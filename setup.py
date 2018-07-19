@@ -11,6 +11,7 @@ setup(
     long_description="LTI Helper",
     install_requires=[
         "Django",
+        'rest_framework',
         ],
     scripts=[],
     license="AGPL",
