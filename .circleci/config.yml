@@ -5,7 +5,7 @@
 #
 version: 2
 workflows:
-  version: 2,
+  version: 2
   test:
     -jobs:
       - test-3.6
