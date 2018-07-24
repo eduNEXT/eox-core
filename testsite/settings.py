@@ -41,7 +41,9 @@ INSTALLED_APPS = [
 ]
 
 INSTALLED_APPS.extend(plugin_apps.get_apps(plugin_constants.ProjectType.CMS))
+INSTALLED_APPS.extend(plugin_apps.get_apps(plugin_constants.ProjectType.LMS))
 plugin_settings.add_plugins(__name__, plugin_constants.ProjectType.CMS, plugin_constants.SettingsType.DEVSTACK)
+plugin_settings.add_plugins(__name__, plugin_constants.ProjectType.LMS, plugin_constants.SettingsType.DEVSTACK)
 
 
 MIDDLEWARE = [

@@ -11,8 +11,7 @@ setup(
     long_description="LTI Helper",
     install_requires=[
         "Django",
-        'rest_framework',
-        ],
+    ],
     scripts=[],
     license="AGPL",
     platforms=["any"],
@@ -25,6 +24,7 @@ setup(
         ],
         "cms.djangoapp": [
             "plugins = openedx.core.djangoapps.plugins.apps:PluginsConfig",
+            "eox_core = eox_core.apps:EoxCoreConfig",
         ],
     }
 )

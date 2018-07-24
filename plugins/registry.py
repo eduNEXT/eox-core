@@ -9,4 +9,7 @@ class DjangoAppRegistry(PluginManager):
 
 
 def get_app_configs(project_type):
-    return DjangoAppRegistry.get_available_plugins(project_type).items()
+    try:
+        return DjangoAppRegistry.get_available_plugins(project_type).values()
+    except AttributeError:
+        return DjangoAppRegistry.get_available_plugins(project_type).itervalues()

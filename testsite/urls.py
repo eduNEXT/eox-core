@@ -22,7 +22,7 @@ from plugins import plugin_urls, constants as plugin_constants
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^api-auth/', include('rest_framework.urls')),
-    url(r'^edunext/', include('eox_core.urls')),
 ]
 
 urlpatterns.extend(plugin_urls.get_patterns(plugin_constants.ProjectType.CMS))
+urlpatterns.extend(plugin_urls.get_patterns(plugin_constants.ProjectType.LMS))
