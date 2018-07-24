@@ -2,11 +2,10 @@
 Utilities related to caching.
 """
 import collections
-import cPickle as pickle
+# import cPickle as pickle
 import functools
-import zlib
-
-#from xblock.core import XBlock
+# import zlib
+# from xblock.core import XBlock
 
 
 def memoize_in_request_cache(request_cache_attr_name=None):
@@ -84,21 +83,21 @@ class memoized(object):  # pylint: disable=invalid-name
         return functools.partial(self.__call__, obj)
 
 
-def hashvalue(arg):
-    """
-    If arg is an xblock, use its location. otherwise just turn it into a string
-    """
-    if isinstance(arg, XBlock):
-        return unicode(arg.location)
-    else:
-        return unicode(arg)
+# def hashvalue(arg):
+#     """
+#     If arg is an xblock, use its location. otherwise just turn it into a string
+#     """
+#     if isinstance(arg, XBlock):
+#         return unicode(arg.location)
+#     else:
+#         return unicode(arg)
 
 
-def zpickle(data):
-    """Given any data structure, returns a zlib compressed pickled serialization."""
-    return zlib.compress(pickle.dumps(data, pickle.HIGHEST_PROTOCOL))
+# def zpickle(data):
+#     """Given any data structure, returns a zlib compressed pickled serialization."""
+#     return zlib.compress(pickle.dumps(data, pickle.HIGHEST_PROTOCOL))
 
 
-def zunpickle(zdata):
-    """Given a zlib compressed pickled serialization, returns the deserialized data."""
-    return pickle.loads(zlib.decompress(zdata))
+# def zunpickle(zdata):
+#     """Given a zlib compressed pickled serialization, returns the deserialized data."""
+#     return pickle.loads(zlib.decompress(zdata))
