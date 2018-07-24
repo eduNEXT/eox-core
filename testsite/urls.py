@@ -16,6 +16,7 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 from django.conf.urls import include
+from plugins import plugin_urls, constants as plugin_constants
 
 
 urlpatterns = [
@@ -23,3 +24,5 @@ urlpatterns = [
     url(r'^api-auth/', include('rest_framework.urls')),
     url(r'^edunext/', include('eox_core.urls')),
 ]
+
+urlpatterns.extend(plugin_urls.get_patterns(plugin_constants.ProjectType.CMS))

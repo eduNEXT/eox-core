@@ -19,4 +19,12 @@ setup(
     zip_safe=False,
     packages=['eox_core'],
     include_package_data=True,
-    )
+    entry_points={
+        "lms.djangoapp": [
+            "plugins = openedx.core.djangoapps.plugins.apps:PluginsConfig",
+        ],
+        "cms.djangoapp": [
+            "plugins = openedx.core.djangoapps.plugins.apps:PluginsConfig",
+        ],
+    }
+)
