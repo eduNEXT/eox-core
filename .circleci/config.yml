@@ -67,10 +67,10 @@ jobs:
       - image: circleci/python:2.7
     steps:
       - run:
-        name: install dependencies
-        command: |
-          mkdir -p ./venv
-          virtualenv ./venv
-          . venv/bin/activate
-          pip install -r requirements.txt
+          name: install dependencies
+          command: |
+            mkdir -p ./venv
+            virtualenv ./venv
+            . venv/bin/activate
+            pip install -r requirements.txt
 
