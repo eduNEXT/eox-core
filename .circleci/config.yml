@@ -11,7 +11,7 @@ workflows:
       - test-3.6
       - test-2.7
 jobs:
-  test-3.6: &test-template
+  test-3.6:
     docker:
       # specify the version you desire here
       # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
@@ -62,10 +62,20 @@ jobs:
           destination: test-reports
   # Based on answer https://discuss.circleci.com/t/run-tests-on-multiple-versions-of-python/15462
   test-2.7:
-    <<: *test-template
     docker:
       - image: circleci/python:2.7
+    working_directory: ~/repo
+
     steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "requirements.txt" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
+
       - run:
           name: install dependencies
           command: |
@@ -73,4 +83,25 @@ jobs:
             virtualenv ./venv
             . venv/bin/activate
             pip install -r requirements.txt
+
+      - save_cache:
+          paths:
+            - ./venv
+          key: v1-dependencies-{{ checksum "requirements.txt" }}
+        
+      # run tests!
+      # this example uses Django's built-in test-runner
+      # other common Python testing frameworks include pytest and nose
+      # https://pytest.org
+      # https://nose.readthedocs.io
+      - run:
+          name: run tests
+          command: |
+            . venv/bin/activate
+            python manage.py test
+
+      - store_artifacts:
+          path: test-reports
+          destination: test-reports
+
 
