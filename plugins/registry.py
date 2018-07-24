@@ -9,4 +9,4 @@ class DjangoAppRegistry(PluginManager):
 
 
 def get_app_configs(project_type):
-    return DjangoAppRegistry.get_available_plugins(project_type).itervalues()
+    return DjangoAppRegistry.get_available_plugins(project_type).items()
