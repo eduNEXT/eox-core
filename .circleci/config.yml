@@ -82,6 +82,7 @@ jobs:
             mkdir -p ./venv
             virtualenv ./venv
             . venv/bin/activate
+            sudo chwon 755 ./venv/bin/python
             pip install -r requirements.txt
 
       - save_cache:
