@@ -81,7 +81,7 @@ jobs:
           command: |
             mkdir -p ./venv
             if [ ! -f ./venv/bin/python ]; then
-              virtualenv ./venv
+              sudo virtualenv ./venv
             fi
             sudo chmod 777 ./venv/bin/python
             . venv/bin/activate
