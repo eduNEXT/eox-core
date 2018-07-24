@@ -79,10 +79,8 @@ jobs:
       - run:
           name: install dependencies
           command: |
-            if [ ! -d ./venv ]; then
-              mkdir -p ./venv;
-              virtualenv ./venv;
-            fi
+            mkdir -p ./venv
+            virtualenv ./venv
             . venv/bin/activate
             pip install -r requirements.txt
 
