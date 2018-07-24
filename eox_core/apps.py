@@ -17,7 +17,7 @@ class EoxCoreConfig(AppConfig):
         URLs.CONFIG: {
 
             # Configure the Plugin URLs for each project type, as needed.
-            ProjectType.LMS: {
+            ProjectType.CMS: {
 
                 # The namespace to provide to django's urls.include.
                 URLs.NAMESPACE: u'eox-core',
