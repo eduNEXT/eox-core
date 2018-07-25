@@ -2,8 +2,13 @@
 from __future__ import unicode_literals
 
 from django.apps import AppConfig
-from plugins.constants import PluginURLs as URLs, ProjectType,\
-    PluginSettings as Settings, PluginSignals as Signals  # , SettingsType
+from plugins.constants import (
+    PluginURLs as URLs,
+    ProjectType,
+    PluginSettings as Settings,
+    PluginSignals as Signals,
+    SettingsType,
+)
 
 
 class EoxCoreConfig(AppConfig):
@@ -24,7 +29,7 @@ class EoxCoreConfig(AppConfig):
 
                 # The regex to provide to django's urls.url.
                 # Optional; Defaults to r''.
-                URLs.REGEX: r'^api/eox-core/',
+                URLs.REGEX: r'^eox-core/',
 
                 # The python path (relative to this app) to the URLs module to
                 # be plugged into the project.
@@ -36,21 +41,22 @@ class EoxCoreConfig(AppConfig):
         # Configuration setting for Plugin Settings for this app.
         Settings.CONFIG: {
 
-            # Configure the Plugin Settings for each Project Type, as needed.
-            # ProjectType.LMS: {
-
-            #     # Configure each Settings Type, as needed.
-            #     SettingsType.AWS: {
-
-            #         # The python path (relative to this app) to the settings
-            #         # module for the relevant Project Type and Settings Type.
-            #         # Optional; Defaults to u'settings'.
-            #         Settings.RELATIVE_PATH: u'settings.aws',
-            #     },
-            #     SettingsType.COMMON: {
-            #         Settings.RELATIVE_PATH: u'settings.common',
-            #     },
-            # }
+            ProjectType.LMS: {
+                SettingsType.AWS: {
+                    Settings.RELATIVE_PATH: u'settings.common',
+                },
+                SettingsType.COMMON: {
+                    Settings.RELATIVE_PATH: u'settings.common',
+                },
+            },
+            ProjectType.CMS: {
+                SettingsType.AWS: {
+                    Settings.RELATIVE_PATH: u'settings.common',
+                },
+                SettingsType.COMMON: {
+                    Settings.RELATIVE_PATH: u'settings.common',
+                },
+            }
         },
 
         # Configuration setting for Plugin Signals for this app.
