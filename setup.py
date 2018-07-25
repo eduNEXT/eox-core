@@ -1,14 +1,13 @@
-
 from setuptools import setup
 
 setup(
     name="eox-core",
     version="0.0.1",
-    author="Edunext",
-    author_email="info@edunext.co",
+    author="eduNEXT",
+    author_email="contact@edunext.co",
     url="https://github.com/eduNEXT/eox-core",
-    description="LTI helper",
-    long_description="LTI Helper",
+    description="eduNEXT Openedx extensions",
+    long_description="",
     install_requires=[
         "Django",
     ],

@@ -8,7 +8,7 @@ from plugins.constants import PluginURLs as URLs, ProjectType,\
 
 class EoxCoreConfig(AppConfig):
     name = 'eox_core'
-    verbose_name = "Edunext Open Extensions"
+    verbose_name = "eduNEXT Openedx Extensions"
 
     # Class attribute that configures and enables this app as a Plugin App.
     plugin_app = {
