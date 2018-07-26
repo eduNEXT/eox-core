@@ -1,4 +1,4 @@
-Django==1.11
+Django>=1.8,<2.0          # Web application framework
 django-filter==2.0.0
 djangorestframework==3.8.2
 Markdown==2.6.11
