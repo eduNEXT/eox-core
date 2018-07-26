@@ -94,8 +94,7 @@ jobs:
       - run:
           name: run tests
           command: |
-            pip install -U pytest
-            pytest
+            python -m pytest
 
       - store_artifacts:
           path: test-reports
