@@ -6,3 +6,4 @@ pbr==4.2.0
 pytz==2018.5
 six==1.11.0
 stevedore==1.29.0
+pytest==3.6.3
