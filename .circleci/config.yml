@@ -40,6 +40,9 @@ jobs:
             python3 -m venv venv
             . venv/bin/activate
             pip install -r requirements.txt
+            coverage run -m pytest
+            coverage report --fail-under=70
+
 
       - save_cache:
           paths:
@@ -95,6 +98,8 @@ jobs:
           name: run tests
           command: |
             python -m pytest
+            coverage run -m pytest
+            coverage report --fail-under=70
 
       - store_artifacts:
           path: test-reports
