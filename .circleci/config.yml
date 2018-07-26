@@ -55,6 +55,7 @@ jobs:
           name: run tests
           command: |
             . venv/bin/activate
+            cd test
             python manage.py test
 
       - store_artifacts:
@@ -94,6 +95,7 @@ jobs:
       - run:
           name: run tests
           command: |
+            cd test
             python manage.py test
 
       - store_artifacts:
