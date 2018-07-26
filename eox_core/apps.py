@@ -42,16 +42,16 @@ class EoxCoreConfig(AppConfig):
         Settings.CONFIG: {
 
             ProjectType.LMS: {
-                SettingsType.AWS: {
-                    Settings.RELATIVE_PATH: u'settings.common',
+                SettingsType.TEST: {
+                    Settings.RELATIVE_PATH: u'settings.test',
                 },
                 SettingsType.COMMON: {
                     Settings.RELATIVE_PATH: u'settings.common',
                 },
             },
             ProjectType.CMS: {
-                SettingsType.AWS: {
-                    Settings.RELATIVE_PATH: u'settings.common',
+                SettingsType.TEST: {
+                    Settings.RELATIVE_PATH: u'settings.test',
                 },
                 SettingsType.COMMON: {
                     Settings.RELATIVE_PATH: u'settings.common',
