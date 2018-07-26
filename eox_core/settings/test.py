@@ -3,14 +3,23 @@ Settings for eox-core
 """
 
 from __future__ import absolute_import, unicode_literals
-from .common import plugin_settings as common_settings
+
+from .common import *  # pylint: disable=wildcard-import
 
 
-def plugin_settings(settings):
-    """
-    Defines completion-specific settings when app is used as a plugin to edx-platform.
-    See: https://github.com/edx/edx-platform/blob/master/openedx/core/djangoapps/plugins/README.rst
-    """
-    common_settings(settings)
+class SettingsClass(object):
+    pass
 
-    settings.EOX_CORE_USER_CREATION_BACKEND = "eox_core.edxapp_wrapper.tests.users_backend"
+
+settings = SettingsClass()
+plugin_settings(settings)
+vars().update(settings.__dict__)
+
+
+# This key needs to be defined so that the check_apps_ready passes and the AppRegistry is loaded
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'db.sqlite3',
+    }
+}
