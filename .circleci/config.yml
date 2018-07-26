@@ -40,17 +40,25 @@ jobs:
             python3 -m venv venv
             . venv/bin/activate
             pip install -r requirements.txt
+            coverage run -m pytest
+            coverage report --fail-under=70
+
 
       - save_cache:
           paths:
             - ./venv
           key: v1-dependencies-{{ checksum "requirements.txt" }}
 
+      # run tests!
+      # this example uses Django's built-in test-runner
+      # other common Python testing frameworks include pytest and nose
+      # https://pytest.org
+      # https://nose.readthedocs.io
       - run:
           name: run tests
           command: |
             . venv/bin/activate
-            DJANGO_SETTINGS_MODULE="eox_core.settings.test" pytest
+            python manage.py test
 
       - store_artifacts:
           path: test-reports
@@ -89,7 +97,9 @@ jobs:
       - run:
           name: run tests
           command: |
-            DJANGO_SETTINGS_MODULE="eox_core.settings.test" python -m pytest
+            python -m pytest
+            coverage run -m pytest
+            coverage report --fail-under=70
 
       - store_artifacts:
           path: test-reports

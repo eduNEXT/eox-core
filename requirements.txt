@@ -11,3 +11,4 @@ stevedore==1.29.0
 mock==2.0.0
 pytest==3.6.3
 pytest-django==3.3.3
+coverage==4.5.1
