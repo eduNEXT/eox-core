@@ -16,6 +16,7 @@ PERMISSIONS = {
 
 
 class EoxData(models.Model):
+    managed = False
     """Define the extra fields related to User here"""
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -41,10 +42,12 @@ class EoxData(models.Model):
 
 
 class EoxSite(models.Model):
+    managed = False
     site = models.CharField(max_length=2083, unique=True)
 
 
 class EoxPermissions(models.Model):
+    managed = False
     choices = [(x, y) for x, y in PERMISSIONS.items()]
     permission = models.CharField(
         EoxData, choices=choices, max_length=100)
