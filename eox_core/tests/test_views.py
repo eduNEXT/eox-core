@@ -11,5 +11,5 @@ class TestInfoView(TestCase):
     """ Tests for the eox-info page """
 
     def test_version_is_present(self):
-        response = self.client.get('/eox-core/eox-info')
+        response = self.client.get('/eox-info')
         self.assertContains(response, eox_core.__version__)

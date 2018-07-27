@@ -2,13 +2,6 @@
 from __future__ import unicode_literals
 
 from django.apps import AppConfig
-from plugins.constants import (
-    PluginURLs as URLs,
-    ProjectType,
-    PluginSettings as Settings,
-    PluginSignals as Signals,
-    SettingsType,
-)
 
 
 class EoxCoreConfig(AppConfig):
@@ -26,12 +19,12 @@ class EoxCoreConfig(AppConfig):
         },
         'settings_config': {
             'lms.djangoapp': {
-                'test': { relative_path: 'settings.test' },
-                'common': { relative_path: 'settings.common'},
+                'test': { 'relative_path': 'settings.test' },
+                'common': { 'relative_path': 'settings.common'},
             },
             'cms.djangoapp': {
-                'test': { relative_path: 'settings.test' },
-                'common': { relative_path: 'settings.common'},
+                'test': { 'relative_path': 'settings.test' },
+                'common': { 'relative_path': 'settings.common'},
             },
         },
     }
