@@ -41,7 +41,7 @@ jobs:
             . venv/bin/activate
             pip install -r requirements.txt
             coverage run -m pytest
-            coverage report --fail-under=70
+            coverage report --fail-under=80
 
 
       - save_cache:
