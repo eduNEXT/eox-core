@@ -67,7 +67,7 @@ jobs:
   test-2.7:
     docker:
       - image: circleci/python:2.7
-    working_directory: ~/repo
+    working_directory: ~/repo27
 
     steps:
       - checkout
@@ -75,14 +75,17 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "requirements.txt" }}
+          - v1-27-dependencies-{{ checksum "requirements.txt" }}
           # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
+          - v1-27-dependencies-
 
       - run:
           name: install dependencies
           command: |
-            pip install --user -r requirements.txt
+            mkdir -p ./venv
+            virtualenv ./venv
+            . venv/bin/activate
+            pip install -r requirements.txt
 
       - save_cache:
           paths:
@@ -97,9 +100,10 @@ jobs:
       - run:
           name: run tests
           command: |
-            python -m pytest
-            coverage run -m pytest
-            coverage report --fail-under=70
+            . venv/bin/activate
+            pytest
+            coverage run --rcfile=.coveragerc -m pytest
+            coverage report --fail-under=70 --rcfile=.coveragerc 
 
       - store_artifacts:
           path: test-reports
