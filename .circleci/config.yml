@@ -46,16 +46,11 @@ jobs:
             - ./venv
           key: v1-dependencies-{{ checksum "requirements.txt" }}
 
-      # run tests!
-      # this example uses Django's built-in test-runner
-      # other common Python testing frameworks include pytest and nose
-      # https://pytest.org
-      # https://nose.readthedocs.io
       - run:
           name: run tests
           command: |
             . venv/bin/activate
-            pytest
+            DJANGO_SETTINGS_MODULE="eox_core.settings.test" pytest
 
       - store_artifacts:
           path: test-reports
@@ -94,7 +89,7 @@ jobs:
       - run:
           name: run tests
           command: |
-            python -m pytest
+            DJANGO_SETTINGS_MODULE="eox_core.settings.test" python -m pytest
 
       - store_artifacts:
           path: test-reports
