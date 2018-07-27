@@ -1,8 +1,6 @@
 from django.conf.urls import url
-from . import views
+from eox_core import views
 
 urlpatterns = [
-    url(r'^$', views.default_view),
+    url(r'^eox-info$', views.default_view),
 ]
-
-

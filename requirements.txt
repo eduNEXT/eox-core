@@ -5,6 +5,7 @@ Markdown==2.6.11
 pbr==4.2.0
 pytz==2018.5
 six==1.11.0
+bumpversion==0.5.3
 stevedore==1.29.0
 mock==2.0.0
 pytest==3.6.3

@@ -16,6 +16,9 @@ plugin_settings(settings)
 vars().update(settings.__dict__)
 
 
+ROOT_URLCONF = 'eox_core.urls'
+ALLOWED_HOSTS = ['*']
+
 # This key needs to be defined so that the check_apps_ready passes and the AppRegistry is loaded
 DATABASES = {
     'default': {
