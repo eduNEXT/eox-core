@@ -31,4 +31,3 @@ class CreateEdxappUserTest(TestCase):
 
         create_edxapp_user(data)
         m_backend.create_edxapp_user.assert_called_with(data)
-

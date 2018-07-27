@@ -4,22 +4,24 @@ Settings for eox-core
 
 from __future__ import absolute_import, unicode_literals
 
-from .common import *  # pylint: disable=wildcard-import
+from .common import plugin_settings  # pylint: disable=wildcard-import
 
 
 class SettingsClass(object):
+    """ dummy settings class """
     pass
 
 
-settings = SettingsClass()
-plugin_settings(settings)
-vars().update(settings.__dict__)
+SETTINGS = SettingsClass()
+plugin_settings(SETTINGS)
+vars().update(SETTINGS.__dict__)
 
 
 ROOT_URLCONF = 'eox_core.urls'
 ALLOWED_HOSTS = ['*']
 
-# This key needs to be defined so that the check_apps_ready passes and the AppRegistry is loaded
+# This key needs to be defined so that the check_apps_ready passes and the
+# AppRegistry is loaded
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',

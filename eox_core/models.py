@@ -1,39 +1,40 @@
 # -*- coding: utf-8 -*-
+"""Models for the eox-core API"""
 from __future__ import unicode_literals
-from django.db import models
 
 
-class Authentication:
-    def __init__(self):
-        pass
+class Authentication(object):
+    """ Handle Authentication"""
+    pass
 
 
 class AuthSession(Authentication):
-    def __init__(self):
-        pass
+    """ Handle AuthSession"""
+    pass
 
 
 class AuthToken(Authentication):
-    def __init__(self):
-        pass
+    """ Handle AuthToken"""
+    pass
 
 
 class AuthOauth(Authentication):
-    def __init__(self):
-        pass
+    """ Handle AuthOauth"""
+    pass
 
 
 class AuthCustom(Authentication):
-    def __init__(self):
-        pass
-
+    """ Handle AuthCustom"""
     def validate(self):
+        """ Allowed or not """
         return True
 
 
-class Authorization:
+class Authorization(object):
+    """ Handle Authorization"""
     def __init__(self):
         pass
 
     def is_authorized(self):
+        """ Allowed or not """
         return True
