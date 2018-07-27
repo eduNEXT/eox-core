@@ -9,6 +9,7 @@ from django.conf import settings
 
 
 def create_edxapp_user(*args, **kwargs):
+    """ Creates the edxapp user """
 
     backend_function = settings.EOX_CORE_USER_CREATION_BACKEND
     backend = import_module(backend_function)

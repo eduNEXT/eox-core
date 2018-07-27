@@ -9,13 +9,12 @@ from django.db import transaction
 from openedx.core.djangoapps.user_api.accounts.api import check_account_exists  # pylint: disable=import-error
 from student.forms import AccountCreationForm  # pylint: disable=import-error
 from student.helpers import do_create_account, create_or_set_user_attribute_created_on_site  # pylint: disable=import-error
-from student.models import create_comments_service_user  # pylint: disable=import-error
 
 LOG = logging.getLogger(__name__)
 
 
 def create_edxapp_user(*args, **kwargs):
-
+    """ Create an edx-app user, code copied from edx with modifications """
     errors = []
 
     email = kwargs.pop("email")
