@@ -4,7 +4,7 @@ Settings for eox-core
 
 from __future__ import absolute_import, unicode_literals
 
-from .common import plugin_settings  # pylint: disable=wildcard-import
+from .common import *  # pylint: disable=wildcard-import
 
 
 class SettingsClass(object):
