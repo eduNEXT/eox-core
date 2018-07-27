@@ -99,7 +99,6 @@ jobs:
           name: run tests
           command: |
             . venv/bin/activate
-            pytest
             coverage run --source="." --rcfile=.coveragerc -m pytest
             coverage report --fail-under=39 --rcfile=.coveragerc 
 
