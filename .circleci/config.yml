@@ -46,11 +46,17 @@ jobs:
             - ./venv
           key: v1-dependencies-{{ checksum "requirements.txt" }}
 
+      # run tests!
+      # this example uses Django's built-in test-runner
+      # other common Python testing frameworks include pytest and nose
+      # https://pytest.org
+      # https://nose.readthedocs.io
       - run:
           name: run tests
           command: |
             . venv/bin/activate
-            DJANGO_SETTINGS_MODULE="eox_core.settings.test" pytest
+            coverage run --source="." -m pytest
+            coverage report --fail-under=39
 
       - store_artifacts:
           path: test-reports
@@ -59,7 +65,7 @@ jobs:
   test-2.7:
     docker:
       - image: circleci/python:2.7
-    working_directory: ~/repo
+    working_directory: ~/repo27
 
     steps:
       - checkout
@@ -67,14 +73,17 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "requirements.txt" }}
+          - v1-27-dependencies-{{ checksum "requirements.txt" }}
           # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
+          - v1-27-dependencies-
 
       - run:
           name: install dependencies
           command: |
-            pip install --user -r requirements.txt
+            mkdir -p ./venv
+            virtualenv ./venv
+            . venv/bin/activate
+            pip install -r requirements.txt
 
       - save_cache:
           paths:
@@ -89,7 +98,9 @@ jobs:
       - run:
           name: run tests
           command: |
-            DJANGO_SETTINGS_MODULE="eox_core.settings.test" python -m pytest
+            . venv/bin/activate
+            coverage run --source="." --rcfile=.coveragerc -m pytest
+            coverage report --fail-under=39 --rcfile=.coveragerc 
 
       - store_artifacts:
           path: test-reports
