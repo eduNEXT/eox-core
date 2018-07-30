@@ -4,28 +4,40 @@ API v1 views.
 
 from __future__ import absolute_import, unicode_literals
 
-from django.utils.translation import ugettext as _
-
+from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
 from rest_framework_oauth.authentication import OAuth2Authentication
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAdminUser
 from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
+from rest_framework.authentication import BasicAuthentication
+from rest_framework.permissions import AllowAny
+from eox_core.api.v1.serializers import EdxappUserQuerySerializer, EdxappUserSerializer
+from eox_core.edxapp_wrapper.users import create_edxapp_user
 
 
-class EdxappUser(APIView):
+class EdxappUser(generics.CreateAPIView):
     """
     Handles API requests to create users
     """
 
-    def get(self, request, *args, **kwargs):
+    authentication_classes = (BasicAuthentication,)
+    permission_classes = (AllowAny,)
+
+    def post(self, request, *args, **kwargs):
         """
         """
-        return Response({"detail": _("ok")}, status=status.HTTP_200_OK)
+        serializer = EdxappUserQuerySerializer(data=request.POST)
+        # TODO: during validation, we should check the conflicts
+        serializer.is_valid(raise_exception=True)
+
+        user, errors = create_edxapp_user(**serializer.validated_data)
+        # TODO: do something about the errors, don't just eat them
+        serialized_user = EdxappUserSerializer(user)
+        return Response(serialized_user.data)
 
 
 class UserInfo(APIView):

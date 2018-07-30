@@ -15,13 +15,6 @@ from student.models import create_comments_service_user  # pylint: disable=impor
 LOG = logging.getLogger(__name__)
 
 
-def serialize_user(user):
-    return {
-        "username": user.username,
-        "email": user.email,
-    }
-
-
 def create_edxapp_user(*args, **kwargs):
     """
     Creates a user on the open edx django site using calls to
@@ -114,8 +107,4 @@ def create_edxapp_user(*args, **kwargs):
 
     # TODO: run conditional email sequence
 
-
-    return {
-        "errors": errors,
-        "user": serialize_user(user)
-    }
+    return user, errors
