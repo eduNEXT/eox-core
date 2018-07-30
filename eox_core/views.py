@@ -41,23 +41,3 @@ def info_view(request):
         content_type="application/json"
     )
 
-
-class UserInfoView(APIView):
-    """
-    Auth-only view to check some basic info about the current user
-    Can use Oauth2/Session/JWT authentication
-    """
-    authentication_classes = (OAuth2Authentication, SessionAuthentication, JSONWebTokenAuthentication)
-    permission_classes = (IsAdminUser,)
-    renderer_classes = (BrowsableAPIRenderer, JSONRenderer)
-
-    def get(self, request, format=None):
-        content = {
-            # `django.contrib.auth.User` instance.
-            'user': unicode(request.user.username),
-            'email': unicode(request.user.email),
-            'is_staff': request.user.is_staff,
-            'is_superuser': request.user.is_superuser,
-            'auth': unicode(request.auth)
-        }
-        return Response(content)
