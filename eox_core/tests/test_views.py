@@ -3,7 +3,7 @@
 from __future__ import absolute_import, unicode_literals
 
 from django.test import TestCase
-from ..test_utils import SuperuserFactory, DEFAULT_PASSWORD
+from ..test_utils import SuperUserFactory, DEFAULT_PASSWORD
 import eox_core
 
 
@@ -16,5 +16,5 @@ class TestInfoView(TestCase):
         self.assertContains(response, eox_core.__version__)
 
     def test_user_is_logged_in(self):
-        self.superuser = SuperuserFactory()
-        self.client.login(username=self.superuser.username, password=TEST_PASSWORD)
+        self.superuser = SuperUserFactory()
+        self.client.login(username=self.superuser.username, password=DEFAULT_PASSWORD)
