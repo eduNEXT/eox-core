@@ -14,3 +14,5 @@ pytest-django==3.3.3
 coverage==4.5.1
 pylint==1.9.3
 factory-boy==2.10.0
+djangorestframework-jwt==1.11.0
+git+https://github.com/edx/django-rest-framework-oauth.git@0a43e8525f1e3048efe4bc70c03de308a277197c#egg=djangorestframework-oauth==1.1.1
