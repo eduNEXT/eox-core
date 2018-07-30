@@ -1,5 +1,5 @@
 coverage==4.5.1
-Django==1.11
+Django>=1.8,<2.0
 django-filter==2.0.0
 djangorestframework==3.8.2
 Markdown==2.6.11

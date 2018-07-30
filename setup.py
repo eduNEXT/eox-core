@@ -30,9 +30,7 @@ setup(
     url="https://github.com/eduNEXT/eox-core",
     description="eduNEXT Openedx extensions",
     long_description="",
-    install_requires=[
-        "Django",
-    ],
+    install_requires=[],
     scripts=[],
     license="AGPL",
     platforms=["any"],
