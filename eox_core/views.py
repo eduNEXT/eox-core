@@ -6,16 +6,25 @@ from __future__ import unicode_literals
 import json
 from os.path import dirname, realpath
 from subprocess import check_output
+from rest_framework.views import APIView
 
 from django.http import HttpResponse
-from django.shortcuts import render
+from rest_framework_oauth.authentication import OAuth2Authentication
+from rest_framework.authentication import SessionAuthentication
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from student import models as student_models
+from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
+from rest_framework_jwt.authentication import JSONWebTokenAuthentication
+
 
 import eox_core
 
 
 def info_view(request):
     """
-    Basic view to show the working version and the exact git commit of the installed app
+    Basic view to show the working version and the exact git commit of the
+    installed app
     """
     try:
         working_dir = dirname(realpath(__file__))
@@ -32,3 +41,26 @@ def info_view(request):
         json.dumps(response_data),
         content_type="application/json"
     )
+
+
+class UserInfoView(APIView):
+    """
+    Auth-only view to check some basic info about the current user
+    Can use Oauth2/Session/JWT authentication
+    """
+    authentication_classes = (OAuth2Authentication, SessionAuthentication, JSONWebTokenAuthentication)
+    permission_classes = (IsAuthenticated,)
+    renderer_classes = (BrowsableAPIRenderer, JSONRenderer)
+
+    def get(self, request, format=None):
+        user, user_profile = student_models.get_user(request.user.email)
+        content = {
+            # `django.contrib.auth.User` instance.
+            'user': unicode(request.user.username),
+            'email': unicode(request.user.email),
+            'is_staff': user.is_staff,
+            'is_superuser': user.is_superuser,
+            'auth': unicode(request.auth),
+            'language': unicode(user_profile.language),
+        }
+        return Response(content)
