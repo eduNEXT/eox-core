@@ -4,6 +4,7 @@
 from __future__ import unicode_literals
 
 import json
+from os.path import dirname, realpath
 from subprocess import check_output
 
 from django.http import HttpResponse
@@ -17,7 +18,8 @@ def info_view(request):
     Basic view to show the working version and the exact git commit of the installed app
     """
     try:
-        git_data = unicode(check_output(["git", "rev-parse", "HEAD"]))
+        working_dir = dirname(realpath(__file__))
+        git_data = unicode(check_output(["git", "rev-parse", "HEAD"], cwd=working_dir))
     except Exception as e:
         git_data = ""
 
