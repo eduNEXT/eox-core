@@ -10,7 +10,7 @@ from rest_framework.views import APIView
 from django.http import HttpResponse
 from rest_framework_oauth.authentication import OAuth2Authentication
 from rest_framework.authentication import SessionAuthentication
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
@@ -46,7 +46,7 @@ class UserInfoView(APIView):
     Can use Oauth2/Session/JWT authentication
     """
     authentication_classes = (OAuth2Authentication, SessionAuthentication, JSONWebTokenAuthentication)
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAdminUser,)
     renderer_classes = (BrowsableAPIRenderer, JSONRenderer)
 
     def get(self, request, format=None):
