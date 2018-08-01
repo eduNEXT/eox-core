@@ -30,15 +30,18 @@ class EdxappUser(generics.CreateAPIView):
 
     def post(self, request, *args, **kwargs):
         """
+        Creates the users on edxapp
         """
         serializer = EdxappUserQuerySerializer(data=request.POST)
-        # TODO: during validation, we should check the conflicts
         serializer.is_valid(raise_exception=True)
 
-        user, errors = create_edxapp_user(**serializer.validated_data)
-        # TODO: do something about the errors, don't just eat them
+        user, msg = create_edxapp_user(**serializer.validated_data)
+
         serialized_user = EdxappUserSerializer(user)
-        return Response(serialized_user.data)
+        response_data = serialized_user.data
+        if msg:
+            response_data["messages"] = msg
+        return Response(response_data)
 
 
 class UserInfo(APIView):

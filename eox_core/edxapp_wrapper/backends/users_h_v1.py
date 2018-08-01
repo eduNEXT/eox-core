@@ -15,6 +15,10 @@ from student.models import create_comments_service_user  # pylint: disable=impor
 LOG = logging.getLogger(__name__)
 
 
+def check_edxapp_account_conflicts(email, username):
+    return check_account_exists(email=email, username=username)
+
+
 def create_edxapp_user(*args, **kwargs):
     """
     Creates a user on the open edx django site using calls to
@@ -38,15 +42,9 @@ def create_edxapp_user(*args, **kwargs):
 
     email = kwargs.pop("email")
     username = kwargs.pop("username")
-    conflicts = check_account_exists(email=email, username=username)
+    conflicts = check_edxapp_account_conflicts(email=email, username=username)
     if conflicts:
-        for field in conflicts:
-            errors.append("There is already an account using this {} field".format(field))
-
-        return {
-            "errors": errors,
-        }
-
+        return None, "Fatal: account collition with the provided: {}".format(", ".join(conflicts))
 
     password = kwargs.pop("password")
     fullname = kwargs.pop("fullname")

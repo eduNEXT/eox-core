@@ -5,6 +5,8 @@ from __future__ import absolute_import, unicode_literals
 
 from rest_framework import serializers
 
+from eox_core.edxapp_wrapper.users import check_edxapp_account_conflicts
+
 
 class EdxappUserSerializer(serializers.Serializer):
     """
@@ -24,6 +26,17 @@ class EdxappUserSerializer(serializers.Serializer):
     is_active = serializers.BooleanField(read_only=True)
     is_staff = serializers.BooleanField(read_only=True)
     is_superuser = serializers.BooleanField(read_only=True)
+
+    def validate(self, data):
+        """
+        Check that there are no conflicts on the accounts
+        """
+        email = data.get("email")
+        username = data.get("username")
+        conflicts = check_edxapp_account_conflicts(email, username)
+        if conflicts:
+            raise serializers.ValidationError("Account already exists with the provided: {}".format(", ".join(conflicts)))
+        return data
 
 
 class EdxappUserQuerySerializer(EdxappUserSerializer):
