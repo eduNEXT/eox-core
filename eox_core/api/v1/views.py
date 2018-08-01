@@ -4,7 +4,6 @@ API v1 views.
 
 from __future__ import absolute_import, unicode_literals
 
-from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_oauth.authentication import OAuth2Authentication
@@ -20,13 +19,14 @@ from eox_core.edxapp_wrapper.users import create_edxapp_user
 from django.utils import six
 
 
-class EdxappUser(generics.CreateAPIView):
+class EdxappUser(APIView):
     """
     Handles API requests to create users
     """
 
-    authentication_classes = (BasicAuthentication,)
-    permission_classes = (AllowAny,)
+    authentication_classes = (OAuth2Authentication, JSONWebTokenAuthentication, SessionAuthentication)
+    permission_classes = (IsAdminUser,)
+    renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
     def post(self, request, *args, **kwargs):
         """
@@ -49,9 +49,9 @@ class UserInfo(APIView):
     Auth-only view to check some basic info about the current user
     Can use Oauth2/Session/JWT authentication
     """
-    authentication_classes = (OAuth2Authentication, SessionAuthentication, JSONWebTokenAuthentication)
+    authentication_classes = (OAuth2Authentication, JSONWebTokenAuthentication, SessionAuthentication)
     permission_classes = (IsAdminUser,)
-    renderer_classes = (BrowsableAPIRenderer, JSONRenderer)
+    renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
     def get(self, request, format=None):
         content = {

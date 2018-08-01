@@ -32,7 +32,8 @@ def create_edxapp_user(*args, **kwargs):
         'password': "P4ssW0rd",
         'fullname': "Full Name",
         'activate': True,
-        'site': request.site
+        'site': request.site,
+        'language_preference': 'es-419',
     }
     user = create_edxapp_user(**data)
 
@@ -87,7 +88,7 @@ def create_edxapp_user(*args, **kwargs):
     # TODO: link account with third party auth
 
 
-    lang_pref = kwargs.pop("language_preference", False):
+    lang_pref = kwargs.pop("language_preference", False)
     if lang_pref:
         try:
             preferences_api.set_user_preference(user, LANGUAGE_KEY, lang_pref)
