@@ -15,11 +15,8 @@ from student.models import create_comments_service_user  # pylint: disable=impor
 LOG = logging.getLogger(__name__)
 
 
-def serialize_user(user):
-    return {
-        "username": user.username,
-        "email": user.email,
-    }
+def check_edxapp_account_conflicts(email, username):
+    return check_account_exists(email=email, username=username)
 
 
 def create_edxapp_user(*args, **kwargs):
@@ -35,7 +32,8 @@ def create_edxapp_user(*args, **kwargs):
         'password': "P4ssW0rd",
         'fullname': "Full Name",
         'activate': True,
-        'site': request.site
+        'site': request.site,
+        'language_preference': 'es-419',
     }
     user = create_edxapp_user(**data)
 
@@ -45,15 +43,9 @@ def create_edxapp_user(*args, **kwargs):
 
     email = kwargs.pop("email")
     username = kwargs.pop("username")
-    conflicts = check_account_exists(email=email, username=username)
+    conflicts = check_edxapp_account_conflicts(email=email, username=username)
     if conflicts:
-        for field in conflicts:
-            errors.append("There is already an account using this {} field".format(field))
-
-        return {
-            "errors": errors,
-        }
-
+        return None, "Fatal: account collition with the provided: {}".format(", ".join(conflicts))
 
     password = kwargs.pop("password")
     fullname = kwargs.pop("fullname")
@@ -96,7 +88,7 @@ def create_edxapp_user(*args, **kwargs):
     # TODO: link account with third party auth
 
 
-    lang_pref = kwargs.pop("language_preference", False):
+    lang_pref = kwargs.pop("language_preference", False)
     if lang_pref:
         try:
             preferences_api.set_user_preference(user, LANGUAGE_KEY, lang_pref)
@@ -114,8 +106,4 @@ def create_edxapp_user(*args, **kwargs):
 
     # TODO: run conditional email sequence
 
-
-    return {
-        "errors": errors,
-        "user": serialize_user(user)
-    }
+    return user, errors

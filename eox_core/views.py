@@ -8,19 +8,20 @@ from os.path import dirname, realpath
 from subprocess import check_output
 
 from django.http import HttpResponse
-from django.shortcuts import render
+
 
 import eox_core
 
 
 def info_view(request):
     """
-    Basic view to show the working version and the exact git commit of the installed app
+    Basic view to show the working version and the exact git commit of the
+    installed app
     """
     try:
         working_dir = dirname(realpath(__file__))
         git_data = unicode(check_output(["git", "rev-parse", "HEAD"], cwd=working_dir))
-    except Exception as e:
+    except Exception:
         git_data = ""
 
     response_data = {
@@ -32,3 +33,4 @@ def info_view(request):
         json.dumps(response_data),
         content_type="application/json"
     )
+
