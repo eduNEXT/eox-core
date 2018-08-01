@@ -17,6 +17,7 @@ from rest_framework.authentication import BasicAuthentication
 from rest_framework.permissions import AllowAny
 from eox_core.api.v1.serializers import EdxappUserQuerySerializer, EdxappUserSerializer
 from eox_core.edxapp_wrapper.users import create_edxapp_user
+from django.utils import six
 
 
 class EdxappUser(generics.CreateAPIView):
@@ -52,10 +53,10 @@ class UserInfo(APIView):
     def get(self, request, format=None):
         content = {
             # `django.contrib.auth.User` instance.
-            'user': unicode(request.user.username),
-            'email': unicode(request.user.email),
+            'user': six.text_type(request.user.username),
+            'email': six.text_type(request.user.email),
             'is_staff': request.user.is_staff,
             'is_superuser': request.user.is_superuser,
-            'auth': unicode(request.auth)
+            'auth': six.text_type(request.auth)
         }
         return Response(content)
