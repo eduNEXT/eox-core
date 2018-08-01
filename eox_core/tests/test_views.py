@@ -19,7 +19,7 @@ class TestInfoView(TestCase):
         response = self.client.get('/eox-info')
         self.assertContains(response, eox_core.__version__)
 
-    def test_user_is_logged_in(self):
+    def test_userinfo_endpoint(self):
         factory = APIRequestFactory()
         view = UserInfo.as_view()
         self.user = SuperUserFactory()
