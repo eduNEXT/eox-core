@@ -40,12 +40,11 @@ def create_edxapp_user(*args, **kwargs):
     """
     errors = []
 
-
     email = kwargs.pop("email")
     username = kwargs.pop("username")
     conflicts = check_edxapp_account_conflicts(email=email, username=username)
     if conflicts:
-        return None, "Fatal: account collition with the provided: {}".format(", ".join(conflicts))
+        return None, ["Fatal: account collition with the provided: {}".format(", ".join(conflicts))]
 
     password = kwargs.pop("password")
     fullname = kwargs.pop("fullname")
@@ -99,7 +98,7 @@ def create_edxapp_user(*args, **kwargs):
             ))
 
 
-    if kwargs.pop("activate", False):
+    if kwargs.pop("activate_user", False):
         user.is_active = True
         user.save()
 
