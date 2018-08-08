@@ -49,7 +49,7 @@ class EdxappUserQuerySerializer(EdxappUserSerializer):
 
 
 class EdxappCourseEnrollmentSerializer(serializers.Serializer):
-    """Serializes CourseEnrollment models
+    """Serializes CourseEnrollment
 
     Aggregates all data from the Course Enrollment table, and pulls in the serialization for
     the Course Descriptor and course modes, to give a complete representation of course enrollment.
@@ -70,3 +70,11 @@ class EdxappCourseEnrollmentSerializer(serializers.Serializer):
 
     def validate(self, data):
         return data
+
+
+class EdxappCourseEnrollmentQuerySerializer(EdxappCourseEnrollmentSerializer):
+    """
+    Handles the serialization of the context data required to create an enrollemnt
+    on different backends
+    """
+    force_registration = serializers.BooleanField(default=False)

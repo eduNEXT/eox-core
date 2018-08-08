@@ -16,6 +16,7 @@ from rest_framework.authentication import BasicAuthentication
 from rest_framework.permissions import AllowAny
 from eox_core.api.v1.serializers import EdxappUserQuerySerializer, EdxappUserSerializer, EdxappCourseEnrollmentSerializer
 from eox_core.edxapp_wrapper.users import create_edxapp_user
+from eox_core.edxapp_wrapper.enrollments import create_enrollment
 from django.utils import six
 
 
@@ -60,9 +61,9 @@ class EdxappEnrollment(APIView):
         serializer = EdxappCourseEnrollmentSerializer(data=request.POST)
         serializer.is_valid(raise_exception=True)
 
-        user, msg = create_edxapp_user(**serializer.validated_data)
+        enrollment = create_enrollment(**serializer.validated_data)
 
-        serialized_user = EdxappUserSerializer(user)
+        serialized_user = EdxappUserSerializer(enrollment)
         response_data = serialized_user.data
         if msg:
             response_data["messages"] = msg
