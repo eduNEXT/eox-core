@@ -17,10 +17,10 @@ def create_enrollment(*args, **kwargs):
     return backend.create_enrollment(*args, **kwargs)
 
 
-def check_edxapp_account_conflicts(*args, **kwargs):
+def check_edxapp_enrollment_is_valid(*args, **kwargs):
     """ Checks the db for accounts with the same email or password """
 
     backend_function = settings.EOX_CORE_ENROLLMENT_BACKEND
     backend = import_module(backend_function)
 
-    return backend.check_edxapp_enrollment_conflicts(*args, **kwargs)
+    return backend.check_edxapp_enrollment_is_valid(*args, **kwargs)
