@@ -14,7 +14,7 @@ from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.permissions import AllowAny
-from eox_core.api.v1.serializers import EdxappUserQuerySerializer, EdxappUserSerializer
+from eox_core.api.v1.serializers import EdxappUserQuerySerializer, EdxappUserSerializer, EdxappCourseEnrollmentSerializer
 from eox_core.edxapp_wrapper.users import create_edxapp_user
 from django.utils import six
 
@@ -43,6 +43,30 @@ class EdxappUser(APIView):
             response_data["messages"] = msg
         return Response(response_data)
 
+
+class EdxappEnrollment(APIView):
+    """
+    Handles API requests to create users
+    """
+
+    authentication_classes = (OAuth2Authentication, JSONWebTokenAuthentication, SessionAuthentication)
+    permission_classes = (IsAdminUser,)
+    renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
+
+    def post(self, request, *args, **kwargs):
+        """
+        Creates the users on edxapp
+        """
+        serializer = EdxappCourseEnrollmentSerializer(data=request.POST)
+        serializer.is_valid(raise_exception=True)
+
+        user, msg = create_edxapp_user(**serializer.validated_data)
+
+        serialized_user = EdxappUserSerializer(user)
+        response_data = serialized_user.data
+        if msg:
+            response_data["messages"] = msg
+        return Response(response_data)
 
 class UserInfo(APIView):
     """

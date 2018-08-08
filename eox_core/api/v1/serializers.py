@@ -46,3 +46,27 @@ class EdxappUserQuerySerializer(EdxappUserSerializer):
     """
 
     activate_user = serializers.BooleanField(default=False)  # We need to allow the api to activate users later on
+
+
+class EdxappCourseEnrollmentSerializer(serializers.Serializer):
+    """Serializes CourseEnrollment models
+
+    Aggregates all data from the Course Enrollment table, and pulls in the serialization for
+    the Course Descriptor and course modes, to give a complete representation of course enrollment.
+
+    """
+    HONOR = 'honor'
+    PROFESSIONAL = 'professional'
+    VERIFIED = 'verified'
+    AUDIT = 'audit'
+    NO_ID_PROFESSIONAL_MODE = 'no-id-professional'
+    CREDIT_MODE = 'credit'
+    ALL_MODES = [AUDIT, CREDIT_MODE, HONOR, NO_ID_PROFESSIONAL_MODE, PROFESSIONAL, VERIFIED, ]
+
+    user = serializers.CharField(max_length=30)
+    created = serializers.DateTimeField(allow_null=True)
+    is_active = serializers.BooleanField(default=True)
+    mode = serializers.CharField(default=AUDIT, max_length=100)
+
+    def validate(self, data):
+        return data
