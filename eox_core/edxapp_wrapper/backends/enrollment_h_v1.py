@@ -7,13 +7,16 @@ Backend for the create_edxapp_user that works under the open-release/hawthorn.be
 from __future__ import absolute_import, unicode_literals
 from enrollment import api
 from enrollment.errors import CourseModeNotFoundError
-from student.models import (
-    AlreadyEnrolledError,
-    CourseFullError,
-    EnrollmentClosedError,
-    NonExistentCourseError
+from enrollment.errors import (
+    CourseEnrollmentClosedError,
+    CourseEnrollmentExistsError,
+    CourseEnrollmentFullError,
+    InvalidEnrollmentAttribute,
+    UserNotFoundError
 )
+from openedx.core.lib.exceptions import CourseNotFoundError
 from course_modes.models import CourseMode
+from rest_framework.exceptions import APIException
 
 
 def create_enrollment(*args, **kwargs):
@@ -31,9 +34,9 @@ def create_enrollment(*args, **kwargs):
         enrollment = api._data_api().create_course_enrollment(user_id, course_id, mode, is_active)
         if enrollment_attributes is not None:
             api.set_enrollment_attributes(user_id, course_id, enrollment_attributes)
-    except (NonExistentCourseError, EnrollmentClosedError, CourseFullError, AlreadyEnrolledError) as e:
+    except (UserNotFoundError, InvalidEnrollmentAttribute, CourseNotFoundError, CourseEnrollmentFullError, CourseEnrollmentClosedError, CourseEnrollmentExistsError) as e:
         enrollment = None
-        errors.append(repr(e))
+        raise APIException(repr(e))
     return enrollment, errors
 
 
