@@ -42,7 +42,6 @@ def create_enrollment(*args, **kwargs):
 
 def check_edxapp_enrollment_is_valid(*args, **kwargs):
     errors = []
-    is_active = kwargs.get("force_registration", False)
     is_active = kwargs.get("is_active", True)
     course_id = kwargs.get("course_id")
     force_registration = kwargs.get('force_registration', False)

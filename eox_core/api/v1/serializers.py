@@ -65,7 +65,6 @@ class EdxappCourseEnrollmentSerializer(serializers.Serializer):
     """
 
     user = serializers.CharField(max_length=30, default="")
-    #created = serializers.DateTimeField(default=datetime.now)
     is_active = serializers.BooleanField(default=True)
     mode = serializers.CharField(max_length=100)
 
