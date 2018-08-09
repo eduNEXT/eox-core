@@ -4,8 +4,10 @@ API v1 serializers.
 from __future__ import absolute_import, unicode_literals
 
 from rest_framework import serializers
+from datetime import datetime    
 
 from eox_core.edxapp_wrapper.users import check_edxapp_account_conflicts
+from eox_core.edxapp_wrapper.enrollments import check_edxapp_enrollment_is_valid
 
 
 class EdxappUserSerializer(serializers.Serializer):
@@ -46,3 +48,42 @@ class EdxappUserQuerySerializer(EdxappUserSerializer):
     """
 
     activate_user = serializers.BooleanField(default=False)  # We need to allow the api to activate users later on
+
+
+class EdxappEnrollmentAttributeSerializer(serializers.Serializer):
+    namespace = serializers.CharField()
+    name = serializers.CharField()
+    value = serializers.CharField()
+
+
+class EdxappCourseEnrollmentSerializer(serializers.Serializer):
+    """Serializes CourseEnrollment
+
+    Aggregates all data from the Course Enrollment table, and pulls in the serialization for
+    the Course Descriptor and course modes, to give a complete representation of course enrollment.
+
+    """
+
+    user = serializers.CharField(max_length=30, default="")
+    is_active = serializers.BooleanField(default=True)
+    mode = serializers.CharField(max_length=100)
+
+    def validate(self, data):
+        """
+        Check that there are no issues with enrollment
+        """
+        errors = check_edxapp_enrollment_is_valid(**data)
+        if errors:
+            raise serializers.ValidationError(", ".join(errors))
+        return data
+
+
+class EdxappCourseEnrollmentQuerySerializer(EdxappCourseEnrollmentSerializer):
+    """
+    Handles the serialization of the context data required to create an enrollemnt
+    on different backends
+    """
+    username = serializers.CharField(max_length=30)
+    force_registration = serializers.BooleanField(default=False)
+    course_id = serializers.CharField(max_length=255)
+    enrollment_attributes = EdxappEnrollmentAttributeSerializer(many=True)
