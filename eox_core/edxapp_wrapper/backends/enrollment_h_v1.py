@@ -32,10 +32,10 @@ def create_enrollment(*args, **kwargs):
     validation_errors = check_edxapp_enrollment_is_valid(*args, **kwargs)
     if validation_errors:
         return None, [", ".join(validation_errors)]
-    if email != "":
+    if email:
         match = get_user_model().objects.filter(email=email).first()
         if match is None:
-            raise APIException('no user found with that email')
+            raise APIException('No user found with that email')
         else:
             user_id = match.username
 
@@ -55,13 +55,15 @@ def check_edxapp_enrollment_is_valid(*args, **kwargs):
     course_id = kwargs.get("course_id")
     force_registration = kwargs.get('force_registration', False)
     mode = kwargs.get("mode")
-    if kwargs.get("email") == "" and kwargs.get("username") == "":
-        return ['email or username needed']
+    if not kwargs.get("email") and not kwargs.get("username"):
+        return ['Email or username needed']
+    if kwargs.get("email") and kwargs.get("username"):
+        return ['Email or username but not both']
     if mode not in CourseMode.ALL_MODES:
-        return ['invalid mode given:' + mode]
+        return ['Invalid mode given:' + mode]
     if not force_registration:
         try:
             api.validate_course_mode(course_id, mode, is_active=is_active)
         except CourseModeNotFoundError:
-            errors.append('mode not found')
+            errors.append('Mode not found')
     return errors
