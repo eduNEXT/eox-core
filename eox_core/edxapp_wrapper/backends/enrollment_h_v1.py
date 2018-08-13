@@ -24,7 +24,7 @@ def create_enrollment(*args, **kwargs):
 
     errors = []
     email = kwargs.get("email")
-    user_id = kwargs.get('username')
+    username = kwargs.get('username')
     course_id = kwargs.get('course_id')
     mode = kwargs.get('mode')
     is_active = kwargs.get('is_active', True)
@@ -37,12 +37,12 @@ def create_enrollment(*args, **kwargs):
         if match is None:
             raise APIException('No user found with that email')
         else:
-            user_id = match.username
+            username = match.username
 
     try:
-        enrollment = api._data_api().create_course_enrollment(user_id, course_id, mode, is_active)
+        enrollment = api._data_api().create_course_enrollment(username, course_id, mode, is_active)
         if enrollment_attributes is not None:
-            api.set_enrollment_attributes(user_id, course_id, enrollment_attributes)
+            api.set_enrollment_attributes(username, course_id, enrollment_attributes)
     except (UserNotFoundError, InvalidEnrollmentAttribute, CourseNotFoundError, CourseEnrollmentFullError, CourseEnrollmentClosedError, CourseEnrollmentExistsError) as e:
         enrollment = None
         raise APIException(repr(e))
@@ -58,7 +58,7 @@ def check_edxapp_enrollment_is_valid(*args, **kwargs):
     if not kwargs.get("email") and not kwargs.get("username"):
         return ['Email or username needed']
     if kwargs.get("email") and kwargs.get("username"):
-        return ['Email or username but not both']
+        return ['You have to provide an email or username but not both']
     if mode not in CourseMode.ALL_MODES:
         return ['Invalid mode given:' + mode]
     if not force_registration:
