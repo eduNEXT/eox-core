@@ -28,6 +28,7 @@ def create_enrollment(*args, **kwargs):
     course_id = kwargs.get('course_id')
     mode = kwargs.get('mode')
     is_active = kwargs.get('is_active', True)
+    force_registration = kwargs.get('force_registration', False)
     enrollment_attributes = kwargs.get('enrollment_attributes', None)
     validation_errors = check_edxapp_enrollment_is_valid(*args, **kwargs)
     if validation_errors:
@@ -38,13 +39,16 @@ def create_enrollment(*args, **kwargs):
             raise APIException('No user found with that email')
         else:
             username = match.username
-
     try:
         enrollment = api._data_api().create_course_enrollment(username, course_id, mode, is_active)
         if enrollment_attributes is not None:
             api.set_enrollment_attributes(username, course_id, enrollment_attributes)
-    except (UserNotFoundError, InvalidEnrollmentAttribute, CourseNotFoundError, CourseEnrollmentFullError, CourseEnrollmentClosedError, CourseEnrollmentExistsError) as e:
-        enrollment = None
+    except CourseEnrollmentExistsError as e:
+        if force_registration:
+            enrollment = api._data_api().update_course_enrollment(username, course_id, mode, is_active)
+        else:
+            raise APIException(repr(e) + ", use force_registration to update the existing enrollment")
+    except (UserNotFoundError, InvalidEnrollmentAttribute, CourseNotFoundError, CourseEnrollmentFullError, CourseEnrollmentClosedError) as e:
         raise APIException(repr(e))
     return enrollment, errors
 
