@@ -85,4 +85,4 @@ class EdxappCourseEnrollmentQuerySerializer(EdxappCourseEnrollmentSerializer):
     email = serializers.CharField(max_length=255, default=None)
     force_registration = serializers.BooleanField(default=False)
     course_id = serializers.CharField(max_length=255)
-    enrollment_attributes = EdxappEnrollmentAttributeSerializer(many=True)
+    enrollment_attributes = EdxappEnrollmentAttributeSerializer(many=True, default=[])
