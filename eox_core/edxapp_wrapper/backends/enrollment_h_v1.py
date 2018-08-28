@@ -39,21 +39,10 @@ def create_enrollment(*args, **kwargs):
             username = match.username
 
     try:
-        enrollment = api._data_api().create_course_enrollment(username, course_id, mode, is_active)
-    except CourseEnrollmentExistsError as e:
-        if force_registration:
-            enrollment = api._data_api().update_course_enrollment(username, course_id, mode, is_active)
-        else:
-            raise APIException(repr(e) + ", use force_registration to update the existing enrollment")
+        enrollment = _create_or_update_enrollment(username, course_id, mode, is_active, force_registration)
     except Exception as e:
         if force_registration:
-            try:
-                course_key = CourseKey.from_string(course_id)
-                user = User.objects.get(username=username)
-                enrollment = CourseEnrollment.enroll(user, course_key, check_access=False)
-                api._data_api()._update_enrollment(enrollment, is_active=is_active, mode=mode)
-            except Exception as e:
-                raise APIException(repr(e))
+            enrollment = _force_create_enrollment(username, course_id, mode, is_active)
         else:
             raise APIException(repr(e))
 
@@ -81,3 +70,25 @@ def check_edxapp_enrollment_is_valid(*args, **kwargs):
         except CourseModeNotFoundError:
             errors.append('Mode not found')
     return errors
+
+
+def _create_or_update_enrollment(username, course_id, mode, is_active, try_update):
+    try:
+        enrollment = api._data_api().create_course_enrollment(username, course_id, mode, is_active)
+    except CourseEnrollmentExistsError as e:
+        if try_update:
+            enrollment = api._data_api().update_course_enrollment(username, course_id, mode, is_active)
+        else:
+            raise Exception(repr(e) + ", use force_registration to update the existing enrollment")
+    return enrollment
+
+
+def _force_create_enrollment(username, course_id, mode, is_active):
+    try:
+        course_key = CourseKey.from_string(course_id)
+        user = User.objects.get(username=username)
+        enrollment = CourseEnrollment.enroll(user, course_key, check_access=False)
+        api._data_api()._update_enrollment(enrollment, is_active=is_active, mode=mode)
+    except Exception as e:
+        raise APIException(repr(e))
+    return enrollment
