@@ -84,11 +84,13 @@ def _create_or_update_enrollment(username, course_id, mode, is_active, try_updat
 
 
 def _force_create_enrollment(username, course_id, mode, is_active):
+    log.info('Calling _force_create_enrollment')
     try:
         course_key = CourseKey.from_string(course_id)
         user = User.objects.get(username=username)
         enrollment = CourseEnrollment.enroll(user, course_key, check_access=False)
         api._data_api()._update_enrollment(enrollment, is_active=is_active, mode=mode)
     except Exception as e:
+        log.warn('API call failed: {}, {}, {}, {}, {}'.format(repr(e), username, course_id, mode, is_active))
         raise APIException(repr(e))
     return enrollment
