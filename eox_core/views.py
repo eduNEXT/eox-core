@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 
 import json
 from os.path import dirname, realpath
-from subprocess import check_output
+from subprocess import check_output, CalledProcessError
 
 from django.http import HttpResponse
 
@@ -20,8 +20,9 @@ def info_view(request):
     """
     try:
         working_dir = dirname(realpath(__file__))
-        git_data = unicode(check_output(["git", "rev-parse", "HEAD"], cwd=working_dir))
-    except Exception:
+        git_data = unicode(check_output(
+            ["git", "rev-parse", "HEAD"], cwd=working_dir))
+    except CalledProcessError:
         git_data = ""
 
     response_data = {
@@ -33,4 +34,3 @@ def info_view(request):
         json.dumps(response_data),
         content_type="application/json"
     )
-

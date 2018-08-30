@@ -1,6 +1,7 @@
 """
 API v1 serializers.
 """
+# pylint: disable=abstract-method
 from __future__ import absolute_import, unicode_literals
 
 from rest_framework import serializers
@@ -27,16 +28,16 @@ class EdxappUserSerializer(serializers.Serializer):
     is_staff = serializers.BooleanField(read_only=True)
     is_superuser = serializers.BooleanField(read_only=True)
 
-    def validate(self, data):
+    def validate(self, attrs):
         """
         Check that there are no conflicts on the accounts
         """
-        email = data.get("email")
-        username = data.get("username")
+        email = attrs.get("email")
+        username = attrs.get("username")
         conflicts = check_edxapp_account_conflicts(email, username)
         if conflicts:
             raise serializers.ValidationError("Account already exists with the provided: {}".format(", ".join(conflicts)))
-        return data
+        return attrs
 
 
 class EdxappUserQuerySerializer(EdxappUserSerializer):
@@ -49,6 +50,9 @@ class EdxappUserQuerySerializer(EdxappUserSerializer):
 
 
 class EdxappEnrollmentAttributeSerializer(serializers.Serializer):
+    """
+    Attributes serializer
+    """
     namespace = serializers.CharField()
     name = serializers.CharField()
     value = serializers.CharField()
@@ -66,14 +70,14 @@ class EdxappCourseEnrollmentSerializer(serializers.Serializer):
     is_active = serializers.BooleanField(default=True)
     mode = serializers.CharField(max_length=100)
 
-    def validate(self, data):
+    def validate(self, attrs):
         """
         Check that there are no issues with enrollment
         """
-        errors = check_edxapp_enrollment_is_valid(**data)
+        errors = check_edxapp_enrollment_is_valid(**attrs)
         if errors:
             raise serializers.ValidationError(", ".join(errors))
-        return data
+        return attrs
 
 
 class EdxappCourseEnrollmentQuerySerializer(EdxappCourseEnrollmentSerializer):

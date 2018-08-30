@@ -3,10 +3,10 @@
 from __future__ import absolute_import, unicode_literals
 
 from django.test import TestCase
-from ..test_utils import SuperUserFactory
-import eox_core
 from rest_framework.test import APIRequestFactory, force_authenticate
+import eox_core
 from eox_core.api.v1.views import UserInfo
+from ..test_utils import SuperUserFactory
 
 JSON_CONTENT_TYPE = 'application/json'
 
@@ -20,11 +20,12 @@ class TestInfoView(TestCase):
         self.assertContains(response, eox_core.__version__)
 
     def test_userinfo_endpoint(self):
+        """ Tests for /userinfo/ """
         factory = APIRequestFactory()
         view = UserInfo.as_view()
-        self.user = SuperUserFactory()
         request = factory.get('/api/v1/userinfo', content_type='application/json')
-        force_authenticate(request, user=self.user)
+        user = SuperUserFactory()
+        force_authenticate(request, user=user)
         response = view(request)
         response_json = response.data
         self.assertIn('user', response_json)

@@ -1,16 +1,18 @@
-
+""" Utils for testing"""
+from datetime import datetime
 import factory
 from factory.django import DjangoModelFactory
 from django.contrib.auth.models import User
-from datetime import datetime
 
 DEFAULT_PASSWORD = 'test'
+
 
 class SuperUserFactory(DjangoModelFactory):
     """
     A Factory for User objects.
     """
     class Meta(object):
+        """ Meta """
         model = User
         django_get_or_create = ('email', 'username')
 
@@ -18,7 +20,8 @@ class SuperUserFactory(DjangoModelFactory):
 
     username = factory.Sequence(u'robot{0}'.format)
     email = factory.Sequence(u'robot+test+{0}@edx.org'.format)
-    password = factory.PostGenerationMethodCall('set_password', _DEFAULT_PASSWORD)
+    password = factory.PostGenerationMethodCall(
+        'set_password', _DEFAULT_PASSWORD)
     first_name = factory.Sequence(u'Robot{0}'.format)
     last_name = 'Test'
     is_staff = True

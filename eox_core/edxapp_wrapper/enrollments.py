@@ -17,6 +17,7 @@ def create_enrollment(*args, **kwargs):
     return backend.create_enrollment(*args, **kwargs)
 
 
+# pylint: disable=invalid-name
 def check_edxapp_enrollment_is_valid(*args, **kwargs):
     """ Checks the db for accounts with the same email or password """
 

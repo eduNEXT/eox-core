@@ -6,16 +6,16 @@ from __future__ import absolute_import, unicode_literals
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework_oauth.authentication import OAuth2Authentication
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAdminUser
 from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
+from rest_framework_oauth.authentication import OAuth2Authentication
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
+from django.utils import six
 
 from eox_core.api.v1.serializers import EdxappUserQuerySerializer, EdxappUserSerializer, EdxappCourseEnrollmentSerializer, EdxappCourseEnrollmentQuerySerializer
 from eox_core.edxapp_wrapper.users import create_edxapp_user
 from eox_core.edxapp_wrapper.enrollments import create_enrollment
-from django.utils import six
 
 
 class EdxappUser(APIView):
@@ -67,6 +67,7 @@ class EdxappEnrollment(APIView):
             response_data["messages"] = msg
         return Response(response_data)
 
+
 class UserInfo(APIView):
     """
     Auth-only view to check some basic info about the current user
@@ -76,7 +77,10 @@ class UserInfo(APIView):
     permission_classes = (IsAdminUser,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
-    def get(self, request, format=None):
+    def get(self, request, format=None):  # pylint: disable=redefined-builtin
+        """
+        handle GET request
+        """
         content = {
             # `django.contrib.auth.User` instance.
             'user': six.text_type(request.user.username),
