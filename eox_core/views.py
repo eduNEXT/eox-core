@@ -8,6 +8,7 @@ from os.path import dirname, realpath
 from subprocess import check_output, CalledProcessError
 
 from django.http import HttpResponse
+from django.utils import six
 
 
 import eox_core
@@ -20,7 +21,7 @@ def info_view(request):
     """
     try:
         working_dir = dirname(realpath(__file__))
-        git_data = unicode(check_output(
+        git_data = six.text_type(check_output(
             ["git", "rev-parse", "HEAD"], cwd=working_dir))
     except CalledProcessError:
         git_data = ""
