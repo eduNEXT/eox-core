@@ -28,7 +28,7 @@ def create_enrollment(*args, **kwargs):
     course_id = kwargs.get('course_id')
     mode = kwargs.get('mode')
     is_active = kwargs.get('is_active', True)
-    force_registration = kwargs.get('force_registration', False)
+    force = kwargs.get('force', False)
     enrollment_attributes = kwargs.get('enrollment_attributes', None)
     validation_errors = check_edxapp_enrollment_is_valid(*args, **kwargs)
     if validation_errors:
@@ -41,9 +41,9 @@ def create_enrollment(*args, **kwargs):
             username = match.username
 
     try:
-        enrollment = _create_or_update_enrollment(username, course_id, mode, is_active, force_registration)
+        enrollment = _create_or_update_enrollment(username, course_id, mode, is_active, force)
     except Exception as err:  # pylint: disable=broad-except
-        if force_registration:
+        if force:
             enrollment = _force_create_enrollment(username, course_id, mode, is_active)
         else:
             raise APIException(repr(err))
@@ -62,7 +62,7 @@ def check_edxapp_enrollment_is_valid(*args, **kwargs):
     errors = []
     is_active = kwargs.get("is_active", True)
     course_id = kwargs.get("course_id")
-    force_registration = kwargs.get('force_registration', False)
+    force = kwargs.get('force', False)
     mode = kwargs.get("mode")
     if not kwargs.get("email") and not kwargs.get("username"):
         return ['Email or username needed']
@@ -70,7 +70,7 @@ def check_edxapp_enrollment_is_valid(*args, **kwargs):
         return ['You have to provide an email or username but not both']
     if mode not in CourseMode.ALL_MODES:
         return ['Invalid mode given:' + mode]
-    if not force_registration:
+    if not force:
         try:
             api.validate_course_mode(course_id, mode, is_active=is_active)
         except CourseModeNotFoundError:
@@ -88,7 +88,7 @@ def _create_or_update_enrollment(username, course_id, mode, is_active, try_updat
         if try_update:
             enrollment = api._data_api().update_course_enrollment(username, course_id, mode, is_active)
         else:
-            raise Exception(repr(err) + ", use force_registration to update the existing enrollment")
+            raise Exception(repr(err) + ", use force to update the existing enrollment")
     return enrollment
 
 
