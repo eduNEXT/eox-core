@@ -6,12 +6,12 @@ Backend for the create_edxapp_user that works under the open-release/hawthorn.be
 # pylint: disable=import-error, protected-access
 from __future__ import absolute_import, unicode_literals
 import logging
+from rest_framework.exceptions import APIException
 from django.contrib.auth.models import User
 from enrollment import api
 from enrollment.errors import CourseModeNotFoundError
 from enrollment.errors import CourseEnrollmentExistsError
 from course_modes.models import CourseMode
-from rest_framework.exceptions import APIException
 from opaque_keys.edx.keys import CourseKey
 from student.models import CourseEnrollment
 

@@ -1,8 +1,8 @@
 """ urls.py """
 
 from django.conf.urls import url
-from eox_core.api.v1 import views
 from rest_framework_jwt.views import obtain_jwt_token
+from eox_core.api.v1 import views
 
 urlpatterns = [  # pylint: disable=invalid-name
     url(r'^api-token-auth/', obtain_jwt_token),

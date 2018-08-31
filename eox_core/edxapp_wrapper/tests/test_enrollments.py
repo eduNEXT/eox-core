@@ -21,8 +21,8 @@ class CreateEdxappUserTest(TestCase):
     @mock.patch('eox_core.edxapp_wrapper.enrollments.import_module')
     def test_call_the_backend(self, m_import):
         """ Test we use the imported backend """
-        m_backend = mock.MagicMock()
-        m_import.return_value = m_backend
+        m_enrollment_backend = mock.MagicMock()
+        m_import.return_value = m_enrollment_backend
 
         data = {
             "email": "something",
@@ -30,4 +30,4 @@ class CreateEdxappUserTest(TestCase):
         }
 
         create_enrollment(data)
-        m_backend.create_enrollment.assert_called_with(data)
+        m_enrollment_backend.create_enrollment.assert_called_with(data)
