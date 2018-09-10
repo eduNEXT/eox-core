@@ -47,7 +47,6 @@ class EdxappEnrollment(APIView):
     """
     Handles API requests to create users
     """
-
     authentication_classes = (OAuth2Authentication, JSONWebTokenAuthentication, SessionAuthentication)
     permission_classes = (IsAdminUser,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
@@ -56,16 +55,27 @@ class EdxappEnrollment(APIView):
         """
         Creates the users on edxapp
         """
-        serializer = EdxappCourseEnrollmentQuerySerializer(data=request.POST)
+        multiple_responses = []
+        many = isinstance(request.data, list)
+        serializer = EdxappCourseEnrollmentQuerySerializer(data=request.data, many=many)
         serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+        if not isinstance(data, list):
+            data = [data]
 
-        enrollment, msg = create_enrollment(**serializer.validated_data)
+        for one in data:
+            enrollment, msg = create_enrollment(**one)
+            serialized_enrollment = EdxappCourseEnrollmentSerializer(enrollment)
+            response_data = serialized_enrollment.data
+            if msg:
+                response_data["messages"] = msg
+            multiple_responses.append(response_data)
 
-        serialized_enrollment = EdxappCourseEnrollmentSerializer(enrollment)
-        response_data = serialized_enrollment.data
-        if msg:
-            response_data["messages"] = msg
-        return Response(response_data)
+        if many:
+            return Response(multiple_responses)
+        else:
+            return Response(multiple_responses[0])
+
 
 
 class UserInfo(APIView):
