@@ -8,21 +8,27 @@ from __future__ import absolute_import, unicode_literals
 import logging
 from rest_framework.exceptions import APIException
 from django.contrib.auth.models import User
+from django.contrib.sites.models import Site
+from django.db import models
 from enrollment import api
 from enrollment.errors import CourseModeNotFoundError
 from enrollment.errors import CourseEnrollmentExistsError
 from course_modes.models import CourseMode
 from opaque_keys.edx.keys import CourseKey
 from student.models import CourseEnrollment
+from edxfuture import get_program
+import pprint
 
 LOG = logging.getLogger(__name__)
-
 
 def create_enrollment(*args, **kwargs):
     """
     backend function to create enrollment
     """
     errors = []
+    program_uuid = kwargs.get('bundle_id') or kwargs.get('program_id')
+    if program_uuid:
+        return create_program_enrollment(program_uuid, *arg, **kwargs)
     email = kwargs.get("email")
     username = kwargs.get('username')
     course_id = kwargs.get('course_id')
@@ -53,6 +59,20 @@ def create_enrollment(*args, **kwargs):
 
     return enrollment, errors
 
+
+def create_program_enrollment(program_uuid, *arg, **kwargs):
+    """
+    backend function to create enrollment
+    """
+    try:
+        site = models.ForeignKey(Site)
+        data = site.siteconfiguration.get_program(program_uuid)
+        for x in data['courses']:
+            print(x)
+            pprint(vars(x))
+            pprint(dir(x))
+    except Exception as err:  # pylint: disable=broad-except
+        raise APIException(repr(err))
 
 # pylint: disable=invalid-name
 def check_edxapp_enrollment_is_valid(*args, **kwargs):
