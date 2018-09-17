@@ -4,7 +4,8 @@ Must be deleted some day and replaced with calls to the actual functions
 """
 from django.core.cache import cache
 from django.conf import settings
-from edx_rest_api_client.client import EdxRestApiClient
+from openedx.core.djangoapps.catalog.models import CatalogIntegration
+from openedx.core.djangoapps.catalog.utils import create_catalog_api_client
 
 
 def get_program(program_uuid, ignore_cache=False):
@@ -27,7 +28,11 @@ def get_program(program_uuid, ignore_cache=False):
         if program:
             return program
 
-    program = EdxRestApiClient(self.catalog_api_url, jwt=self.access_token).programs(program_uuid).get()
+    catalog_integration = CatalogIntegration.current()
+    user = catalog_integration.get_service_user()
+    api = create_catalog_api_client(user)
+
+    program = api.programs(program_uuid).get()
     cache.set(cache_key, program, settings.PROGRAMS_CACHE_TTL)
 
     return program

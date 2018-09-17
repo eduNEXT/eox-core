@@ -8,30 +8,35 @@ from __future__ import absolute_import, unicode_literals
 import logging
 from rest_framework.exceptions import APIException
 from django.contrib.auth.models import User
-from django.contrib.sites.models import Site
-from django.db import models
 from enrollment import api
 from enrollment.errors import CourseModeNotFoundError
 from enrollment.errors import CourseEnrollmentExistsError
 from course_modes.models import CourseMode
 from opaque_keys.edx.keys import CourseKey
 from student.models import CourseEnrollment
-from edxfuture import get_program
+from eox_core.edxapp_wrapper.backends.edxfuture import get_program
 import pprint
 
 LOG = logging.getLogger(__name__)
+
 
 def create_enrollment(*args, **kwargs):
     """
     backend function to create enrollment
     """
-    errors = []
-    program_uuid = kwargs.get('bundle_id') or kwargs.get('program_id')
+    program_uuid = kwargs.get('bundle_id')
+    course_id = kwargs.get('course_id')
+
     if program_uuid:
-        return create_program_enrollment(program_uuid, *arg, **kwargs)
+        return enroll_on_program(program_uuid, *args, **kwargs)
+    else:
+        return enroll_on_course(course_id, *args, **kwargs)
+
+
+def enroll_on_course(course_id, *args, **kwargs):
+    errors = []
     email = kwargs.get("email")
     username = kwargs.get('username')
-    course_id = kwargs.get('course_id')
     mode = kwargs.get('mode')
     is_active = kwargs.get('is_active', True)
     force = kwargs.get('force', False)
@@ -60,19 +65,23 @@ def create_enrollment(*args, **kwargs):
     return enrollment, errors
 
 
-def create_program_enrollment(program_uuid, *arg, **kwargs):
+def enroll_on_program(program_uuid, *arg, **kwargs):
     """
     backend function to create enrollment
     """
+    results = []
+    errors = []
     try:
-        site = models.ForeignKey(Site)
-        data = site.siteconfiguration.get_program(program_uuid)
-        for x in data['courses']:
-            print(x)
-            pprint(vars(x))
-            pprint(dir(x))
+        data = get_program(program_uuid)
+        for course in data['courses']:
+            result, error = enroll_on_course(data['courses']['courses_run'][0]['key'], *arg, **kwargs)
+            results += result
+            errors += error
     except Exception as err:  # pylint: disable=broad-except
-        raise APIException(repr(err))
+        raise err
+        # raise APIException(repr(err))
+    return results, errors
+
 
 # pylint: disable=invalid-name
 def check_edxapp_enrollment_is_valid(*args, **kwargs):
@@ -84,13 +93,17 @@ def check_edxapp_enrollment_is_valid(*args, **kwargs):
     course_id = kwargs.get("course_id")
     force = kwargs.get('force', False)
     mode = kwargs.get("mode")
+    program_uuid = kwargs.get('bundle_id')
+
+    if program_uuid and course_id:
+        return None, ['You have to provide a course_id or bundle_id but not both']
     if not kwargs.get("email") and not kwargs.get("username"):
         return ['Email or username needed']
     if kwargs.get("email") and kwargs.get("username"):
         return ['You have to provide an email or username but not both']
     if mode not in CourseMode.ALL_MODES:
         return ['Invalid mode given:' + mode]
-    if not force:
+    if course_id and not force:
         try:
             api.validate_course_mode(course_id, mode, is_active=is_active)
         except CourseModeNotFoundError:
