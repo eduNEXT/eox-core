@@ -56,7 +56,7 @@ class EdxappEnrollment(APIView):
         Creates the users on edxapp
         """
         multiple_responses = []
-        many = isinstance(request.data, list)
+        many = isinstance(request.data, list) or 'bundle_id' in request.data
         serializer = EdxappCourseEnrollmentQuerySerializer(data=request.data, many=many)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
@@ -64,18 +64,18 @@ class EdxappEnrollment(APIView):
             data = [data]
 
         for one in data:
-            enrollment, msg = create_enrollment(**one)
-            serialized_enrollment = EdxappCourseEnrollmentSerializer(enrollment)
-            response_data = serialized_enrollment.data
-            if msg:
-                response_data["messages"] = msg
-            multiple_responses.append(response_data)
+            enrollments, msgs = create_enrollment(**one)
+            if not isinstance(enrollments, list):
+                enrollments = [enrollments]
+                msgs = [msgs]
+            for enrollment, msg in zip(enrollments, msgs):
+                response_data = EdxappCourseEnrollmentSerializer(enrollment).data
+                if msg:
+                    response_data["messages"] = msg
+                multiple_responses.append(response_data)
 
-        if many:
-            return Response(multiple_responses)
-        else:
-            return Response(multiple_responses[0])
-
+        response = multiple_responses if many else multiple_responses[0]
+        return Response(response)
 
 
 class UserInfo(APIView):
