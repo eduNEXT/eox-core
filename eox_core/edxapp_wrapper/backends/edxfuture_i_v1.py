@@ -1,7 +1,8 @@
 """
-Functions copied from a version higer than hawtorn (for backwards compatibility with i)
+Functions copied from a version higer than hawthorn (for backwards compatibility with it)
 Must be deleted some day and replaced with calls to the actual functions
 """
+# pylint: disable=import-error
 from django.core.cache import cache
 from django.conf import settings
 from openedx.core.djangoapps.catalog.models import CatalogIntegration
@@ -33,6 +34,6 @@ def get_program(program_uuid, ignore_cache=False):
     api = create_catalog_api_client(user)
 
     program = api.programs(program_uuid).get()
-    cache.set(cache_key, program, settings.PROGRAMS_CACHE_TTL)
+    cache.set(cache_key, program, getattr(settings, 'PROGRAMS_CACHE_TTL', 60))
 
     return program
