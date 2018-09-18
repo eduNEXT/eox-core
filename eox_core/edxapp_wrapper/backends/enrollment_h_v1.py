@@ -26,6 +26,7 @@ def create_enrollment(*args, **kwargs):
     """
     backend function to create enrollment
     """
+    kwargs = dict(kwargs)
     program_uuid = kwargs.pop('bundle_id', None)
     course_id = kwargs.pop('course_id', None)
 
@@ -57,9 +58,11 @@ def enroll_on_course(course_id, *args, **kwargs):
             username = match.username
 
     try:
+        LOG.info('Creating regular enrollment %s, %s, %s', username, course_id, mode)
         enrollment = _create_or_update_enrollment(username, course_id, mode, is_active, force)
     except Exception as err:  # pylint: disable=broad-except
         if force:
+            LOG.info('Force create enrollment %s, %s, %s', username, course_id, mode)
             enrollment = _force_create_enrollment(username, course_id, mode, is_active)
         else:
             raise APIException(repr(err))
@@ -76,6 +79,7 @@ def enroll_on_program(program_uuid, *arg, **kwargs):
     """
     results = []
     errors = []
+    LOG.info('Enrolling on program: %s', program_uuid)
     try:
         data = get_program(program_uuid)
     except Exception as err:  # pylint: disable=broad-except
@@ -83,6 +87,7 @@ def enroll_on_program(program_uuid, *arg, **kwargs):
     for course in data['courses']:
         if course['course_runs']:
             course_run = get_preferred_course_run(course)
+            LOG.info('Enrolling on course_run: %s', course_run['key'])
             course_id = course_run['key']
             result, errors_list = enroll_on_course(course_id, *arg, **kwargs)
             results.append(result)
@@ -157,13 +162,11 @@ def _force_create_enrollment(username, course_id, mode, is_active):
     """
     forced create enrollment internal function
     """
-    LOG.info('Calling _force_create_enrollment')
     try:
         course_key = CourseKey.from_string(course_id)
         user = User.objects.get(username=username)
         enrollment = CourseEnrollment.enroll(user, course_key, check_access=False)
         api._data_api()._update_enrollment(enrollment, is_active=is_active, mode=mode)
     except Exception as err:  # pylint: disable=broad-except
-        LOG.warn('API call failed: %s, %s, %s, %s, %s', repr(err), username, course_id, mode, is_active)
         raise APIException(repr(err))
     return enrollment
