@@ -18,6 +18,7 @@ from opaque_keys.edx.keys import CourseKey
 from student.models import CourseEnrollment
 from eox_core.edxapp_wrapper.backends.edxfuture_i_v1 import get_program
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
+from openedx.core.lib.exceptions import CourseNotFoundError
 
 LOG = logging.getLogger(__name__)
 
@@ -60,6 +61,8 @@ def enroll_on_course(course_id, *args, **kwargs):
     try:
         LOG.info('Creating regular enrollment %s, %s, %s', username, course_id, mode)
         enrollment = _create_or_update_enrollment(username, course_id, mode, is_active, force)
+    except CourseNotFoundError as err:
+        raise APIException(repr(err))
     except Exception as err:  # pylint: disable=broad-except
         if force:
             LOG.info('Force create enrollment %s, %s, %s', username, course_id, mode)
