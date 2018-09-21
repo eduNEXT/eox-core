@@ -20,6 +20,7 @@ make dev.provision
 make dev.provision
 direnv allow .
 echo export OPENEDX_RELEASE=hawthorn.master > .envrc
+make dev.up
 cd ~/Documents/eoxstack/src/
 # Instructions for installing eox-core
 sudo mkdir edxapp
