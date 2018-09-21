@@ -11,6 +11,7 @@ cd ~/Documents/
 mkdir eoxstack
 cd eoxstack
 git clone git@github.com:edx/devstack.git
+cd devstack
 git checkout open-release/hawthorn.master
 export OPENEDX_RELEASE=hawthorn.master
 make dev.checkout
