@@ -19,7 +19,7 @@ class SuperUserFactory(DjangoModelFactory):
     _DEFAULT_PASSWORD = 'test'
 
     username = factory.Sequence(u'robot{0}'.format)
-    email = factory.Sequence(u'robot+test+{0}@edx.org'.format)
+    email = factory.Sequence(u'robot+test+{0}@example.com'.format)
     password = factory.PostGenerationMethodCall(
         'set_password', _DEFAULT_PASSWORD)
     first_name = factory.Sequence(u'Robot{0}'.format)
