@@ -35,6 +35,6 @@ class TestInfoView(TestCase):
                 u'is_staff': True,
                 u'user': u'robot0',
                 u'auth': u'None',
-                u'email': u'robot+test+0@edx.org'
+                u'email': u'robot+test+0@example.com'
             }
         )

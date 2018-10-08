@@ -1,5 +1,0 @@
-
-[run]
-data_file = .coverage
-omit =
-    venv/*

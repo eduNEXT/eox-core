@@ -10,8 +10,8 @@ from rest_framework.response import Response
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAdminUser
 from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
+
 from rest_framework_oauth.authentication import OAuth2Authentication
-from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from django.utils import six
 
 from eox_core.api.v1.serializers import EdxappUserQuerySerializer, EdxappUserSerializer, EdxappCourseEnrollmentSerializer, EdxappCourseEnrollmentQuerySerializer
@@ -26,7 +26,7 @@ class EdxappUser(APIView):
     Handles API requests to create users
     """
 
-    authentication_classes = (OAuth2Authentication, JSONWebTokenAuthentication, SessionAuthentication)
+    authentication_classes = (OAuth2Authentication, SessionAuthentication)
     permission_classes = (IsAdminUser,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
@@ -50,7 +50,7 @@ class EdxappEnrollment(APIView):
     """
     Handles API requests to create users
     """
-    authentication_classes = (OAuth2Authentication, JSONWebTokenAuthentication, SessionAuthentication)
+    authentication_classes = (OAuth2Authentication, SessionAuthentication)
     permission_classes = (IsAdminUser,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
@@ -67,8 +67,8 @@ class EdxappEnrollment(APIView):
         if not isinstance(data, list):
             data = [data]
 
-        for one in data:
-            enrollments, msgs = create_enrollment(**one)
+        for enrollment_request in data:
+            enrollments, msgs = create_enrollment(**enrollment_request)
             if not isinstance(enrollments, list):
                 enrollments = [enrollments]
                 msgs = [msgs]
@@ -114,9 +114,9 @@ class EdxappEnrollment(APIView):
 class UserInfo(APIView):
     """
     Auth-only view to check some basic info about the current user
-    Can use Oauth2/Session/JWT authentication
+    Can use Oauth2/Session
     """
-    authentication_classes = (OAuth2Authentication, JSONWebTokenAuthentication, SessionAuthentication)
+    authentication_classes = (OAuth2Authentication, SessionAuthentication)
     permission_classes = (IsAdminUser,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
