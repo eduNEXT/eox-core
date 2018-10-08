@@ -39,7 +39,6 @@ export OPENEDX_RELEASE=hawthorn.master
 make dev.checkout
 make dev.clone
 make dev.provision
-make dev.provision
 echo export OPENEDX_RELEASE=hawthorn.master > .envrc
 ```
 - Clone the git repo:

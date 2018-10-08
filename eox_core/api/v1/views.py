@@ -67,8 +67,8 @@ class EdxappEnrollment(APIView):
         if not isinstance(data, list):
             data = [data]
 
-        for one in data:
-            enrollments, msgs = create_enrollment(**one)
+        for enrollment_request in data:
+            enrollments, msgs = create_enrollment(**enrollment_request)
             if not isinstance(enrollments, list):
                 enrollments = [enrollments]
                 msgs = [msgs]
@@ -114,7 +114,7 @@ class EdxappEnrollment(APIView):
 class UserInfo(APIView):
     """
     Auth-only view to check some basic info about the current user
-    Can use Oauth2/Session/JWT authentication
+    Can use Oauth2/Session
     """
     authentication_classes = (OAuth2Authentication, SessionAuthentication)
     permission_classes = (IsAdminUser,)
