@@ -88,7 +88,7 @@ def enroll_on_program(program_uuid, *arg, **kwargs):
     except Exception as err:  # pylint: disable=broad-except
         raise APIException(repr(err))
     if not data['courses']:
-        APIException("No courses found for this program")
+        raise APIException("No courses found for this program")
     for course in data['courses']:
         if course['course_runs']:
             course_run = get_preferred_course_run(course)
