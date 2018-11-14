@@ -10,10 +10,10 @@ from django.conf import settings
 from rest_framework import viewsets, mixins, filters, status
 from rest_framework.response import Response
 
-from student.models import CourseEnrollment  # pylint: disable=import-error
-from certificates.models import GeneratedCertificate  # pylint: disable=import-error
+from eox_core.edxapp_wrapper.certificates import get_generated_certificate
+from eox_core.edxapp_wrapper.users import get_course_enrollment
 from edx_proctoring.models import ProctoredExamStudentAttempt  # pylint: disable=import-error
-from eox_manage.microsite_api.authenticators import (
+from eox_manage.microsite_api.authenticators import ( # pylint: disable=import-error
     MicrositeManagerAuthentication,
 )
 
@@ -89,7 +89,7 @@ class CourseEnrollmentViewset(DataApiViewSet):
     A viewset for viewing Course Enrollments.
     """
     serializer_class = CourseEnrollmentSerializer
-    queryset = CourseEnrollment.objects.all()
+    queryset = get_course_enrollment().objects.all()
     filter_class = CourseEnrollmentFilter
 
 
@@ -101,7 +101,7 @@ class CourseEnrollmentWithGradesViewset(DataApiViewSet):
     celery task
     """
     serializer_class = CourseEnrollmentSerializer
-    queryset = CourseEnrollment.objects.all()
+    queryset = get_course_enrollment().objects.all()
     filter_class = CourseEnrollmentFilter
 
     def list(self, request, *args, **kwargs):
@@ -138,7 +138,7 @@ class CertificateViewSet(DataApiViewSet):
     A viewset for viewing certificates generated for users.
     """
     serializer_class = CertificateSerializer
-    queryset = GeneratedCertificate.objects.all()
+    queryset = get_generated_certificate().objects.all()
     filter_class = GeneratedCerticatesFilter
     prefetch_fields = [
         {
