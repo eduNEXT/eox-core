@@ -3,7 +3,7 @@ TODO: add me
 """
 from celery import Task
 
-from student.models import CourseEnrollment  # pylint: disable=import-error
+from eox_core.edxapp_wrapper.users import get_course_enrollment
 
 from .serializers import CourseEnrollmentWithGradesSerializer
 
@@ -20,7 +20,7 @@ class EnrollmentsGrades(Task):
         """
 
         enrollments_ids = [el["id"] for el in data]
-        enrollments_queryset = CourseEnrollment.objects.filter(id__in=enrollments_ids)
+        enrollments_queryset = get_course_enrollment().objects.filter(id__in=enrollments_ids)
 
         serializer = CourseEnrollmentWithGradesSerializer(enrollments_queryset, many=True)
 
