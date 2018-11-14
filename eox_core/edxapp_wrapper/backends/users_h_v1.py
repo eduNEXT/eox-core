@@ -5,6 +5,7 @@ Backend for the create_edxapp_user that works under the open-release/hawthorn.be
 """
 from __future__ import absolute_import, unicode_literals
 import logging
+
 from django.db import transaction
 from django.contrib.auth import get_user_model
 from django.conf import settings
@@ -15,7 +16,7 @@ from openedx.core.djangoapps.user_api.preferences import api as preferences_api 
 from openedx.core.djangoapps.user_api.accounts.serializers import UserReadOnlySerializer  # pylint: disable=import-error
 from student.forms import AccountCreationForm  # pylint: disable=import-error
 from student.helpers import do_create_account, create_or_set_user_attribute_created_on_site  # pylint: disable=import-error
-from student.models import create_comments_service_user, UserAttribute, UserSignupSource  # pylint: disable=import-error
+from student.models import create_comments_service_user, UserAttribute, UserSignupSource, CourseEnrollment  # pylint: disable=import-error
 
 LOG = logging.getLogger(__name__)
 User = get_user_model()  # pylint: disable=invalid-name
@@ -158,3 +159,8 @@ class FetchUserSiteSources(object):
     def fetch_from_user_signup_source(user, site):
         """ fetch option """
         return len(UserSignupSource.objects.filter(user=user, site=site)) > 0
+
+
+def get_course_enrollment():
+    """ get CourseEnrollment model """
+    return CourseEnrollment

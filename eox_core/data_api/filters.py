@@ -6,10 +6,10 @@ import django_filters
 from rest_framework import filters
 from django.contrib.auth.models import User
 
-from student.models import CourseEnrollment  # pylint: disable=import-error
-from certificates.models import GeneratedCertificate  # pylint: disable=import-error
+from eox_core.edxapp_wrapper.users import get_course_enrollment
+from eox_core.edxapp_wrapper.certificates import get_generated_certificate
 from edx_proctoring.models import ProctoredExamStudentAttempt  # pylint: disable=import-error
-from opaque_keys.edx.keys import CourseKey
+from opaque_keys.edx.keys import CourseKey # pylint: disable=import-error
 
 
 class BaseDataApiFilter(filters.FilterSet):
@@ -104,7 +104,7 @@ class CourseEnrollmentFilter(BaseDataApiFilter):
         """
         TODO: add me
         """
-        model = CourseEnrollment
+        model = get_course_enrollment()
         fields = [
             'id',
             'course_id',
@@ -169,7 +169,7 @@ class GeneratedCerticatesFilter(BaseDataApiFilter):
         """
         TODO: add me
         """
-        model = GeneratedCertificate
+        model = get_generated_certificate()
         fields = [
             'id',
             'course_id',
