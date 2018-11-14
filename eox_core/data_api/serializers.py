@@ -7,18 +7,13 @@ import json
 import logging
 
 from django.utils.duration import duration_string
+from eox_core.edxapp_wrapper.courseware import get_courseware_courses
+from eox_core.edxapp_wrapper.grades import get_course_grade_factory
 from rest_framework import serializers
 
 from .fields import CustomRelatedField
 
 LOG = logging.getLogger(__name__)
-
-try:
-    from courseware import courses  # pylint: disable=import-error
-    from lms.djangoapps.grades.new.course_grade_factory import CourseGradeFactory  # pylint: disable=import-error
-except ImportError, exception:
-    LOG.error("One or more imports failed for `edunext.serializers`. Details on debug level.")
-    LOG.debug(exception, exc_info=True)
 
 
 class MetaSerializer(serializers.Serializer):  # pylint: disable=abstract-method
@@ -110,9 +105,9 @@ class CourseEnrollmentWithGradesSerializer(CourseEnrollmentSerializer):  # pylin
         """
         TODO: add me
         """
-        course = courses.get_course_by_id(obj.course_id)
+        course = get_courseware_courses().get_course_by_id(obj.course_id)
         user = obj.user
-        gradeset = CourseGradeFactory().create(user, course).summary
+        gradeset = get_course_grade_factory().create(user, course).summary
         return gradeset
 
 
