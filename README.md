@@ -40,6 +40,7 @@ make dev.checkout
 make dev.clone
 make dev.provision
 echo export OPENEDX_RELEASE=hawthorn.master > .envrc
+direnv allow
 ```
 - Clone the git repo:
 ```bash
