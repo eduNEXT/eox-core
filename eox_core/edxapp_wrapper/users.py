@@ -8,13 +8,13 @@ from importlib import import_module
 from django.conf import settings
 
 
-def get_edxapp_user(*args, **kwargs):
+def get_edxapp_user(site, *args, **kwargs):
     """ Creates the edxapp user """
 
     backend_function = settings.EOX_CORE_USERS_BACKEND
     backend = import_module(backend_function)
 
-    return backend.get_edxapp_user(*args, **kwargs)
+    return backend.get_edxapp_user(site, *args, **kwargs)
 
 
 def create_edxapp_user(*args, **kwargs):

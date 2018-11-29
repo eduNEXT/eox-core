@@ -12,6 +12,7 @@ from rest_framework.permissions import IsAdminUser
 from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
 
 from rest_framework_oauth.authentication import OAuth2Authentication
+from django.contrib.sites.shortcuts import get_current_site
 from django.utils import six
 from eox_core.api.v1.serializers import (
     EdxappUserQuerySerializer,
@@ -22,6 +23,7 @@ from eox_core.api.v1.serializers import (
 )
 from eox_core.edxapp_wrapper.users import create_edxapp_user, get_edxapp_user
 from eox_core.edxapp_wrapper.enrollments import create_enrollment
+
 
 LOG = logging.getLogger(__name__)
 
@@ -41,8 +43,9 @@ class EdxappUser(APIView):
         """
         serializer = EdxappUserQuerySerializer(data=request.POST)
         serializer.is_valid(raise_exception=True)
-
-        user, msg = create_edxapp_user(**serializer.validated_data)
+        data = serializer.validated_data
+        data['site'] = get_current_site(request).domain
+        user, msg = create_edxapp_user(**data)
 
         serialized_user = EdxappUserSerializer(user)
         response_data = serialized_user.data
@@ -54,10 +57,12 @@ class EdxappUser(APIView):
         """
         Creates the users on edxapp
         """
-        username = request.GET.get('username')
-        user = get_edxapp_user(username=username)
+        params = {key: request.GET[key] for key in ['username', 'email'] if key in request.GET}
+        site = get_current_site(request).domain
+        user = get_edxapp_user(site, **params)
         serialized_user = EdxappUserReadOnlySerializer(user, context={'request': request})
         response_data = serialized_user.data
+
         return Response(response_data)
 
 

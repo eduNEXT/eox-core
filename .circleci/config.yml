@@ -56,7 +56,7 @@ jobs:
           command: |
             . venv/bin/activate
             coverage run --source="." -m pytest
-            coverage report --fail-under=39
+            coverage report --fail-under=37
 
       - store_artifacts:
           path: test-reports
@@ -100,7 +100,7 @@ jobs:
           command: |
             . venv/bin/activate
             coverage run --source="." --rcfile=.coveragerc -m pytest
-            coverage report --fail-under=39 --rcfile=.coveragerc 
+            coverage report --fail-under=37 --rcfile=.coveragerc 
 
       - store_artifacts:
           path: test-reports
