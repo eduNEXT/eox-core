@@ -6,14 +6,37 @@ Backend for the create_edxapp_user that works under the open-release/hawthorn.be
 import logging
 
 from django.db import transaction
+from django.contrib.auth import get_user_model
+from rest_framework.exceptions import APIException
 from openedx.core.djangoapps.lang_pref import LANGUAGE_KEY  # pylint: disable=import-error
 from openedx.core.djangoapps.user_api.accounts.api import check_account_exists  # pylint: disable=import-error
 from openedx.core.djangoapps.user_api.preferences import api as preferences_api  # pylint: disable=import-error
+from openedx.core.djangoapps.user_api.accounts.serializers import UserReadOnlySerializer  # pylint: disable=import-error
 from student.forms import AccountCreationForm  # pylint: disable=import-error
 from student.helpers import do_create_account, create_or_set_user_attribute_created_on_site  # pylint: disable=import-error
 from student.models import create_comments_service_user  # pylint: disable=import-error
 
 LOG = logging.getLogger(__name__)
+User = get_user_model()  # pylint: disable=invalid-name
+
+
+def get_edxapp_user(**kwargs):
+    """
+    Retrieve an user by username and/or email
+    """
+    params = {key: kwargs.get(key) for key in ['username', 'email'] if key in kwargs}
+    try:
+        user = User.objects.get(**params)
+    except User.DoesNotExist:
+        raise APIException('No user found by {query} exists.'.format(query=str(params)))
+    return user
+
+
+def get_user_read_only_serializer():
+    """
+    Great serializer that fits our needs
+    """
+    return UserReadOnlySerializer
 
 
 def check_edxapp_account_conflicts(email, username):

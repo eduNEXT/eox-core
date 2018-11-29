@@ -16,7 +16,7 @@ class CreateEdxappUserTest(TestCase):
         """ Test we import the correct backend defined in the settings """
 
         create_edxapp_user()
-        m_import.assert_called_with(settings.EOX_CORE_USER_CREATION_BACKEND)
+        m_import.assert_called_with(settings.EOX_CORE_USERS_BACKEND)
 
     @mock.patch('eox_core.edxapp_wrapper.users.import_module')
     def test_call_the_backend(self, m_import):

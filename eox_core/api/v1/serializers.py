@@ -5,7 +5,7 @@ API v1 serializers.
 from __future__ import absolute_import, unicode_literals
 
 from rest_framework import serializers
-from eox_core.edxapp_wrapper.users import check_edxapp_account_conflicts
+from eox_core.edxapp_wrapper.users import check_edxapp_account_conflicts, get_user_read_only_serializer
 from eox_core.edxapp_wrapper.enrollments import check_edxapp_enrollment_is_valid
 
 
@@ -91,3 +91,10 @@ class EdxappCourseEnrollmentQuerySerializer(EdxappCourseEnrollmentSerializer):
     course_id = serializers.CharField(max_length=255, default=None)
     bundle_id = serializers.CharField(max_length=255, default=None)
     enrollment_attributes = EdxappEnrollmentAttributeSerializer(many=True, default=[])
+
+
+def EdxappUserReadOnlySerializer(*args, **kwargs):   # pylint: disable=invalid-name
+    """
+    Fake class to lazily retrieve UserReadOnlySerializer
+    """
+    return get_user_read_only_serializer()(*args, **kwargs)
