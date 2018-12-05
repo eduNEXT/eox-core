@@ -14,6 +14,7 @@ from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
 from rest_framework_oauth.authentication import OAuth2Authentication
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils import six
+from django.conf import settings
 from eox_core.api.v1.serializers import (
     EdxappUserQuerySerializer,
     EdxappUserSerializer,
@@ -60,7 +61,8 @@ class EdxappUser(APIView):
         query = {key: request.GET[key] for key in ['username', 'email'] if key in request.GET}
         query['site'] = get_current_site(request)
         user = get_edxapp_user(**query)
-        serialized_user = EdxappUserReadOnlySerializer(user, context={'request': request})
+        admin_fields = getattr(settings, 'ACCOUNT_VISIBILITY_CONFIGURATION', {}).get('admin_fields', {})
+        serialized_user = EdxappUserReadOnlySerializer(user, custom_fields=admin_fields, context={'request': request})
         response_data = serialized_user.data
 
         return Response(response_data)
