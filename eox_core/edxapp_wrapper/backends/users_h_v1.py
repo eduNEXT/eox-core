@@ -116,21 +116,22 @@ def create_edxapp_user(*args, **kwargs):
     return user, errors
 
 
-def get_edxapp_user(site, **kwargs):
+def get_edxapp_user(**kwargs):
     """
     Retrieve an user by username and/or email
     """
     params = {key: kwargs.get(key) for key in ['username', 'email'] if key in kwargs}
+    site = kwargs.get('site')
 
     try:
         user = User.objects.get(**params)
         for source_method in FetchUserSiteSources.get_enabled_source_methods():
-            if source_method(user, site):
+            if source_method(user, site.domain):
                 break
         else:
             raise User.DoesNotExist
     except User.DoesNotExist:
-        raise APIException('No user found by {query} on site {site} exists.'.format(query=str(params), site=site))
+        raise APIException('No user found by {query} on site {site} exists.'.format(query=str(params), site=site.domain))
     return user
 
 

@@ -57,9 +57,9 @@ class EdxappUser(APIView):
         """
         Creates the users on edxapp
         """
-        params = {key: request.GET[key] for key in ['username', 'email'] if key in request.GET}
-        site = get_current_site(request).domain
-        user = get_edxapp_user(site, **params)
+        query = {key: request.GET[key] for key in ['username', 'email'] if key in request.GET}
+        query['site'] = get_current_site(request)
+        user = get_edxapp_user(**query)
         serialized_user = EdxappUserReadOnlySerializer(user, context={'request': request})
         response_data = serialized_user.data
 
