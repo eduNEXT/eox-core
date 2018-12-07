@@ -131,7 +131,7 @@ def get_edxapp_user(**kwargs):
         else:
             raise User.DoesNotExist
     except User.DoesNotExist:
-        raise APIException('No user found by {query} on site {site} exists.'.format(query=str(params), site=site.domain))
+        raise APIException('No user found by {query} on site {site}.'.format(query=str(params), site=site.domain))
     return user
 
 

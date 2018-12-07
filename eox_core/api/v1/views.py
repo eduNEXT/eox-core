@@ -56,7 +56,7 @@ class EdxappUser(APIView):
 
     def get(self, request, *args, **kwargs):
         """
-        Creates the users on edxapp
+        Retrieves an user from edxapp
         """
         query = {key: request.GET[key] for key in ['username', 'email'] if key in request.GET}
         query['site'] = get_current_site(request)

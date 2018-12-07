@@ -99,7 +99,7 @@ jobs:
           name: run tests
           command: |
             . venv/bin/activate
-            coverage run --source="." --rcfile=.coveragerc -m pytest
+            coverage run --source="." --omit="*/backends*" -m pytest
             coverage report --fail-under=37 --rcfile=.coveragerc 
 
       - store_artifacts:
