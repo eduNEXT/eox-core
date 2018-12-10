@@ -12,11 +12,19 @@ from rest_framework.permissions import IsAdminUser
 from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
 
 from rest_framework_oauth.authentication import OAuth2Authentication
+from django.contrib.sites.shortcuts import get_current_site
 from django.utils import six
-
-from eox_core.api.v1.serializers import EdxappUserQuerySerializer, EdxappUserSerializer, EdxappCourseEnrollmentSerializer, EdxappCourseEnrollmentQuerySerializer
-from eox_core.edxapp_wrapper.users import create_edxapp_user
+from django.conf import settings
+from eox_core.api.v1.serializers import (
+    EdxappUserQuerySerializer,
+    EdxappUserSerializer,
+    EdxappCourseEnrollmentSerializer,
+    EdxappCourseEnrollmentQuerySerializer,
+    EdxappUserReadOnlySerializer
+)
+from eox_core.edxapp_wrapper.users import create_edxapp_user, get_edxapp_user
 from eox_core.edxapp_wrapper.enrollments import create_enrollment
+
 
 LOG = logging.getLogger(__name__)
 
@@ -34,15 +42,29 @@ class EdxappUser(APIView):
         """
         Creates the users on edxapp
         """
-        serializer = EdxappUserQuerySerializer(data=request.POST)
+        serializer = EdxappUserQuerySerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-
-        user, msg = create_edxapp_user(**serializer.validated_data)
+        data = serializer.validated_data
+        data['site'] = get_current_site(request)
+        user, msg = create_edxapp_user(**data)
 
         serialized_user = EdxappUserSerializer(user)
         response_data = serialized_user.data
         if msg:
             response_data["messages"] = msg
+        return Response(response_data)
+
+    def get(self, request, *args, **kwargs):
+        """
+        Retrieves an user from edxapp
+        """
+        query = {key: request.GET[key] for key in ['username', 'email'] if key in request.GET}
+        query['site'] = get_current_site(request)
+        user = get_edxapp_user(**query)
+        admin_fields = getattr(settings, 'ACCOUNT_VISIBILITY_CONFIGURATION', {}).get('admin_fields', {})
+        serialized_user = EdxappUserReadOnlySerializer(user, custom_fields=admin_fields, context={'request': request})
+        response_data = serialized_user.data
+
         return Response(response_data)
 
 
