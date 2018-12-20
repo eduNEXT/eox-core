@@ -14,6 +14,7 @@ certifi==2018.10.15       # via requests
 chardet==3.0.4            # via requests
 configparser==3.5.0       # via pylint
 coverage==4.5.1
+django-filter==1.0.4
 django-ipware==2.1.0      # via edx-proctoring
 django-model-utils==3.1.2  # via edx-proctoring
 django-oauth2-provider==0.2.6.1
