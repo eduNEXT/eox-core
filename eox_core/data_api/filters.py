@@ -72,7 +72,7 @@ class CourseEnrollmentFilter(BaseDataApiFilter):
     """
     TODO: add me
     """
-    course_id = django_filters.MethodFilter()
+    course_id = django_filters.CharFilter(method="filter_course_id")
     created = django_filters.DateTimeFromToRangeFilter()
     is_active = django_filters.BooleanFilter()
     mode = django_filters.CharFilter(lookup_expr='icontains')
@@ -126,8 +126,8 @@ class GeneratedCerticatesFilter(BaseDataApiFilter):
     site = django_filters.CharFilter(name="user__usersignupsource__site", lookup_expr='iexact')
     username = django_filters.CharFilter(name="user__username", lookup_expr='icontains')
     created_date = django_filters.DateTimeFromToRangeFilter()
-    course_id = django_filters.MethodFilter()
-    status = django_filters.MethodFilter()
+    course_id = django_filters.CharFilter(method="filter_course_id")
+    status = django_filters.CharFilter(method="filter_status")
 
     def filter_course_id(self, queryset, value):
         """
