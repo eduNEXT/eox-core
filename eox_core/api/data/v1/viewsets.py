@@ -38,7 +38,7 @@ class DataApiViewSet(mixins.ListModelMixin,
     """
     A generic viewset for all the instances of the data-api
     """
-    authentication_classes = (MicrositeManagerAuthentication,)
+    authentication_classes = ()
 
     pagination_class = DataApiResultsSetPagination
     filter_backends = (filters.DjangoFilterBackend,)
@@ -124,7 +124,7 @@ class CourseEnrollmentWithGradesViewset(DataApiViewSet):
         )
 
         url_task_status = request.build_absolute_uri(
-            reverse("celery-data-api-tasks", kwargs={"task_id": task_id})
+            reverse("eox-core:eox-data-api:celery-data-api-tasks", kwargs={"task_id": task_id})
         )
         data_response = {
             "task_id": res.id,

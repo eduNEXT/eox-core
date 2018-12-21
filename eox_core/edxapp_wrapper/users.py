@@ -47,7 +47,7 @@ def check_edxapp_account_conflicts(*args, **kwargs):
 def get_course_enrollment():
     """ Gets the CourseEnrollment model """
 
-    backend_function = settings.EOX_CORE_USER_CREATION_BACKEND
+    backend_function = settings.EOX_CORE_USERS_BACKEND
     backend = import_module(backend_function)
 
     return backend.get_course_enrollment()

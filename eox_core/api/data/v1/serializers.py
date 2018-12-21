@@ -105,9 +105,10 @@ class CourseEnrollmentWithGradesSerializer(CourseEnrollmentSerializer):  # pylin
         """
         TODO: add me
         """
+        grade_factory = get_course_grade_factory()
         course = get_courseware_courses().get_course_by_id(obj.course_id)
         user = obj.user
-        gradeset = get_course_grade_factory().create(user, course).summary
+        gradeset = grade_factory().read(user, course).summary
         return gradeset
 
 
