@@ -4,32 +4,25 @@ Controllers for the data-api. Used in the report generation process
 import random
 from datetime import datetime
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from django.conf import settings
-from rest_framework import viewsets, mixins, filters, status
-from rest_framework.response import Response
-
+from edx_proctoring.models import \
+    ProctoredExamStudentAttempt  # pylint: disable=import-error
 from eox_core.edxapp_wrapper.certificates import get_generated_certificate
 from eox_core.edxapp_wrapper.users import get_course_enrollment
-from edx_proctoring.models import ProctoredExamStudentAttempt  # pylint: disable=import-error
-from eox_manage.microsite_api.authenticators import ( # pylint: disable=import-error
-    MicrositeManagerAuthentication,
-)
+from rest_framework import filters, mixins, status, viewsets
+from rest_framework.authentication import SessionAuthentication
+from rest_framework.permissions import IsAdminUser
+from rest_framework.response import Response
+from rest_framework_oauth.authentication import OAuth2Authentication
 
-from .filters import (
-    UserFilter,
-    CourseEnrollmentFilter,
-    GeneratedCerticatesFilter,
-    ProctoredExamStudentAttemptFilter,
-)
-from .serializers import (
-    UserSerializer,
-    CourseEnrollmentSerializer,
-    CertificateSerializer,
-    ProctoredExamStudentAttemptSerializer,
-)
+from .filters import (CourseEnrollmentFilter, GeneratedCerticatesFilter,
+                      ProctoredExamStudentAttemptFilter, UserFilter)
 from .paginators import DataApiResultsSetPagination
+from .serializers import (CertificateSerializer, CourseEnrollmentSerializer,
+                          ProctoredExamStudentAttemptSerializer,
+                          UserSerializer)
 from .tasks import EnrollmentsGrades
 
 
@@ -38,7 +31,8 @@ class DataApiViewSet(mixins.ListModelMixin,
     """
     A generic viewset for all the instances of the data-api
     """
-    authentication_classes = ()
+    authentication_classes = (OAuth2Authentication, SessionAuthentication)
+    permission_classes = (IsAdminUser,)
 
     pagination_class = DataApiResultsSetPagination
     filter_backends = (filters.DjangoFilterBackend,)
