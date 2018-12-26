@@ -110,8 +110,8 @@ class CourseEnrollmentWithGradesViewset(DataApiViewSet):
         named_args = {
             "data": serializer.data,
         }
-        task_instance = EnrollmentsGrades()
-        res = task_instance.apply_async(
+
+        task = EnrollmentsGrades().apply_async(
             kwargs=named_args,
             task_id=task_id,
             routing_key=settings.GRADES_DOWNLOAD_ROUTING_KEY
@@ -121,7 +121,7 @@ class CourseEnrollmentWithGradesViewset(DataApiViewSet):
             reverse("eox-core:eox-data-api:celery-data-api-tasks", kwargs={"task_id": task_id})
         )
         data_response = {
-            "task_id": res.id,
+            "task_id": task.id,
             "task_url": url_task_status,
         }
         return Response(data_response, status=status.HTTP_202_ACCEPTED)
