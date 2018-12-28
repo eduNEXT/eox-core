@@ -6,10 +6,14 @@
 #
 -e git+https://github.com/edx/django-rest-framework-oauth.git@0a43e8525f1e3048efe4bc70c03de308a277197c#egg=djangorestframework-oauth==1.1.1
 -e git+https://github.com/edx/django-rest-framework.git@1ceda7c086fddffd1c440cc86856441bbf0bd9cb#egg=djangorestframework==3.6.3
+amqp==1.4.9               # via kombu
+anyjson==0.3.3            # via kombu
 astroid==1.6.5            # via pylint
 atomicwrites==1.2.1       # via pytest
 attrs==18.2.0             # via pytest
 backports.functools-lru-cache==1.5  # via astroid, pylint
+billiard==3.3.0.23        # via celery
+celery==3.1.25
 certifi==2018.10.15       # via requests
 chardet==3.0.4            # via requests
 configparser==3.5.0       # via pylint
@@ -29,6 +33,7 @@ futures==3.2.0 ; python_version < "3.0"
 idna==2.7                 # via requests
 ipaddress==1.0.22         # via faker
 isort==4.3.4              # via pylint
+kombu==3.0.37             # via celery
 lazy-object-proxy==1.3.1  # via astroid
 mccabe==0.6.1             # via pylint
 mock==2.0.0
@@ -42,7 +47,7 @@ pymongo==3.7.2            # via edx-opaque-keys
 pytest-django==3.3.3
 pytest==3.6.3
 python-dateutil==2.7.3    # via edx-proctoring, faker
-pytz==2018.5              # via django, edx-proctoring
+pytz==2018.5              # via celery, django, edx-proctoring
 requests==2.20.1          # via edx-proctoring
 shortuuid==0.5.0          # via django-oauth2-provider
 singledispatch==3.4.0.3   # via astroid, pylint

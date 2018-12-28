@@ -7,10 +7,6 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.exceptions import NotFound
 
-from eox_manage.microsite_api.authenticators import (
-    MicrositeManagerAuthentication,
-)
-
 
 class CeleryTasksStatus(APIView):
     """
