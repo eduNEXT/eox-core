@@ -128,8 +128,8 @@ class GeneratedCerticatesFilter(BaseDataApiFilter):
     created_date = django_filters.DateTimeFromToRangeFilter()
     course_id = django_filters.CharFilter(method="filter_course_id")
     status = django_filters.CharFilter(method="filter_status")
-    grade = django_filters.CharFilter(method="filter_status")
-    mode = django_filters.CharFilter(method="filter_status")
+    grade = django_filters.CharFilter()
+    mode = django_filters.CharFilter()
 
     def filter_course_id(self, queryset, value):
         """
