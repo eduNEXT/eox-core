@@ -9,14 +9,14 @@ from django.contrib.auth.models import User
 from eox_core.edxapp_wrapper.users import get_course_enrollment
 from eox_core.edxapp_wrapper.certificates import get_generated_certificate
 from edx_proctoring.models import ProctoredExamStudentAttempt  # pylint: disable=import-error
-from opaque_keys.edx.keys import CourseKey # pylint: disable=import-error
+from opaque_keys.edx.keys import CourseKey  # pylint: disable=import-error
 
 
 class BaseDataApiFilter(filters.FilterSet):
     """
     TODO: add me
     """
-    order_by_field = "ordering"
+    ordering = django_filters.OrderingFilter()
 
 
 class UserFilter(BaseDataApiFilter):
@@ -65,7 +65,6 @@ class UserFilter(BaseDataApiFilter):
             'country',
             'site',
         ]
-        order_by = True
 
 
 class CourseEnrollmentFilter(BaseDataApiFilter):
@@ -78,7 +77,7 @@ class CourseEnrollmentFilter(BaseDataApiFilter):
     mode = django_filters.CharFilter(lookup_expr='icontains')
     site = django_filters.CharFilter(name="user__usersignupsource__site", lookup_expr='iexact')
 
-    def filter_course_id(self, queryset, value):
+    def filter_course_id(self, queryset, name, value):
         """
         This custom filter was created to enable filtering by course_id.
         See common.djangoapps.xmodule_django.models
@@ -113,7 +112,6 @@ class CourseEnrollmentFilter(BaseDataApiFilter):
             'mode',
             'site',
         ]
-        order_by = True
 
 
 class GeneratedCerticatesFilter(BaseDataApiFilter):
@@ -131,7 +129,7 @@ class GeneratedCerticatesFilter(BaseDataApiFilter):
     grade = django_filters.CharFilter()
     mode = django_filters.CharFilter()
 
-    def filter_course_id(self, queryset, value):
+    def filter_course_id(self, queryset, name, value):
         """
         This custom filter was created to enable filtering by course_id.
         See common.djangoapps.xmodule_django.models
@@ -153,7 +151,7 @@ class GeneratedCerticatesFilter(BaseDataApiFilter):
 
         return queryset
 
-    def filter_status(self, queryset, value):
+    def filter_status(self, queryset, name, value):
         """
         This custom filter was created to return a queryset
         where certificates have downloadable status or
@@ -182,7 +180,6 @@ class GeneratedCerticatesFilter(BaseDataApiFilter):
             'site',
             'created_date'
         ]
-        order_by = True
 
 
 class ProctoredExamStudentAttemptFilter(BaseDataApiFilter):
@@ -205,4 +202,3 @@ class ProctoredExamStudentAttemptFilter(BaseDataApiFilter):
             'exam_name'
 
         ]
-        order_by = True
