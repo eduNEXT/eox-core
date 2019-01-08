@@ -1,7 +1,6 @@
 """
 Settings for eox-core
 """
-
 from __future__ import absolute_import, unicode_literals
 
 
@@ -13,6 +12,7 @@ INSTALLED_APPS = (
     'edx_proctoring',
     'django_filters',
 )
+
 
 def plugin_settings(settings):
     """
