@@ -15,7 +15,18 @@ class SettingsClass(object):
 SETTINGS = SettingsClass()
 plugin_settings(SETTINGS)
 vars().update(SETTINGS.__dict__)
+EOX_CORE_USERS_BACKEND = "eox_core.edxapp_wrapper.backends.users_h_v1_test"
+EOX_CORE_CERTIFICATES_BACKEND = "eox_core.edxapp_wrapper.backends.certificates_h_v1_test"
 
+
+INSTALLED_APPS = (
+    'eox_core',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'edx_proctoring',
+    'django_filters',
+)
 
 ROOT_URLCONF = 'eox_core.urls'
 ALLOWED_HOSTS = ['*']
