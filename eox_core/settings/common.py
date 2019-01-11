@@ -24,5 +24,5 @@ def plugin_settings(settings):
     settings.EOX_CORE_CERTIFICATES_BACKEND = "eox_core.edxapp_wrapper.backends.certificates_h_v1"
     settings.EOX_CORE_COURSEWARE_BACKEND = "eox_core.edxapp_wrapper.backends.courseware_h_v1"
     settings.EOX_CORE_GRADES_BACKEND = "eox_core.edxapp_wrapper.backends.grades_h_v1"
-    settings.DATA_API_DEF_PAGE_SIZE = 10
-    settings.DATA_API_MAX_PAGE_SIZE = 10
+    settings.DATA_API_DEF_PAGE_SIZE = 1000
+    settings.DATA_API_MAX_PAGE_SIZE = 5000
