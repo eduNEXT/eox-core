@@ -12,6 +12,7 @@ INSTALLED_APPS = (
     'edx_proctoring',
     'django_filters',
 )
+EOX_CORE_LOAD_PERMISSIONS = True
 
 
 def plugin_settings(settings):

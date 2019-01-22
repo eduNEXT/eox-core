@@ -8,13 +8,13 @@ import logging
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authentication import SessionAuthentication
-from rest_framework.permissions import IsAdminUser
 from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
 
 from rest_framework_oauth.authentication import OAuth2Authentication
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils import six
 from django.conf import settings
+from eox_core.api.v1.permissions import EoxCoreAPIPermission
 from eox_core.api.v1.serializers import (
     EdxappUserQuerySerializer,
     EdxappUserSerializer,
@@ -35,7 +35,7 @@ class EdxappUser(APIView):
     """
 
     authentication_classes = (OAuth2Authentication, SessionAuthentication)
-    permission_classes = (IsAdminUser,)
+    permission_classes = (EoxCoreAPIPermission,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
     def post(self, request, *args, **kwargs):
@@ -73,7 +73,7 @@ class EdxappEnrollment(APIView):
     Handles API requests to create users
     """
     authentication_classes = (OAuth2Authentication, SessionAuthentication)
-    permission_classes = (IsAdminUser,)
+    permission_classes = (EoxCoreAPIPermission,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
     # pylint: disable=too-many-locals
@@ -139,7 +139,7 @@ class UserInfo(APIView):
     Can use Oauth2/Session
     """
     authentication_classes = (OAuth2Authentication, SessionAuthentication)
-    permission_classes = (IsAdminUser,)
+    permission_classes = (EoxCoreAPIPermission,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
     def get(self, request, format=None):  # pylint: disable=redefined-builtin

@@ -39,3 +39,5 @@ DATABASES = {
         'NAME': 'db.sqlite3',
     }
 }
+
+EOX_CORE_LOAD_PERMISSIONS = False
