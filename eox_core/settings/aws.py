@@ -29,6 +29,10 @@ def plugin_settings(settings):  # pylint: disable=function-redefined
         'EOX_CORE_GRADES_BACKEND',
         settings.EOX_CORE_GRADES_BACKEND
     )
+    settings.EOX_CORE_LOAD_PERMISSIONS = getattr(settings, 'ENV_TOKENS', {}).get(
+        'EOX_CORE_LOAD_PERMISSIONS',
+        settings.EOX_CORE_LOAD_PERMISSIONS
+    )
     settings.DATA_API_DEF_PAGE_SIZE = getattr(settings, 'ENV_TOKENS', {}).get(
         'DATA_API_DEF_PAGE_SIZE',
         settings.DATA_API_DEF_PAGE_SIZE
