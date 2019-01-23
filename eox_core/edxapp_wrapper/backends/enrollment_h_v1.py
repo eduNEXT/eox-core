@@ -18,6 +18,7 @@ from opaque_keys.edx.keys import CourseKey
 from student.models import CourseEnrollment
 from eox_core.edxapp_wrapper.backends.edxfuture_i_v1 import get_program
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
+from openedx.core.djangoapps.site_configuration.helpers import get_current_site_orgs, get_all_orgs
 from openedx.core.lib.exceptions import CourseNotFoundError
 
 LOG = logging.getLogger(__name__)
@@ -141,6 +142,9 @@ def check_edxapp_enrollment_is_valid(*args, **kwargs):
         return ['You have to provide an email or username but not both']
     if mode not in CourseMode.ALL_MODES:
         return ['Invalid mode given:' + mode]
+    if course_id:
+        if not _validate_org(course_id):
+            errors.append('Enrollment not allowed for given org')
     if course_id and not force:
         try:
             api.validate_course_mode(course_id, mode, is_active=is_active)
@@ -175,3 +179,18 @@ def _force_create_enrollment(username, course_id, mode, is_active):
     except Exception as err:  # pylint: disable=broad-except
         raise APIException(repr(err))
     return enrollment
+
+
+def _validate_org(course_id):
+    """
+    Validates the course organization against all possible orgs for the site
+    """
+    course_key = CourseKey.from_string(course_id)
+    current_site_orgs = get_current_site_orgs() or []
+
+    if not current_site_orgs:
+        if course_key.org in get_all_orgs():
+            return False
+        return True
+    else:
+        return course_key.org in current_site_orgs
