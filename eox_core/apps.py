@@ -25,6 +25,24 @@ class EoxCoreConfig(AppConfig):
                 'common': {'relative_path': 'settings.common'},
                 'aws': {'relative_path': 'settings.aws'},
             },
+        },
+    }
+
+
+class EoxCoreCMSConfig(EoxCoreConfig):
+    """App configuration"""
+    name = 'eox_core'
+    verbose_name = "eduNEXT Openedx Extensions"
+
+    plugin_app = {
+        'url_config': {
+            'cms.djangoapp': {
+                'namespace': 'eox-core',
+                'regex': r'^eox-core/',
+                'relative_path': 'urls',
+            }
+        },
+        'settings_config': {
             'cms.djangoapp': {
                 'test': {'relative_path': 'settings.test'},
                 'common': {'relative_path': 'settings.common'},
