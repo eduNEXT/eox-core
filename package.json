@@ -1,0 +1,33 @@
+{
+  "name": "eox-core",
+  "version": "0.1.0",
+  "description": "eduNEXT Openedx Extensions",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eduNEXT/eox-core.git"
+  },
+  "author": "eduNEXT",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/eduNEXT/eox-core/issues"
+  },
+  "homepage": "https://github.com/eduNEXT/eox-core#readme",
+  "dependencies": {
+    "@edx/paragon": "2.6.4",
+    "babel-core": "6.26.0",
+    "babel-loader": "6.4.1",
+    "babel-preset-env": "1.6.1",
+    "babel-preset-react": "6.24.1",
+    "react": "16.1.0",
+    "react-dom": "16.1.0",
+    "webpack": "2.7.0"
+  },
+  "devDependencies": {
+    "webpack-cli": "^3.2.1"
+  }
+}

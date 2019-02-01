@@ -41,5 +41,8 @@ setup(
         "lms.djangoapp": [
             "eox_core = eox_core.apps:EoxCoreConfig",
         ],
+        "cms.djangoapp": [
+            "eox_core = eox_core.apps:EoxCoreCMSConfig",
+        ],
     }
 )

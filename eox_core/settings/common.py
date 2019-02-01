@@ -27,3 +27,4 @@ def plugin_settings(settings):
     settings.EOX_CORE_LOAD_PERMISSIONS = True
     settings.DATA_API_DEF_PAGE_SIZE = 1000
     settings.DATA_API_MAX_PAGE_SIZE = 5000
+    settings.EDXMAKO_MODULE = "eox_core.edxapp_wrapper.backends.edxmako_module"
