@@ -4,19 +4,33 @@
 Backend for the create_edxapp_user that works under the open-release/hawthorn.beta1 tag
 """
 from __future__ import absolute_import, unicode_literals
+
 import logging
 
-from django.db import transaction
-from django.contrib.auth import get_user_model
 from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.db import transaction
 from rest_framework.exceptions import APIException
-from openedx.core.djangoapps.lang_pref import LANGUAGE_KEY  # pylint: disable=import-error
-from openedx.core.djangoapps.user_api.accounts.api import check_account_exists  # pylint: disable=import-error
+
+from contentstore.views.user import _course_team_user
+from openedx.core.djangoapps.lang_pref import (
+    LANGUAGE_KEY  # pylint: disable=import-error
+)
+from openedx.core.djangoapps.user_api.accounts.api import (
+    check_account_exists  # pylint: disable=import-error
+)
+from openedx.core.djangoapps.user_api.accounts.serializers import (
+    UserReadOnlySerializer  # pylint: disable=import-error
+)
 from openedx.core.djangoapps.user_api.preferences import api as preferences_api  # pylint: disable=import-error
-from openedx.core.djangoapps.user_api.accounts.serializers import UserReadOnlySerializer  # pylint: disable=import-error
 from student.forms import AccountCreationForm  # pylint: disable=import-error
-from student.helpers import do_create_account, create_or_set_user_attribute_created_on_site  # pylint: disable=import-error
-from student.models import create_comments_service_user, UserAttribute, UserSignupSource, CourseEnrollment  # pylint: disable=import-error
+from student.helpers import (
+    create_or_set_user_attribute_created_on_site  # pylint: disable=import-error
+)
+from student.helpers import do_create_account
+from student.models import CourseEnrollment  # pylint: disable=import-error
+from student.models import (UserAttribute, UserSignupSource,
+                            create_comments_service_user)
 
 LOG = logging.getLogger(__name__)
 User = get_user_model()  # pylint: disable=invalid-name
@@ -134,6 +148,11 @@ def get_edxapp_user(**kwargs):
     except User.DoesNotExist:
         raise APIException('No user found by {query} on site {site}.'.format(query=str(params), site=site.domain))
     return user
+
+
+def get_course_team_user(*args, **kwargs):
+    """ get _course_team_user function. """
+    return _course_team_user(*args, **kwargs)
 
 
 class FetchUserSiteSources(object):

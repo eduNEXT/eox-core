@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack"
+    "build": "webpack --display-error-details"
   },
   "repository": {
     "type": "git",
@@ -23,11 +23,9 @@
     "babel-loader": "6.4.1",
     "babel-preset-env": "1.6.1",
     "babel-preset-react": "6.24.1",
+    "js-cookie": "2.2.0",
     "react": "16.1.0",
     "react-dom": "16.1.0",
     "webpack": "2.7.0"
-  },
-  "devDependencies": {
-    "webpack-cli": "^3.2.1"
   }
 }

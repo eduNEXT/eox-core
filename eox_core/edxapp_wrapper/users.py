@@ -51,3 +51,12 @@ def get_course_enrollment():
     backend = import_module(backend_function)
 
     return backend.get_course_enrollment()
+
+
+def get_course_team_user(*args, **kwargs):
+    """ Gets the course_team_user function """
+
+    backend_function = settings.EOX_CORE_USERS_BACKEND
+    backend = import_module(backend_function)
+
+    return backend.get_course_team_user(*args, **kwargs)
