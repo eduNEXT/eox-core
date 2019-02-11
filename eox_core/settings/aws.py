@@ -45,3 +45,11 @@ def plugin_settings(settings):  # pylint: disable=function-redefined
         'EDXMAKO_MODULE',
         settings.EDXMAKO_MODULE
     )
+    settings.EOX_CORE_COURSES_BACKEND = getattr(settings, 'ENV_TOKENS', {}).get(
+        'EOX_CORE_COURSES_BACKEND',
+        settings.EOX_CORE_COURSES_BACKEND
+    )
+    settings.EOX_CORE_SITE_CONFIGURATION = getattr(settings, 'ENV_TOKENS', {}).get(
+        'EOX_CORE_SITE_CONFIGURATION',
+        settings.EOX_CORE_SITE_CONFIGURATION
+    )

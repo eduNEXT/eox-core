@@ -4,7 +4,8 @@ module.exports = {
     entry: path.join(__dirname, '/eox_core/cms/static/js/index.jsx'),
     output: {
         filename: 'build.js',
-        path: path.join(__dirname, '/eox_core/static/js')
+        path: path.join(__dirname, '/eox_core/static/js'),
+        libraryTarget: 'window'
     },
     module: {
         rules:[{
@@ -16,5 +17,8 @@ module.exports = {
     watch: true,
     watchOptions: {
         ignored: ['*.js', 'node_modules']
+    },
+    resolve: {
+        extensions: ['.js', '.jsx', '.json']
     }
 }
