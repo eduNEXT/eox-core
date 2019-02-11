@@ -18,6 +18,10 @@
             new RenderReactComponent({
                 teamManagement: {
                     list_org: ${list_org | n, dump_js_escaped_json}
+                },
+                courseSettings: {
+                    settings_fileds: ${settings_fileds | n, dump_js_escaped_json},
+                    details_fields: ${details_fields | n, dump_js_escaped_json}
                 }
             });
         </script>

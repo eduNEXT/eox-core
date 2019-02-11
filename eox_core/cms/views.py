@@ -13,7 +13,9 @@ from rest_framework import status
 from rest_framework.response import Response
 
 from eox_core.edxapp_wrapper.courses import (get_courses_accessible_to_user,
-                                             get_process_courses_list)
+                                             get_process_courses_list,
+                                             get_course_settings_fields,
+                                             get_course_details_fields,)
 from eox_core.edxapp_wrapper.edxmako_module import render_to_response
 from eox_core.edxapp_wrapper.site_configuration import get_all_orgs_helper
 from eox_core.edxapp_wrapper.users import get_course_team_user
@@ -31,16 +33,20 @@ def management_view(request):
     """
     if 'text/html' in request.META.get('HTTP_ACCEPT', '') and request.method == 'GET':
         org_list = get_all_orgs()
+        settings_fields = get_course_settings_fields()
+        details_fields = get_course_details_fields()
 
         return render_to_response(u'management.html', {
             'list_org': org_list,
+            'settings_fileds': settings_fields,
+            'details_fields': details_fields,
         })
 
 
 @enable_course_management_view
 @login_required
 @ensure_csrf_cookie
-@require_http_methods(["POST", 'DELETE'])
+@require_http_methods(["POST", "DELETE"])
 def course_team(request, *args, **kwargs):
     """
     **Use Cases**
@@ -146,7 +152,7 @@ def get_json_from_body_request(request):
     Function to convert request.body into a json format.
     """
     json_content = {}
-    if "application/json" in request.META.get('CONTENT_TYPE', '') and request.body:
+    if 'application/json' in request.META.get('CONTENT_TYPE', '') and request.body:
         try:
             json_content = json.loads(request.body)
         except ValueError:

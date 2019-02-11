@@ -2,15 +2,19 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Tabs } from '@edx/paragon';
 import { CourseTeamManagement } from './CourseTeamManagement'
+import { CourseSettings } from './CourseSettings'
 
 function CourseManagement(props) {
   return (
-    <Tabs labels={["Course team management", "Panel 2", "Panel 3"]}>
+    <Tabs labels={["Course team management", "Course settings", "Panel 3"]}>
       <div>
         <CourseTeamManagement orgList={props.teamManagement.list_org}/>
       </div>
       <div>
-        Panel 2
+        <CourseSettings
+          settingsFields={props.courseSettings.settings_fileds}
+          detailsFields={props.courseSettings.details_fields}
+        />
       </div>
       <div>
         Panel 3
