@@ -1,16 +1,18 @@
 # -*- coding: utf-8 -*-
+"""
+API endpoints for Course Management view.
+"""
 from __future__ import unicode_literals
 
 import json
+import re
 
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from django.shortcuts import render
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_http_methods
 from opaque_keys.edx.keys import CourseKey  # pylint: disable=import-error
 from rest_framework import status
-from rest_framework.response import Response
 
 from eox_core.edxapp_wrapper.courses import (get_courses_accessible_to_user,
                                              get_process_courses_list,
@@ -53,13 +55,15 @@ def course_team(request, *args, **kwargs):
         Add or change the course team status role.
 
     **Example Requests**:
-        <studio-url>/eox-core/management/course-team-management
+        POST, DELETE <studio-url>/eox-core/management/course-team-management
 
     **Request Values**
 
         * org: Organization short name.
         * user: user email.
         * role: user role (staff, instructor, '')
+
+        Note: If the role value is empty must be send it as a DELETE operation.
 
     **Response Values**
 
@@ -135,6 +139,83 @@ def course_team(request, *args, **kwargs):
     return JsonResponse(data)
 
 
+@enable_course_management_view
+@login_required
+@ensure_csrf_cookie
+@require_http_methods(["GET"])
+def get_courses_by_course_regex(request, *args, **kwargs):
+    """
+    **Use Cases**
+        Get a list of course keys that match with the provided query string.
+        E.g:
+            course-v1:FP+DAT248x+2018*
+            course-v1:FP+DAT*
+            course-v1:FP*
+            *DAT248x+2018*
+
+
+    **Example Requests**:
+        GET <studio-url>/eox-core/management/get_courses?search=<query-string>
+
+    **Request Values**
+
+        * search: Query string of the desired course matching.
+
+    **Response Values**
+
+        * message: Status message of the operation.
+        * status: Global operaion status.
+            Failed, Success.
+        * courses: List containing the course/s key/s that match with the provided query string.
+    """
+
+    input_course_regex = request.GET.get('search')
+    if not input_course_regex:
+        data = {
+            'message': 'No course regex provided.',
+            'status': 'Failed'
+        }
+        return JsonResponse(data, status=status.HTTP_400_BAD_REQUEST)
+
+    match_courses = []
+    course_regex = get_course_regex(input_course_regex)
+
+    courses_iter, in_process_course_actions = get_courses_accessible_to_user(request)
+    active_courses, archived_courses = get_process_courses_list(courses_iter, in_process_course_actions)
+
+    if not active_courses:
+        data = {
+            'message': 'No courses were found.',
+            'status': 'Success'
+        }
+        return JsonResponse(data, status=status.HTTP_404_NOT_FOUND)
+
+    for course in active_courses:
+        plain_course_key = course.get('course_key')
+        match = course_regex.search(plain_course_key)
+        if match:
+            match_courses.append(plain_course_key)
+
+    if not match_courses:
+        data = {
+            'message': 'No courses match with this: "{}" query string.'.format(
+                input_course_regex
+            ),
+            'status': 'Success'
+        }
+        return JsonResponse(data, status=status.HTTP_200_OK)
+
+    data = {
+        'message': '{} course/s were found.'.format(
+            len(match_courses)
+        ),
+        'status': 'Success',
+        'courses': match_courses
+    }
+
+    return JsonResponse(data, status=status.HTTP_200_OK)
+
+
 def get_all_orgs():
     """
     Return organization list.
@@ -158,3 +239,15 @@ def get_json_from_body_request(request):
         except ValueError:
             return json_content
     return json_content
+
+
+def get_course_regex(input_course_regex):
+    """
+    Returns the final course regex to match with the courses keys.
+    """
+    search_value_replaced = input_course_regex.replace('*', '.*')
+    splitted_search_value = search_value_replaced.split('+')
+    final_regex_string = '.*'.join(splitted_search_value)
+    course_regex = re.compile(r"{}".format(final_regex_string))
+
+    return course_regex
