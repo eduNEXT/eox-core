@@ -12,7 +12,9 @@ export class CourseSettings extends React.Component {
       findCoursesRegex: '',
       openAlert: false,
       statusAlertMessage: '',
-      statusAlertType: ''
+      statusAlertType: '',
+      courseList: [],
+      courseListHtml: []
     }
 
     this.findCoursesRegexUrl = '/eox-core/management/get_courses'
@@ -45,6 +47,11 @@ export class CourseSettings extends React.Component {
       return;
     }
 
+    this.setState({
+      courseListHtml: [],
+      openAlert: false
+    });
+
     const searchStringScaped = this.state.findCoursesRegex.replace("+", "%2B");
     const queryUrl = `${this.findCoursesRegexUrl}?search=${searchStringScaped}`;
 
@@ -54,6 +61,10 @@ export class CourseSettings extends React.Component {
     )
     .then(res => res.json())
     .then((response) => {
+      if (response.status !== 'Failed')
+        this.fillCourseList(response)
+      else
+        this.failedCourseRegexMatch(response)
       console.log(response);
     })
     .catch((error) => {
@@ -64,6 +75,24 @@ export class CourseSettings extends React.Component {
   onCloseAlert() {
     this.setState({
       openAlert: false
+    });
+  }
+
+  fillCourseList(response) {
+    let courseList = response.courses.map((courseKey) => {
+      return <li key={courseKey}>{courseKey}</li>
+    })
+
+    this.setState({
+      courseListHtml: courseList
+    });
+  }
+
+  failedCourseRegexMatch(response) {
+    this.setState({
+      openAlert: true,
+      statusAlertMessage: response.message,
+      statusAlertType: 'danger'
     });
   }
 
@@ -83,6 +112,9 @@ export class CourseSettings extends React.Component {
             name="find"
             onClick={this.handleFindCoursesSubmit}
           ></Button>
+        </div>
+        <div className="col-8">
+          <ul>{this.state.courseListHtml}</ul>
         </div>
       </div>
       <div className="row">

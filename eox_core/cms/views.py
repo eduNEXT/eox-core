@@ -186,7 +186,8 @@ def get_courses_by_course_regex(request, *args, **kwargs):
     if not active_courses:
         data = {
             'message': 'No courses were found.',
-            'status': 'Success'
+            'status': 'Failed',
+            'courses': []
         }
         return JsonResponse(data, status=status.HTTP_404_NOT_FOUND)
 
@@ -201,7 +202,8 @@ def get_courses_by_course_regex(request, *args, **kwargs):
             'message': 'No courses match with this: "{}" query string.'.format(
                 input_course_regex
             ),
-            'status': 'Success'
+            'status': 'Failed',
+            'courses': []
         }
         return JsonResponse(data, status=status.HTTP_200_OK)
 
