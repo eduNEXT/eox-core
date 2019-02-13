@@ -8,11 +8,17 @@ module.exports = {
         libraryTarget: 'window'
     },
     module: {
-        rules:[{
-            test: /\.jsx$/,
-            exclude: /node_modules/,
-            loader: 'babel-loader'
-        }]
+        rules:[
+            {
+                test: /\.jsx$/,
+                exclude: /node_modules/,
+                loader: 'babel-loader'
+            },
+            {
+                test: /\.css$/,
+                use: ['style-loader', 'css-loader']
+            }
+        ]
     },
     watch: true,
     watchOptions: {

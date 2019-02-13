@@ -40,3 +40,12 @@ def get_course_details_fields():
     backend = import_module(backend_function)
 
     return backend.get_course_details_fields()
+
+
+def get_first_course_key():
+    """ Gets the first course key string. """
+
+    backend_function = settings.EOX_CORE_COURSES_BACKEND
+    backend = import_module(backend_function)
+
+    return backend.get_first_course_key()

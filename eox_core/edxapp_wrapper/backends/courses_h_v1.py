@@ -4,6 +4,7 @@ Backend for contenstore courses.
 
 from contentstore.views.course import get_courses_accessible_to_user, _process_courses_list
 from models.settings.course_metadata import CourseMetadata
+from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from openedx.core.djangoapps.models.course_details import CourseDetails
 
 
@@ -31,3 +32,18 @@ def get_course_details_fields():
     all_fields = vars(course_details)
 
     return all_fields.keys()
+
+
+def get_first_course_key():
+    """
+    Returns the course key of any course in roder to get
+    the advance settings keys to populate the course settings
+    tab in the Course management view.
+    """
+
+    course = CourseOverview.objects.all()[:1]
+    if course:
+        course_location = course[0].location
+    else:
+        return ''
+    return course_location.course_key

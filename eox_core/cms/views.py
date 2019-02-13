@@ -17,7 +17,8 @@ from rest_framework import status
 from eox_core.edxapp_wrapper.courses import (get_courses_accessible_to_user,
                                              get_process_courses_list,
                                              get_course_settings_fields,
-                                             get_course_details_fields,)
+                                             get_course_details_fields,
+                                             get_first_course_key,)
 from eox_core.edxapp_wrapper.edxmako_module import render_to_response
 from eox_core.edxapp_wrapper.site_configuration import get_all_orgs_helper
 from eox_core.edxapp_wrapper.users import get_course_team_user
@@ -35,12 +36,12 @@ def management_view(request):
     """
     if 'text/html' in request.META.get('HTTP_ACCEPT', '') and request.method == 'GET':
         org_list = get_all_orgs()
-        settings_fields = get_course_settings_fields()
         details_fields = get_course_details_fields()
+        course_key = get_first_course_key()
 
         return render_to_response(u'management.html', {
             'list_org': org_list,
-            'settings_fileds': settings_fields,
+            'course_key': course_key,
             'details_fields': details_fields,
         })
 

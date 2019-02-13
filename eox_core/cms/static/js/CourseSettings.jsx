@@ -1,6 +1,7 @@
 import React from 'react';
 import { InputText, InputSelect, RadioButtonGroup, RadioButton, TextArea, Button, StatusAlert } from '@edx/paragon'
 import { clientRequest } from './client'
+import styles from '../css/CourseSettings.css'
 
 
 export class CourseSettings extends React.Component {
@@ -14,10 +15,13 @@ export class CourseSettings extends React.Component {
       statusAlertMessage: '',
       statusAlertType: '',
       courseList: [],
-      courseListHtml: []
+      courseListHtml: [],
+      advancedSettingList: [],
+      hasAdvancedCourseSettings: false
     }
 
-    this.findCoursesRegexUrl = '/eox-core/management/get_courses'
+    this.findCoursesRegexUrl = '/eox-core/management/get_courses';
+    this.getAdvancedSettingsListUrl = '/settings/advanced/'
 
     this.handleChange = this.handleChange.bind(this);
     this.handleFindCoursesSubmit = this.handleFindCoursesSubmit.bind(this);
@@ -25,7 +29,7 @@ export class CourseSettings extends React.Component {
   }
 
   componentDidMount() {
-
+    this.getCourseAdvancedSettings(this.props.courseKey);
   }
 
   handleChange(value, name) {
@@ -65,7 +69,6 @@ export class CourseSettings extends React.Component {
         this.fillCourseList(response)
       else
         this.failedCourseRegexMatch(response)
-      console.log(response);
     })
     .catch((error) => {
       console.log(error);
@@ -96,6 +99,29 @@ export class CourseSettings extends React.Component {
     });
   }
 
+  getCourseAdvancedSettings(courseKey) {
+
+    if (courseKey === '') {
+      this.setState({
+        hasAdvancedCourseSettings: false
+      });
+      return;
+    }
+
+    const queryUrl = `${this.getAdvancedSettingsListUrl}${this.props.courseKey}`
+    clientRequest(
+      queryUrl,
+      'GET'
+    )
+    .then(res => res.json())
+    .then((response) => {
+      console.log(response);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  }
+
   render() {
     return (
     <div>
@@ -114,7 +140,10 @@ export class CourseSettings extends React.Component {
           ></Button>
         </div>
         <div className="col-8">
-          <ul>{this.state.courseListHtml}</ul>
+          <label>Current operation will apply to the following courses:</label>
+          <div className={styles.coursesList}>
+            <ul>{this.state.courseListHtml}</ul>
+          </div>
         </div>
       </div>
       <div className="row">
@@ -149,7 +178,7 @@ export class CourseSettings extends React.Component {
         <div className="col-4">
           <InputSelect
             label="Advanced Settings"
-            options={this.props.settingsFields}
+            options={this.state.advancedSettingList}
             name="advanced"
           />
         </div>

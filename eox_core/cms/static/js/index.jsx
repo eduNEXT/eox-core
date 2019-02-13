@@ -12,7 +12,7 @@ function CourseManagement(props) {
       </div>
       <div>
         <CourseSettings
-          settingsFields={props.courseSettings.settings_fileds}
+          courseKey={props.courseSettings.course_key}
           detailsFields={props.courseSettings.details_fields}
         />
       </div>
