@@ -17,7 +17,10 @@ export class CourseSettings extends React.Component {
       courseList: [],
       courseListHtml: [],
       advancedSettingList: [],
-      hasAdvancedCourseSettings: false
+      hasAdvancedCourseSettings: false,
+      settingTypeValue: '',
+      detailsValue: '',
+      advancedValue: ''
     }
 
     this.findCoursesRegexUrl = '/eox-core/management/get_courses';
@@ -26,6 +29,7 @@ export class CourseSettings extends React.Component {
     this.handleChange = this.handleChange.bind(this);
     this.handleFindCoursesSubmit = this.handleFindCoursesSubmit.bind(this);
     this.onCloseAlert = this.onCloseAlert.bind(this);
+    this.onSubmitSetting = this.onSubmitSetting.bind(this);
   }
 
   componentDidMount() {
@@ -33,10 +37,26 @@ export class CourseSettings extends React.Component {
   }
 
   handleChange(value, name) {
-    if (value !== name) {
+    // We need to catch a TypeError error due to some Paragon components returns
+    // as parameters the key pair value-name and other components returns
+    // the generated event on its onChange event.
+    // So, we need to capture both in order to update the state values.
+    try {
+      const elementValue = value.target.value;
+      const elementName = value.target.name;
       this.setState({
-        [name]: value
+        [elementName]: elementValue
       });
+    } catch (error) {
+      if (error instanceof TypeError) {
+        if (value !== name) {
+          this.setState({
+            [name]: value
+          });
+        }
+      } else {
+        throw new Error(error);
+      }
     }
   }
 
@@ -87,7 +107,8 @@ export class CourseSettings extends React.Component {
     })
 
     this.setState({
-      courseListHtml: courseList
+      courseListHtml: courseList,
+      courseList: response.courses
     });
   }
 
@@ -115,11 +136,59 @@ export class CourseSettings extends React.Component {
     )
     .then(res => res.json())
     .then((response) => {
-      console.log(response);
+      this.setState({
+        advancedSettingList: Object.keys(response)
+      });
     })
     .catch((error) => {
       console.log(error);
     });
+  }
+
+  onSubmitSetting() {
+    this.setState({
+      openAlert: false
+    });
+
+    const isValid = this.onSubmitValidator();
+    if (isValid) {
+      console.log(this.state.courseList);
+    }
+  }
+
+  onSubmitValidator() {
+
+    const settingTypeValue = this.state.settingTypeValue;
+
+    if (this.state.courseList.length === 0) {
+      this.setState({
+        openAlert: true,
+        statusAlertMessage: 'No courses selected to apply the changes.',
+        statusAlertType: 'danger'
+      });
+      return false;
+    }
+
+    if (settingTypeValue === '') {
+      this.setState({
+        openAlert: true,
+        statusAlertMessage: 'Please, select Schedule & details or Advanced settings.',
+        statusAlertType: 'danger'
+      });
+      return false;
+    }
+
+    const fieldToCheck = Object.getOwnPropertyDescriptor(this.state, `${settingTypeValue}Value`);
+    const typeMessage = (settingTypeValue === 'details') ? 'Schedule & Details' : 'Advanced settings';
+    if (fieldToCheck.value === '') {
+      this.setState({
+        openAlert: true,
+        statusAlertMessage: `Please enter a valid ${typeMessage} value.`,
+        statusAlertType: 'danger'
+      });
+      return false;
+    }
+    return true;
   }
 
   render() {
@@ -149,10 +218,11 @@ export class CourseSettings extends React.Component {
       <div className="row">
         <div className="col-4">
           <RadioButtonGroup
-            name="type"
-            label=""
+            name="settingTypeValue"
+            label="Setting type"
+            onChange={this.handleChange}
           >
-            <RadioButton value="deatils">
+            <RadioButton value="details">
               Schedule & Details
             </RadioButton>
             <RadioButton value="advanced">
@@ -168,7 +238,11 @@ export class CourseSettings extends React.Component {
           />
         </div>
         <div className="col-4">
-          <TextArea name="deatils-value" label="New value" value=""/>
+          <TextArea
+            name="detailsValue"
+            label="New value"
+            onChange={this.handleChange}
+          />
         </div>
       </div>
       <div className="row">
@@ -183,12 +257,17 @@ export class CourseSettings extends React.Component {
           />
         </div>
         <div className="col-4">
-          <TextArea name="advanced-value" label="New value" value=""/>
+          <TextArea
+            name="advancedValue"
+            label="New value"
+            onChange={this.handleChange}
+          />
         </div>
       </div>
       <Button
         label="Apply changes"
         name="apply"
+        onClick={this.onSubmitSetting}
       ></Button>
       <StatusAlert
         dialog={this.state.statusAlertMessage}
