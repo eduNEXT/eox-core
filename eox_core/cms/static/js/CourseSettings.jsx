@@ -29,12 +29,15 @@ export class CourseSettings extends React.Component {
     this.findCoursesRegexUrl = '/eox-core/management/get_courses';
     this.advancedSettingsUrl = '/settings/advanced/';
     this.detailSettingsUrl = '/settings/details/';
+    this.courseIndexGet = 0;
+    this.processedCourses = 0;
 
     this.handleChange = this.handleChange.bind(this);
     this.handleFindCoursesSubmit = this.handleFindCoursesSubmit.bind(this);
     this.onCloseAlert = this.onCloseAlert.bind(this);
     this.onSubmitSetting = this.onSubmitSetting.bind(this);
-    this.submitNewSetting = this.submitNewSetting.bind(this);
+    this.submitNewAdvancedSetting = this.submitNewAdvancedSetting.bind(this);
+    this.submitNewDetailSetting = this.submitNewDetailSetting.bind(this);
   }
 
   componentDidMount() {
@@ -168,7 +171,11 @@ export class CourseSettings extends React.Component {
 
     const isValid = this.onSubmitValidator();
     if (isValid) {
-      this.submitNewSetting();
+      const settingTypeValue = this.state.settingTypeValue;
+      if (settingTypeValue === 'details')
+        this.submitNewDetailSetting();
+      else if (settingTypeValue === 'advanced')
+        this.submitNewAdvancedSetting();
     }
   }
 
@@ -218,33 +225,20 @@ export class CourseSettings extends React.Component {
     return true;
   }
 
-  submitNewSetting() {
+  submitNewAdvancedSetting() {
     const courses = this.state.courseList;
-    const settingTypeValue = this.state.settingTypeValue;
-    const typeSettingUrl = (settingTypeValue === 'details') ? this.detailSettingsUrl : this.advancedSettingsUrl;
+    const settingName = this.state.advancedSettingName;
+    const settingValue = this.state.advancedSettingValue;
     let requetsBody = {};
 
-    if (settingTypeValue === 'details') {
-      let settingName = this.state.detailsSettingName;
-      let settingValue = this.state.detailsSettingValue;
-      requetsBody = {
-        [settingName]: this.convertToType(settingValue),
-        intro_video: (settingName === 'intro_video') ? this.convertToType(settingValue) : null
-      };
-    }
-
-    if (settingTypeValue === 'advanced') {
-      let settingName = this.state.advancedSettingName;
-      let settingValue = this.state.advancedSettingValue;
-      requetsBody = {
-        [settingName]: {
-          value: this.convertToType(settingValue)
-        }
-      };
-    }
+    requetsBody = {
+      [settingName]: {
+        value: this.convertToType(settingValue)
+      }
+    };
 
     for (const courseKey of courses) {
-      const queryUrl = `${typeSettingUrl}${courseKey}`;
+      const queryUrl = `${this.advancedSettingsUrl}${courseKey}`;
       clientRequest(
         queryUrl,
         'POST',
@@ -258,6 +252,53 @@ export class CourseSettings extends React.Component {
         console.log(error);
       });
     }
+  }
+
+  submitNewDetailSetting() {
+    const courses = this.state.courseList;
+
+    if (this.processedCourses === courses.length) {
+      this.processedCourses = 0;
+      this.courseIndexGet = 0;
+      return;
+    }
+
+    const queryUrl = `${this.detailSettingsUrl}${courses[this.courseIndexGet]}`;
+    clientRequest(
+      queryUrl,
+      'GET'
+    )
+    .then(res => res.json())
+    .then((response) => {
+      // Deep clone response
+      const responseData = JSON.parse(JSON.stringify(response));
+      this.postNewDeatilSetting(responseData, queryUrl);
+    })
+    .catch((error) => {
+      console.log('GET error: ', error);
+    });
+  }
+
+  postNewDeatilSetting(response, url) {
+    const settingName = this.state.detailsSettingName;
+    const settingValue = this.state.detailsSettingValue;
+
+    response[settingName] = this.convertToType(settingValue);
+
+    clientRequest(
+      url,
+      'POST',
+      response
+    )
+    .then(res => res.json())
+    .then((postResponse) => {
+      this.courseIndexGet += 1;
+      this.processedCourses += 1;
+      this.submitNewDetailSetting();
+    })
+    .catch((error) => {
+      console.log('POST error: ', error);
+    });
   }
 
   convertToType(value) {
@@ -278,15 +319,28 @@ export class CourseSettings extends React.Component {
 
     } catch (error) {
       if (error instanceof SyntaxError) {
-        let dateLocal = new Date(`${value} UTC`);
-        if (dateLocal !== null || dateLocal !== undefined || dateLocal.toString() !== 'Invalid Date')
-          return dateLocal.toJSON();
-        return value;
+        let dateValue = this.isDateObject(value);
+        if (!dateValue)
+          return value;
+        else
+          return dateValue;
       } else {
         throw new Error(error);
       }
     }
-    return value;
+    let dateValue = this.isDateObject(value);
+    if (!dateValue)
+      return value;
+    else
+      return dateValue;
+  }
+
+  isDateObject(value) {
+    let dateLocal = new Date(`${value} UTC`);
+    if (dateLocal !== null || dateLocal !== undefined || dateLocal.toString() !== 'Invalid Date')
+      return dateLocal.toJSON();
+    else
+      return false
   }
 
   render() {
