@@ -12,7 +12,6 @@ from django.contrib.auth import get_user_model
 from django.db import transaction
 from rest_framework.exceptions import APIException
 
-from contentstore.views.user import _course_team_user
 from openedx.core.djangoapps.lang_pref import (
     LANGUAGE_KEY  # pylint: disable=import-error
 )
@@ -151,8 +150,16 @@ def get_edxapp_user(**kwargs):
 
 
 def get_course_team_user(*args, **kwargs):
-    """ get _course_team_user function. """
-    return _course_team_user(*args, **kwargs)
+    """
+    Get _course_team_user function.
+    We need to check if the SERVICE_VARIANT is equal to cms, since
+    contentstore is a module registered in the INSTALLED_APPS
+    of the cms only.
+    """
+    if settings.SERVICE_VARIANT == 'cms':
+        from contentstore.views.user import _course_team_user
+        return _course_team_user(*args, **kwargs)
+    return None
 
 
 class FetchUserSiteSources(object):
