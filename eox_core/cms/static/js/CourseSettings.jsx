@@ -278,6 +278,9 @@ export class CourseSettings extends React.Component {
 
     } catch (error) {
       if (error instanceof SyntaxError) {
+        let dateLocal = new Date(`${value} UTC`);
+        if (dateLocal !== null || dateLocal !== undefined || dateLocal.toString() !== 'Invalid Date')
+          return dateLocal.toJSON();
         return value;
       } else {
         throw new Error(error);
