@@ -23,7 +23,8 @@ export class CourseSettings extends React.Component {
       detailsSettingValue: '',
       advancedSettingValue: '',
       advancedSettingName: '',
-      detailsSettingName: ''
+      detailsSettingName: '',
+      completedTasks: []
     }
 
     this.findCoursesRegexUrl = '/eox-core/management/get_courses';
@@ -464,6 +465,12 @@ export class CourseSettings extends React.Component {
         open={this.state.openAlert}
         alertType={this.state.statusAlertType}
       />
+      <div>
+        <h2>Operations complete:</h2>
+        <ol>{this.state.completedTasks}</ol>
+        <h2>Operations not complete:</h2>
+        <ol>{this.state.failedTasks}</ol>
+      </div>
     </div>
     );
   }
