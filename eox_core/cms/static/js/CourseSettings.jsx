@@ -38,6 +38,7 @@ export class CourseSettings extends React.Component {
     this.onSubmitSetting = this.onSubmitSetting.bind(this);
     this.submitNewAdvancedSetting = this.submitNewAdvancedSetting.bind(this);
     this.submitNewDetailSetting = this.submitNewDetailSetting.bind(this);
+    this.handleResponseError = this.handleResponseError.bind(this);
   }
 
   componentDidMount() {
@@ -244,7 +245,12 @@ export class CourseSettings extends React.Component {
         'POST',
         requetsBody
       )
-      .then(res => res.json())
+      .then(res => {
+        if (res.ok)
+          return res.json();
+        else
+          this.handleResponseError(res);
+      })
       .then((response) => {
         console.log(response);
       })
@@ -262,20 +268,25 @@ export class CourseSettings extends React.Component {
       this.courseIndexGet = 0;
       return;
     }
-
+    // We need to GET the current settings in order to updated it.
     const queryUrl = `${this.detailSettingsUrl}${courses[this.courseIndexGet]}`;
     clientRequest(
       queryUrl,
       'GET'
     )
-    .then(res => res.json())
+    .then(res => {
+      if (res.ok)
+        return res.json();
+      else
+        this.handleResponseError(res);
+    })
     .then((response) => {
       // Deep clone response
       const responseData = JSON.parse(JSON.stringify(response));
       this.postNewDeatilSetting(responseData, queryUrl);
     })
     .catch((error) => {
-      console.log('GET error: ', error);
+      console.log(error);
     });
   }
 
@@ -290,14 +301,19 @@ export class CourseSettings extends React.Component {
       'POST',
       response
     )
-    .then(res => res.json())
+    .then(res => {
+      if (res.ok)
+        return res.json();
+      else
+        this.handleResponseError(res);
+    })
     .then((postResponse) => {
       this.courseIndexGet += 1;
       this.processedCourses += 1;
       this.submitNewDetailSetting();
     })
     .catch((error) => {
-      console.log('POST error: ', error);
+      console.log(error);
     });
   }
 
@@ -341,6 +357,25 @@ export class CourseSettings extends React.Component {
       return dateLocal.toJSON();
     else
       return false
+  }
+
+  handleResponseError(response) {
+    if (response.status !== 500) {
+      response.json().then(json => {
+        this.setState({
+          openAlert: true,
+          statusAlertMessage: `${json[0].message}`,
+          statusAlertType: 'danger'
+        });
+      });
+    } else {
+      this.setState({
+        openAlert: true,
+        statusAlertMessage: response.statusText,
+        statusAlertType: 'danger'
+      });
+    }
+    throw new Error(response.statusText);
   }
 
   render() {
