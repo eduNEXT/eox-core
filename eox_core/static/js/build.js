@@ -1059,7 +1059,8 @@ var CourseSettings = function (_React$Component) {
       advancedSettingValue: '',
       advancedSettingName: '',
       detailsSettingName: '',
-      completedTasks: []
+      completedTasks: [],
+      failedTasks: []
     };
 
     _this.findCoursesRegexUrl = '/eox-core/management/get_courses';
@@ -1067,6 +1068,8 @@ var CourseSettings = function (_React$Component) {
     _this.detailSettingsUrl = '/settings/details/';
     _this.courseIndexGet = 0;
     _this.processedCourses = 0;
+    _this.completedTasksCourseKeys = [];
+    _this.failedTasksCourseKeys = [];
 
     _this.handleChange = _this.handleChange.bind(_this);
     _this.handleFindCoursesSubmit = _this.handleFindCoursesSubmit.bind(_this);
@@ -1270,9 +1273,27 @@ var CourseSettings = function (_React$Component) {
       var settingValue = this.state.advancedSettingValue;
       var requetsBody = {};
 
+      this.setState({
+        completedTasks: [],
+        failedTasks: []
+      });
+      this.completedTasksCourseKeys = [];
+      this.failedTasksCourseKeys = [];
+
       requetsBody = _defineProperty({}, settingName, {
         value: this.convertToType(settingValue)
       });
+
+      var _loop = function _loop(courseKey) {
+        var queryUrl = '' + _this4.advancedSettingsUrl + courseKey;
+        __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__client__["a" /* clientRequest */])(queryUrl, 'POST', requetsBody).then(function (res) {
+          if (res.ok) return res.json();else _this4.handleResponseError(res);
+        }).then(function (response) {
+          _this4.handleSettingsJsonResponse(response, courseKey);
+        }).catch(function (error) {
+          console.log(error);
+        });
+      };
 
       var _iteratorNormalCompletion = true;
       var _didIteratorError = false;
@@ -1282,14 +1303,7 @@ var CourseSettings = function (_React$Component) {
         for (var _iterator = courses[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
           var courseKey = _step.value;
 
-          var queryUrl = '' + this.advancedSettingsUrl + courseKey;
-          __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__client__["a" /* clientRequest */])(queryUrl, 'POST', requetsBody).then(function (res) {
-            if (res.ok) return res.json();else _this4.handleResponseError(res);
-          }).then(function (response) {
-            console.log(response);
-          }).catch(function (error) {
-            console.log(error);
-          });
+          _loop(courseKey);
         }
       } catch (err) {
         _didIteratorError = true;
@@ -1313,9 +1327,19 @@ var CourseSettings = function (_React$Component) {
 
       var courses = this.state.courseList;
 
+      if (this.courseIndexGet === 0) {
+        this.setState({
+          completedTasks: [],
+          failedTasks: []
+        });
+        this.completedTasksCourseKeys = [];
+        this.failedTasksCourseKeys = [];
+      }
+
       if (this.processedCourses === courses.length) {
         this.processedCourses = 0;
         this.courseIndexGet = 0;
+        this.deatilsSettingCompleted();
         return;
       }
       // We need to GET the current settings in order to updated it.
@@ -1337,12 +1361,14 @@ var CourseSettings = function (_React$Component) {
 
       var settingName = this.state.detailsSettingName;
       var settingValue = this.state.detailsSettingValue;
+      var courses = this.state.courseList;
 
       response[settingName] = this.convertToType(settingValue);
 
       __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__client__["a" /* clientRequest */])(url, 'POST', response).then(function (res) {
         if (res.ok) return res.json();else _this6.handleResponseError(res);
       }).then(function (postResponse) {
+        _this6.handleSettingsJsonResponse(postResponse, courses[_this6.courseIndexGet]);
         _this6.courseIndexGet += 1;
         _this6.processedCourses += 1;
         _this6.submitNewDetailSetting();
@@ -1401,6 +1427,65 @@ var CourseSettings = function (_React$Component) {
         });
       }
       throw new Error(response.statusText);
+    }
+  }, {
+    key: 'handleSettingsJsonResponse',
+    value: function handleSettingsJsonResponse(response, courseKey) {
+      var advancedSettingName = this.state.advancedSettingName;
+      var advanceSettingValue = this.state.advancedSettingValue;
+      var deatilsSettingName = this.state.detailsSettingName;
+      var settingTypeValue = this.state.settingTypeValue;
+
+      if (settingTypeValue === 'details') {
+        if (response[deatilsSettingName]) this.completedTasksCourseKeys.push(courseKey);else this.failedTasksCourseKeys.push(courseKey);
+      } else if (settingTypeValue === 'advanced') {
+        if (response[advancedSettingName].value === this.convertToType(advanceSettingValue)) this.completedTasksCourseKeys.push(courseKey);else this.failedTasksCourseKeys.push(courseKey);
+
+        var completedTasks = this.completedTasksCourseKeys.map(function (value) {
+          return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'li',
+            { key: value },
+            value
+          );
+        });
+
+        var failedTasks = this.failedTasksCourseKeys.map(function (value) {
+          return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'li',
+            { key: value },
+            value
+          );
+        });
+
+        this.setState({
+          completedTasks: completedTasks,
+          failedTasks: failedTasks
+        });
+      }
+    }
+  }, {
+    key: 'deatilsSettingCompleted',
+    value: function deatilsSettingCompleted() {
+      var completedTasks = this.completedTasksCourseKeys.map(function (value) {
+        return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'li',
+          { key: value },
+          value
+        );
+      });
+
+      var failedTasks = this.failedTasksCourseKeys.map(function (value) {
+        return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'li',
+          { key: value },
+          value
+        );
+      });
+
+      this.setState({
+        completedTasks: completedTasks,
+        failedTasks: failedTasks
+      });
     }
   }, {
     key: 'render',

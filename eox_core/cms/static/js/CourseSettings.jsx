@@ -24,7 +24,8 @@ export class CourseSettings extends React.Component {
       advancedSettingValue: '',
       advancedSettingName: '',
       detailsSettingName: '',
-      completedTasks: []
+      completedTasks: [],
+      failedTasks: []
     }
 
     this.findCoursesRegexUrl = '/eox-core/management/get_courses';
@@ -32,6 +33,8 @@ export class CourseSettings extends React.Component {
     this.detailSettingsUrl = '/settings/details/';
     this.courseIndexGet = 0;
     this.processedCourses = 0;
+    this.completedTasksCourseKeys = [];
+    this.failedTasksCourseKeys = [];
 
     this.handleChange = this.handleChange.bind(this);
     this.handleFindCoursesSubmit = this.handleFindCoursesSubmit.bind(this);
@@ -233,6 +236,13 @@ export class CourseSettings extends React.Component {
     const settingValue = this.state.advancedSettingValue;
     let requetsBody = {};
 
+    this.setState({
+      completedTasks: [],
+      failedTasks: []
+    });
+    this.completedTasksCourseKeys = [];
+    this.failedTasksCourseKeys = [];
+
     requetsBody = {
       [settingName]: {
         value: this.convertToType(settingValue)
@@ -253,7 +263,7 @@ export class CourseSettings extends React.Component {
           this.handleResponseError(res);
       })
       .then((response) => {
-        console.log(response);
+        this.handleSettingsJsonResponse(response, courseKey);
       })
       .catch((error) => {
         console.log(error);
@@ -264,9 +274,19 @@ export class CourseSettings extends React.Component {
   submitNewDetailSetting() {
     const courses = this.state.courseList;
 
+    if (this.courseIndexGet === 0) {
+      this.setState({
+        completedTasks: [],
+        failedTasks: []
+      });
+      this.completedTasksCourseKeys = [];
+      this.failedTasksCourseKeys = [];
+    }
+
     if (this.processedCourses === courses.length) {
       this.processedCourses = 0;
       this.courseIndexGet = 0;
+      this.deatilsSettingCompleted();
       return;
     }
     // We need to GET the current settings in order to updated it.
@@ -294,6 +314,7 @@ export class CourseSettings extends React.Component {
   postNewDeatilSetting(response, url) {
     const settingName = this.state.detailsSettingName;
     const settingValue = this.state.detailsSettingValue;
+    const courses = this.state.courseList;
 
     response[settingName] = this.convertToType(settingValue);
 
@@ -309,6 +330,7 @@ export class CourseSettings extends React.Component {
         this.handleResponseError(res);
     })
     .then((postResponse) => {
+      this.handleSettingsJsonResponse(postResponse, courses[this.courseIndexGet])
       this.courseIndexGet += 1;
       this.processedCourses += 1;
       this.submitNewDetailSetting();
@@ -377,6 +399,53 @@ export class CourseSettings extends React.Component {
       });
     }
     throw new Error(response.statusText);
+  }
+
+  handleSettingsJsonResponse(response, courseKey) {
+    const advancedSettingName = this.state.advancedSettingName;
+    const advanceSettingValue = this.state.advancedSettingValue;
+    const deatilsSettingName = this.state.detailsSettingName;
+    const settingTypeValue = this.state.settingTypeValue;
+
+    if (settingTypeValue === 'details') {
+      if (response[deatilsSettingName])
+        this.completedTasksCourseKeys.push(courseKey);
+      else
+        this.failedTasksCourseKeys.push(courseKey);
+    } else if (settingTypeValue === 'advanced') {
+      if (response[advancedSettingName].value === this.convertToType(advanceSettingValue))
+        this.completedTasksCourseKeys.push(courseKey);
+      else
+        this.failedTasksCourseKeys.push(courseKey);
+
+      let completedTasks = this.completedTasksCourseKeys.map((value) => {
+        return <li key={value}>{value}</li>
+      });
+
+      let failedTasks = this.failedTasksCourseKeys.map((value) => {
+        return <li key={value}>{value}</li>
+      });
+
+      this.setState({
+        completedTasks: completedTasks,
+        failedTasks: failedTasks
+      });
+    }
+  }
+
+  deatilsSettingCompleted() {
+    let completedTasks = this.completedTasksCourseKeys.map((value) => {
+      return <li key={value}>{value}</li>
+    });
+
+    let failedTasks = this.failedTasksCourseKeys.map((value) => {
+      return <li key={value}>{value}</li>
+    });
+
+    this.setState({
+      completedTasks: completedTasks,
+      failedTasks: failedTasks
+    });
   }
 
   render() {
