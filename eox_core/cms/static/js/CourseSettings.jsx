@@ -15,7 +15,7 @@ export class CourseSettings extends React.Component {
       statusAlertMessage: '',
       statusAlertType: '',
       courseList: [],
-      courseListHtml: [],
+      courseListTextArea: '',
       advancedSettingList: [],
       detailsSettingList: [],
       hasAdvancedCourseSettings: false,
@@ -43,6 +43,7 @@ export class CourseSettings extends React.Component {
     this.submitNewAdvancedSetting = this.submitNewAdvancedSetting.bind(this);
     this.submitNewDetailSetting = this.submitNewDetailSetting.bind(this);
     this.handleResponseError = this.handleResponseError.bind(this);
+    this.handleCourseListChange = this.handleCourseListChange.bind(this);
   }
 
   componentDidMount() {
@@ -93,7 +94,7 @@ export class CourseSettings extends React.Component {
     }
 
     this.setState({
-      courseListHtml: [],
+      courseListTextArea: '',
       openAlert: false
     });
 
@@ -123,12 +124,10 @@ export class CourseSettings extends React.Component {
   }
 
   fillCourseList(response) {
-    let courseList = response.courses.map((courseKey) => {
-      return <li key={courseKey}>{courseKey}</li>
-    })
+    let courseList = response.courses.join('\n');
 
     this.setState({
-      courseListHtml: courseList,
+      courseListTextArea: courseList,
       courseList: response.courses
     });
   }
@@ -448,6 +447,17 @@ export class CourseSettings extends React.Component {
     });
   }
 
+  handleCourseListChange(value, name) {
+    const courseListRaw = value.split('\n');
+    const courseList = courseListRaw.filter(value => {
+      if (value !== '')
+        return value;
+    });
+    this.setState({
+      courseList: courseList
+    });
+  }
+
   render() {
     return (
     <div>
@@ -466,10 +476,13 @@ export class CourseSettings extends React.Component {
           ></Button>
         </div>
         <div className="col-8">
-          <label>Current operation will apply to the following courses:</label>
-          <div className={styles.coursesList}>
-            <ul>{this.state.courseListHtml}</ul>
-          </div>
+          <TextArea
+            name="coursesListValue"
+            className={[styles.coursesList]}
+            label="Current operation will apply to the following courses:"
+            value={this.state.courseListTextArea}
+            onChange={this.handleCourseListChange}
+          />
         </div>
       </div>
       <div className="row">
