@@ -154,6 +154,9 @@ export class CourseSettings extends React.Component {
   }
 
   onSubmitSetting() {
+    if (!confirm(`Are you sure to change the settings of ${this.state.courseList.length} courses.`))
+      return;
+
     this.setState({
       openAlert: false
     });
