@@ -31,10 +31,6 @@ export class CourseSettings extends React.Component {
     this.findCoursesRegexUrl = '/eox-core/management/get_courses';
     this.advancedSettingsUrl = '/settings/advanced/';
     this.detailSettingsUrl = '/settings/details/';
-    this.courseIndexGet = 0;
-    this.processedCourses = 0;
-    this.completedTasksCourseKeys = [];
-    this.failedTasksCourseKeys = [];
 
     this.handleChange = this.handleChange.bind(this);
     this.handleFindCoursesSubmit = this.handleFindCoursesSubmit.bind(this);
@@ -42,7 +38,7 @@ export class CourseSettings extends React.Component {
     this.onSubmitSetting = this.onSubmitSetting.bind(this);
     this.submitNewAdvancedSetting = this.submitNewAdvancedSetting.bind(this);
     this.submitNewDetailSetting = this.submitNewDetailSetting.bind(this);
-    this.handleResponseError = this.handleResponseError.bind(this);
+    this.handleResponse = this.handleResponse.bind(this);
     this.handleCourseListChange = this.handleCourseListChange.bind(this);
   }
 
@@ -85,11 +81,7 @@ export class CourseSettings extends React.Component {
   handleFindCoursesSubmit() {
 
     if (this.state.findCoursesRegex === '') {
-      this.setState({
-        openAlert: true,
-        statusAlertMessage: 'Please, enter a valid course regex.',
-        statusAlertType: 'danger'
-      });
+      this.openStatusAlert('Please, enter a valid course regex.', 'danger')
       return;
     }
 
@@ -105,15 +97,17 @@ export class CourseSettings extends React.Component {
       queryUrl,
       'GET'
     )
-    .then(res => res.json())
+    .then(
+      res => this.handleResponse(res)
+    )
     .then((response) => {
       if (response.status !== 'Failed')
-        this.fillCourseList(response)
+        this.fillCourseList(response);
       else
-        this.failedCourseRegexMatch(response)
+        this.openStatusAlert(`${response.message}`);
     })
     .catch((error) => {
-      console.log(error);
+      this.openStatusAlert(`An error occurred in the course regex searching: ${error.message}`, 'danger');
     });
   }
 
@@ -125,27 +119,16 @@ export class CourseSettings extends React.Component {
 
   fillCourseList(response) {
     let courseList = response.courses.join('\n');
-
     this.setState({
       courseListTextArea: courseList,
       courseList: response.courses
     });
   }
 
-  failedCourseRegexMatch(response) {
-    this.setState({
-      openAlert: true,
-      statusAlertMessage: response.message,
-      statusAlertType: 'danger'
-    });
-  }
-
   getCourseAdvancedSettings(courseKey) {
 
     if (courseKey === '') {
-      this.setState({
-        hasAdvancedCourseSettings: false
-      });
+      this.openStatusAlert(`No course key to obtain course advanced settings.`, 'danger');
       return;
     }
 
@@ -154,7 +137,9 @@ export class CourseSettings extends React.Component {
       queryUrl,
       'GET'
     )
-    .then(res => res.json())
+    .then(
+      res => this.handleResponse(res)
+    )
     .then((response) => {
       // Adds an empty value at the beginning of the settings array.
       const advancedSettingKeys = Object.keys(response);
@@ -164,7 +149,7 @@ export class CourseSettings extends React.Component {
       });
     })
     .catch((error) => {
-      console.log(error);
+      this.openStatusAlert(`An error occurred while getting the course advanced settings: ${error.message}`, 'danger');
     });
   }
 
@@ -188,20 +173,12 @@ export class CourseSettings extends React.Component {
     const settingTypeValue = this.state.settingTypeValue;
 
     if (this.state.courseList.length === 0) {
-      this.setState({
-        openAlert: true,
-        statusAlertMessage: 'No courses selected to apply the changes.',
-        statusAlertType: 'danger'
-      });
+      this.openStatusAlert('No courses selected to apply the changes.', 'danger');
       return false;
     }
 
     if (settingTypeValue === '') {
-      this.setState({
-        openAlert: true,
-        statusAlertMessage: 'Please, select Schedule & details or Advanced settings.',
-        statusAlertType: 'danger'
-      });
+      this.openStatusAlert('Please, select Schedule & details or Advanced settings.', 'danger');
       return false;
     }
 
@@ -209,21 +186,13 @@ export class CourseSettings extends React.Component {
     const typeMessage = (settingTypeValue === 'details') ? 'Schedule & Details' : 'Advanced settings';
 
     if (typeSettingName.value === '') {
-      this.setState({
-        openAlert: true,
-        statusAlertMessage: `Please enter a valid ${typeMessage} setting.`,
-        statusAlertType: 'danger'
-      });
+      this.openStatusAlert(`Please enter a valid ${typeMessage} setting.`, 'danger');
       return false;
     }
 
     const fieldToCheck = Object.getOwnPropertyDescriptor(this.state, `${settingTypeValue}SettingValue`);
     if (fieldToCheck.value === '') {
-      this.setState({
-        openAlert: true,
-        statusAlertMessage: `Please enter a valid ${typeMessage} value.`,
-        statusAlertType: 'danger'
-      });
+      this.openStatusAlert(`Please enter a valid ${typeMessage} value.`, 'danger');
       return false;
     }
     return true;
@@ -234,13 +203,10 @@ export class CourseSettings extends React.Component {
     const settingName = this.state.advancedSettingName;
     const settingValue = this.state.advancedSettingValue;
     let requetsBody = {};
-
     this.setState({
       completedTasks: [],
       failedTasks: []
     });
-    this.completedTasksCourseKeys = [];
-    this.failedTasksCourseKeys = [];
 
     requetsBody = {
       [settingName]: {
@@ -255,15 +221,9 @@ export class CourseSettings extends React.Component {
         'POST',
         requetsBody
       )
-      .then(res => {
-        if (res.ok)
-          return res.json();
-        else
-          this.handleResponseError(res);
-      })
-      .then((response) => {
-        this.handleSettingsJsonResponse(response, courseKey);
-      })
+      .then(
+        res => this.handlePostSettingsResponse(res, courseKey)
+      )
       .catch((error) => {
         console.log(error);
       });
@@ -272,48 +232,50 @@ export class CourseSettings extends React.Component {
 
   submitNewDetailSetting() {
     const courses = this.state.courseList;
-
-    if (this.courseIndexGet === 0) {
-      this.setState({
-        completedTasks: [],
-        failedTasks: []
-      });
-      this.completedTasksCourseKeys = [];
-      this.failedTasksCourseKeys = [];
-    }
-
-    if (this.processedCourses === courses.length) {
-      this.processedCourses = 0;
-      this.courseIndexGet = 0;
-      this.deatilsSettingCompleted();
-      return;
-    }
-    // We need to GET the current settings in order to updated it.
-    const queryUrl = `${this.detailSettingsUrl}${courses[this.courseIndexGet]}`;
-    clientRequest(
-      queryUrl,
-      'GET'
-    )
-    .then(res => {
-      if (res.ok)
-        return res.json();
-      else
-        this.handleResponseError(res);
-    })
-    .then((response) => {
-      // Deep clone response
-      const responseData = JSON.parse(JSON.stringify(response));
-      this.postNewDeatilSetting(responseData, queryUrl);
-    })
-    .catch((error) => {
-      console.log(error);
+    this.setState({
+      completedTasks: [],
+      failedTasks: []
     });
+
+    for (const courseKey of courses) {
+      const queryUrl = `${this.detailSettingsUrl}${courseKey}`;
+      // We need to get the current settings in order to updated it.
+      clientRequest(
+        queryUrl,
+        'GET'
+      )
+      .then(
+        res => this.handleGetDeatilSettingsResponse(res, courseKey)
+      )
+      .then((response) => {
+        // Deep clone response
+        const responseData = JSON.parse(JSON.stringify(response));
+        this.postNewDeatilSetting(responseData, queryUrl, courseKey);
+      })
+      .catch(error => {
+        console.error(error.message);
+      });
+    }
   }
 
-  postNewDeatilSetting(response, url) {
+  handleGetDeatilSettingsResponse(response, courseKey) {
+    if (response.ok)
+      return response.json()
+
+    const failedTaskMessage = `An error ocurred while trying to get the settings of ${courseKey}, ${response.statusText}`;
+    const actualFailedTasks = this.state.failedTasks;
+    actualFailedTasks.push(<li key={courseKey}>{failedTaskMessage}</li>);
+
+    this.setState({
+        failedTasks: actualFailedTasks
+    });
+
+    throw new Error(response.statusText);
+  }
+
+  postNewDeatilSetting(response, url, courseKey) {
     const settingName = this.state.detailsSettingName;
     const settingValue = this.state.detailsSettingValue;
-    const courses = this.state.courseList;
 
     response[settingName] = this.convertToType(settingValue);
 
@@ -322,20 +284,34 @@ export class CourseSettings extends React.Component {
       'POST',
       response
     )
-    .then(res => {
-      if (res.ok)
-        return res.json();
-      else
-        this.handleResponseError(res);
-    })
-    .then((postResponse) => {
-      this.handleSettingsJsonResponse(postResponse, courses[this.courseIndexGet])
-      this.courseIndexGet += 1;
-      this.processedCourses += 1;
-      this.submitNewDetailSetting();
-    })
+    .then(res => this.handlePostSettingsResponse(res, courseKey))
     .catch((error) => {
-      console.log(error);
+      console.log(error.message);
+    });
+  }
+
+  handlePostSettingsResponse(response, courseKey) {
+    const successesTaskMessage = `Successful change to ${courseKey}`;
+    const actualSuccessTasks = this.state.completedTasks;
+    const failedTaskMessage = `An error ocurred while trying to post the settings of ${courseKey}, ${response.statusText}`;
+    const actualFailedTasks = this.state.failedTasks;
+
+    if (response.ok) {
+      response.json().then(json => {
+        actualSuccessTasks.push(<li key={courseKey}>{successesTaskMessage}</li>);
+        this.setState({
+          completedTasks: actualSuccessTasks
+        });
+      })
+      .catch(error => {
+        actualFailedTasks.push(<li key={courseKey}>{failedTaskMessage}</li>);
+      });
+    } else {
+      actualFailedTasks.push(<li key={courseKey}>{failedTaskMessage}</li>);
+    }
+
+    this.setState({
+      failedTasks: actualFailedTasks
     });
   }
 
@@ -381,69 +357,18 @@ export class CourseSettings extends React.Component {
       return false
   }
 
-  handleResponseError(response) {
-    if (response.status !== 500) {
-      response.json().then(json => {
-        this.setState({
-          openAlert: true,
-          statusAlertMessage: `${json[0].message}`,
-          statusAlertType: 'danger'
-        });
-      });
-    } else {
-      this.setState({
-        openAlert: true,
-        statusAlertMessage: response.statusText,
-        statusAlertType: 'danger'
-      });
-    }
+  handleResponse(response) {
+    if (response.ok)
+      return response.json();
+
     throw new Error(response.statusText);
   }
 
-  handleSettingsJsonResponse(response, courseKey) {
-    const advancedSettingName = this.state.advancedSettingName;
-    const advanceSettingValue = this.state.advancedSettingValue;
-    const deatilsSettingName = this.state.detailsSettingName;
-    const settingTypeValue = this.state.settingTypeValue;
-
-    if (settingTypeValue === 'details') {
-      if (response[deatilsSettingName])
-        this.completedTasksCourseKeys.push(courseKey);
-      else
-        this.failedTasksCourseKeys.push(courseKey);
-    } else if (settingTypeValue === 'advanced') {
-      if (response[advancedSettingName].value === this.convertToType(advanceSettingValue))
-        this.completedTasksCourseKeys.push(courseKey);
-      else
-        this.failedTasksCourseKeys.push(courseKey);
-
-      let completedTasks = this.completedTasksCourseKeys.map((value) => {
-        return <li key={value}>{value}</li>
-      });
-
-      let failedTasks = this.failedTasksCourseKeys.map((value) => {
-        return <li key={value}>{value}</li>
-      });
-
-      this.setState({
-        completedTasks: completedTasks,
-        failedTasks: failedTasks
-      });
-    }
-  }
-
-  deatilsSettingCompleted() {
-    let completedTasks = this.completedTasksCourseKeys.map((value) => {
-      return <li key={value}>{value}</li>
-    });
-
-    let failedTasks = this.failedTasksCourseKeys.map((value) => {
-      return <li key={value}>{value}</li>
-    });
-
+  openStatusAlert(message, type) {
     this.setState({
-      completedTasks: completedTasks,
-      failedTasks: failedTasks
+      openAlert: true,
+      statusAlertMessage: message,
+      statusAlertType: type
     });
   }
 
