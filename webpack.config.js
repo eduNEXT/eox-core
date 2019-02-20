@@ -1,4 +1,5 @@
 const path = require('path');
+var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
     entry: path.join(__dirname, '/eox_core/cms/static/js/index.jsx'),
@@ -15,8 +16,23 @@ module.exports = {
                 loader: 'babel-loader'
             },
             {
-                test: /\.css$/,
-                use: ['style-loader', 'css-loader']
+                test: /\.scss$/,
+                loader: ExtractTextPlugin.extract({
+                    fallback: 'style-loader',
+                    use: [
+                        {
+                            loader: 'css-loader'
+                        },
+                        {
+                            loader: 'sass-loader',
+                            options: {
+                                includePaths: [
+                                    path.join(__dirname, './node_modules')
+                                ]
+                            }
+                        }
+                    ]
+                })
             }
         ]
     },
@@ -25,6 +41,11 @@ module.exports = {
         ignored: ['*.js', 'node_modules']
     },
     resolve: {
-        extensions: ['.js', '.jsx', '.json']
-    }
+        extensions: ['.js', '.jsx', '.json', '.scss']
+    },
+    plugins: [
+        new ExtractTextPlugin({
+            filename: '../css/course-management.bundle.css'
+        })
+    ]
 }

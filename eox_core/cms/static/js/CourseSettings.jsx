@@ -1,7 +1,7 @@
 import React from 'react';
 import { InputText, InputSelect, RadioButtonGroup, RadioButton, TextArea, Button, StatusAlert } from '@edx/paragon'
 import { clientRequest } from './client'
-import styles from '../css/CourseSettings.css'
+import styles from '../css/CourseSettings'
 
 
 export class CourseSettings extends React.Component {
@@ -78,7 +78,8 @@ export class CourseSettings extends React.Component {
     }
   }
 
-  handleFindCoursesSubmit() {
+  handleFindCoursesSubmit(event) {
+    event.preventDefault();
 
     if (this.state.findCoursesRegex === '') {
       this.openStatusAlert('Please, enter a valid course regex.', 'danger')
@@ -154,8 +155,6 @@ export class CourseSettings extends React.Component {
   }
 
   onSubmitSetting() {
-    if (!confirm(`Are you sure to change the settings of ${this.state.courseList.length} courses.`))
-      return;
 
     this.setState({
       openAlert: false
@@ -163,6 +162,8 @@ export class CourseSettings extends React.Component {
 
     const isValid = this.onSubmitValidator();
     if (isValid) {
+      if (!confirm(`Are you sure to change the settings of ${this.state.courseList.length} courses.`))
+        return;
       const settingTypeValue = this.state.settingTypeValue;
       if (settingTypeValue === 'details')
         this.submitNewDetailSetting();
@@ -228,7 +229,7 @@ export class CourseSettings extends React.Component {
         res => this.handlePostSettingsResponse(res, courseKey)
       )
       .catch((error) => {
-        console.log(error);
+        console.log(error.message);
       });
     }
   }
@@ -391,17 +392,21 @@ export class CourseSettings extends React.Component {
     <div>
       <div className="row">
         <div className="col-4">
-          <InputText
-            name="findCoursesRegex"
-            label="Enter the course regex"
-            onChange={this.handleChange}
-            value={this.state.findCoursesRegex}
-          />
-          <Button
-            label="Find courses"
-            name="find"
-            onClick={this.handleFindCoursesSubmit}
-          ></Button>
+          <form>
+            <InputText
+              name="findCoursesRegex"
+              label="Enter the course regex"
+              onChange={this.handleChange}
+              value={this.state.findCoursesRegex}
+            />
+            <Button
+              label="Find courses"
+              name="find"
+              type="submit"
+              onClick={this.handleFindCoursesSubmit}
+              className={['btn-primary']}
+            ></Button>
+          </form>
         </div>
         <div className="col-8">
           <TextArea
@@ -468,6 +473,7 @@ export class CourseSettings extends React.Component {
         label="Apply changes"
         name="apply"
         onClick={this.onSubmitSetting}
+        className={['btn-primary']}
       ></Button>
       <StatusAlert
         dialog={this.state.statusAlertMessage}
