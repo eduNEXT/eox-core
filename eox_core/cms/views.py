@@ -16,7 +16,6 @@ from rest_framework import status
 
 from eox_core.edxapp_wrapper.courses import (get_courses_accessible_to_user,
                                              get_process_courses_list,
-                                             get_course_settings_fields,
                                              get_course_details_fields,
                                              get_first_course_key,)
 from eox_core.edxapp_wrapper.edxmako_module import render_to_response

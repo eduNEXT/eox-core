@@ -24,15 +24,6 @@ def get_process_courses_list(*args, **kwargs):
     return backend.get_process_courses_list(*args, **kwargs)
 
 
-def get_course_settings_fields():
-    """ Gets course settings fields. """
-
-    backend_function = settings.EOX_CORE_COURSES_BACKEND
-    backend = import_module(backend_function)
-
-    return backend.get_course_settings_fields()
-
-
 def get_course_details_fields():
     """ Gets course details fields. """
 
