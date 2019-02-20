@@ -9,11 +9,11 @@
 </%block>
 
 <%block name="content">
-    <link type='text/css' rel='stylesheet' href='${STATIC_URL}css/course-management.bundle.css'>
+    <link type='text/css' rel='stylesheet' href='${STATIC_URL}bundle/css/course-management.bundle.css'>
     <div class="wrapper-content wrapper content">
         <h1>Course Management</h1>
         <div id="root"></div>
-        <script src="${static.url('js/build.js')}"></script>
+        <script src="${static.url('bundle/js/build.js')}"></script>
         <script>
             new RenderReactComponent({
                 teamManagement: {
