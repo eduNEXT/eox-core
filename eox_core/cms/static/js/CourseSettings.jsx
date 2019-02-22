@@ -1,6 +1,7 @@
 import React from 'react';
 import { InputText, InputSelect, RadioButtonGroup, RadioButton, TextArea, Button, StatusAlert } from '@edx/paragon'
 import { clientRequest } from './client'
+import { LoadingIconComponent } from './LoadingIcon'
 import styles from '../css/CourseSettings'
 
 
@@ -25,7 +26,8 @@ export class CourseSettings extends React.Component {
       advancedSettingName: '',
       detailsSettingName: '',
       completedTasks: [],
-      failedTasks: []
+      failedTasks: [],
+      isLoading: false
     }
 
     this.findCoursesRegexUrl = '/eox-core/management/get_courses';
@@ -88,7 +90,8 @@ export class CourseSettings extends React.Component {
 
     this.setState({
       courseListTextArea: '',
-      openAlert: false
+      openAlert: false,
+      isLoading: true
     });
 
     const searchStringScaped = this.state.findCoursesRegex.replace(/[+*]/gm, "%2B");
@@ -102,13 +105,20 @@ export class CourseSettings extends React.Component {
       res => this.handleResponse(res)
     )
     .then((response) => {
-      if (response.status !== 'Failed')
+      if (response.status !== 'Failed') {
         this.fillCourseList(response);
-      else
+      } else {
         this.openStatusAlert(`${response.message}`);
+        this.setState({
+          isLoading: false
+        });
+      }
     })
     .catch((error) => {
       this.openStatusAlert(`An error occurred in the course regex searching: ${error.message}`, 'danger');
+      this.setState({
+        isLoading: false
+      });
     });
   }
 
@@ -122,7 +132,8 @@ export class CourseSettings extends React.Component {
     let courseList = response.courses.join('\n');
     this.setState({
       courseListTextArea: courseList,
-      courseList: response.courses
+      courseList: response.courses,
+      isLoading: false
     });
   }
 
@@ -221,6 +232,9 @@ export class CourseSettings extends React.Component {
     for (const courseKey of courses) {
       const queryUrl = `${this.advancedSettingsUrl}${courseKey}`;
       setTimeout(() => {
+        this.setState({
+          isLoading: true
+        });
         clientRequest(
           queryUrl,
           'POST',
@@ -231,6 +245,9 @@ export class CourseSettings extends React.Component {
         )
         .catch((error) => {
           console.log(error.message);
+          this.setState({
+            isLoading: false
+          });
         });
       }, requestTimeOut);
       requestTimeOut += this.props.requestTimeOut
@@ -249,6 +266,9 @@ export class CourseSettings extends React.Component {
       const queryUrl = `${this.detailSettingsUrl}${courseKey}`;
       // We need to get the current settings in order to updated it.
       setTimeout(() => {
+        this.setState({
+          isLoading: true
+        });
         clientRequest(
           queryUrl,
           'GET'
@@ -263,6 +283,9 @@ export class CourseSettings extends React.Component {
         })
         .catch(error => {
           console.error(error.message);
+          this.setState({
+            isLoading: false
+          });
         });
       }, requestTimeOut);
       requestTimeOut += this.props.requestTimeOut
@@ -278,7 +301,8 @@ export class CourseSettings extends React.Component {
     actualFailedTasks.push(<li key={courseKey}>{failedTaskMessage}</li>);
 
     this.setState({
-        failedTasks: actualFailedTasks
+        failedTasks: actualFailedTasks,
+        isLoading: false
     });
 
     throw new Error(response.statusText);
@@ -289,6 +313,9 @@ export class CourseSettings extends React.Component {
     const settingValue = this.state.detailsSettingValue;
 
     response[settingName] = this.convertToType(settingValue);
+    this.setState({
+      isLoading: true
+    });
 
     clientRequest(
       url,
@@ -298,6 +325,9 @@ export class CourseSettings extends React.Component {
     .then(res => this.handlePostSettingsResponse(res, courseKey))
     .catch((error) => {
       console.log(error.message);
+      this.setState({
+        isLoading: false
+      });
     });
   }
 
@@ -311,7 +341,8 @@ export class CourseSettings extends React.Component {
       response.json().then(json => {
         actualSuccessTasks.push(<li key={courseKey}>{successesTaskMessage}</li>);
         this.setState({
-          completedTasks: actualSuccessTasks
+          completedTasks: actualSuccessTasks,
+          isLoading: false
         });
       })
       .catch(error => {
@@ -322,7 +353,8 @@ export class CourseSettings extends React.Component {
     }
 
     this.setState({
-      failedTasks: actualFailedTasks
+      failedTasks: actualFailedTasks,
+      isLoading: false
     });
   }
 
@@ -494,6 +526,7 @@ export class CourseSettings extends React.Component {
         <h2>Operations not complete:</h2>
         <ol>{this.state.failedTasks}</ol>
       </div>
+      {this.state.isLoading ? <LoadingIconComponent/> : null}
     </div>
     );
   }

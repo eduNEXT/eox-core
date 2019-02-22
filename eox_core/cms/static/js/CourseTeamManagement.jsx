@@ -1,6 +1,7 @@
 import React from 'react';
 import { InputText, Button, StatusAlert, InputSelect } from '@edx/paragon'
 import { clientRequest } from './client'
+import { LoadingIconComponent } from './LoadingIcon'
 import styles from '../css/CourseTeamManagement'
 
 
@@ -20,7 +21,8 @@ export class CourseTeamManagement extends React.Component {
       completedTasks: [],
       failedTasks: [],
       statusAlertMessage: '',
-      statusAlertType: ''
+      statusAlertType: '',
+      isLoading: false
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -47,17 +49,17 @@ export class CourseTeamManagement extends React.Component {
   handleSubmit(event, role) {
     event.preventDefault();
 
-    this.setState({
-      completedTasks: [],
-      failedTasks: []
-    });
-
     if (!this.state.isValid || this.state.org === '') {
       this.openStatusAlert('Please, enter a valid data.', 'danger');
       return;
     }
 
     let methodType = (role !== '') ? 'POST' : 'DELETE';
+    this.setState({
+      completedTasks: [],
+      failedTasks: [],
+      isLoading: true
+    });
 
     clientRequest(
       this.apiUrl,
@@ -77,6 +79,9 @@ export class CourseTeamManagement extends React.Component {
     })
     .catch((error) => {
       console.log(error);
+      this.setState({
+        isLoading: false
+      });
     });
   }
 
@@ -95,12 +100,16 @@ export class CourseTeamManagement extends React.Component {
 
     this.setState({
       completedTasks: completedTasks,
-      failedTasks: failedTasks
+      failedTasks: failedTasks,
+      isLoading: false
     });
   }
 
   apiResponseError(response) {
     this.openStatusAlert(response.message, 'danger');
+    this.setState({
+      isLoading: false
+    });
   }
 
   emailValidator(emailValue) {
@@ -185,6 +194,7 @@ export class CourseTeamManagement extends React.Component {
         <h2>Operations not complete:</h2>
         <ol>{this.state.failedTasks}</ol>
       </div>
+      {this.state.isLoading ? <LoadingIconComponent/> : null}
     </div>
     );
   }
