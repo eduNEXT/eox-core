@@ -206,13 +206,13 @@ export class CourseSettings extends React.Component {
     const courses = this.state.courseList;
     const settingName = this.state.advancedSettingName;
     const settingValue = this.state.advancedSettingValue;
-    let requetsBody = {};
+    let requestTimeOut = 0;
     this.setState({
       completedTasks: [],
       failedTasks: []
     });
 
-    requetsBody = {
+    let requetsBody = {
       [settingName]: {
         value: this.convertToType(settingValue)
       }
@@ -220,22 +220,26 @@ export class CourseSettings extends React.Component {
 
     for (const courseKey of courses) {
       const queryUrl = `${this.advancedSettingsUrl}${courseKey}`;
-      clientRequest(
-        queryUrl,
-        'POST',
-        requetsBody
-      )
-      .then(
-        res => this.handlePostSettingsResponse(res, courseKey)
-      )
-      .catch((error) => {
-        console.log(error.message);
-      });
+      setTimeout(() => {
+        clientRequest(
+          queryUrl,
+          'POST',
+          requetsBody
+        )
+        .then(
+          res => this.handlePostSettingsResponse(res, courseKey)
+        )
+        .catch((error) => {
+          console.log(error.message);
+        });
+      }, requestTimeOut);
+      requestTimeOut += this.props.requestTimeOut
     }
   }
 
   submitNewDetailSetting() {
     const courses = this.state.courseList;
+    let requestTimeOut = 0;
     this.setState({
       completedTasks: [],
       failedTasks: []
@@ -244,21 +248,24 @@ export class CourseSettings extends React.Component {
     for (const courseKey of courses) {
       const queryUrl = `${this.detailSettingsUrl}${courseKey}`;
       // We need to get the current settings in order to updated it.
-      clientRequest(
-        queryUrl,
-        'GET'
-      )
-      .then(
-        res => this.handleGetDeatilSettingsResponse(res, courseKey)
-      )
-      .then((response) => {
-        // Deep clone response
-        const responseData = JSON.parse(JSON.stringify(response));
-        this.postNewDeatilSetting(responseData, queryUrl, courseKey);
-      })
-      .catch(error => {
-        console.error(error.message);
-      });
+      setTimeout(() => {
+        clientRequest(
+          queryUrl,
+          'GET'
+        )
+        .then(
+          res => this.handleGetDeatilSettingsResponse(res, courseKey)
+        )
+        .then((response) => {
+          // Deep clone response
+          const responseData = JSON.parse(JSON.stringify(response));
+          this.postNewDeatilSetting(responseData, queryUrl, courseKey);
+        })
+        .catch(error => {
+          console.error(error.message);
+        });
+      }, requestTimeOut);
+      requestTimeOut += this.props.requestTimeOut
     }
   }
 

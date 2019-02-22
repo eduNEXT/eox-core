@@ -17,11 +17,13 @@
         <script>
             new RenderReactComponent({
                 teamManagement: {
-                    list_org: ${list_org | n, dump_js_escaped_json}
+                    list_org: ${list_org | n, dump_js_escaped_json},
+                    request_timeout_value: ${request_timeout_value | n, dump_js_escaped_json}
                 },
                 courseSettings: {
                     course_key: "${course_key | n, js_escaped_string}",
-                    details_fields: ${details_fields | n, dump_js_escaped_json}
+                    details_fields: ${details_fields | n, dump_js_escaped_json},
+                    request_timeout_value: ${request_timeout_value | n, dump_js_escaped_json}
                 }
             });
         </script>

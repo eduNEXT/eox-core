@@ -8,12 +8,16 @@ function CourseManagement(props) {
   return (
     <Tabs labels={["Course team management", "Course settings", "Panel 3"]}>
       <div>
-        <CourseTeamManagement orgList={props.teamManagement.list_org}/>
+        <CourseTeamManagement
+          orgList={props.teamManagement.list_org}
+          requestTimeOut={props.teamManagement.request_timeout_value}
+        />
       </div>
       <div>
         <CourseSettings
           courseKey={props.courseSettings.course_key}
           detailsFields={props.courseSettings.details_fields}
+          requestTimeOut={props.courseSettings.request_timeout_value}
         />
       </div>
       <div>

@@ -53,11 +53,7 @@ export class CourseTeamManagement extends React.Component {
     });
 
     if (!this.state.isValid || this.state.org === '') {
-      this.setState({
-        openAlert: true,
-        statusAlertMessage: 'Please, enter a valid data.',
-        statusAlertType: 'danger'
-      });
+      this.openStatusAlert('Please, enter a valid data.', 'danger');
       return;
     }
 
@@ -104,11 +100,7 @@ export class CourseTeamManagement extends React.Component {
   }
 
   apiResponseError(response) {
-    this.setState({
-      openAlert: true,
-      statusAlertMessage: response.message,
-      statusAlertType: 'danger'
-    });
+    this.openStatusAlert(response.message, 'danger');
   }
 
   emailValidator(emailValue) {
@@ -133,6 +125,14 @@ export class CourseTeamManagement extends React.Component {
   onCloseAlert() {
     this.setState({
       openAlert: false
+    });
+  }
+
+  openStatusAlert(message, type) {
+    this.setState({
+      openAlert: true,
+      statusAlertMessage: message,
+      statusAlertType: type
     });
   }
 

@@ -7,6 +7,7 @@ from __future__ import unicode_literals
 import json
 import re
 
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -37,11 +38,13 @@ def management_view(request):
         org_list = get_all_orgs()
         details_fields = get_course_details_fields()
         course_key = get_first_course_key()
+        request_timeout_value = getattr(settings, 'EOX_CORE_COURSE_MANAGEMENT_REQUEST_TIMEOUT', 500)
 
         return render_to_response(u'management.html', {
             'list_org': org_list,
             'course_key': course_key,
             'details_fields': details_fields,
+            'request_timeout_value': request_timeout_value
         })
 
 
