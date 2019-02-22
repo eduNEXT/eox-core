@@ -1,6 +1,7 @@
 import React from 'react';
 import { InputText, Button, StatusAlert, InputSelect } from '@edx/paragon'
 import { clientRequest } from './client'
+import styles from '../css/CourseTeamManagement'
 
 
 export class CourseTeamManagement extends React.Component {
@@ -159,14 +160,17 @@ export class CourseTeamManagement extends React.Component {
         <Button
           label="Add as staff user."
           onClick={(event) => { this.handleSubmit(event, 'staff') }}
+          className={['btn-primary']}
         />
         <Button
           label="Add as instrcutor user."
           onClick={(event) => { this.handleSubmit(event, 'instructor') }}
+          className={['btn-primary', styles.btnPrimarySpace]}
         />
         <Button
           label="Remove user."
           onClick={(event) => { this.handleSubmit(event, '') }}
+          className={['btn-primary']}
         />
         <StatusAlert
           dialog={this.state.statusAlertMessage}
