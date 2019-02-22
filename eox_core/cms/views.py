@@ -34,7 +34,7 @@ def management_view(request):
     """
     Renders the course management view.
     """
-    if 'text/html' in request.META.get('HTTP_ACCEPT', '') and request.method == 'GET':
+    if 'text/html' in request.META.get('HTTP_ACCEPT', ''):
         org_list = get_all_orgs()
         details_fields = get_course_details_fields()
         course_key = get_first_course_key()

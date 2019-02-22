@@ -163,7 +163,7 @@ export class CourseTeamManagement extends React.Component {
           className={['btn-primary']}
         />
         <Button
-          label="Add as instrcutor user."
+          label="Add as instructor user."
           onClick={(event) => { this.handleSubmit(event, 'instructor') }}
           className={['btn-primary', styles.btnPrimarySpace]}
         />

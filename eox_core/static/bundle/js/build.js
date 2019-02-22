@@ -1836,7 +1836,7 @@ var CourseTeamManagement = function (_React$Component) {
             className: ['btn-primary']
           }),
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__edx_paragon__["Button"], {
-            label: 'Add as instrcutor user.',
+            label: 'Add as instructor user.',
             onClick: function onClick(event) {
               _this3.handleSubmit(event, 'instructor');
             },
