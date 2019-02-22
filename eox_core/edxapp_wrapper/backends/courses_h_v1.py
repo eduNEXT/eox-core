@@ -27,7 +27,7 @@ def get_course_details_fields():
 
 def get_first_course_key():
     """
-    Returns the course key of any course in roder to get
+    Returns the course key of any course in order to get
     the advance settings keys to populate the course settings
     tab in the Course management view.
     """

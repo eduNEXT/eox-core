@@ -7,15 +7,17 @@ const HEADERS = {
   'X-CSRFToken': Cookies.get('csrftoken'),
 };
 
-const clientRequest = (url, method, body) => fetch(
+/* eslint-disable no-undef */
+const clientRequest = (url, httpMethod, body) => window.fetch(
   url, {
-    method: method,
+    method: httpMethod,
     headers: HEADERS,
     credentials: 'same-origin',
-    body: JSON.stringify(body)
-  }
+    body: JSON.stringify(body),
+  },
 );
 
+/* eslint-disable import/prefer-default-export */
 export {
-  clientRequest
-}
+  clientRequest,
+};

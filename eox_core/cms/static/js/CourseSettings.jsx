@@ -1,11 +1,15 @@
 import React from 'react';
-import { InputText, InputSelect, RadioButtonGroup, RadioButton, TextArea, Button, StatusAlert } from '@edx/paragon'
-import { clientRequest } from './client'
-import styles from '../css/CourseSettings'
+import {
+  InputText, InputSelect, RadioButtonGroup, RadioButton, TextArea, Button, StatusAlert,
+} from '@edx/paragon';
+import PropTypes from 'prop-types';
+import { clientRequest } from './client';
+import LoadingIconComponent from './LoadingIcon';
+/* eslint-disable import/no-unresolved */
+import styles from '../css/CourseSettings';
 
 
-export class CourseSettings extends React.Component {
-
+export default class CourseSettings extends React.Component {
   constructor(props) {
     super(props);
 
@@ -25,8 +29,9 @@ export class CourseSettings extends React.Component {
       advancedSettingName: '',
       detailsSettingName: '',
       completedTasks: [],
-      failedTasks: []
-    }
+      failedTasks: [],
+      isLoading: false,
+    };
 
     this.findCoursesRegexUrl = '/eox-core/management/get_courses';
     this.advancedSettingsUrl = '/settings/advanced/';
@@ -46,12 +51,16 @@ export class CourseSettings extends React.Component {
     this.getCourseAdvancedSettings(this.props.courseKey);
     // Adds an empty value at the beginning of the details array.
     if (this.props.detailsFields.length !== 0) {
-      const detailsSettingKeys = this.props.detailsFields;
-      detailsSettingKeys.unshift('');
-      this.setState({
-        detailsSettingList: detailsSettingKeys
-      });
+      this.addEmptyValueToDetailSettings();
     }
+  }
+
+  addEmptyValueToDetailSettings() {
+    const detailsSettingKeys = this.props.detailsFields;
+    detailsSettingKeys.unshift('');
+    this.setState({
+      detailsSettingList: detailsSettingKeys,
+    });
   }
 
   handleChange(value, name) {
@@ -63,13 +72,13 @@ export class CourseSettings extends React.Component {
       const elementValue = value.target.value;
       const elementName = value.target.name;
       this.setState({
-        [elementName]: elementValue
+        [elementName]: elementValue,
       });
     } catch (error) {
       if (error instanceof TypeError) {
         if (value !== name) {
           this.setState({
-            [name]: value
+            [name]: value,
           });
         }
       } else {
@@ -82,98 +91,101 @@ export class CourseSettings extends React.Component {
     event.preventDefault();
 
     if (this.state.findCoursesRegex === '') {
-      this.openStatusAlert('Please, enter a valid course regex.', 'danger')
+      this.openStatusAlert('Please, enter a valid course regex.', 'danger');
       return;
     }
 
     this.setState({
       courseListTextArea: '',
-      openAlert: false
+      openAlert: false,
+      isLoading: true,
     });
 
-    const searchStringScaped = this.state.findCoursesRegex.replace(/[+*]/gm, "%2B");
+    const searchStringScaped = this.state.findCoursesRegex.replace(/[+*]/gm, '%2B');
     const queryUrl = `${this.findCoursesRegexUrl}?search=${searchStringScaped}`;
 
     clientRequest(
       queryUrl,
-      'GET'
-    )
-    .then(
-      res => this.handleResponse(res)
-    )
-    .then((response) => {
-      if (response.status !== 'Failed')
+      'GET',
+    ).then(
+      res => this.handleResponse(res),
+    ).then((response) => {
+      if (response.status !== 'Failed') {
         this.fillCourseList(response);
-      else
+      } else {
         this.openStatusAlert(`${response.message}`);
-    })
-    .catch((error) => {
+        this.setState({
+          isLoading: false,
+        });
+      }
+    }).catch((error) => {
       this.openStatusAlert(`An error occurred in the course regex searching: ${error.message}`, 'danger');
+      this.setState({
+        isLoading: false,
+      });
     });
   }
 
   onCloseAlert() {
     this.setState({
-      openAlert: false
+      openAlert: false,
     });
   }
 
   fillCourseList(response) {
-    let courseList = response.courses.join('\n');
+    const courseList = response.courses.join('\n');
     this.setState({
       courseListTextArea: courseList,
-      courseList: response.courses
+      courseList: response.courses,
+      isLoading: false,
     });
   }
 
   getCourseAdvancedSettings(courseKey) {
-
     if (courseKey === '') {
-      this.openStatusAlert(`No course key to obtain course advanced settings.`, 'danger');
+      this.openStatusAlert('No course key to obtain course advanced settings.', 'danger');
       return;
     }
 
-    const queryUrl = `${this.advancedSettingsUrl}${this.props.courseKey}`
+    const queryUrl = `${this.advancedSettingsUrl}${this.props.courseKey}`;
     clientRequest(
       queryUrl,
-      'GET'
-    )
-    .then(
-      res => this.handleResponse(res)
-    )
-    .then((response) => {
+      'GET',
+    ).then(
+      res => this.handleResponse(res),
+    ).then((response) => {
       // Adds an empty value at the beginning of the settings array.
       const advancedSettingKeys = Object.keys(response);
       advancedSettingKeys.unshift('');
       this.setState({
-        advancedSettingList: advancedSettingKeys
+        advancedSettingList: advancedSettingKeys,
       });
-    })
-    .catch((error) => {
+    }).catch((error) => {
       this.openStatusAlert(`An error occurred while getting the course advanced settings: ${error.message}`, 'danger');
     });
   }
 
   onSubmitSetting() {
-
     this.setState({
-      openAlert: false
+      openAlert: false,
     });
 
     const isValid = this.onSubmitValidator();
     if (isValid) {
-      if (!confirm(`Are you sure to change the settings of ${this.state.courseList.length} courses.`))
+      /* eslint-disable no-undef */
+      if (!confirm(`Are you sure to change the settings of ${this.state.courseList.length} courses.`)) {
         return;
+      }
       const settingTypeValue = this.state.settingTypeValue;
-      if (settingTypeValue === 'details')
+      if (settingTypeValue === 'details') {
         this.submitNewDetailSetting();
-      else if (settingTypeValue === 'advanced')
+      } else if (settingTypeValue === 'advanced') {
         this.submitNewAdvancedSetting();
+      }
     }
   }
 
   onSubmitValidator() {
-
     const settingTypeValue = this.state.settingTypeValue;
 
     if (this.state.courseList.length === 0) {
@@ -209,31 +221,35 @@ export class CourseSettings extends React.Component {
     let requestTimeOut = 0;
     this.setState({
       completedTasks: [],
-      failedTasks: []
+      failedTasks: [],
     });
 
-    let requetsBody = {
+    const requetsBody = {
       [settingName]: {
-        value: this.convertToType(settingValue)
-      }
+        value: this.convertToType(settingValue),
+      },
     };
 
     for (const courseKey of courses) {
       const queryUrl = `${this.advancedSettingsUrl}${courseKey}`;
       setTimeout(() => {
+        this.setState({
+          isLoading: true,
+        });
         clientRequest(
           queryUrl,
           'POST',
-          requetsBody
-        )
-        .then(
-          res => this.handlePostSettingsResponse(res, courseKey)
-        )
-        .catch((error) => {
+          requetsBody,
+        ).then(
+          res => this.handlePostSettingsResponse(res, courseKey),
+        ).catch((error) => {
           console.log(error.message);
+          this.setState({
+            isLoading: false,
+          });
         });
       }, requestTimeOut);
-      requestTimeOut += this.props.requestTimeOut
+      requestTimeOut += this.props.requestTimeOut;
     }
   }
 
@@ -242,43 +258,49 @@ export class CourseSettings extends React.Component {
     let requestTimeOut = 0;
     this.setState({
       completedTasks: [],
-      failedTasks: []
+      failedTasks: [],
     });
 
     for (const courseKey of courses) {
       const queryUrl = `${this.detailSettingsUrl}${courseKey}`;
       // We need to get the current settings in order to updated it.
       setTimeout(() => {
+        this.setState({
+          isLoading: true,
+        });
         clientRequest(
           queryUrl,
-          'GET'
-        )
-        .then(
-          res => this.handleGetDeatilSettingsResponse(res, courseKey)
-        )
-        .then((response) => {
+          'GET',
+        ).then(
+          res => this.handleGetDeatilSettingsResponse(res, courseKey),
+        ).then((response) => {
           // Deep clone response
           const responseData = JSON.parse(JSON.stringify(response));
           this.postNewDeatilSetting(responseData, queryUrl, courseKey);
-        })
-        .catch(error => {
+        }).catch((error) => {
           console.error(error.message);
+          this.setState({
+            isLoading: false,
+          });
         });
       }, requestTimeOut);
-      requestTimeOut += this.props.requestTimeOut
+      requestTimeOut += this.props.requestTimeOut;
     }
   }
 
   handleGetDeatilSettingsResponse(response, courseKey) {
-    if (response.ok)
-      return response.json()
+    if (response.ok) {
+      return response.json();
+    }
 
     const failedTaskMessage = `An error ocurred while trying to get the settings of ${courseKey}, ${response.statusText}`;
+    /* eslint-disable react/no-access-state-in-setstate */
     const actualFailedTasks = this.state.failedTasks;
     actualFailedTasks.push(<li key={courseKey}>{failedTaskMessage}</li>);
 
     this.setState({
-        failedTasks: actualFailedTasks
+      failedTasks: actualFailedTasks,
+      isLoading: false,
     });
 
     throw new Error(response.statusText);
@@ -289,15 +311,21 @@ export class CourseSettings extends React.Component {
     const settingValue = this.state.detailsSettingValue;
 
     response[settingName] = this.convertToType(settingValue);
+    this.setState({
+      isLoading: true,
+    });
 
     clientRequest(
       url,
       'POST',
-      response
-    )
-    .then(res => this.handlePostSettingsResponse(res, courseKey))
-    .catch((error) => {
+      response,
+    ).then(
+      res => this.handlePostSettingsResponse(res, courseKey),
+    ).catch((error) => {
       console.log(error.message);
+      this.setState({
+        isLoading: false,
+      });
     });
   }
 
@@ -308,13 +336,13 @@ export class CourseSettings extends React.Component {
     const actualFailedTasks = this.state.failedTasks;
 
     if (response.ok) {
-      response.json().then(json => {
+      response.json().then(() => {
         actualSuccessTasks.push(<li key={courseKey}>{successesTaskMessage}</li>);
         this.setState({
-          completedTasks: actualSuccessTasks
+          completedTasks: actualSuccessTasks,
+          isLoading: false,
         });
-      })
-      .catch(error => {
+      }).catch(() => {
         actualFailedTasks.push(<li key={courseKey}>{failedTaskMessage}</li>);
       });
     } else {
@@ -322,7 +350,8 @@ export class CourseSettings extends React.Component {
     }
 
     this.setState({
-      failedTasks: actualFailedTasks
+      failedTasks: actualFailedTasks,
+      isLoading: false,
     });
   }
 
@@ -330,47 +359,48 @@ export class CourseSettings extends React.Component {
     try {
       const typeValue = JSON.parse(value);
 
-      if (typeof typeValue === 'boolean')
-        return typeValue
+      if (typeof typeValue === 'boolean') {
+        return typeValue;
+      }
 
-      if (Array.isArray(typeValue))
-        return typeValue
+      if (Array.isArray(typeValue)) {
+        return typeValue;
+      }
 
-      if (typeof typeValue === 'object')
-        return typeValue
-
-      if (typeof typeValue === 'null')
-        return null
-
+      if (typeof typeValue === 'object') {
+        return typeValue;
+      }
     } catch (error) {
       if (error instanceof SyntaxError) {
-        let dateValue = this.isDateObject(value);
-        if (!dateValue)
+        const dateValue = this.isDateObject(value);
+        if (!dateValue) {
           return value;
-        else
-          return dateValue;
-      } else {
-        throw new Error(error);
+        }
+        return dateValue;
       }
+      throw new Error(error);
     }
-    let dateValue = this.isDateObject(value);
-    if (!dateValue)
+    const dateValue = this.isDateObject(value);
+    if (!dateValue) {
       return value;
-    else
-      return dateValue;
+    }
+    return dateValue;
   }
 
+  /* eslint-disable class-methods-use-this */
   isDateObject(value) {
-    let dateLocal = new Date(`${value} UTC`);
-    if (dateLocal !== null || dateLocal !== undefined || dateLocal.toString() !== 'Invalid Date')
+    const dateLocal = new Date(`${value} UTC`);
+    if (dateLocal !== null || dateLocal !== undefined || dateLocal.toString() !== 'Invalid Date') {
       return dateLocal.toJSON();
-    else
-      return false
+    }
+    return false;
   }
 
+  /* eslint-disable class-methods-use-this */
   handleResponse(response) {
-    if (response.ok)
+    if (response.ok) {
       return response.json();
+    }
 
     throw new Error(response.statusText);
   }
@@ -379,122 +409,136 @@ export class CourseSettings extends React.Component {
     this.setState({
       openAlert: true,
       statusAlertMessage: message,
-      statusAlertType: type
+      statusAlertType: type,
     });
   }
 
+  /* eslint-disable no-unused-vars */
   handleCourseListChange(value, name) {
     const courseListRaw = value.split('\n');
-    const courseList = courseListRaw.filter(value => {
-      if (value !== '')
-        return value;
+    const courseListFiltered = courseListRaw.filter((courseValue) => {
+      if (courseValue !== '') {
+        return courseValue;
+      }
+      return false;
     });
     this.setState({
-      courseList: courseList
+      courseList: courseListFiltered,
     });
   }
 
   render() {
     return (
-    <div>
-      <div className="row">
-        <div className="col-4">
-          <form>
-            <InputText
-              name="findCoursesRegex"
-              label="Enter the course regex"
-              onChange={this.handleChange}
-              value={this.state.findCoursesRegex}
-            />
-            <Button
-              label="Find courses"
-              name="find"
-              type="submit"
-              onClick={this.handleFindCoursesSubmit}
-              className={['btn-primary']}
-            ></Button>
-          </form>
-        </div>
-        <div className="col-8">
-          <TextArea
-            name="coursesListValue"
-            className={[styles.coursesList]}
-            label="Current operation will apply to the following courses:"
-            value={this.state.courseListTextArea}
-            onChange={this.handleCourseListChange}
-          />
-        </div>
-      </div>
-      <div className="row">
-        <div className="col-4">
-          <RadioButtonGroup
-            name="settingTypeValue"
-            label="Setting type"
-            onChange={this.handleChange}
-          >
-            <RadioButton value="details">
-              Schedule & Details
-            </RadioButton>
-            <RadioButton value="advanced">
-              Advanced Settings
-            </RadioButton>
-          </RadioButtonGroup>
-        </div>
-        <div className="col-4">
-          <InputSelect
-            label="Schedule & Details"
-            options={this.state.detailsSettingList}
-            name="detailsSettingName"
-            onChange={this.handleChange}
-          />
-        </div>
-        <div className="col-4">
-          <TextArea
-            name="detailsSettingValue"
-            label="New value"
-            onChange={this.handleChange}
-          />
-        </div>
-      </div>
-      <div className="row">
-        <div className="col-4">
-
-        </div>
-        <div className="col-4">
-          <InputSelect
-            label="Advanced Settings"
-            options={this.state.advancedSettingList}
-            name="advancedSettingName"
-            onChange={this.handleChange}
-          />
-        </div>
-        <div className="col-4">
-          <TextArea
-            name="advancedSettingValue"
-            label="New value"
-            onChange={this.handleChange}
-          />
-        </div>
-      </div>
-      <Button
-        label="Apply changes"
-        name="apply"
-        onClick={this.onSubmitSetting}
-        className={['btn-primary']}
-      ></Button>
-      <StatusAlert
-        dialog={this.state.statusAlertMessage}
-        onClose={this.onCloseAlert}
-        open={this.state.openAlert}
-        alertType={this.state.statusAlertType}
-      />
       <div>
-        <h2>Operations complete:</h2>
-        <ol>{this.state.completedTasks}</ol>
-        <h2>Operations not complete:</h2>
-        <ol>{this.state.failedTasks}</ol>
+        <div className="row">
+          <div className="col-4">
+            <form>
+              <InputText
+                label="Enter the course regex"
+                name="findCoursesRegex"
+                onChange={this.handleChange}
+                value={this.state.findCoursesRegex}
+              />
+              <Button
+                className={['btn-primary']}
+                label="Find courses"
+                name="find"
+                onClick={this.handleFindCoursesSubmit}
+                type="submit"
+              />
+            </form>
+          </div>
+          <div className="col-8">
+            <TextArea
+              className={[styles.coursesList]}
+              label="Current operation will apply to the following courses:"
+              name="coursesListValue"
+              onChange={this.handleCourseListChange}
+              value={this.state.courseListTextArea}
+            />
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-4">
+            <RadioButtonGroup
+              label="Setting type"
+              name="settingTypeValue"
+              onChange={this.handleChange}
+            >
+              <RadioButton value="details">
+                Schedule & Details
+              </RadioButton>
+              <RadioButton value="advanced">
+                Advanced Settings
+              </RadioButton>
+            </RadioButtonGroup>
+          </div>
+          <div className="col-4">
+            <InputSelect
+              label="Schedule & Details"
+              name="detailsSettingName"
+              onChange={this.handleChange}
+              options={this.state.detailsSettingList}
+            />
+          </div>
+          <div className="col-4">
+            <TextArea
+              label="New value"
+              name="detailsSettingValue"
+              onChange={this.handleChange}
+            />
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-4" />
+          <div className="col-4">
+            <InputSelect
+              label="Advanced Settings"
+              name="advancedSettingName"
+              onChange={this.handleChange}
+              options={this.state.advancedSettingList}
+            />
+          </div>
+          <div className="col-4">
+            <TextArea
+              label="New value"
+              name="advancedSettingValue"
+              onChange={this.handleChange}
+            />
+          </div>
+        </div>
+        <Button
+          className={['btn-primary']}
+          label="Apply changes"
+          name="apply"
+          onClick={this.onSubmitSetting}
+        />
+        <StatusAlert
+          alertType={this.state.statusAlertType}
+          dialog={this.state.statusAlertMessage}
+          onClose={this.onCloseAlert}
+          open={this.state.openAlert}
+        />
+        <div>
+          <h2>Operations complete:</h2>
+          <ol>{this.state.completedTasks}</ol>
+          <h2>Operations not complete:</h2>
+          <ol>{this.state.failedTasks}</ol>
+        </div>
+        {this.state.isLoading && <LoadingIconComponent />}
       </div>
-    </div>
     );
   }
 }
+
+CourseSettings.defaultProps = {
+  courseKey: '',
+  detailsFields: [],
+  requestTimeOut: 500,
+};
+
+CourseSettings.propTypes = {
+  courseKey: PropTypes.string,
+  detailsFields: PropTypes.arrayOf(PropTypes.string),
+  requestTimeOut: PropTypes.number,
+};

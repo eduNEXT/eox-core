@@ -9,17 +9,13 @@
 </%block>
 
 <%block name="content">
-    <link type='text/css' rel='stylesheet' href='${STATIC_URL}bundle/css/course-management.bundle.css'>
+    <link type='text/css' rel='stylesheet' href="${static.url('bundle/css/course-management.bundle.css')}">
     <div class="wrapper-content wrapper content">
         <h1>Course Management</h1>
         <div id="root"></div>
         <script src="${static.url('bundle/js/build.js')}"></script>
         <script>
             new RenderReactComponent({
-                teamManagement: {
-                    list_org: ${list_org | n, dump_js_escaped_json},
-                    request_timeout_value: ${request_timeout_value | n, dump_js_escaped_json}
-                },
                 courseSettings: {
                     course_key: "${course_key | n, js_escaped_string}",
                     details_fields: ${details_fields | n, dump_js_escaped_json},

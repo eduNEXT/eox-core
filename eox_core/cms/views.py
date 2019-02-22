@@ -15,12 +15,13 @@ from django.views.decorators.http import require_http_methods
 from opaque_keys.edx.keys import CourseKey  # pylint: disable=import-error
 from rest_framework import status
 
-from eox_core.edxapp_wrapper.courses import (get_courses_accessible_to_user,
-                                             get_process_courses_list,
-                                             get_course_details_fields,
-                                             get_first_course_key,)
+from eox_core.edxapp_wrapper.courses import (
+    get_courses_accessible_to_user,
+    get_process_courses_list,
+    get_course_details_fields,
+    get_first_course_key,
+)
 from eox_core.edxapp_wrapper.edxmako_module import render_to_response
-from eox_core.edxapp_wrapper.site_configuration import get_all_orgs_helper
 from eox_core.edxapp_wrapper.users import get_course_team_user
 
 from .helpers import enable_course_management_view
@@ -34,14 +35,12 @@ def management_view(request):
     """
     Renders the course management view.
     """
-    if 'text/html' in request.META.get('HTTP_ACCEPT', '') and request.method == 'GET':
-        org_list = get_all_orgs()
+    if 'text/html' in request.META.get('HTTP_ACCEPT', ''):
         details_fields = get_course_details_fields()
         course_key = get_first_course_key()
         request_timeout_value = getattr(settings, 'EOX_CORE_COURSE_MANAGEMENT_REQUEST_TIMEOUT', 500)
 
         return render_to_response(u'management.html', {
-            'list_org': org_list,
             'course_key': course_key,
             'details_fields': details_fields,
             'request_timeout_value': request_timeout_value
@@ -52,7 +51,7 @@ def management_view(request):
 @login_required
 @ensure_csrf_cookie
 @require_http_methods(["POST", "DELETE"])
-def course_team(request, *args, **kwargs):
+def course_team(request, *args, **kwargs):  # pylint: disable=too-many-locals
     """
     **Use Cases**
         Add or change the course team status role.
@@ -66,7 +65,7 @@ def course_team(request, *args, **kwargs):
         * user: user email.
         * role: user role (staff, instructor, '')
 
-        Note: If the role value is empty must be send it as a DELETE operation.
+        Note: If the role value is empty, then it must be sent as a DELETE operation.
 
     **Response Values**
 
@@ -92,7 +91,7 @@ def course_team(request, *args, **kwargs):
     org = json_content.get('org', '')
     user_email = json_content.get('user')
     courses_iter, in_process_course_actions = get_courses_accessible_to_user(request, org)
-    active_courses, archived_courses = get_process_courses_list(courses_iter, in_process_course_actions)
+    active_courses, archived_courses = get_process_courses_list(courses_iter, in_process_course_actions)  # pylint: disable=unused-variable
 
     if not org:
         data = {
@@ -184,7 +183,7 @@ def get_courses_by_course_regex(request, *args, **kwargs):
     course_regex = get_course_regex(input_course_regex)
 
     courses_iter, in_process_course_actions = get_courses_accessible_to_user(request)
-    active_courses, archived_courses = get_process_courses_list(courses_iter, in_process_course_actions)
+    active_courses, archived_courses = get_process_courses_list(courses_iter, in_process_course_actions)  # pylint: disable=unused-variable
 
     if not active_courses:
         data = {
@@ -221,18 +220,6 @@ def get_courses_by_course_regex(request, *args, **kwargs):
     return JsonResponse(data, status=status.HTTP_200_OK)
 
 
-def get_all_orgs():
-    """
-    Return organization list.
-    """
-    organizations_raw = get_all_orgs_helper()
-    organization_list = list(organizations_raw)
-    # Add a empty value to be used inside of select html tag.
-    organization_list.insert(0, ' ')
-
-    return organization_list
-
-
 def get_json_from_body_request(request):
     """
     Function to convert request.body into a json format.
@@ -249,6 +236,10 @@ def get_json_from_body_request(request):
 def get_course_regex(input_course_regex):
     """
     Returns the final course regex to match with the courses keys.
+
+    Since the input string could be a course key like value (course-v1:FP+DAT*),
+    we need to replace '+' and wildcard '*' characters to '.*' character in order to build
+    a correct regular expression string.
     """
     search_value_replaced = input_course_regex.replace('*', '.*')
     splitted_search_value = search_value_replaced.split('+')

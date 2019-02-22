@@ -66,3 +66,12 @@ $ source /path/to/venv/bin/activate
 (venv)$ pip install pip-tools
 (venv)$ pip-compile
 ```
+
+## Course Management automation compilation
+
+We use webpack to bundle the React js application and its dependencies,
+in order to compile for dev environment run this command in the root folder:
+
+npm run build
+
+This command is defined in the package.json file and export two bundles (a build.js and course-management.bundle.css) inside of eox_core/static folder.
