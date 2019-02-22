@@ -105,4 +105,4 @@ venv.bak/
 
 !openedx/core/lib/
 node_modules/
-eox_core/static/bundle/
+# eox_core/static/bundle/
