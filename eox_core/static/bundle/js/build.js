@@ -474,6 +474,28 @@ const clientRequest = (url, method, body) => fetch(
 
 /***/ }),
 /* 7 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (immutable) */ __webpack_exports__["a"] = LoadingIconComponent;
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__css_LoadingIcon__ = __webpack_require__(23);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__css_LoadingIcon___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__css_LoadingIcon__);
+
+
+
+function LoadingIconComponent(props) {
+    var spinnerStyles = 'fa fa-spinner fa-5x ' + __WEBPACK_IMPORTED_MODULE_1__css_LoadingIcon___default.a.courseManagementSpinner;
+    return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'div',
+        { className: __WEBPACK_IMPORTED_MODULE_1__css_LoadingIcon___default.a.courseManagementSpinnerContainer },
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('i', { className: spinnerStyles, 'aria-hidden': 'true' })
+    );
+}
+
+/***/ }),
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -554,7 +576,7 @@ module.exports = EventListener;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -593,7 +615,7 @@ var ExecutionEnvironment = {
 module.exports = ExecutionEnvironment;
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -636,7 +658,7 @@ function containsNode(outerNode, innerNode) {
 module.exports = containsNode;
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -666,7 +688,7 @@ function focusNode(node) {
 module.exports = focusNode;
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -708,7 +730,7 @@ function getActiveElement(doc) /*?DOMElement*/{
 module.exports = getActiveElement;
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -768,7 +790,7 @@ module.exports = invariant;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -839,7 +861,7 @@ function shallowEqual(objA, objB) {
 module.exports = shallowEqual;
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -908,7 +930,7 @@ module.exports = warning;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1007,7 +1029,7 @@ module.exports = checkPropTypes;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1017,7 +1039,7 @@ module.exports = checkPropTypes;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__edx_paragon__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__edx_paragon___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__edx_paragon__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__client__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__LoadingIcon__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__LoadingIcon__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__css_CourseSettings__ = __webpack_require__(21);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__css_CourseSettings___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__css_CourseSettings__);
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -1658,7 +1680,7 @@ var CourseSettings = function (_React$Component) {
 }(__WEBPACK_IMPORTED_MODULE_0_react___default.a.Component);
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1668,7 +1690,7 @@ var CourseSettings = function (_React$Component) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__edx_paragon__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__edx_paragon___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__edx_paragon__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__client__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__LoadingIcon__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__LoadingIcon__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__css_CourseTeamManagement__ = __webpack_require__(22);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__css_CourseTeamManagement___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__css_CourseTeamManagement__);
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1936,7 +1958,7 @@ var CourseTeamManagement = function (_React$Component) {
 }(__WEBPACK_IMPORTED_MODULE_0_react___default.a.Component);
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1982,28 +2004,6 @@ if (process.env.NODE_ENV === 'production') {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 19 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (immutable) */ __webpack_exports__["a"] = LoadingIconComponent;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__css_LoadingIcon__ = __webpack_require__(23);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__css_LoadingIcon___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__css_LoadingIcon__);
-
-
-
-function LoadingIconComponent(props) {
-    var spinnerStyles = 'fa fa-spinner fa-5x ' + __WEBPACK_IMPORTED_MODULE_1__css_LoadingIcon___default.a.courseManagementSpinner;
-    return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-        'div',
-        { className: __WEBPACK_IMPORTED_MODULE_1__css_LoadingIcon___default.a.courseManagementSpinnerContainer },
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('i', { className: spinnerStyles, 'aria-hidden': 'true' })
-    );
-}
-
-/***/ }),
 /* 20 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -2012,12 +2012,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "RenderReactComponent", function() { return RenderReactComponent; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_dom__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_dom__ = __webpack_require__(19);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_dom___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_react_dom__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__edx_paragon__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__edx_paragon___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__edx_paragon__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__CourseTeamManagement__ = __webpack_require__(17);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__CourseSettings__ = __webpack_require__(16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__CourseTeamManagement__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__CourseSettings__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__CourseRerun__ = __webpack_require__(43);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__css_edx_bootstrap__ = __webpack_require__(46);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__css_edx_bootstrap___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6__css_edx_bootstrap__);
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -2028,10 +2031,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 
 
+
+
 function CourseManagement(props) {
   return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
     __WEBPACK_IMPORTED_MODULE_2__edx_paragon__["Tabs"],
-    { labels: ["Course team management", "Course settings", "Panel 3"] },
+    { labels: ["Course team management", "Course settings", "Course rerun"] },
     __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
       'div',
       null,
@@ -2052,7 +2057,7 @@ function CourseManagement(props) {
     __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
       'div',
       null,
-      'Panel 3'
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_5__CourseRerun__["a" /* CourseRerun */], null)
     )
   );
 }
@@ -2527,18 +2532,18 @@ if (process.env.NODE_ENV !== "production") {
 'use strict';
 
 var React = __webpack_require__(1);
-var invariant = __webpack_require__(12);
-var warning = __webpack_require__(14);
-var ExecutionEnvironment = __webpack_require__(8);
+var invariant = __webpack_require__(13);
+var warning = __webpack_require__(15);
+var ExecutionEnvironment = __webpack_require__(9);
 var _assign = __webpack_require__(4);
 var emptyFunction$1 = __webpack_require__(2);
-var EventListener = __webpack_require__(7);
-var getActiveElement = __webpack_require__(11);
-var shallowEqual = __webpack_require__(13);
-var containsNode = __webpack_require__(9);
-var focusNode = __webpack_require__(10);
+var EventListener = __webpack_require__(8);
+var getActiveElement = __webpack_require__(12);
+var shallowEqual = __webpack_require__(14);
+var containsNode = __webpack_require__(10);
+var focusNode = __webpack_require__(11);
 var emptyObject = __webpack_require__(3);
-var checkPropTypes = __webpack_require__(15);
+var checkPropTypes = __webpack_require__(16);
 var hyphenateStyleName = __webpack_require__(27);
 var camelizeStyleName = __webpack_require__(25);
 
@@ -17888,7 +17893,7 @@ module.exports = reactDom;
 /*
  Modernizr 3.0.0pre (Custom Build) | MIT
 */
-var aa=__webpack_require__(1),m=__webpack_require__(8),A=__webpack_require__(4),B=__webpack_require__(2),ca=__webpack_require__(7),da=__webpack_require__(11),ea=__webpack_require__(13),ha=__webpack_require__(9),ia=__webpack_require__(10),C=__webpack_require__(3);
+var aa=__webpack_require__(1),m=__webpack_require__(9),A=__webpack_require__(4),B=__webpack_require__(2),ca=__webpack_require__(8),da=__webpack_require__(12),ea=__webpack_require__(14),ha=__webpack_require__(10),ia=__webpack_require__(11),C=__webpack_require__(3);
 function D(a){for(var b=arguments.length-1,c="Minified React error #"+a+"; visit http://facebook.github.io/react/docs/error-decoder.html?invariant\x3d"+a,d=0;d<b;d++)c+="\x26args[]\x3d"+encodeURIComponent(arguments[d+1]);b=Error(c+" for the full message or use the non-minified dev environment for full errors and additional helpful warnings.");b.name="Invariant Violation";b.framesToPop=1;throw b;}aa?void 0:D("227");
 var la={children:!0,dangerouslySetInnerHTML:!0,defaultValue:!0,defaultChecked:!0,innerHTML:!0,suppressContentEditableWarning:!0,suppressHydrationWarning:!0,style:!0};function qa(a,b){return(a&b)===b}
 var ra={MUST_USE_PROPERTY:1,HAS_BOOLEAN_VALUE:4,HAS_NUMERIC_VALUE:8,HAS_POSITIVE_NUMERIC_VALUE:24,HAS_OVERLOADED_BOOLEAN_VALUE:32,HAS_STRING_BOOLEAN_VALUE:64,injectDOMPropertyConfig:function(a){var b=ra,c=a.Properties||{},d=a.DOMAttributeNamespaces||{},e=a.DOMAttributeNames||{};a=a.DOMMutationMethods||{};for(var f in c){sa.hasOwnProperty(f)?D("48",f):void 0;var g=f.toLowerCase(),k=c[f];g={attributeName:g,attributeNamespace:null,propertyName:f,mutationMethod:null,mustUseProperty:qa(k,b.MUST_USE_PROPERTY),
@@ -18127,11 +18132,11 @@ if (process.env.NODE_ENV !== "production") {
 'use strict';
 
 var _assign = __webpack_require__(4);
-var invariant = __webpack_require__(12);
+var invariant = __webpack_require__(13);
 var emptyObject = __webpack_require__(3);
-var warning = __webpack_require__(14);
+var warning = __webpack_require__(15);
 var emptyFunction = __webpack_require__(2);
-var checkPropTypes = __webpack_require__(15);
+var checkPropTypes = __webpack_require__(16);
 
 // TODO: this is special because it gets imported during build.
 
@@ -19952,6 +19957,306 @@ version:"16.1.0",__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED:{ReactCurren
   self.fetch.polyfill = true
 })(typeof self !== 'undefined' ? self : this);
 
+
+/***/ }),
+/* 37 */,
+/* 38 */,
+/* 39 */,
+/* 40 */,
+/* 41 */,
+/* 42 */,
+/* 43 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return CourseRerun; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__edx_paragon__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__edx_paragon___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__edx_paragon__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__LoadingIcon__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__client__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__css_CourseRerun__ = __webpack_require__(44);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__css_CourseRerun___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__css_CourseRerun__);
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+
+
+
+
+
+
+var CourseRerun = function (_React$Component) {
+  _inherits(CourseRerun, _React$Component);
+
+  function CourseRerun(props) {
+    _classCallCheck(this, CourseRerun);
+
+    var _this = _possibleConstructorReturn(this, (CourseRerun.__proto__ || Object.getPrototypeOf(CourseRerun)).call(this, props));
+
+    _this.organizationApiUrl = '/organizations';
+    _this.courseApiUrl = '/course';
+
+    _this.state = {
+      courseKey: '',
+      organizationList: '',
+      organizationListTextArea: '',
+      openAlert: false,
+      completedTasks: [],
+      failedTasks: [],
+      statusAlertMessage: '',
+      statusAlertType: '',
+      isLoading: false
+    };
+
+    _this.handleChange = _this.handleChange.bind(_this);
+    _this.handleSubmit = _this.handleSubmit.bind(_this);
+    _this.onCloseAlert = _this.onCloseAlert.bind(_this);
+    _this.handleOrganizationListChange = _this.handleOrganizationListChange.bind(_this);
+    return _this;
+  }
+
+  _createClass(CourseRerun, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      this.getOrganizationList();
+    }
+  }, {
+    key: 'handleChange',
+    value: function handleChange(value, name) {
+      if (value !== name) {
+        this.setState(_defineProperty({}, name, value));
+      }
+    }
+  }, {
+    key: 'getOrganizationList',
+    value: function getOrganizationList() {
+      var _this2 = this;
+
+      this.setState({
+        isLoading: true
+      });
+
+      __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__client__["a" /* clientRequest */])(this.organizationApiUrl, 'GET').then(function (res) {
+        return _this2.handleResponse(res);
+      }).then(function (response) {
+        _this2.fillOrganizationList(response);
+      }).catch(function (error) {
+        _this2.openStatusAlert('An error occurred while getting the organizations list: ' + error.message, 'danger');
+        _this2.setState({
+          isLoading: false
+        });
+      });
+    }
+  }, {
+    key: 'handleSubmit',
+    value: function handleSubmit() {
+      var isValid = this.onSubmitValidator();
+      var requestTimeOut = 0;
+
+      if (isValid && confirm('Rerun ' + this.state.courseKey + ' course into ' + this.state.organizationList.length + ' organizations.')) {
+        alert("enviando");
+        // for (const org of this.state.organizationList) {
+        //   setTimeout(() => {
+        //     this.setState({
+        //       isLoading: true
+        //     });
+        //     // const requetsBody = {
+        //     //   source_course_key: this.state.courseKey,
+        //     //   org: org,
+        //     //   number:
+        //     // }
+
+        //     // clientRequest(
+        //     //   courseApiUrl,
+        //     //   'POST',
+        //     //   requetsBody
+        //     // )
+        //     // .then(
+        //     //   res => this.handlePostSettingsResponse(res, courseKey)
+        //     // )
+        //     // .catch((error) => {
+        //     //   console.log(error.message);
+        //     //   this.setState({
+        //     //     isLoading: false
+        //     //   });
+        //     // });
+        //   }, requestTimeOut);
+        //   requestTimeOut += this.props.requestTimeOut
+        // }
+      }
+    }
+  }, {
+    key: 'onSubmitValidator',
+    value: function onSubmitValidator() {
+      var courseKey = this.state.courseKey;
+      var organizationList = this.state.organizationList;
+
+      if (courseKey === '') {
+        this.openStatusAlert('Please, enter a valid course key.');
+        return false;
+      }
+
+      if (organizationList.length === 0) {
+        this.openStatusAlert('Please, enter a valid organization name/s.');
+        return false;
+      }
+
+      return true;
+    }
+  }, {
+    key: 'courseKeyValidator',
+    value: function courseKeyValidator() {
+      var regex = /[^/+]+\+([^/+]+)\+([^/?+]+)/gm;
+      var courseKey = this.state.courseKey;
+
+      console.log(regex.exec(courseKey));
+    }
+  }, {
+    key: 'courseKeyExists',
+    value: function courseKeyExists() {
+      var _this3 = this;
+
+      var courseKey = this.state.courseKey;
+
+      __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__client__["a" /* clientRequest */])(this.organizationApiUrl, 'GET').then(function (res) {
+        return _this3.handleResponse(res);
+      }).then(function (response) {
+        _this3.fillOrganizationList(response);
+      }).catch(function (error) {
+        _this3.openStatusAlert('An error occurred while getting the organizations list: ' + error.message, 'danger');
+        _this3.setState({
+          isLoading: false
+        });
+      });
+    }
+  }, {
+    key: 'fillOrganizationList',
+    value: function fillOrganizationList(response) {
+      var organizationList = response.join('\n');
+      this.setState({
+        organizationListTextArea: organizationList,
+        organizationList: response,
+        isLoading: false
+      });
+    }
+  }, {
+    key: 'handleResponse',
+    value: function handleResponse(response) {
+      if (response.ok) return response.json();
+
+      throw new Error(response.statusText);
+    }
+  }, {
+    key: 'onCloseAlert',
+    value: function onCloseAlert() {
+      this.setState({
+        openAlert: false
+      });
+    }
+  }, {
+    key: 'openStatusAlert',
+    value: function openStatusAlert(message, type) {
+      this.setState({
+        openAlert: true,
+        statusAlertMessage: message,
+        statusAlertType: type
+      });
+    }
+  }, {
+    key: 'handleOrganizationListChange',
+    value: function handleOrganizationListChange(value, name) {
+      var organizationListRaw = value.split('\n');
+      var organizationList = organizationListRaw.filter(function (value) {
+        if (value !== '') return value;
+      });
+      this.setState({
+        organizationList: organizationList
+      });
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'div',
+        null,
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__edx_paragon__["InputText"], {
+          name: 'courseKey',
+          label: 'Course to rerun:',
+          onChange: this.handleChange,
+          value: this.state.courseKey
+        }),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__edx_paragon__["TextArea"], {
+          name: 'OrganizationList',
+          className: [__WEBPACK_IMPORTED_MODULE_4__css_CourseRerun___default.a.organizationList],
+          label: 'Target organizations:',
+          value: this.state.organizationListTextArea,
+          onChange: this.handleOrganizationListChange
+        }),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__edx_paragon__["Button"], {
+          label: 'Rerun course.',
+          onClick: this.handleSubmit,
+          className: ['btn-primary btn-lg']
+        }),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__edx_paragon__["StatusAlert"], {
+          dialog: this.state.statusAlertMessage,
+          onClose: this.onCloseAlert,
+          open: this.state.openAlert,
+          alertType: this.state.statusAlertType
+        }),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'div',
+          null,
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'h2',
+            null,
+            'Operations complete:'
+          ),
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'ol',
+            null,
+            this.state.completedTasks
+          ),
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'h2',
+            null,
+            'Operations not complete:'
+          ),
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'ol',
+            null,
+            this.state.failedTasks
+          )
+        ),
+        this.state.isLoading ? __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2__LoadingIcon__["a" /* LoadingIconComponent */], null) : null
+      );
+    }
+  }]);
+
+  return CourseRerun;
+}(__WEBPACK_IMPORTED_MODULE_0_react___default.a.Component);
+
+/***/ }),
+/* 44 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+module.exports = {"organizationList":"_2pgaJ7JH9q4BSkZg06Zcye"};
+
+/***/ }),
+/* 45 */,
+/* 46 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
 
 /***/ })
 /******/ ])));

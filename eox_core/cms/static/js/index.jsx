@@ -3,10 +3,12 @@ import ReactDOM from 'react-dom';
 import { Tabs } from '@edx/paragon';
 import { CourseTeamManagement } from './CourseTeamManagement'
 import { CourseSettings } from './CourseSettings'
+import { CourseRerun } from './CourseRerun'
+import '../css/edx-bootstrap'
 
 function CourseManagement(props) {
   return (
-    <Tabs labels={["Course team management", "Course settings", "Panel 3"]}>
+    <Tabs labels={["Course team management", "Course settings", "Course rerun"]}>
       <div>
         <CourseTeamManagement
           orgList={props.teamManagement.list_org}
@@ -21,7 +23,7 @@ function CourseManagement(props) {
         />
       </div>
       <div>
-        Panel 3
+        <CourseRerun/>
       </div>
     </Tabs>
   );
