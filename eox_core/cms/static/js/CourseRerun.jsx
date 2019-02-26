@@ -125,22 +125,37 @@ export class CourseRerun extends React.Component {
   }
 
   handleCourseRerunResponse(response, organization) {
+    const actualSuccessTasks = this.state.completedTasks;
+    const actualFailedTasks = this.state.failedTasks;
+    const unknownErrorMessage = `An unknown error occurred while tried to rerun a course into ${organization} organization. ${response.statusText}`;
+
     if (response.ok) {
       response.json()
       .then((jsonResponse) => {
         const destinationCourseKey = Object.getOwnPropertyDescriptor(jsonResponse, 'destination_course_key');
-
         if (destinationCourseKey) {
-          this.state.completedTasks.push(
-            <li key={organization}>Rerun completed for {organization} organization.</li>
+          actualSuccessTasks.push(
+            <li key={organization}>Rerun completed into {organization} organization.</li>
           );
         } else {
           const errorMessage = `An error occurred while tried to rerun a course into ${organization} organization. ${jsonResponse.ErrMsg}`;
-          this.state.failedTasks.push(<li key={organization}>{errorMessage}</li>);
+          actualFailedTasks.push(<li key={organization}>{errorMessage}</li>);
         }
+
+        this.setState({
+          isLoading: false,
+          completedTasks: actualSuccessTasks
+        });
+      })
+      .catch(error => {
+        actualFailedTasks.push(<li key={organization}>{unknownErrorMessage}</li>);
       });
+    } else {
+      actualFailedTasks.push(<li key={organization}>{unknownErrorMessage}</li>);
     }
+
     this.setState({
+      failedTasks: actualFailedTasks,
       isLoading: false
     });
   }
