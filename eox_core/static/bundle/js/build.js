@@ -2057,7 +2057,9 @@ function CourseManagement(props) {
     __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
       'div',
       null,
-      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_5__CourseRerun__["a" /* CourseRerun */], null)
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_5__CourseRerun__["a" /* CourseRerun */], {
+        requestTimeOut: props.courseRerun.request_timeout_value
+      })
     )
   );
 }
@@ -19980,6 +19982,8 @@ version:"16.1.0",__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED:{ReactCurren
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__css_CourseRerun___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__css_CourseRerun__);
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
+
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -20003,18 +20007,21 @@ var CourseRerun = function (_React$Component) {
     var _this = _possibleConstructorReturn(this, (CourseRerun.__proto__ || Object.getPrototypeOf(CourseRerun)).call(this, props));
 
     _this.organizationApiUrl = '/organizations';
-    _this.courseApiUrl = '/course';
+    _this.courseApiUrl = '/course/';
 
     _this.state = {
       courseKey: '',
       organizationList: '',
       organizationListTextArea: '',
+      initialOrganizationList: [],
       openAlert: false,
       completedTasks: [],
       failedTasks: [],
       statusAlertMessage: '',
       statusAlertType: '',
-      isLoading: false
+      isLoading: false,
+      courseRun: '',
+      courseName: ''
     };
 
     _this.handleChange = _this.handleChange.bind(_this);
@@ -20059,46 +20066,119 @@ var CourseRerun = function (_React$Component) {
   }, {
     key: 'handleSubmit',
     value: function handleSubmit() {
+      var _this3 = this;
+
       var isValid = this.onSubmitValidator();
-      var requestTimeOut = 0;
 
       if (isValid && confirm('Rerun ' + this.state.courseKey + ' course into ' + this.state.organizationList.length + ' organizations.')) {
-        alert("enviando");
-        // for (const org of this.state.organizationList) {
-        //   setTimeout(() => {
-        //     this.setState({
-        //       isLoading: true
-        //     });
-        //     // const requetsBody = {
-        //     //   source_course_key: this.state.courseKey,
-        //     //   org: org,
-        //     //   number:
-        //     // }
-
-        //     // clientRequest(
-        //     //   courseApiUrl,
-        //     //   'POST',
-        //     //   requetsBody
-        //     // )
-        //     // .then(
-        //     //   res => this.handlePostSettingsResponse(res, courseKey)
-        //     // )
-        //     // .catch((error) => {
-        //     //   console.log(error.message);
-        //     //   this.setState({
-        //     //     isLoading: false
-        //     //   });
-        //     // });
-        //   }, requestTimeOut);
-        //   requestTimeOut += this.props.requestTimeOut
-        // }
+        this.setState({
+          completedTasks: [],
+          failedTasks: []
+        });
+        this.courseKeyExists().then(function (courseExists) {
+          _this3.setState({
+            isLoading: false
+          });
+          if (courseExists && _this3.organizationListExists()) _this3.submitRerunCourse();
+        });
       }
+    }
+  }, {
+    key: 'submitRerunCourse',
+    value: function submitRerunCourse() {
+      var _this4 = this;
+
+      var requestTimeOut = 0;
+      var courseKeyData = this.getCourseKeyData();
+
+      var _loop = function _loop(org) {
+        setTimeout(function () {
+          _this4.setState({
+            isLoading: true
+          });
+          var requetsBody = {
+            source_course_key: _this4.state.courseKey,
+            org: org,
+            number: courseKeyData.number,
+            display_name: _this4.state.courseName,
+            run: _this4.state.courseRun
+          };
+
+          __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__client__["a" /* clientRequest */])(_this4.courseApiUrl, 'POST', requetsBody).then(function (res) {
+            return _this4.handleCourseRerunResponse(res, org);
+          }).catch(function (error) {
+            _this4.openStatusAlert(error.message, 'danger');
+            _this4.setState({
+              isLoading: false
+            });
+          });
+        }, requestTimeOut);
+        requestTimeOut += _this4.props.requestTimeOut;
+      };
+
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        for (var _iterator = this.state.organizationList[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var org = _step.value;
+
+          _loop(org);
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator.return) {
+            _iterator.return();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+    }
+  }, {
+    key: 'handleCourseRerunResponse',
+    value: function handleCourseRerunResponse(response, organization) {
+      var _this5 = this;
+
+      if (response.ok) {
+        response.json().then(function (jsonResponse) {
+          var destinationCourseKey = Object.getOwnPropertyDescriptor(jsonResponse, 'destination_course_key');
+
+          if (destinationCourseKey) {
+            _this5.state.completedTasks.push(__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+              'li',
+              { key: organization },
+              'Rerun completed for ',
+              organization,
+              ' organization.'
+            ));
+          } else {
+            var errorMessage = 'An error occurred while tried to rerun a course into ' + organization + ' organization. ' + jsonResponse.ErrMsg;
+            _this5.state.failedTasks.push(__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+              'li',
+              { key: organization },
+              errorMessage
+            ));
+          }
+        });
+      }
+      this.setState({
+        isLoading: false
+      });
     }
   }, {
     key: 'onSubmitValidator',
     value: function onSubmitValidator() {
       var courseKey = this.state.courseKey;
       var organizationList = this.state.organizationList;
+      var courseRun = this.state.courseRun;
+      var courseName = this.state.courseName;
 
       if (courseKey === '') {
         this.openStatusAlert('Please, enter a valid course key.');
@@ -20110,33 +20190,123 @@ var CourseRerun = function (_React$Component) {
         return false;
       }
 
+      if (courseName === '') {
+        this.openStatusAlert('Please, enter a valid course name.');
+        return false;
+      }
+
+      if (courseRun === '') {
+        this.openStatusAlert('Please, enter a valid course run.');
+        return false;
+      }
+
       return true;
     }
   }, {
-    key: 'courseKeyValidator',
-    value: function courseKeyValidator() {
-      var regex = /[^/+]+\+([^/+]+)\+([^/?+]+)/gm;
+    key: 'getCourseKeyData',
+    value: function getCourseKeyData() {
+      var courseRegex = /[^/+]+\+([^/+]+)\+([^/?+]+)/gm;
       var courseKey = this.state.courseKey;
+      var groups = courseRegex.exec(courseKey);
+      var courseData = {
+        number: groups[1],
+        run: groups[2]
+      };
 
-      console.log(regex.exec(courseKey));
+      return courseData;
     }
   }, {
     key: 'courseKeyExists',
-    value: function courseKeyExists() {
-      var _this3 = this;
+    value: function () {
+      var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+        var _this6 = this;
 
-      var courseKey = this.state.courseKey;
+        var courseKey, queryUrl, requestResult;
+        return regeneratorRuntime.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                courseKey = this.state.courseKey;
+                queryUrl = '' + this.courseApiUrl + courseKey;
 
-      __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__client__["a" /* clientRequest */])(this.organizationApiUrl, 'GET').then(function (res) {
-        return _this3.handleResponse(res);
-      }).then(function (response) {
-        _this3.fillOrganizationList(response);
-      }).catch(function (error) {
-        _this3.openStatusAlert('An error occurred while getting the organizations list: ' + error.message, 'danger');
-        _this3.setState({
-          isLoading: false
-        });
+                this.setState({
+                  isLoading: true
+                });
+
+                _context.next = 5;
+                return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__client__["a" /* clientRequest */])(queryUrl, 'GET').then(function (res) {
+                  return _this6.handleResponse(res);
+                }).then(function (response) {
+                  return true;
+                }).catch(function (error) {
+                  _this6.openStatusAlert('The ' + courseKey + ' course key does not exists or a server error has ocurred.', 'danger');
+                  _this6.setState({
+                    isLoading: false
+                  });
+                  return false;
+                });
+
+              case 5:
+                requestResult = _context.sent;
+                return _context.abrupt('return', requestResult);
+
+              case 7:
+              case 'end':
+                return _context.stop();
+            }
+          }
+        }, _callee, this);
+      }));
+
+      function courseKeyExists() {
+        return _ref.apply(this, arguments);
+      }
+
+      return courseKeyExists;
+    }()
+  }, {
+    key: 'organizationListExists',
+    value: function organizationListExists() {
+      var organizationList = this.state.initialOrganizationList;
+      var actualOrganizationList = this.state.organizationList;
+      var unknownOrganization = [];
+      var knownOrganization = [];
+
+      var _iteratorNormalCompletion2 = true;
+      var _didIteratorError2 = false;
+      var _iteratorError2 = undefined;
+
+      try {
+        for (var _iterator2 = actualOrganizationList[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+          var org = _step2.value;
+
+          if (!organizationList.includes(org)) unknownOrganization.push(org);else knownOrganization.push(org);
+        }
+      } catch (err) {
+        _didIteratorError2 = true;
+        _iteratorError2 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion2 && _iterator2.return) {
+            _iterator2.return();
+          }
+        } finally {
+          if (_didIteratorError2) {
+            throw _iteratorError2;
+          }
+        }
+      }
+
+      if (unknownOrganization.length !== 0) {
+        var message = 'This organization does not exists: ' + unknownOrganization.join('\n');
+        this.openStatusAlert(message, 'danger');
+        return false;
+      }
+
+      this.setState({
+        organizationList: knownOrganization
       });
+      return true;
     }
   }, {
     key: 'fillOrganizationList',
@@ -20145,6 +20315,7 @@ var CourseRerun = function (_React$Component) {
       this.setState({
         organizationListTextArea: organizationList,
         organizationList: response,
+        initialOrganizationList: response,
         isLoading: false
       });
     }
@@ -20193,6 +20364,18 @@ var CourseRerun = function (_React$Component) {
           label: 'Course to rerun:',
           onChange: this.handleChange,
           value: this.state.courseKey
+        }),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__edx_paragon__["InputText"], {
+          name: 'courseName',
+          label: 'New course name:',
+          onChange: this.handleChange,
+          value: this.state.courseName
+        }),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__edx_paragon__["InputText"], {
+          name: 'courseRun',
+          label: 'New course run:',
+          onChange: this.handleChange,
+          value: this.state.courseRun
         }),
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__edx_paragon__["TextArea"], {
           name: 'OrganizationList',

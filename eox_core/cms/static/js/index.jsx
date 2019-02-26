@@ -23,7 +23,9 @@ function CourseManagement(props) {
         />
       </div>
       <div>
-        <CourseRerun/>
+        <CourseRerun
+          requestTimeOut={props.courseRerun.request_timeout_value}
+        />
       </div>
     </Tabs>
   );

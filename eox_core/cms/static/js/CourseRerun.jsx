@@ -11,18 +11,21 @@ export class CourseRerun extends React.Component {
     super(props);
 
     this.organizationApiUrl = '/organizations';
-    this.courseApiUrl = '/course';
+    this.courseApiUrl = '/course/';
 
     this.state = {
       courseKey: '',
       organizationList: '',
       organizationListTextArea: '',
+      initialOrganizationList: [],
       openAlert: false,
       completedTasks: [],
       failedTasks: [],
       statusAlertMessage: '',
       statusAlertType: '',
-      isLoading: false
+      isLoading: false,
+      courseRun: '',
+      courseName: ''
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -68,44 +71,85 @@ export class CourseRerun extends React.Component {
 
   handleSubmit() {
     const isValid = this.onSubmitValidator();
-    let requestTimeOut = 0;
 
     if (isValid && confirm(`Rerun ${this.state.courseKey} course into ${this.state.organizationList.length} organizations.`)) {
-      alert("enviando");
-      // for (const org of this.state.organizationList) {
-      //   setTimeout(() => {
-      //     this.setState({
-      //       isLoading: true
-      //     });
-      //     // const requetsBody = {
-      //     //   source_course_key: this.state.courseKey,
-      //     //   org: org,
-      //     //   number:
-      //     // }
-
-      //     // clientRequest(
-      //     //   courseApiUrl,
-      //     //   'POST',
-      //     //   requetsBody
-      //     // )
-      //     // .then(
-      //     //   res => this.handlePostSettingsResponse(res, courseKey)
-      //     // )
-      //     // .catch((error) => {
-      //     //   console.log(error.message);
-      //     //   this.setState({
-      //     //     isLoading: false
-      //     //   });
-      //     // });
-      //   }, requestTimeOut);
-      //   requestTimeOut += this.props.requestTimeOut
-      // }
+      this.setState({
+        completedTasks: [],
+        failedTasks: []
+      });
+      this.courseKeyExists()
+      .then((courseExists) => {
+        this.setState({
+          isLoading: false
+        });
+        if (courseExists && this.organizationListExists())
+          this.submitRerunCourse();
+      });
     }
+  }
+
+  submitRerunCourse() {
+    let requestTimeOut = 0;
+    const courseKeyData = this.getCourseKeyData();
+
+    for (const org of this.state.organizationList) {
+      setTimeout(() => {
+        this.setState({
+          isLoading: true
+        });
+        const requetsBody = {
+          source_course_key: this.state.courseKey,
+          org: org,
+          number: courseKeyData.number,
+          display_name: this.state.courseName,
+          run: this.state.courseRun
+        }
+
+        clientRequest(
+          this.courseApiUrl,
+          'POST',
+          requetsBody
+        )
+        .then(
+          res => this.handleCourseRerunResponse(res, org)
+        )
+        .catch((error) => {
+          this.openStatusAlert(error.message, 'danger');
+          this.setState({
+            isLoading: false
+          });
+        });
+      }, requestTimeOut);
+      requestTimeOut += this.props.requestTimeOut
+    }
+  }
+
+  handleCourseRerunResponse(response, organization) {
+    if (response.ok) {
+      response.json()
+      .then((jsonResponse) => {
+        const destinationCourseKey = Object.getOwnPropertyDescriptor(jsonResponse, 'destination_course_key');
+
+        if (destinationCourseKey) {
+          this.state.completedTasks.push(
+            <li key={organization}>Rerun completed for {organization} organization.</li>
+          );
+        } else {
+          const errorMessage = `An error occurred while tried to rerun a course into ${organization} organization. ${jsonResponse.ErrMsg}`;
+          this.state.failedTasks.push(<li key={organization}>{errorMessage}</li>);
+        }
+      });
+    }
+    this.setState({
+      isLoading: false
+    });
   }
 
   onSubmitValidator() {
     const courseKey = this.state.courseKey;
     const organizationList = this.state.organizationList;
+    const courseRun = this.state.courseRun;
+    const courseName = this.state.courseName;
 
     if (courseKey === '') {
       this.openStatusAlert('Please, enter a valid course key.');
@@ -117,35 +161,82 @@ export class CourseRerun extends React.Component {
       return false;
     }
 
+    if (courseName === '') {
+      this.openStatusAlert('Please, enter a valid course name.');
+      return false;
+    }
+
+    if (courseRun === '') {
+      this.openStatusAlert('Please, enter a valid course run.');
+      return false;
+    }
+
     return true;
   }
 
-  courseKeyValidator() {
-    const regex = /[^/+]+\+([^/+]+)\+([^/?+]+)/gm;
+  getCourseKeyData() {
+    const courseRegex = /[^/+]+\+([^/+]+)\+([^/?+]+)/gm;
     const courseKey = this.state.courseKey;
+    const groups = courseRegex.exec(courseKey);
+    const courseData = {
+      number: groups[1],
+      run: groups[2]
+    };
 
-    console.log(regex.exec(courseKey));
+    return courseData;
   }
 
-  courseKeyExists() {
+  async courseKeyExists() {
     const courseKey = this.state.courseKey;
+    const queryUrl = `${this.courseApiUrl}${courseKey}`;
+    this.setState({
+      isLoading: true
+    });
 
-    clientRequest(
-      this.organizationApiUrl,
+    const requestResult = await clientRequest(
+      queryUrl,
       'GET'
     )
     .then(
       res => this.handleResponse(res)
     )
     .then((response) => {
-      this.fillOrganizationList(response);
+      return true;
     })
     .catch((error) => {
-      this.openStatusAlert(`An error occurred while getting the organizations list: ${error.message}`, 'danger');
+      this.openStatusAlert(`The ${courseKey} course key does not exists or a server error has ocurred.`, 'danger');
       this.setState({
         isLoading: false
       });
+      return false;
     });
+
+    return requestResult;
+  }
+
+  organizationListExists() {
+    const organizationList = this.state.initialOrganizationList;
+    const actualOrganizationList = this.state.organizationList;
+    let unknownOrganization = [];
+    let knownOrganization = [];
+
+    for (const org of actualOrganizationList) {
+      if (!organizationList.includes(org))
+        unknownOrganization.push(org);
+      else
+        knownOrganization.push(org);
+    }
+
+    if (unknownOrganization.length !== 0) {
+      const message = `This organization does not exists: ${unknownOrganization.join('\n')}`;
+      this.openStatusAlert(message, 'danger');
+      return false;
+    }
+
+    this.setState({
+      organizationList: knownOrganization
+    });
+    return true;
   }
 
   fillOrganizationList(response) {
@@ -153,6 +244,7 @@ export class CourseRerun extends React.Component {
     this.setState({
       organizationListTextArea: organizationList,
       organizationList: response,
+      initialOrganizationList: response,
       isLoading: false
     });
   }
@@ -197,6 +289,18 @@ export class CourseRerun extends React.Component {
         label="Course to rerun:"
         onChange={this.handleChange}
         value={this.state.courseKey}
+      />
+      <InputText
+        name="courseName"
+        label="New course name:"
+        onChange={this.handleChange}
+        value={this.state.courseName}
+      />
+      <InputText
+        name="courseRun"
+        label="New course run:"
+        onChange={this.handleChange}
+        value={this.state.courseRun}
       />
       <TextArea
         name="OrganizationList"
