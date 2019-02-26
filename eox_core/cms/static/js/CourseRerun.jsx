@@ -305,18 +305,28 @@ export class CourseRerun extends React.Component {
         onChange={this.handleChange}
         value={this.state.courseKey}
       />
+      <span className={styles.tip}>
+        Course key of the course to rerun. e.g. course-v1:edX+DemoX+Demo_Course
+      </span>
       <InputText
         name="courseName"
         label="New course name:"
         onChange={this.handleChange}
         value={this.state.courseName}
       />
+      <span className={styles.tip}>
+        The public display name for the new course. (This name is often the same as the original course name.)
+      </span>
       <InputText
         name="courseRun"
         label="New course run:"
         onChange={this.handleChange}
         value={this.state.courseRun}
       />
+      <span className={styles.tip}>
+        The term in which the new course will run. (This value is often different than the original course run value.)<br></br>
+        <b>Note: No spaces or special characters are allowed.</b>
+      </span>
       <TextArea
         name="OrganizationList"
         className={[styles.organizationList]}
@@ -324,6 +334,9 @@ export class CourseRerun extends React.Component {
         value={this.state.organizationListTextArea}
         onChange={this.handleOrganizationListChange}
       />
+      <span className={styles.tip}>
+        List of the organizations to rerun a course.
+      </span><br></br>
       <Button
         label="Rerun course."
         onClick={this.handleSubmit}

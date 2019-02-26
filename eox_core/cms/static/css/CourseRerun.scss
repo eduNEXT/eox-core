@@ -6,3 +6,10 @@
     height: 200px !important;
     max-height: 200px !important;
 }
+
+:local(.tip) {
+    color: #666;
+    font-size: 0.7em;
+    top: -10px;
+    position: relative;
+}

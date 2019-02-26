@@ -1449,18 +1449,39 @@ var CourseRerun = function (_React$Component) {
           onChange: this.handleChange,
           value: this.state.courseKey
         }),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'span',
+          { className: __WEBPACK_IMPORTED_MODULE_4__css_CourseRerun___default.a.tip },
+          'Course key of the course to rerun. e.g. course-v1:edX+DemoX+Demo_Course'
+        ),
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__edx_paragon__["InputText"], {
           name: 'courseName',
           label: 'New course name:',
           onChange: this.handleChange,
           value: this.state.courseName
         }),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'span',
+          { className: __WEBPACK_IMPORTED_MODULE_4__css_CourseRerun___default.a.tip },
+          'The public display name for the new course. (This name is often the same as the original course name.)'
+        ),
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__edx_paragon__["InputText"], {
           name: 'courseRun',
           label: 'New course run:',
           onChange: this.handleChange,
           value: this.state.courseRun
         }),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'span',
+          { className: __WEBPACK_IMPORTED_MODULE_4__css_CourseRerun___default.a.tip },
+          'The term in which the new course will run. (This value is often different than the original course run value.)',
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('br', null),
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'b',
+            null,
+            'Note: No spaces or special characters are allowed.'
+          )
+        ),
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__edx_paragon__["TextArea"], {
           name: 'OrganizationList',
           className: [__WEBPACK_IMPORTED_MODULE_4__css_CourseRerun___default.a.organizationList],
@@ -1468,6 +1489,12 @@ var CourseRerun = function (_React$Component) {
           value: this.state.organizationListTextArea,
           onChange: this.handleOrganizationListChange
         }),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'span',
+          { className: __WEBPACK_IMPORTED_MODULE_4__css_CourseRerun___default.a.tip },
+          'List of the organizations to rerun a course.'
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('br', null),
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__edx_paragon__["Button"], {
           label: 'Rerun course.',
           onClick: this.handleSubmit,
@@ -2580,7 +2607,7 @@ var RenderReactComponent = function () {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
-module.exports = {"organizationList":"_2pgaJ7JH9q4BSkZg06Zcye"};
+module.exports = {"organizationList":"_2pgaJ7JH9q4BSkZg06Zcye","tip":"IoLNgV_KfTuqyE4_I1ZoI"};
 
 /***/ }),
 /* 24 */
