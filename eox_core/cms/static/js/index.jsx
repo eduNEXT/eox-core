@@ -1,16 +1,22 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Tabs } from '@edx/paragon';
-import { CourseTeamManagement } from './CourseTeamManagement'
+import PropTypes from 'prop-types';
+import CourseTeamManagement from './CourseTeamManagement';
+import CourseSettings from './CourseSettings';
 
 function CourseManagement(props) {
   return (
-    <Tabs labels={["Course team management", "Panel 2", "Panel 3"]}>
+    <Tabs labels={['Course team management', 'Course settings', 'Panel 3']}>
       <div>
-        <CourseTeamManagement orgList={props.teamManagement.list_org}/>
+        <CourseTeamManagement />
       </div>
       <div>
-        Panel 2
+        <CourseSettings
+          courseKey={props.courseSettings.course_key}
+          detailsFields={props.courseSettings.details_fields}
+          requestTimeOut={props.courseSettings.request_timeout_value}
+        />
       </div>
       <div>
         Panel 3
@@ -19,11 +25,11 @@ function CourseManagement(props) {
   );
 }
 
+/* eslint-disable import/prefer-default-export */
 export class RenderReactComponent {
-
-  constructor(properties={}) {
+  constructor(properties = {}) {
     Object.assign(this, {
-      properties
+      properties,
     });
     this.renderReact();
   }
@@ -31,8 +37,24 @@ export class RenderReactComponent {
   renderReact() {
     ReactDOM.render(
       React.createElement(CourseManagement, this.properties, null),
-      document.getElementById('root')
+      /* eslint-disable no-undef */
+      document.getElementById('root'),
     );
   }
 }
 
+CourseManagement.defaultProps = {
+  courseSettings: {
+    course_key: '',
+    details_fields: [],
+    request_timeout_value: 500,
+  },
+};
+
+CourseManagement.propTypes = {
+  courseSettings: PropTypes.shape({
+    course_key: PropTypes.string,
+    details_fields: PropTypes.arrayOf(PropTypes.string),
+    request_timeout_value: PropTypes.number,
+  }),
+};

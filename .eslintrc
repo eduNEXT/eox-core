@@ -1,0 +1,25 @@
+{
+    "parser": "babel-eslint",
+    "extends": ["airbnb", "plugin:react/all"],
+    "plugins": [
+        "react"
+    ],
+    "rules": {
+        "max-len": [1, 120, 2, {"ignoreComments": true}],
+        "no-alert": 0,
+        "no-restricted-globals": 0,
+        "prefer-destructuring": 0,
+        "no-restricted-syntax": 0,
+        "react/destructuring-assignment": [0],
+        "react/no-set-state": 0,
+        "react/sort-comp": 0,
+        "react/jsx-max-depth": [1, { "max": 5 }],
+        "react/jsx-no-literals": 0,
+        "react/jsx-handler-names": 1
+    },
+    "parserOptions": {
+        "ecmaFeatures": {
+          "jsx": true
+        }
+    }
+}
