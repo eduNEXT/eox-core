@@ -12,8 +12,8 @@ from django.contrib.auth import get_user_model
 from django.db import transaction
 from rest_framework.exceptions import APIException
 
-from openedx.core.djangoapps.lang_pref import (
-    LANGUAGE_KEY  # pylint: disable=import-error
+from openedx.core.djangoapps.lang_pref import (  # pylint: disable=import-error
+    LANGUAGE_KEY
 )
 from openedx.core.djangoapps.user_api.accounts.api import (  # pylint: disable=import-error
     check_account_exists
@@ -157,7 +157,7 @@ def get_course_team_user(*args, **kwargs):
     of the cms only.
     """
     if settings.SERVICE_VARIANT == 'cms':
-        from contentstore.views.user import _course_team_user
+        from contentstore.views.user import _course_team_user  # pylint: disable=import-error
         return _course_team_user(*args, **kwargs)
     return None
 

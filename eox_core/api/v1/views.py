@@ -128,7 +128,7 @@ class EdxappEnrollment(APIView):
         logstr = id_str + ': %s, username: %s, mode: %s, is_active: %s, force: %s'
         logarr = [id_val, username, mode, is_active, force]
         if exception:
-            LOG.warn(desc + ': Exception %s,' + logstr, repr(exception), *logarr)
+            LOG.error(desc + ': Exception %s,' + logstr, repr(exception), *logarr)
         else:
             LOG.info(desc + ': ' + logstr, *logarr)
 

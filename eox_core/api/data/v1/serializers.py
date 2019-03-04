@@ -7,9 +7,10 @@ import json
 import logging
 
 from django.utils.duration import duration_string
+from rest_framework import serializers
+
 from eox_core.edxapp_wrapper.courseware import get_courseware_courses
 from eox_core.edxapp_wrapper.grades import get_course_grade_factory
-from rest_framework import serializers
 
 from .fields import CustomRelatedField
 
@@ -28,7 +29,7 @@ class MetaSerializer(serializers.Serializer):  # pylint: disable=abstract-method
         try:
             _data = json.loads(obj)
             _output = {}
-            for key, value in _fields.iteritems():
+            for key, value in iter(_fields.items()):
                 _output[key] = _data.get(key, value)
             return _output
         except ValueError:

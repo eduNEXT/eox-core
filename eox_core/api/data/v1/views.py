@@ -14,7 +14,7 @@ class CeleryTasksStatus(APIView):
     """
     authentication_classes = ()
 
-    def get(self, request, task_id=None, *args, **kwargs):  # pylint: disable=unused-argument
+    def get(self, request, task_id=None, *args, **kwargs):  # pylint: disable=unused-argument, keyword-arg-before-vararg
         """
         Return the task status and its result, if already calculated.
         """

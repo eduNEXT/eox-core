@@ -4,4 +4,6 @@ disable=
 	no-self-use,
 	too-few-public-methods,
 	fixme,
-	line-too-long
+	line-too-long,
+	arguments-differ,
+	duplicate-code
