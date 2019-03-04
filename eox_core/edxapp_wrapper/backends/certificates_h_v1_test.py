@@ -8,6 +8,7 @@ def get_generated_certificate():
     """ get test GeneratedCertificate model. """
 
     class CertificatesDummyModel(models.Model):
+        """ Dummy model for testing. """
         pass
 
     return CertificatesDummyModel

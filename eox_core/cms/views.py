@@ -9,7 +9,7 @@ import re
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseNotFound
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_http_methods
 from opaque_keys.edx.keys import CourseKey  # pylint: disable=import-error
@@ -45,6 +45,7 @@ def management_view(request):
             'details_fields': details_fields,
             'request_timeout_value': request_timeout_value
         })
+    return HttpResponseNotFound()
 
 
 @enable_course_management_view

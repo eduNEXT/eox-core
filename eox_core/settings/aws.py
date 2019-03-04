@@ -1,7 +1,7 @@
 """
 Settings for eox_core project meant to be called on the edx-platform/*/envs/aws.py module
 """
-from .common import *  # pylint: disable=wildcard-import
+from .common import *  # pylint: disable=wildcard-import, unused-wildcard-import
 
 
 def plugin_settings(settings):  # pylint: disable=function-redefined

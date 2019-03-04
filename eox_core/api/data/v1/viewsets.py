@@ -9,13 +9,14 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from edx_proctoring.models import \
     ProctoredExamStudentAttempt  # pylint: disable=import-error
-from eox_core.edxapp_wrapper.certificates import get_generated_certificate
-from eox_core.edxapp_wrapper.users import get_course_enrollment
 from rest_framework import filters, mixins, status, viewsets
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework_oauth.authentication import OAuth2Authentication
+
+from eox_core.edxapp_wrapper.certificates import get_generated_certificate
+from eox_core.edxapp_wrapper.users import get_course_enrollment
 
 from .filters import (CourseEnrollmentFilter, GeneratedCerticatesFilter,
                       ProctoredExamStudentAttemptFilter, UserFilter)
@@ -59,7 +60,7 @@ class DataApiViewSet(mixins.ListModelMixin,
         return queryset
 
 
-class UsersViewSet(DataApiViewSet):
+class UsersViewSet(DataApiViewSet):  # pylint: disable=too-many-ancestors
     """
     A viewset for viewing users in the platform.
     """
@@ -78,7 +79,7 @@ class UsersViewSet(DataApiViewSet):
     ]
 
 
-class CourseEnrollmentViewset(DataApiViewSet):
+class CourseEnrollmentViewset(DataApiViewSet):  # pylint: disable=too-many-ancestors
     """
     A viewset for viewing Course Enrollments.
     """
@@ -87,7 +88,7 @@ class CourseEnrollmentViewset(DataApiViewSet):
     filter_class = CourseEnrollmentFilter
 
 
-class CourseEnrollmentWithGradesViewset(DataApiViewSet):
+class CourseEnrollmentWithGradesViewset(DataApiViewSet):  # pylint: disable=too-many-ancestors
     """
     A viewset for viewing Course Enrollments with grades data.
     This view will create a celery task to fetch grades data for
@@ -127,7 +128,7 @@ class CourseEnrollmentWithGradesViewset(DataApiViewSet):
         return Response(data_response, status=status.HTTP_202_ACCEPTED)
 
 
-class CertificateViewSet(DataApiViewSet):
+class CertificateViewSet(DataApiViewSet):  # pylint: disable=too-many-ancestors
     """
     A viewset for viewing certificates generated for users.
     """
@@ -143,7 +144,7 @@ class CertificateViewSet(DataApiViewSet):
     ]
 
 
-class ProctoredExamStudentViewSet(DataApiViewSet):
+class ProctoredExamStudentViewSet(DataApiViewSet):  # pylint: disable=too-many-ancestors
     """
     A viewset for viewing proctored exams attempts made by students.
     """

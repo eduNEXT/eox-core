@@ -5,21 +5,26 @@ Backend for the create_edxapp_user that works under the open-release/hawthorn.be
 """
 # pylint: disable=import-error, protected-access
 from __future__ import absolute_import, unicode_literals
-import logging
+
 import datetime
+import logging
+
+from django.contrib.auth.models import User
+from opaque_keys.edx.keys import CourseKey
 from pytz import utc
 from rest_framework.exceptions import APIException
-from django.contrib.auth.models import User
-from enrollment import api
-from enrollment.errors import CourseModeNotFoundError
-from enrollment.errors import CourseEnrollmentExistsError
+
 from course_modes.models import CourseMode
-from opaque_keys.edx.keys import CourseKey
-from student.models import CourseEnrollment
+from enrollment import api
+from enrollment.errors import (CourseEnrollmentExistsError,
+                               CourseModeNotFoundError)
 from eox_core.edxapp_wrapper.backends.edxfuture_i_v1 import get_program
-from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
-from openedx.core.djangoapps.site_configuration.helpers import get_current_site_orgs, get_all_orgs
+from openedx.core.djangoapps.content.course_overviews.models import \
+    CourseOverview
+from openedx.core.djangoapps.site_configuration.helpers import (get_all_orgs,
+                                                                get_current_site_orgs)
 from openedx.core.lib.exceptions import CourseNotFoundError
+from student.models import CourseEnrollment
 
 LOG = logging.getLogger(__name__)
 
