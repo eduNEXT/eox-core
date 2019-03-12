@@ -4,10 +4,14 @@ import { Tabs } from '@edx/paragon';
 import PropTypes from 'prop-types';
 import CourseTeamManagement from './CourseTeamManagement';
 import CourseSettings from './CourseSettings';
+import CourseRerun from './CourseRerun';
+/* eslint-disable import/no-unresolved */
+import '../css/edx-bootstrap';
+
 
 function CourseManagement(props) {
   return (
-    <Tabs labels={['Course team management', 'Course settings', 'Panel 3']}>
+    <Tabs labels={['Course team management', 'Course settings', 'Course rerun']}>
       <div>
         <CourseTeamManagement />
       </div>
@@ -19,7 +23,9 @@ function CourseManagement(props) {
         />
       </div>
       <div>
-        Panel 3
+        <CourseRerun
+          requestTimeOut={props.courseRerun.request_timeout_value}
+        />
       </div>
     </Tabs>
   );
@@ -44,6 +50,9 @@ export class RenderReactComponent {
 }
 
 CourseManagement.defaultProps = {
+  courseRerun: {
+    request_timeout_value: 500,
+  },
   courseSettings: {
     course_key: '',
     details_fields: [],
@@ -55,6 +64,12 @@ CourseManagement.propTypes = {
   courseSettings: PropTypes.shape({
     course_key: PropTypes.string,
     details_fields: PropTypes.arrayOf(PropTypes.string),
+    request_timeout_value: PropTypes.number,
+  }),
+};
+
+CourseManagement.propTypes = {
+  courseRerun: PropTypes.shape({
     request_timeout_value: PropTypes.number,
   }),
 };

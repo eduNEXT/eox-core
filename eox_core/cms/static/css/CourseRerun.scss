@@ -1,0 +1,15 @@
+/* Styles for CourseRerun React js component */
+
+:local(.organizationList) {
+    position: relative;
+    width: 100% !important;
+    height: 200px !important;
+    max-height: 200px !important;
+}
+
+:local(.tip) {
+    color: #666;
+    font-size: 0.7em;
+    top: -10px;
+    position: relative;
+}
