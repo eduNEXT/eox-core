@@ -1,11 +1,11 @@
 {
   "name": "eox-core",
-  "version": "0.1.0",
+  "version": "0.13.0",
   "description": "eduNEXT Openedx Extensions",
   "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack --display-error-details"
+    "build-dev": "webpack --display-error-details --config webpack.dev.js",
+    "build-prod": "webpack --optimize-minimize --config webpack.prod.js"
   },
   "repository": {
     "type": "git",
@@ -43,6 +43,7 @@
     "eslint-loader": "2.1.2",
     "eslint-plugin-import": "2.16.0",
     "eslint-plugin-jsx-a11y": "6.2.1",
-    "eslint-plugin-react": "7.12.4"
+    "eslint-plugin-react": "7.12.4",
+    "webpack-merge": "^4.2.1"
   }
 }
