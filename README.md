@@ -72,6 +72,10 @@ $ source /path/to/venv/bin/activate
 We use webpack to bundle the React js application and its dependencies,
 in order to compile for dev environment run this command in the root folder:
 
-npm run build
+npm run build-dev
+
+Otherwise, if you want to compile for use in production environment, run this command instead:
+
+npm run build-prod
 
 This command is defined in the package.json file and export two bundles (a build.js and course-management.bundle.css) inside of eox_core/static folder.
