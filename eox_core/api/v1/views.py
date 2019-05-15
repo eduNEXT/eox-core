@@ -46,6 +46,7 @@ class EdxappUser(APIView):
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
         data['site'] = get_current_site(request)
+        data['request'] = request
         user, msg = create_edxapp_user(**data)
 
         serialized_user = EdxappUserSerializer(user)

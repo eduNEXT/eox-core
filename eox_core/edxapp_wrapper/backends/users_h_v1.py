@@ -7,6 +7,7 @@ from __future__ import absolute_import, unicode_literals
 
 import logging
 
+from copy import deepcopy
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import transaction
@@ -26,7 +27,7 @@ from student.forms import AccountCreationForm  # pylint: disable=import-error
 from student.helpers import (  # pylint: disable=import-error
     create_or_set_user_attribute_created_on_site
 )
-from student.helpers import do_create_account  # pylint: disable=import-error
+from student.views import create_account_with_params  # pylint: disable=import-error
 from student.models import CourseEnrollment  # pylint: disable=import-error
 from student.models import (UserAttribute, UserSignupSource,  # pylint: disable=import-error
                             create_comments_service_user)
@@ -64,68 +65,59 @@ def create_edxapp_user(*args, **kwargs):
         'activate': True,
         'site': request.site,
         'language_preference': 'es-419',
+        'extended_profile_fields': {
+            'internal_id': '12',
+            ...
+        },
+        'year_of_birth': '1981',
+        'city': 'Boston',
+        'verify_account_email': True,
+        'enable_comments_service': True
     }
     user = create_edxapp_user(**data)
 
     """
     errors = []
-
     email = kwargs.pop("email")
     username = kwargs.pop("username")
     conflicts = check_edxapp_account_conflicts(email=email, username=username)
     if conflicts:
         return None, ["Fatal: account collition with the provided: {}".format(", ".join(conflicts))]
+    request = kwargs.pop("request", False)
+    request.data['name'] = kwargs.pop("fullname")
+    email_validation = request.data.pop("verify_account_email", False)
+    terms_of_service = request.data.pop("terms_of_service", None)
+    honor_code = request.data.pop("honor_code", None)
+    comments_service = request.data.pop("enable_comments_service", None)
 
-    data = {
-        'username': username,
-        'email': email,
-        'password': kwargs.pop("password"),
-        'name': kwargs.pop("fullname"),
-    }
-    # Go ahead and create the new user
-    with transaction.atomic():
-        # In theory is possible to extend the registration form with a custom app
-        # An example form app for this can be found at http://github.com/open-craft/custom-form-app
-        # form = get_registration_extension_form(data=params)
-        # if not form:
-        form = AccountCreationForm(
-            data=data,
-            tos_required=False,
-            # TODO: we need to support the extra profile fields as defined in the django.settings
-            # extra_fields=extra_fields,
-            # extended_profile_fields=extended_profile_fields,
-            # enforce_password_policy=enforce_password_policy,
-        )
-        (user, profile, registration) = do_create_account(form)  # pylint: disable=unused-variable
+    _original_settings_FEATURES = deepcopy(settings.FEATURES)
+    registration_fields = getattr(settings, 'REGISTRATION_EXTRA_FIELDS', {})
+    _original_settings_registration_fields = deepcopy(registration_fields)
 
-    site = kwargs.pop("site", False)
-    if site:
-        create_or_set_user_attribute_created_on_site(user, site)
+    settings.FEATURES['SKIP_EMAIL_VALIDATION'] = not email_validation == True
+
+    if not comments_service:
+        if 'ENABLE_DISCUSSION_SERVICE' in settings.FEATURES:
+            settings.FEATURES['ENABLE_DISCUSSION_SERVICE'] = False
+
+    if terms_of_service:
+        registration_fields['terms_of_service'] = 'required'
     else:
-        errors.append("The user was not assigned to any site")
+        registration_fields['terms_of_service'] = 'hidden'
 
-    try:
-        create_comments_service_user(user)
-    except Exception:  # pylint: disable=broad-except
-        errors.append("No comments_service_user was created")
+    if honor_code:
+        registration_fields['honor_code'] = 'required'
+    else:
+        registration_fields['honor_code'] = 'hidden'
 
-    # TODO: link account with third party auth
+    user = create_account_with_params(request, request.data)
 
-    lang_pref = kwargs.pop("language_preference", False)
-    if lang_pref:
-        try:
-            preferences_api.set_user_preference(user, LANGUAGE_KEY, lang_pref)
-        except Exception:  # pylint: disable=broad-except
-            errors.append("Could not set lang preference '{} for user '{}'".format(
-                lang_pref,
-                user.username,
-            ))
+    settings.FEATURES = _original_settings_FEATURES
+    registration_fields = _original_settings_registration_fields
 
     if kwargs.pop("activate_user", False):
         user.is_active = True
         user.save()
-
-    # TODO: run conditional email sequence
 
     return user, errors
 
