@@ -11,6 +11,7 @@ from copy import deepcopy
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import transaction
+from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from rest_framework.exceptions import APIException
 
 from openedx.core.djangoapps.lang_pref import (  # pylint: disable=import-error
@@ -85,16 +86,21 @@ def create_edxapp_user(*args, **kwargs):
         return None, ["Fatal: account collition with the provided: {}".format(", ".join(conflicts))]
     request = kwargs.pop("request", False)
     request.data['name'] = kwargs.pop("fullname")
+    # Get additional settings for this user
     email_validation = request.data.pop("verify_account_email", False)
     terms_of_service = request.data.pop("terms_of_service", None)
     honor_code = request.data.pop("honor_code", None)
     comments_service = request.data.pop("enable_comments_service", None)
+    extended_profile_data = request.data.pop("extended_profile_fields", {})
 
-    _original_settings_FEATURES = deepcopy(settings.FEATURES)
+    # Settings to be monkey patched to suit request
     registration_fields = getattr(settings, 'REGISTRATION_EXTRA_FIELDS', {})
+    site_configuration = configuration_helpers.get_current_site_configuration()
+    # Backup copies of original configurations
+    _original_settings_features = deepcopy(settings.FEATURES)
     _original_settings_registration_fields = deepcopy(registration_fields)
 
-    settings.FEATURES['SKIP_EMAIL_VALIDATION'] = not email_validation == True
+    settings.FEATURES['SKIP_EMAIL_VALIDATION'] = not email_validation
 
     if not comments_service:
         if 'ENABLE_DISCUSSION_SERVICE' in settings.FEATURES:
@@ -110,15 +116,20 @@ def create_edxapp_user(*args, **kwargs):
     else:
         registration_fields['honor_code'] = 'hidden'
 
+    extended_profile_fields = {
+        'extended_profile_fields': {key: '' for key in extended_profile_data}
+        }
+    site_configuration.values.update(extended_profile_fields)
+    request.data.update(extended_profile_data)
     user = create_account_with_params(request, request.data)
 
-    settings.FEATURES = _original_settings_FEATURES
+    settings.FEATURES = _original_settings_features
     registration_fields = _original_settings_registration_fields
+    #TODO restore site configuration
 
     if kwargs.pop("activate_user", False):
         user.is_active = True
         user.save()
-
     return user, errors
 
 
