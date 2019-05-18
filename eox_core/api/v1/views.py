@@ -25,7 +25,14 @@ from eox_core.api.v1.serializers import (
     EdxappUserReadOnlySerializer,
     EdxappCoursePreEnrollmentSerializer,
 )
-from eox_core.edxapp_wrapper.users import create_edxapp_user, get_edxapp_user
+
+from eox_core.edxapp_wrapper.users import (
+    create_edxapp_user,
+    get_edxapp_user,
+    update_edxapp_user,
+)
+
+
 from eox_core.edxapp_wrapper.enrollments import (
     create_enrollment,
     update_enrollment,
@@ -123,6 +130,18 @@ class EdxappUser(UserQueryMixin, APIView):
         response_data = serialized_user.data
         if msg:
             response_data["messages"] = msg
+        return Response(response_data)
+
+    def put(self, request, *args, **kwargs):
+        """
+        Update the user on edxapp
+        """
+        data = request.data
+        data['site'] = get_current_site(request)
+        msg = update_edxapp_user(**data)
+
+        if msg:
+            response_data = msg
         return Response(response_data)
 
     def get(self, request, *args, **kwargs):

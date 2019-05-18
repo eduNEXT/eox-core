@@ -25,6 +25,14 @@ def create_edxapp_user(*args, **kwargs):
 
     return backend.create_edxapp_user(*args, **kwargs)
 
+def update_edxapp_user(*args, **kwargs):
+    """ Update the edxapp user """
+
+    backend_function = settings.EOX_CORE_USERS_BACKEND
+    backend = import_module(backend_function)
+
+    return backend.update_edxapp_user(*args, **kwargs)
+
 
 def get_user_read_only_serializer(*args, **kwargs):
     """ Gets the Open edX model UserProfile """

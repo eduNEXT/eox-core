@@ -16,7 +16,12 @@ from openedx.core.djangoapps.lang_pref import (  # pylint: disable=import-error
     LANGUAGE_KEY
 )
 from openedx.core.djangoapps.user_api.accounts.api import (  # pylint: disable=import-error
-    check_account_exists
+    check_account_exists,
+    update_account_settings,
+)
+from openedx.core.djangoapps.user_api.errors import ( # pylint: disable=import-error
+    AccountUpdateError,
+    AccountValidationError,
 )
 from openedx.core.djangoapps.user_api.accounts.serializers import (   # pylint: disable=import-error
     UserReadOnlySerializer
@@ -129,6 +134,40 @@ def create_edxapp_user(*args, **kwargs):
 
     return user, errors
 
+def update_edxapp_user(*args, **kwargs):
+    """
+    Update a user on the open edx django site using calls to
+    functions defined in the edx-platform codebase
+
+    Example call:
+
+    data: A JSON containing the username and key-value pairs of the fields to be updated.
+
+    data = {
+        'username': "Username",
+        'email': "address@example.org",
+        'name': "Full Name",
+        'gender': 'f',
+        'bio': '...'
+    }
+    msg = update_edxapp_user(**data)
+
+    """
+    errors = []
+    try:
+        username = kwargs.pop('username')
+        site = kwargs.pop('site')
+        data = {'username': username, 'site': site}
+        user = get_edxapp_user(**data)
+        update_account_settings(requesting_user=user, update=kwargs)
+    except AccountValidationError as acc_exp:
+        for error in acc_exp.field_errors:
+            err_msg = acc_exp.field_errors[error]['user_message']
+            errors.append('Error: {}'.format(err_msg))
+    except AccountUpdateError:
+        errors.append('Fatal: Update process failed')
+
+    return errors or 'User {} updated'.format(username)
 
 def get_edxapp_user(**kwargs):
     """
