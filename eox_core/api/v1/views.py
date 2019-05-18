@@ -23,7 +23,7 @@ from eox_core.api.v1.serializers import (
     EdxappUserReadOnlySerializer
 )
 from eox_core.edxapp_wrapper.users import create_edxapp_user, get_edxapp_user
-from eox_core.edxapp_wrapper.enrollments import create_enrollment
+from eox_core.edxapp_wrapper.enrollments import create_enrollment, update_enrollment
 
 
 LOG = logging.getLogger(__name__)
@@ -91,6 +91,35 @@ class EdxappEnrollment(APIView):
 
         for enrollment_request in data:
             enrollments, msgs = create_enrollment(**enrollment_request)
+            if not isinstance(enrollments, list):
+                enrollments = [enrollments]
+                msgs = [msgs]
+            for enrollment, msg in zip(enrollments, msgs):
+                response_data = EdxappCourseEnrollmentSerializer(enrollment).data
+                if msg:
+                    response_data["messages"] = msg
+                multiple_responses.append(response_data)
+
+        if many or 'bundle_id' in request.data:
+            response = multiple_responses
+        else:
+            response = multiple_responses[0]
+        return Response(response)
+
+    def put(self, request, *args, **kwargs):
+        """
+        Update enrollments on edxapp
+        """
+        multiple_responses = []
+        many = isinstance(request.data, list)
+        serializer = EdxappCourseEnrollmentQuerySerializer(data=request.data, many=many)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+        if not isinstance(data, list):
+            data = [data]
+
+        for enrollment_update in data:
+            enrollments, msgs = update_enrollment(**enrollment_update)
             if not isinstance(enrollments, list):
                 enrollments = [enrollments]
                 msgs = [msgs]

@@ -19,6 +19,7 @@ from enrollment import api
 from enrollment.errors import (CourseEnrollmentExistsError,
                                CourseModeNotFoundError)
 from eox_core.edxapp_wrapper.backends.edxfuture_i_v1 import get_program
+from eox_core.edxapp_wrapper.backends.users_h_v1 import check_edxapp_account_conflicts
 from openedx.core.djangoapps.content.course_overviews.models import \
     CourseOverview
 from openedx.core.djangoapps.site_configuration.helpers import (get_all_orgs,
@@ -42,6 +43,50 @@ def create_enrollment(*args, **kwargs):
 
     return enroll_on_course(course_id, *args, **kwargs)
 
+def update_enrollment(*args, **kwargs):
+    """
+    Update enrollment of given user in the course provided.
+
+    Example:
+        >>>update_enrollment(
+            {
+            "username": "Bob",
+            "course_id": course-v1-edX-DemoX-1T2015",
+            "is_active": "False",
+            "mode": "audit"
+            "enrollment_attributes": [
+                {
+                    "namespace": "credit",
+                    "name": "provider_id",
+                    "value": "hogwarts",
+                },
+                {...}
+                ]
+            }
+        )
+    """
+    errors = []
+    course_id = kwargs.pop('course_id', None)
+    email = kwargs.get("email")
+    username = kwargs.get('username')
+    mode = kwargs.get('mode')
+    is_active = kwargs.get('is_active', True)
+    enrollment_attributes = kwargs.get('enrollment_attributes', None)
+
+    if email:
+        match = User.objects.filter(email=email).first()
+        if match is None:
+            raise APIException('No user found with that email')
+        else:
+            username = match.username
+    LOG.info('Updating enrollment for student: %s of course: %s mode: %s', username, course_id, mode)
+    enrollment = api._data_api().update_course_enrollment(username, course_id, mode, is_active)
+    if not enrollment:
+        raise APIException('No enrollment found for {}'.format(username or email))
+    if enrollment_attributes is not None:
+        api.set_enrollment_attributes(username, course_id, enrollment_attributes)
+
+    return enrollment, errors
 
 def enroll_on_course(course_id, *args, **kwargs):
     """
@@ -138,13 +183,15 @@ def check_edxapp_enrollment_is_valid(*args, **kwargs):
     force = kwargs.get('force', False)
     mode = kwargs.get("mode")
     program_uuid = kwargs.get('bundle_id')
+    username = kwargs.get("username")
+    email = kwargs.get("email")
 
     if program_uuid and course_id:
         return None, ['You have to provide a course_id or bundle_id but not both']
-    if not kwargs.get("email") and not kwargs.get("username"):
+    if not email and not username:
         return ['Email or username needed']
-    if kwargs.get("email") and kwargs.get("username"):
-        return ['You have to provide an email or username but not both']
+    if not check_edxapp_account_conflicts(email=email, username=username):
+        return ['User not found']
     if mode not in CourseMode.ALL_MODES:
         return ['Invalid mode given:' + mode]
     if course_id:
@@ -155,6 +202,8 @@ def check_edxapp_enrollment_is_valid(*args, **kwargs):
             api.validate_course_mode(course_id, mode, is_active=is_active)
         except CourseModeNotFoundError:
             errors.append('Mode not found')
+        except CourseNotFoundError:
+            errors.append('Course not found')
     return errors
 
 
