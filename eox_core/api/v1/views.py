@@ -23,7 +23,11 @@ from eox_core.api.v1.serializers import (
     EdxappUserReadOnlySerializer
 )
 from eox_core.edxapp_wrapper.users import create_edxapp_user, get_edxapp_user
-from eox_core.edxapp_wrapper.enrollments import create_enrollment, update_enrollment
+from eox_core.edxapp_wrapper.enrollments import (
+    create_enrollment,
+    update_enrollment,
+    get_enrollment
+)
 
 
 LOG = logging.getLogger(__name__)
@@ -133,6 +137,14 @@ class EdxappEnrollment(APIView):
             response = multiple_responses
         else:
             response = multiple_responses[0]
+        return Response(response)
+
+    def get(self, request, *args, **kwargs):
+        """
+        Get enrollments on edxapp
+        """
+        data = dict(request.data)
+        response = get_enrollment(**data)
         return Response(response)
 
     def handle_exception(self, exc):

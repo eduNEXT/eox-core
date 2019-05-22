@@ -88,6 +88,40 @@ def update_enrollment(*args, **kwargs):
 
     return enrollment, errors
 
+
+def get_enrollment(*args, **kwargs):
+    """
+    Return enrollment of given user in the course provided.
+
+    Example:
+        >>>get_enrollment(
+            {
+            "username": "Bob",
+            "course_id": course-v1-edX-DemoX-1T2015"
+        )
+    """
+    errors = []
+    course_id = kwargs.pop('course_id', None)
+    username = kwargs.get('username', None)
+    email = kwargs.get('email', None)
+    try:
+        if username:
+            user = User.objects.get(username=username)
+        else:
+            user = User.objects.get(email=email)
+    except User.DoesNotExist:
+        raise APIException('No user found by {query} .'.format(query=str(kwargs)))
+
+    username = user.username
+
+    LOG.info('Getting enrollment information of student: %s  course: %s', username, course_id)
+    enrollment = api.get_enrollment(username, course_id)
+    if not enrollment:
+        raise APIException('No enrollment found for {}'.format(username))
+
+    enrollment['enrollment_attributes'] = api.get_enrollment_attributes(username, course_id)
+    return enrollment, errors
+
 def enroll_on_course(course_id, *args, **kwargs):
     """
     enroll user on a single course
