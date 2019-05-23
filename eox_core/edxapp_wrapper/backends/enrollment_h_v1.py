@@ -109,7 +109,7 @@ def get_enrollment(*args, **kwargs):
             user = User.objects.get(username=username)
         else:
             user = User.objects.get(email=email)
-    except User.DoesNotExist:
+    except User.DoesNotExist: # pylint: disable=no-member
         raise APIException('No user found by {query} .'.format(query=str(kwargs)))
 
     username = user.username
@@ -121,6 +121,43 @@ def get_enrollment(*args, **kwargs):
 
     enrollment['enrollment_attributes'] = api.get_enrollment_attributes(username, course_id)
     return enrollment, errors
+
+def delete_enrollment(*args, **kwargs):
+    """
+    Delete enrollment and enrollment attributes of given user in the course provided.
+
+    Example:
+        >>>delete_enrollment(
+            {
+            "username": "Bob",
+            "course_id": course-v1-edX-DemoX-1T2015"
+        )
+    """
+    course_id = kwargs.pop('course_id', None)
+    course_key = CourseKey.from_string(course_id)
+    username = kwargs.get('username', None)
+    email = kwargs.get('email', None)
+    try:
+        if username:
+            user = User.objects.get(username=username)
+        else:
+            user = User.objects.get(email=email)
+    except User.DoesNotExist: # pylint: disable=no-member
+        raise APIException('No user found by {query} .'.format(query=str(kwargs)))
+
+    username = user.username
+
+    LOG.info('Deleting enrollment student: %s  course: %s', username, course_id)
+    enrollment = CourseEnrollment.get_enrollment(user, course_key)
+    if not enrollment:
+        raise APIException('No enrollment found for {}'.format(username))
+    try:
+        enrollment.delete()
+    except Exception:
+        raise APIException('Error: Enrollment could not be deleted for {}'.format(username))
+    else:
+        return 'Enrollment deleted for {}'.format(username)
+
 
 def enroll_on_course(course_id, *args, **kwargs):
     """

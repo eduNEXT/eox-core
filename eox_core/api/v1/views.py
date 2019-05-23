@@ -20,13 +20,14 @@ from eox_core.api.v1.serializers import (
     EdxappUserSerializer,
     EdxappCourseEnrollmentSerializer,
     EdxappCourseEnrollmentQuerySerializer,
-    EdxappUserReadOnlySerializer
+    EdxappUserReadOnlySerializer,
 )
 from eox_core.edxapp_wrapper.users import create_edxapp_user, get_edxapp_user
 from eox_core.edxapp_wrapper.enrollments import (
     create_enrollment,
     update_enrollment,
-    get_enrollment
+    get_enrollment,
+    delete_enrollment,
 )
 
 
@@ -145,6 +146,14 @@ class EdxappEnrollment(APIView):
         """
         data = dict(request.data)
         response = get_enrollment(**data)
+        return Response(response)
+
+    def delete(self, request, *args, **kwargs):
+        """
+        Delete enrollment on edxapp
+        """
+        data = dict(request.data)
+        response = delete_enrollment(**data)
         return Response(response)
 
     def handle_exception(self, exc):
