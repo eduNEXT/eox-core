@@ -118,7 +118,7 @@ class EdxappCoursePreEnrollmentSerializer(serializers.Serializer):
 
     Handles the serialization of the context data required to create a course whitelisting or pre-enrollments for a user
     """
-
+    course_id = serializers.CharField(max_length=255, default=None)
     auto_enroll = serializers.BooleanField(default=True)
     email = serializers.EmailField()
 
@@ -137,7 +137,6 @@ class EdxappCoursePreEnrollmentQuerySerializer(EdxappCoursePreEnrollmentSerializ
     Handles the serialization of the context data required to create a course whitelisting
     on different backends
     """
-    course_id = serializers.CharField(max_length=255, default=None)
     bundle_id = serializers.CharField(max_length=255, default=None)
 
 def EdxappUserReadOnlySerializer(*args, **kwargs):   # pylint: disable=invalid-name

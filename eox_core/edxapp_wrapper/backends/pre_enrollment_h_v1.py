@@ -44,6 +44,36 @@ def create_pre_enrollment(*args, **kwargs):
 
     return pre_enroll_on_course(course_id=course_id, *args, **kwargs)
 
+def update_pre_enrollment(*args, **kwargs):
+    """
+    Update pre-enrollment of given user in the course provided.
+
+    Example:
+        >>>update_pre_enrollment(
+            {
+            "email": "bob@example.com",
+            "course_id": course-v1-edX-DemoX-1T2015",
+            "auto_enroll": "False"
+            }
+        )
+    """
+    kwargs = dict(kwargs)
+    errors = []
+    email = kwargs.get('email')
+    auto_enroll = kwargs.pop('auto_enroll', True)
+    course_id = kwargs.pop('course_id')
+    try:
+        course_key = CourseKey.from_string(course_id)
+        pre_enrollment = CourseEnrollmentAllowed.objects.get(course_id=course_key, **kwargs)
+        pre_enrollment.auto_enroll = auto_enroll
+        pre_enrollment.save()
+        LOG.info('Updating regular pre-enrollment for email: %s course_id: %s auto_enroll: %s', email, course_id, auto_enroll)
+    except IntegrityError:
+        return None, 'Pre-enrollment not found for email: {} course_id: {}'.format(email, course_id)
+    except CourseEnrollmentAllowed.DoesNotExist:
+        return None, 'Pre-enrollment not found for email: {} course_id: {}'.format(email, course_id)
+    return pre_enrollment, errors
+
 
 def pre_enroll_on_course(*args, **kwargs):
     """

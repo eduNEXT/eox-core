@@ -35,7 +35,8 @@ from eox_core.edxapp_wrapper.enrollments import (
 )
 from eox_core.edxapp_wrapper.pre_enrollments import (
     create_pre_enrollment,
-  )
+    update_pre_enrollment,
+)
 
 LOG = logging.getLogger(__name__)
 
@@ -317,6 +318,21 @@ class EdxappPreEnrollment(APIView):
         else:
             response = multiple_responses[0]
         return Response(response)
+
+    def put(self, request, *args, **kwargs):
+        """
+        Update whitelistings on edxapp
+        """
+        serializer = EdxappCoursePreEnrollmentQuerySerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+        data.pop('bundle_id')
+        pre_enrollment, errors = update_pre_enrollment(**data)
+        if pre_enrollment:
+            return Response(EdxappCoursePreEnrollmentSerializer(pre_enrollment).data)
+
+        return Response(errors, status=status.HTTP_404_NOT_FOUND)
+
 
     def handle_exception(self, exc):
         """
