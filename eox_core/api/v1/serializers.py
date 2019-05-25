@@ -8,6 +8,7 @@ from rest_framework import serializers
 from eox_core.edxapp_wrapper.users import check_edxapp_account_conflicts, get_user_read_only_serializer
 from eox_core.edxapp_wrapper.enrollments import check_edxapp_enrollment_is_valid
 from eox_core.edxapp_wrapper.coursekey import validate_org, get_valid_course_key
+from eox_core.edxapp_wrapper.pre_enrollments import validate_pre_enrollment
 
 
 class EdxappUserSerializer(serializers.Serializer):
@@ -111,6 +112,33 @@ class EdxappCourseEnrollmentQuerySerializer(EdxappCourseEnrollmentSerializer):
     course_id = EdxappValidatedCourseIDField(default=None)
     bundle_id = serializers.CharField(max_length=255, default=None)
 
+
+class EdxappCoursePreEnrollmentSerializer(serializers.Serializer):
+    """Serialize CourseEnrollmentAllowed
+
+    Handles the serialization of the context data required to create a course whitelisting or pre-enrollments for a user
+    """
+
+    auto_enroll = serializers.BooleanField(default=True)
+    email = serializers.EmailField()
+
+    def validate(self, attrs):
+        """
+        Check that there are no issues with enrollment
+        """
+        errors = validate_pre_enrollment(**attrs)
+        if errors:
+            raise serializers.ValidationError(", ".join(errors))
+        return attrs
+
+
+class EdxappCoursePreEnrollmentQuerySerializer(EdxappCoursePreEnrollmentSerializer):
+    """
+    Handles the serialization of the context data required to create a course whitelisting
+    on different backends
+    """
+    course_id = serializers.CharField(max_length=255, default=None)
+    bundle_id = serializers.CharField(max_length=255, default=None)
 
 def EdxappUserReadOnlySerializer(*args, **kwargs):   # pylint: disable=invalid-name
     """

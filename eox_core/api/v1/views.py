@@ -23,6 +23,8 @@ from eox_core.api.v1.serializers import (
     EdxappCourseEnrollmentSerializer,
     EdxappCourseEnrollmentQuerySerializer,
     EdxappUserReadOnlySerializer,
+    EdxappCoursePreEnrollmentSerializer,
+    EdxappCoursePreEnrollmentQuerySerializer,
 )
 from eox_core.edxapp_wrapper.users import create_edxapp_user, get_edxapp_user
 from eox_core.edxapp_wrapper.enrollments import (
@@ -31,7 +33,9 @@ from eox_core.edxapp_wrapper.enrollments import (
     get_enrollment,
     delete_enrollment,
 )
-
+from eox_core.edxapp_wrapper.pre_enrollments import (
+    create_pre_enrollment,
+  )
 
 LOG = logging.getLogger(__name__)
 
@@ -274,6 +278,69 @@ class EdxappEnrollment(APIView):
             LOG.error('API Error: %s', repr(exc.detail))
 
         return super(EdxappEnrollment, self).handle_exception(exc)
+
+
+class EdxappPreEnrollment(APIView):
+    """
+    Handles API requests to manage whitelistings (pre-enrollments)
+    """
+    authentication_classes = (OAuth2Authentication, SessionAuthentication)
+    permission_classes = (EoxCoreAPIPermission,)
+    renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
+
+    # pylint: disable=too-many-locals
+    def post(self, request, *args, **kwargs):
+        """
+        Create whitelistings on edxapp
+        """
+        multiple_responses = []
+        many = isinstance(request.data, list)
+        serializer = EdxappCoursePreEnrollmentQuerySerializer(data=request.data, many=many)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+        if not isinstance(data, list):
+            data = [data]
+
+        for pre_enrollment_request in data:
+            pre_enrollments, msgs = create_pre_enrollment(**pre_enrollment_request)
+            if not isinstance(pre_enrollments, list):
+                pre_enrollments = [pre_enrollments]
+                msgs = [msgs]
+            for pre_enrollment, msg in zip(pre_enrollments, msgs):
+                response_data = EdxappCoursePreEnrollmentSerializer(pre_enrollment).data
+                if msg:
+                    response_data["messages"] = msg
+                multiple_responses.append(response_data)
+
+        if many or 'bundle_id' in request.data:
+            response = multiple_responses
+        else:
+            response = multiple_responses[0]
+        return Response(response)
+
+    def handle_exception(self, exc):
+        """
+        Handle exception: log it
+        """
+        self.log('API Error', self.kwargs, exc)
+        return super(EdxappPreEnrollment, self).handle_exception(exc)
+
+    def log(self, desc, data, exception=None):
+        """
+        log util for this view
+        """
+        email = data.get('email')
+        bundle_id = data.get('bundle_id')
+        course_id = data.get('course_id')
+        auto_enroll = data.get('auto_enroll')
+        id_val = bundle_id or course_id
+        id_str = 'bundle_id' if bundle_id else 'course_id'
+        logstr = id_str + ': %s, email: %s, auto_enroll: %s'
+        logarr = [id_val, email, auto_enroll]
+        if exception:
+            LOG.error(desc + ': Exception %s,' + logstr, repr(exception), *logarr)
+        else:
+            LOG.info(desc + ': ' + logstr, *logarr)
 
 
 class UserInfo(APIView):
