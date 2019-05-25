@@ -28,6 +28,25 @@ def update_pre_enrollment(*args, **kwargs):
 
     return backend.update_pre_enrollment(*args, **kwargs)
 
+def delete_pre_enrollment(*args, **kwargs):
+    """
+    Delete a pre-enrollment for an existing or future user
+    """
+
+    backend_function = settings.EOX_CORE_PRE_ENROLLMENT_BACKEND
+    backend = import_module(backend_function)
+
+    return backend.delete_pre_enrollment(*args, **kwargs)
+
+def get_pre_enrollment(*args, **kwargs):
+    """
+    Get a pre-enrollment for an existing or future user
+    """
+
+    backend_function = settings.EOX_CORE_PRE_ENROLLMENT_BACKEND
+    backend = import_module(backend_function)
+
+    return backend.get_pre_enrollment(*args, **kwargs)
 
 def validate_pre_enrollment(*args, **kwargs):
     """ Validate CourseEnrollmentAllowed fields """

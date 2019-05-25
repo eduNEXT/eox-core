@@ -74,6 +74,59 @@ def update_pre_enrollment(*args, **kwargs):
         return None, 'Pre-enrollment not found for email: {} course_id: {}'.format(email, course_id)
     return pre_enrollment, errors
 
+def delete_pre_enrollment(*args, **kwargs):
+    """
+    Delete pre-enrollment of given user in the course provided.
+
+    Example:
+        >>>delete_pre_enrollment(
+            {
+            "email": "bob@example.com",
+            "course_id": course-v1-edX-DemoX-1T2015"
+            }
+        )
+    """
+    kwargs = dict(kwargs)
+    errors = []
+    email = kwargs.get('email')
+    course_id = kwargs.pop('course_id')
+    try:
+        course_key = CourseKey.from_string(course_id)
+        pre_enrollment = CourseEnrollmentAllowed.objects.get(course_id=course_key, email=email)
+        pre_enrollment.delete()
+        LOG.info('Deleting regular pre-enrollment for email: %s course_id: %s', email, course_id)
+    except IntegrityError:
+        return None, 'Pre-enrollment not found for email: {} course_id: {}'.format(email, course_id)
+    except CourseEnrollmentAllowed.DoesNotExist:
+        return None, 'Pre-enrollment not found for email: {} course_id: {}'.format(email, course_id)
+    return errors
+
+
+def get_pre_enrollment(*args, **kwargs):
+    """
+    Get pre-enrollment of given user in the course provided.
+
+    Example:
+        >>>get_pre_enrollment(
+            {
+            "email": "bob@example.com",
+            "course_id": course-v1-edX-DemoX-1T2015"
+            }
+        )
+    """
+    kwargs = dict(kwargs)
+    errors = []
+    email = kwargs.get('email')
+    course_id = kwargs.pop('course_id')
+    try:
+        course_key = CourseKey.from_string(course_id)
+        pre_enrollment = CourseEnrollmentAllowed.objects.get(course_id=course_key, email=email)
+        LOG.info('Getting regular pre-enrollment for email: %s course_id: %s', email, course_id)
+    except IntegrityError:
+        return None, 'Pre-enrollment not found for email: {} course_id: {}'.format(email, course_id)
+    except CourseEnrollmentAllowed.DoesNotExist:
+        return None, 'Pre-enrollment not found for email: {} course_id: {}'.format(email, course_id)
+    return pre_enrollment, errors
 
 def pre_enroll_on_course(*args, **kwargs):
     """
