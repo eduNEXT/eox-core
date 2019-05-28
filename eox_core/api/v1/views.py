@@ -9,6 +9,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
+from rest_framework import status
 
 from rest_framework_oauth.authentication import OAuth2Authentication
 from django.contrib.sites.shortcuts import get_current_site
@@ -20,10 +21,15 @@ from eox_core.api.v1.serializers import (
     EdxappUserSerializer,
     EdxappCourseEnrollmentSerializer,
     EdxappCourseEnrollmentQuerySerializer,
-    EdxappUserReadOnlySerializer
+    EdxappUserReadOnlySerializer,
 )
 from eox_core.edxapp_wrapper.users import create_edxapp_user, get_edxapp_user
-from eox_core.edxapp_wrapper.enrollments import create_enrollment
+from eox_core.edxapp_wrapper.enrollments import (
+    create_enrollment,
+    update_enrollment,
+    get_enrollment,
+    delete_enrollment,
+)
 
 
 LOG = logging.getLogger(__name__)
@@ -81,16 +87,51 @@ class EdxappEnrollment(APIView):
         """
         Creates the users on edxapp
         """
+        data = dict(request.data)
+        return EdxappEnrollment.prepare_multiresponse(data, create_enrollment)
+
+    def put(self, request, *args, **kwargs):
+        """
+        Update enrollments on edxapp
+        """
+        data = dict(request.data)
+        return EdxappEnrollment.prepare_multiresponse(data, update_enrollment)
+
+    def get(self, request, *args, **kwargs):
+        """
+        Get enrollments on edxapp
+        """
+        data = dict(request.data)
+        return EdxappEnrollment.prepare_multiresponse(data, get_enrollment)
+
+    def delete(self, request, *args, **kwargs):
+        """
+        Delete enrollment on edxapp
+        """
+        data = dict(request.data)
+        delete_enrollment(**data)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @staticmethod
+    def prepare_multiresponse(request_data, action_method):
+        """
+        Prepare a multiple part response according to the request_data and the action_method provided
+        Args:
+            request_data: Data dictionary containing the query o queries to be processed
+            action_method: Function to be applied to the queries (create, update)
+
+        Returns: List of responses
+        """
         multiple_responses = []
-        many = isinstance(request.data, list)
-        serializer = EdxappCourseEnrollmentQuerySerializer(data=request.data, many=many)
+        many = isinstance(request_data, list)
+        serializer = EdxappCourseEnrollmentQuerySerializer(data=request_data, many=many)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
         if not isinstance(data, list):
             data = [data]
 
-        for enrollment_request in data:
-            enrollments, msgs = create_enrollment(**enrollment_request)
+        for enrollment_query in data:
+            enrollments, msgs = action_method(**enrollment_query)
             if not isinstance(enrollments, list):
                 enrollments = [enrollments]
                 msgs = [msgs]
@@ -100,7 +141,7 @@ class EdxappEnrollment(APIView):
                     response_data["messages"] = msg
                 multiple_responses.append(response_data)
 
-        if many or 'bundle_id' in request.data:
+        if many or 'bundle_id' in request_data:
             response = multiple_responses
         else:
             response = multiple_responses[0]
