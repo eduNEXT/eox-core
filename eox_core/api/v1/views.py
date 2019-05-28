@@ -9,6 +9,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
+from rest_framework import status
 
 from rest_framework_oauth.authentication import OAuth2Authentication
 from django.contrib.sites.shortcuts import get_current_site
@@ -102,14 +103,14 @@ class EdxappEnrollment(APIView):
         """
         data = dict(request.data)
         return EdxappEnrollment.prepare_multiresponse(data, get_enrollment)
-        
+
     def delete(self, request, *args, **kwargs):
         """
         Delete enrollment on edxapp
         """
         data = dict(request.data)
-        response = delete_enrollment(**data)
-        return Response(response)
+        delete_enrollment(**data)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @staticmethod
     def prepare_multiresponse(request_data, action_method):

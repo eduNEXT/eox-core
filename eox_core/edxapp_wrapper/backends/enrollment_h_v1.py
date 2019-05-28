@@ -155,8 +155,6 @@ def delete_enrollment(*args, **kwargs):
         enrollment.delete()
     except Exception:
         raise APIException('Error: Enrollment could not be deleted for {}'.format(username))
-    else:
-        return 'Enrollment deleted for {}'.format(username)
 
 
 def enroll_on_course(course_id, *args, **kwargs):
