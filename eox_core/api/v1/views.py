@@ -102,7 +102,19 @@ class EdxappEnrollment(APIView):
         Get enrollments on edxapp
         """
         data = dict(request.data)
-        return EdxappEnrollment.prepare_multiresponse(data, get_enrollment)
+        course_id = data.get('course_id', None)
+        username = data.get('username', None)
+        email = data.get('email', None)
+
+        if not course_id:
+            return Response('You have to provide a course_id', status.HTTP_400_BAD_REQUEST)
+        if not email and not username:
+            return Response('Email or username needed', status.HTTP_400_BAD_REQUEST)
+        enrollment, errors = get_enrollment(**data)
+        if errors:
+            return Response(errors, status.HTTP_404_NOT_FOUND)
+        response = EdxappCourseEnrollmentSerializer(enrollment).data
+        return  Response(response)
 
     def delete(self, request, *args, **kwargs):
         """

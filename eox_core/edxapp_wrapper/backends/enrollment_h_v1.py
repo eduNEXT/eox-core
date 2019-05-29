@@ -11,6 +11,7 @@ import logging
 
 from django.contrib.auth.models import User
 from opaque_keys.edx.keys import CourseKey
+from opaque_keys import InvalidKeyError
 from pytz import utc
 from rest_framework.exceptions import APIException
 
@@ -19,7 +20,7 @@ from enrollment import api
 from enrollment.errors import (CourseEnrollmentExistsError,
                                CourseModeNotFoundError)
 from eox_core.edxapp_wrapper.backends.edxfuture_i_v1 import get_program
-from eox_core.edxapp_wrapper.backends.users_h_v1 import check_edxapp_account_conflicts
+from eox_core.edxapp_wrapper.users import check_edxapp_account_conflicts
 from openedx.core.djangoapps.content.course_overviews.models import \
     CourseOverview
 from openedx.core.djangoapps.site_configuration.helpers import (get_all_orgs,
@@ -53,7 +54,7 @@ def update_enrollment(*args, **kwargs):
             "username": "Bob",
             "course_id": course-v1-edX-DemoX-1T2015",
             "is_active": "False",
-            "mode": "audit"
+            "mode": "audit",
             "enrollment_attributes": [
                 {
                     "namespace": "credit",
@@ -97,7 +98,8 @@ def get_enrollment(*args, **kwargs):
         >>>get_enrollment(
             {
             "username": "Bob",
-            "course_id": course-v1-edX-DemoX-1T2015"
+            "course_id": "course-v1-edX-DemoX-1T2015"
+            }
         )
     """
     errors = []
@@ -110,16 +112,24 @@ def get_enrollment(*args, **kwargs):
         else:
             user = User.objects.get(email=email)
     except User.DoesNotExist: # pylint: disable=no-member
-        raise APIException('No user found by {query} .'.format(query=str(kwargs)))
+        errors.append('No user found by {query} .'.format(query=str(kwargs)))
+        return None, errors
 
     username = user.username
+    email = user.email
 
-    LOG.info('Getting enrollment information of student: %s  course: %s', username, course_id)
-    enrollment = api.get_enrollment(username, course_id)
-    if not enrollment:
-        raise APIException('No enrollment found for {}'.format(username))
-
+    try:
+        LOG.info('Getting enrollment information of student: %s  course: %s', username, course_id)
+        enrollment = api.get_enrollment(username, course_id)
+        if not enrollment:
+            errors.append('No enrollment found for {}'.format(username))
+            return None, errors
+    except InvalidKeyError:
+        errors.append('No course found for course_id {}'.format(course_id))
+        return None, errors
     enrollment['enrollment_attributes'] = api.get_enrollment_attributes(username, course_id)
+    enrollment['course_id'] = course_id
+    enrollment['email'] = email
     return enrollment, errors
 
 def delete_enrollment(*args, **kwargs):
@@ -274,7 +284,6 @@ def check_edxapp_enrollment_is_valid(*args, **kwargs):
         except CourseNotFoundError:
             errors.append('Course not found')
     return errors
-
 
 def _create_or_update_enrollment(username, course_id, mode, is_active, try_update):
     """
