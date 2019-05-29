@@ -80,6 +80,7 @@ def update_enrollment(*args, **kwargs):
             raise APIException('No user found with that email')
         else:
             username = match.username
+            email = match.email
     LOG.info('Updating enrollment for student: %s of course: %s mode: %s', username, course_id, mode)
     enrollment = api._data_api().update_course_enrollment(username, course_id, mode, is_active)
     if not enrollment:
@@ -87,6 +88,9 @@ def update_enrollment(*args, **kwargs):
     if enrollment_attributes is not None:
         api.set_enrollment_attributes(username, course_id, enrollment_attributes)
 
+    enrollment['enrollment_attributes'] = enrollment_attributes
+    enrollment['course_id'] = course_id
+    enrollment['email'] = email
     return enrollment, errors
 
 
@@ -187,6 +191,7 @@ def enroll_on_course(course_id, *args, **kwargs):
             raise APIException('No user found with that email')
         else:
             username = match.username
+            email = match.email
 
     try:
         LOG.info('Creating regular enrollment %s, %s, %s', username, course_id, mode)
@@ -203,6 +208,9 @@ def enroll_on_course(course_id, *args, **kwargs):
     if enrollment_attributes is not None:
         api.set_enrollment_attributes(username, course_id, enrollment_attributes)
 
+    enrollment['enrollment_attributes'] = enrollment_attributes
+    enrollment['course_id'] = course_id
+    enrollment['email'] = email
     return enrollment, errors
 
 
