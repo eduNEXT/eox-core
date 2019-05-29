@@ -69,6 +69,9 @@ class EdxappCourseEnrollmentSerializer(serializers.Serializer):
     user = serializers.CharField(max_length=30, default=None)
     is_active = serializers.BooleanField(default=True)
     mode = serializers.CharField(max_length=100)
+    email = serializers.CharField(max_length=255, default=None)
+    enrollment_attributes = EdxappEnrollmentAttributeSerializer(many=True, default=[])
+    course_id = serializers.CharField(max_length=255, default=None)
 
     def validate(self, attrs):
         """
@@ -86,11 +89,8 @@ class EdxappCourseEnrollmentQuerySerializer(EdxappCourseEnrollmentSerializer):
     on different backends
     """
     username = serializers.CharField(max_length=30, default=None)
-    email = serializers.CharField(max_length=255, default=None)
     force = serializers.BooleanField(default=False)
-    course_id = serializers.CharField(max_length=255, default=None)
     bundle_id = serializers.CharField(max_length=255, default=None)
-    enrollment_attributes = EdxappEnrollmentAttributeSerializer(many=True, default=[])
 
 
 def EdxappUserReadOnlySerializer(*args, **kwargs):   # pylint: disable=invalid-name
