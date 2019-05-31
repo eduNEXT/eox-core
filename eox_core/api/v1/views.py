@@ -38,6 +38,7 @@ from eox_core.edxapp_wrapper.pre_enrollments import (
     update_pre_enrollment,
     delete_pre_enrollment,
     get_pre_enrollment,
+    pre_enroll_on_program,
 )
 
 LOG = logging.getLogger(__name__)
@@ -296,31 +297,27 @@ class EdxappPreEnrollment(APIView):
         """
         Create whitelistings on edxapp
         """
-        multiple_responses = []
-        many = isinstance(request.data, list)
-        serializer = EdxappCoursePreEnrollmentQuerySerializer(data=request.data, many=many)
+        serializer = EdxappCoursePreEnrollmentQuerySerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
-        if not isinstance(data, list):
-            data = [data]
+        program_uuid = data.pop('bundle_id', None)
+        course_id = data.pop('course_id', None)
 
-        for pre_enrollment_request in data:
-            pre_enrollments, msgs, warnings = create_pre_enrollment(**pre_enrollment_request)
-            if not isinstance(pre_enrollments, list):
-                pre_enrollments = [pre_enrollments]
-                msgs = [msgs]
-                warnings = [warnings]
-            for pre_enrollment, msg, warning in zip(pre_enrollments, msgs, warnings):
-                response_data = EdxappCoursePreEnrollmentSerializer(pre_enrollment, context=warning).data
-                if msg:
-                    response_data["messages"] = msg
-                multiple_responses.append(response_data)
+        if program_uuid:
+            results = pre_enroll_on_program(program_uuid, **data)
+            response_results = []
+            for result in results:
+                if 'pre_enrollment' in result:
+                    pre_enrollment = result['pre_enrollment']
+                    warning = result['warning']
+                    response_results.append(EdxappCoursePreEnrollmentSerializer(pre_enrollment, context=warning).data)
+                else:
+                    response_results.append(result)
+            return Response(response_results)
 
-        if many or 'bundle_id' in request.data:
-            response = multiple_responses
-        else:
-            response = multiple_responses[0]
-        return Response(response)
+        pre_enrollment, warning = create_pre_enrollment(course_id=course_id, **data)
+        response_data = EdxappCoursePreEnrollmentSerializer(pre_enrollment, context=warning).data
+        return Response(response_data)
 
     def put(self, request, *args, **kwargs):
         """
@@ -330,12 +327,9 @@ class EdxappPreEnrollment(APIView):
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
         data.pop('bundle_id')
-        pre_enrollment, errors = update_pre_enrollment(**data)
-        if pre_enrollment:
-            response = EdxappCoursePreEnrollmentSerializer(pre_enrollment).data
-            return Response(response)
-
-        return Response(errors, status=status.HTTP_404_NOT_FOUND)
+        pre_enrollment = update_pre_enrollment(**data)
+        response = EdxappCoursePreEnrollmentSerializer(pre_enrollment).data
+        return Response(response)
 
     def delete(self, request, *args, **kwargs):
         """
@@ -345,10 +339,7 @@ class EdxappPreEnrollment(APIView):
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
         data.pop('bundle_id')
-        errors = delete_pre_enrollment(**data)
-        if errors:
-            return Response(errors, status=status.HTTP_404_NOT_FOUND)
-
+        delete_pre_enrollment(**data)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def get(self, request, *args, **kwargs):
@@ -359,18 +350,16 @@ class EdxappPreEnrollment(APIView):
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
         data.pop('bundle_id')
-        pre_enrollment, errors = get_pre_enrollment(**data)
-        if pre_enrollment:
-            response = EdxappCoursePreEnrollmentSerializer(pre_enrollment).data
-            return Response(response)
-
-        return Response(errors, status=status.HTTP_404_NOT_FOUND)
+        pre_enrollment = get_pre_enrollment(**data)
+        response = EdxappCoursePreEnrollmentSerializer(pre_enrollment).data
+        return Response(response)
 
     def handle_exception(self, exc):
         """
         Handle exception: log it
         """
-        self.log('API Error', self.kwargs, exc)
+        data = self.request.data or self.request.query_params
+        self.log('API Error', data, exc)
         return super(EdxappPreEnrollment, self).handle_exception(exc)
 
     def log(self, desc, data, exception=None):
@@ -386,7 +375,7 @@ class EdxappPreEnrollment(APIView):
         logstr = id_str + ': %s, email: %s, auto_enroll: %s'
         logarr = [id_val, email, auto_enroll]
         if exception:
-            LOG.error(desc + ': Exception %s,' + logstr, repr(exception), *logarr)
+            LOG.error(desc + ': Exception %s, ' + logstr, repr(exception), *logarr)
         else:
             LOG.info(desc + ': ' + logstr, *logarr)
 

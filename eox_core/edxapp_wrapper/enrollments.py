@@ -61,7 +61,7 @@ def validate_org(course_id):
     backend_function = settings.EOX_CORE_ENROLLMENT_BACKEND
     backend = import_module(backend_function)
 
-    return backend._validate_org(course_id)
+    return backend._validate_org(course_id) #pylint: disable=protected-access
 
 def get_preferred_course_run(course_id):
     """

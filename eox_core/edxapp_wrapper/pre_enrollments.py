@@ -18,6 +18,16 @@ def create_pre_enrollment(*args, **kwargs):
 
     return backend.create_pre_enrollment(*args, **kwargs)
 
+def pre_enroll_on_program(*args, **kwargs):
+    """
+    Create a pre-enrollment for a program
+    """
+
+    backend_function = settings.EOX_CORE_PRE_ENROLLMENT_BACKEND
+    backend = import_module(backend_function)
+
+    return backend.pre_enroll_on_program(*args, **kwargs)
+
 def update_pre_enrollment(*args, **kwargs):
     """
     Update a pre-enrollment for an existing or future user
