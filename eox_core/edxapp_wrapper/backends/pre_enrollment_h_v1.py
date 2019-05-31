@@ -14,7 +14,8 @@ from opaque_keys import InvalidKeyError
 from rest_framework.exceptions import APIException
 
 from eox_core.edxapp_wrapper.backends.edxfuture_i_v1 import get_program
-from eox_core.edxapp_wrapper.backends.enrollment_h_v1 import _validate_org, get_preferred_course_run
+from eox_core.edxapp_wrapper.enrollments import validate_org, get_preferred_course_run
+from eox_core.edxapp_wrapper.courseware import get_courseware_courses
 from student.models import (
     CourseEnrollmentAllowed,
 )
@@ -133,16 +134,23 @@ def pre_enroll_on_course(*args, **kwargs):
     Pre-enroll user on a single course
     """
     errors = []
+    warnings = []
     email = kwargs.get('email')
     auto_enroll = kwargs.get('auto_enroll', True)
     course_id = kwargs.pop('course_id')
+
     try:
         course_key = CourseKey.from_string(course_id)
         pre_enrollment = CourseEnrollmentAllowed.objects.create(course_id=course_key, **kwargs)
-        LOG.info('Creating regular pre-enrollment for email: %s course_id: %s auto_enroll: %s', email, course_id, auto_enroll)
+        # Check if the course exists otherwise add a warning
+        course = get_courseware_courses().get_course(course_key)
+        LOG.info('Creating regular pre-enrollment for email: %s course_id: %s auto_enroll: %s', email, course.id, auto_enroll)
     except IntegrityError:
-        return None, 'Pre-enrollment already exists for email: {} course_id: {}'.format(email, course_id)
-    return pre_enrollment, errors
+        pre_enrollment = None
+        errors = ['Pre-enrollment already exists for email: {} course_id: {}'.format(email, course_id)]
+    except ValueError:
+        warnings = ['Course with course_id:{} does not exist'.format(course_id)]
+    return pre_enrollment, errors, warnings
 
 
 def pre_enroll_on_program(program_uuid, *arg, **kwargs):
@@ -151,6 +159,7 @@ def pre_enroll_on_program(program_uuid, *arg, **kwargs):
     """
     results = []
     errors = []
+    warnings = []
     LOG.info('Pre-enrolling on program: %s', program_uuid)
     try:
         data = get_program(program_uuid)
@@ -163,12 +172,13 @@ def pre_enroll_on_program(program_uuid, *arg, **kwargs):
             course_run = get_preferred_course_run(course)
             LOG.info('Pre-enrolling on course_run: %s', course_run['key'])
             course_id = course_run['key']
-            result, errors_list = pre_enroll_on_course(course_id=course_id, *arg, **kwargs)
+            result, errors_list, warnings_list = pre_enroll_on_course(course_id=course_id, *arg, **kwargs)
             results.append(result)
             errors.append(errors_list)
+            warnings.append(warnings_list)
         else:
             raise APIException("No course runs available for this course")
-    return results, errors
+    return results, errors, warnings
 
 
 def validate_pre_enrollment(*args, **kwargs):
@@ -183,7 +193,7 @@ def validate_pre_enrollment(*args, **kwargs):
         return None, ['You have to provide a course_id or bundle_id but not both']
     if course_id:
         try:
-            if not _validate_org(course_id):
+            if not validate_org(course_id):
                 errors.append('Enrollment not allowed for given org')
         except InvalidKeyError:
             raise APIException("No valid course_id {}".format(course_id))

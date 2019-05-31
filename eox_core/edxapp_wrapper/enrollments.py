@@ -52,3 +52,23 @@ def check_edxapp_enrollment_is_valid(*args, **kwargs):
     backend = import_module(backend_function)
 
     return backend.check_edxapp_enrollment_is_valid(*args, **kwargs)
+
+def validate_org(course_id):
+    """
+    Validate the course organization against all possible orgs for the site
+    """
+
+    backend_function = settings.EOX_CORE_ENROLLMENT_BACKEND
+    backend = import_module(backend_function)
+
+    return backend._validate_org(course_id)
+
+def get_preferred_course_run(course_id):
+    """
+    Return the course run most suitable for the enrollment date
+    """
+
+    backend_function = settings.EOX_CORE_ENROLLMENT_BACKEND
+    backend = import_module(backend_function)
+
+    return backend.get_preferred_course_run(course_id)

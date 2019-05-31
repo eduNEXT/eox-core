@@ -11,6 +11,18 @@ from eox_core.edxapp_wrapper.coursekey import validate_org, get_valid_course_key
 from eox_core.edxapp_wrapper.pre_enrollments import validate_pre_enrollment
 
 
+class EdxappWithWarningSerializer(serializers.Serializer):
+    """
+    Mixin serializer to add a warning field to Edxapp serializers
+    """
+    warning = serializers.SerializerMethodField('set_warning')
+
+    def set_warning(self, obj):
+        """Set the warning from the context"""
+        if self.context:
+            return self.context
+        return ''
+
 class EdxappUserSerializer(serializers.Serializer):
     """
     Handles the serialization of the user data required to create an edxapp user
@@ -113,7 +125,7 @@ class EdxappCourseEnrollmentQuerySerializer(EdxappCourseEnrollmentSerializer):
     bundle_id = serializers.CharField(max_length=255, default=None)
 
 
-class EdxappCoursePreEnrollmentSerializer(serializers.Serializer):
+class EdxappCoursePreEnrollmentSerializer(EdxappWithWarningSerializer):
     """Serialize CourseEnrollmentAllowed
 
     Handles the serialization of the context data required to create a course whitelisting or pre-enrollments for a user

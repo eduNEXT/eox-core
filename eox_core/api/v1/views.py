@@ -305,12 +305,13 @@ class EdxappPreEnrollment(APIView):
             data = [data]
 
         for pre_enrollment_request in data:
-            pre_enrollments, msgs = create_pre_enrollment(**pre_enrollment_request)
+            pre_enrollments, msgs, warnings = create_pre_enrollment(**pre_enrollment_request)
             if not isinstance(pre_enrollments, list):
                 pre_enrollments = [pre_enrollments]
                 msgs = [msgs]
-            for pre_enrollment, msg in zip(pre_enrollments, msgs):
-                response_data = EdxappCoursePreEnrollmentSerializer(pre_enrollment).data
+                warnings = [warnings]
+            for pre_enrollment, msg, warning in zip(pre_enrollments, msgs, warnings):
+                response_data = EdxappCoursePreEnrollmentSerializer(pre_enrollment, context=warning).data
                 if msg:
                     response_data["messages"] = msg
                 multiple_responses.append(response_data)
