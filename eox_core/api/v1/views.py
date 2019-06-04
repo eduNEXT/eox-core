@@ -346,7 +346,11 @@ class EdxappPreEnrollment(APIView):
         """
         Get whitelistings on edxapp
         """
-        serializer = EdxappCoursePreEnrollmentQuerySerializer(data=request.data)
+        query_params = request.query_params
+        if not query_params:
+            query_params = request.data
+
+        serializer = EdxappCoursePreEnrollmentQuerySerializer(data=query_params)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
         data.pop('bundle_id')

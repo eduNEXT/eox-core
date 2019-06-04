@@ -136,11 +136,18 @@ class EdxappCoursePreEnrollmentSerializer(EdxappWithWarningSerializer):
 
     def validate(self, attrs):
         """
-        Check that there are no issues with enrollment
+        Check that there are no issues with the pre-enrollment
         """
-        errors = validate_pre_enrollment(**attrs)
-        if errors:
-            raise serializers.ValidationError(", ".join(errors))
+        course_id = attrs.get("course_id", None)
+        program_uuid = attrs.get('bundle_id', None)
+        error = None
+
+        if program_uuid and course_id:
+            error = 'You have to provide a course_id or a bundle_id but not both'
+        if not program_uuid and not course_id:
+            error = 'You have to provide a course_id or bundle_id'
+        if error:
+            raise serializers.ValidationError(error)
         return attrs
 
 

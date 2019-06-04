@@ -57,11 +57,3 @@ def get_pre_enrollment(*args, **kwargs):
     backend = import_module(backend_function)
 
     return backend.get_pre_enrollment(*args, **kwargs)
-
-def validate_pre_enrollment(*args, **kwargs):
-    """ Validate CourseEnrollmentAllowed fields """
-
-    backend_function = settings.EOX_CORE_PRE_ENROLLMENT_BACKEND
-    backend = import_module(backend_function)
-
-    return backend.validate_pre_enrollment(*args, **kwargs)

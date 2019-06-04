@@ -115,15 +115,12 @@ def get_pre_enrollment(*args, **kwargs):
             }
         )
     """
-    kwargs = dict(kwargs)
     email = kwargs.get('email')
     course_id = kwargs.pop('course_id')
     try:
-        course_key = CourseKey.from_string(course_id)
+        course_key = get_course_key(course_id)
         pre_enrollment = CourseEnrollmentAllowed.objects.get(course_id=course_key, email=email)
         LOG.info('Getting regular pre-enrollment for email: %s course_id: %s', email, course_id)
-    except IntegrityError:
-        raise NotFound('Pre-enrollment not found for email: {} course_id: {}'.format(email, course_id))
     except CourseEnrollmentAllowed.DoesNotExist:
         raise NotFound('Pre-enrollment not found for email: {} course_id: {}'.format(email, course_id))
     return pre_enrollment
@@ -156,23 +153,11 @@ def pre_enroll_on_program(program_uuid, *arg, **kwargs):
     return results
 
 
-def validate_pre_enrollment(*args, **kwargs):
+def get_course_key(course_id):
     """
-    Validate pre_enrollment fields
+    Return the CourseKey if the course_id is valid
     """
-    errors = []
-    course_id = kwargs.get("course_id")
-    program_uuid = kwargs.get('bundle_id')
-
-    if program_uuid and course_id:
-        return ['You have to provide a course_id or bundle_id but not both']
-    if not program_uuid and not course_id:
-        return ['You have to provide a course_id or bundle_id']
-    if course_id:
-        try:
-            if not validate_org(course_id):
-                return ['Enrollment not allowed for given org']
-        except InvalidKeyError:
-            return ["No valid course_id {}".format(course_id)]
-
-    return errors
+    try:
+        return CourseKey.from_string(course_id)
+    except InvalidKeyError:
+        raise NotFound("No valid course_id {}".format(course_id))
