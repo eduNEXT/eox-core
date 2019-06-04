@@ -102,10 +102,13 @@ class EdxappEnrollment(APIView):
         """
         Get enrollments on edxapp
         """
-        data = dict(request.data)
-        course_id = data.get('course_id', None)
-        username = data.get('username', None)
-        email = data.get('email', None)
+        query_params = request.query_params
+        if not query_params and request.data:
+            query_params = request.data
+
+        course_id = query_params.get('course_id', None)
+        username = query_params.get('username', None)
+        email = query_params.get('email', None)
 
         if not course_id:
             raise ValidationError(detail='You have to provide a course_id')
