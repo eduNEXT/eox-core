@@ -5,12 +5,12 @@ API v1 views.
 from __future__ import absolute_import, unicode_literals
 import logging
 
+from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.exceptions import ValidationError, NotFound, APIException
 from rest_framework.response import Response
-from rest_framework.authentication import SessionAuthentication
 from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
-from rest_framework import status
+from rest_framework.views import APIView
 
 from rest_framework_oauth.authentication import OAuth2Authentication
 from django.contrib.sites.shortcuts import get_current_site
@@ -65,7 +65,7 @@ class EdxappUser(APIView):
         """
         Retrieves an user from edxapp
         """
-        query = {key: request.GET[key] for key in ['username', 'email'] if key in request.GET}
+        query = {key: request.query_params[key] for key in ['username', 'email'] if key in request.query_params}
         query['site'] = get_current_site(request)
         user = get_edxapp_user(**query)
         admin_fields = getattr(settings, 'ACCOUNT_VISIBILITY_CONFIGURATION', {}).get('admin_fields', {})
@@ -108,12 +108,28 @@ class EdxappEnrollment(APIView):
         email = data.get('email', None)
 
         if not course_id:
-            return Response('You have to provide a course_id', status.HTTP_400_BAD_REQUEST)
+            raise ValidationError(detail='You have to provide a course_id')
         if not email and not username:
-            return Response('Email or username needed', status.HTTP_400_BAD_REQUEST)
-        enrollment, errors = get_enrollment(**data)
+            raise ValidationError(detail='Email or username needed')
+
+        user_query = {
+            'site': request.site,
+        }
+        if username:
+            user_query['username'] = username
+        elif email:
+            user_query['email'] = email
+
+        user = get_edxapp_user(**user_query)
+
+        enrollment_query = {
+            'username': user.username,
+            'course_id': course_id,
+        }
+        enrollment, errors = get_enrollment(**enrollment_query)
+
         if errors:
-            return Response(errors, status.HTTP_404_NOT_FOUND)
+            raise NotFound(detail=errors)
         response = EdxappCourseEnrollmentSerializer(enrollment).data
         return  Response(response)
 
