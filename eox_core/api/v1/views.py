@@ -5,7 +5,8 @@ API v1 views.
 from __future__ import absolute_import, unicode_literals
 import logging
 
-from rest_framework.views import APIView
+from rest_framework.authentication import SessionAuthentication
+from rest_framework.exceptions import ValidationError, NotFound, APIException
 from rest_framework.response import Response
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
@@ -163,27 +164,10 @@ class EdxappEnrollment(APIView):
         """
         Handle exception: log it
         """
-        self.log('API Error', self.kwargs, exc)
-        return super(EdxappEnrollment, self).handle_exception(exc)
+        if isinstance(exc, APIException):
+            LOG.error('API Error: %s', repr(exc.detail))
 
-    def log(self, desc, data, exception=None):
-        """
-        log util for this view
-        """
-        username = data.get('username')
-        bundle_id = data.get('bundle_id')
-        course_id = data.get('course_id')
-        mode = data.get('mode')
-        is_active = data.get('is_active')
-        force = data.get('force')
-        id_val = bundle_id or course_id
-        id_str = 'bundle_id' if bundle_id else 'course_id'
-        logstr = id_str + ': %s, username: %s, mode: %s, is_active: %s, force: %s'
-        logarr = [id_val, username, mode, is_active, force]
-        if exception:
-            LOG.error(desc + ': Exception %s,' + logstr, repr(exception), *logarr)
-        else:
-            LOG.info(desc + ': ' + logstr, *logarr)
+        return super(EdxappEnrollment, self).handle_exception(exc)
 
 
 class UserInfo(APIView):
