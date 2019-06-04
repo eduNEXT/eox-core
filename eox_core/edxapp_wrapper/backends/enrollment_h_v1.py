@@ -90,7 +90,6 @@ def update_enrollment(*args, **kwargs):
 
     enrollment['enrollment_attributes'] = enrollment_attributes
     enrollment['course_id'] = course_id
-    enrollment['email'] = email
     return enrollment, errors
 
 
@@ -133,7 +132,6 @@ def get_enrollment(*args, **kwargs):
         return None, errors
     enrollment['enrollment_attributes'] = api.get_enrollment_attributes(username, course_id)
     enrollment['course_id'] = course_id
-    enrollment['email'] = email
     return enrollment, errors
 
 def delete_enrollment(*args, **kwargs):
@@ -210,7 +208,6 @@ def enroll_on_course(course_id, *args, **kwargs):
 
     enrollment['enrollment_attributes'] = enrollment_attributes
     enrollment['course_id'] = course_id
-    enrollment['email'] = email
     return enrollment, errors
 
 
