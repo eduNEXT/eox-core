@@ -19,7 +19,6 @@ from course_modes.models import CourseMode
 from enrollment import api
 from enrollment.errors import (CourseEnrollmentExistsError,
                                CourseModeNotFoundError)
-from eox_core.edxapp_wrapper.users import get_edxapp_user
 from eox_core.edxapp_wrapper.backends.edxfuture_i_v1 import get_program
 from eox_core.edxapp_wrapper.users import check_edxapp_account_conflicts
 from openedx.core.djangoapps.content.course_overviews.models import \

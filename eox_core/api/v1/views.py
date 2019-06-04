@@ -115,9 +115,9 @@ class EdxappEnrollment(APIView):
         if not email and not username:
             raise ValidationError(detail='Email or username needed')
 
-        user_query = {
-            'site': request.site,
-        }
+        user_query = {}
+        if hasattr(request, 'site'):
+            user_query['site'] = request.site
         if username:
             user_query['username'] = username
         elif email:
@@ -134,7 +134,7 @@ class EdxappEnrollment(APIView):
         if errors:
             raise NotFound(detail=errors)
         response = EdxappCourseEnrollmentSerializer(enrollment).data
-        return  Response(response)
+        return Response(response)
 
     def delete(self, request, *args, **kwargs):
         """

@@ -63,12 +63,12 @@ def plugin_settings(settings):  # pylint: disable=function-redefined
         settings.EOX_CORE_USER_ENABLE_MULTI_TENANCY
     )
     if not settings.EOX_CORE_USER_ENABLE_MULTI_TENANCY:
-        local_eox_core_user_origin_sources = [
+        user_origin_sources = [
             'fetch_from_unfiltered_table',
         ]
     else:
-        local_eox_core_user_origin_sources = settings.EOX_CORE_USER_ORIGIN_SITE_SOURCES
+        user_origin_sources = settings.EOX_CORE_USER_ORIGIN_SITE_SOURCES
     settings.EOX_CORE_USER_ORIGIN_SITE_SOURCES = getattr(settings, 'ENV_TOKENS', {}).get(
         'EOX_CORE_USER_ORIGIN_SITE_SOURCES',
-        local_eox_core_user_origin_sources
+        user_origin_sources
     )
