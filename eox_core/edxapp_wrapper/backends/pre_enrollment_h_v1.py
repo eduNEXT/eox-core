@@ -42,14 +42,14 @@ def create_pre_enrollment(*args, **kwargs):
     course_id = kwargs.pop('course_id')
 
     try:
-        course_key = CourseKey.from_string(course_id)
+        course_key = get_course_key(course_id)
         pre_enrollment = CourseEnrollmentAllowed.objects.create(course_id=course_key, **kwargs)
         # Check if the course exists otherwise add a warning
         course = get_courseware_courses().get_course(course_key)
         LOG.info('Creating regular pre-enrollment for email: %s course_id: %s auto_enroll: %s', email, course.id, auto_enroll)
     except IntegrityError:
         pre_enrollment = None
-        raise APIException('Pre-enrollment already exists for email: {} course_id: {}'.format(email, course_id))
+        raise NotFound('Pre-enrollment already exists for email: {} course_id: {}'.format(email, course_id))
     except ValueError:
         warnings = ['Course with course_id:{} does not exist'.format(course_id)]
     return pre_enrollment, warnings

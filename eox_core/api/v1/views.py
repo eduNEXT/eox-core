@@ -304,7 +304,7 @@ class EdxappPreEnrollment(APIView):
         course_id = data.pop('course_id', None)
 
         if program_uuid:
-            results = pre_enroll_on_program(program_uuid, **data)
+            results = pre_enroll_on_program(program_uuid=program_uuid, **data)
             response_results = []
             for result in results:
                 if 'pre_enrollment' in result:
