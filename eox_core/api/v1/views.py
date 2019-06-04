@@ -206,8 +206,11 @@ class UserInfo(APIView):
             # `django.contrib.auth.User` instance.
             'user': six.text_type(request.user.username),
             'email': six.text_type(request.user.email),
-            'is_staff': request.user.is_staff,
-            'is_superuser': request.user.is_superuser,
             'auth': six.text_type(request.auth)
         }
+
+        if request.user.is_staff:
+            content['is_superuser'] = request.user.is_superuser
+            content['is_staff'] = request.user.is_staff
+
         return Response(content)
