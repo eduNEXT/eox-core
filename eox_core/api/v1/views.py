@@ -88,14 +88,14 @@ class EdxappEnrollment(APIView):
         """
         Creates the users on edxapp
         """
-        data = dict(request.data)
+        data = request.data
         return EdxappEnrollment.prepare_multiresponse(data, create_enrollment)
 
     def put(self, request, *args, **kwargs):
         """
         Update enrollments on edxapp
         """
-        data = dict(request.data)
+        data = request.data
         return EdxappEnrollment.prepare_multiresponse(data, update_enrollment)
 
     def get(self, request, *args, **kwargs):
@@ -140,8 +140,10 @@ class EdxappEnrollment(APIView):
         """
         Delete enrollment on edxapp
         """
-        data = dict(request.data)
-        delete_enrollment(**data)
+        query_params = request.query_params
+        if not query_params and request.data:
+            query_params = request.data
+        delete_enrollment(**query_params)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @staticmethod

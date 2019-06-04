@@ -13,7 +13,7 @@ from django.contrib.auth.models import User
 from opaque_keys.edx.keys import CourseKey
 from opaque_keys import InvalidKeyError
 from pytz import utc
-from rest_framework.exceptions import APIException
+from rest_framework.exceptions import APIException, NotFound
 
 from course_modes.models import CourseMode
 from enrollment import api
@@ -77,14 +77,14 @@ def update_enrollment(*args, **kwargs):
     if email:
         match = User.objects.filter(email=email).first()
         if match is None:
-            raise APIException('No user found with that email')
+            raise NotFound('No user found with that email')
         else:
             username = match.username
             email = match.email
     LOG.info('Updating enrollment for student: %s of course: %s mode: %s', username, course_id, mode)
     enrollment = api._data_api().update_course_enrollment(username, course_id, mode, is_active)
     if not enrollment:
-        raise APIException('No enrollment found for {}'.format(username or email))
+        raise NotFound('No enrollment found for {}'.format(username or email))
     if enrollment_attributes is not None:
         api.set_enrollment_attributes(username, course_id, enrollment_attributes)
 
@@ -134,27 +134,30 @@ def delete_enrollment(*args, **kwargs):
         )
     """
     course_id = kwargs.pop('course_id', None)
-    course_key = CourseKey.from_string(course_id)
     username = kwargs.get('username', None)
     email = kwargs.get('email', None)
     try:
+        course_key = CourseKey.from_string(course_id)
         if username:
             user = User.objects.get(username=username)
         else:
             user = User.objects.get(email=email)
     except User.DoesNotExist: # pylint: disable=no-member
-        raise APIException('No user found by {query} .'.format(query=str(kwargs)))
+        raise NotFound('No user found by {query} .'.format(query=str(kwargs)))
+    except InvalidKeyError:
+        raise NotFound('No course found by course id {} .'.format(course_id))
+
 
     username = user.username
 
     LOG.info('Deleting enrollment student: %s  course: %s', username, course_id)
     enrollment = CourseEnrollment.get_enrollment(user, course_key)
     if not enrollment:
-        raise APIException('No enrollment found for {}'.format(username))
+        raise NotFound('No enrollment found for {}'.format(username))
     try:
         enrollment.delete()
     except Exception:
-        raise APIException('Error: Enrollment could not be deleted for {}'.format(username))
+        raise NotFound('Error: Enrollment could not be deleted for {}'.format(username))
 
 
 def enroll_on_course(course_id, *args, **kwargs):
@@ -174,7 +177,7 @@ def enroll_on_course(course_id, *args, **kwargs):
     if email:
         match = User.objects.filter(email=email).first()
         if match is None:
-            raise APIException('No user found with that email')
+            raise NotFound('No user found with that email')
         else:
             username = match.username
             email = match.email
@@ -183,7 +186,7 @@ def enroll_on_course(course_id, *args, **kwargs):
         LOG.info('Creating regular enrollment %s, %s, %s', username, course_id, mode)
         enrollment = _create_or_update_enrollment(username, course_id, mode, is_active, force)
     except CourseNotFoundError as err:
-        raise APIException(repr(err))
+        raise NotFound(repr(err))
     except Exception as err:  # pylint: disable=broad-except
         if force:
             LOG.info('Force create enrollment %s, %s, %s', username, course_id, mode)
@@ -209,9 +212,9 @@ def enroll_on_program(program_uuid, *arg, **kwargs):
     try:
         data = get_program(program_uuid)
     except Exception as err:  # pylint: disable=broad-except
-        raise APIException(repr(err))
+        raise NotFound(repr(err))
     if not data['courses']:
-        raise APIException("No courses found for this program")
+        raise NotFound("No courses found for this program")
     for course in data['courses']:
         if course['course_runs']:
             course_run = get_preferred_course_run(course)
@@ -221,7 +224,7 @@ def enroll_on_program(program_uuid, *arg, **kwargs):
             results.append(result)
             errors.append(errors_list)
         else:
-            raise APIException("No course runs available for this course")
+            raise NotFound("No course runs available for this course")
     return results, errors
 
 
