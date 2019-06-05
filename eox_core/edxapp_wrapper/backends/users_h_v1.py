@@ -134,6 +134,8 @@ def get_edxapp_user(**kwargs):
     """
     Retrieve an user by username and/or email
 
+    The user will be returned only if it belongs to the calling site
+
     Examples:
         >>> get_edxapp_user(
             {

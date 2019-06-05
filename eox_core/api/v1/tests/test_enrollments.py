@@ -20,19 +20,20 @@ class TestEnrollmentsAPI(TestCase):
         self.client.force_authenticate(user=self.api_user)
 
     @patch_permissions
-    def test_api_get_validation(self, _):
+    @patch('eox_core.api.v1.views.get_edxapp_user')
+    def test_api_get_validation(self, m_get_user, *_):
         """ Test that the GET method requires some parameters """
         response = self.client.get('/api/v1/enrollment/')
 
         self.assertEqual(response.status_code, 400)
-        self.assertIn('course_id', response.data[0])
+        self.assertIn('username', response.data[0])
 
         params = {
-            'course_id': 'course-v1:org+course+run',
+            'username': 'test',
         }
         response = self.client.get('/api/v1/enrollment/', params)
         self.assertEqual(response.status_code, 400)
-        self.assertIn('username', response.data[0])
+        self.assertIn('course_id', response.data[0])
 
     @patch('eox_core.api.v1.views.get_enrollment')
     @patch('eox_core.api.v1.views.get_edxapp_user')
@@ -54,8 +55,6 @@ class TestEnrollmentsAPI(TestCase):
             username='testusername',
             course_id='course-v1:org+course+run',
         )
-
-
 
     @patch('eox_core.api.v1.serializers.check_edxapp_enrollment_is_valid', )
     @patch_permissions
@@ -132,3 +131,18 @@ class TestEnrollmentsAPI(TestCase):
         self.assertIn('course_id', response.data[0])
         self.assertIn('is_active', response.data[0])
         self.assertEqual(2, len(response.data))
+
+    @patch_permissions
+    @patch('eox_core.api.v1.views.get_edxapp_user')
+    @patch('eox_core.api.v1.views.delete_enrollment')
+    def test_api_delete_works(self, m_delete_enrollment, m_get_user, *_):
+        """ Test that the DELETE method works in normal conditions with a bundle """
+
+        params = {
+            'username': 'test',
+            'course_id': 'course-v1:org+course+run',
+        }
+        response = self.client.delete('/api/v1/enrollment/', params)
+        m_get_user.assert_called_once_with(username='test')
+        m_delete_enrollment.assert_called_once_with(course_id='course-v1:org+course+run', user=m_get_user.return_value)
+        self.assertEqual(response.status_code, 204)

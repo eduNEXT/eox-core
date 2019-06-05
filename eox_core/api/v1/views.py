@@ -98,20 +98,21 @@ class EdxappEnrollment(APIView):
         data = request.data
         return EdxappEnrollment.prepare_multiresponse(data, update_enrollment)
 
-    def get(self, request, *args, **kwargs):
+    def get_user_query(self, request):
         """
-        Get enrollments on edxapp
+        Utility to prepare the user query in a forgiving way
+
+        As a side effect it loads self.query_params also in a forgiving way
         """
         query_params = request.query_params
         if not query_params and request.data:
             query_params = request.data
 
-        course_id = query_params.get('course_id', None)
+        self.query_params = query_params
+
         username = query_params.get('username', None)
         email = query_params.get('email', None)
 
-        if not course_id:
-            raise ValidationError(detail='You have to provide a course_id')
         if not email and not username:
             raise ValidationError(detail='Email or username needed')
 
@@ -123,7 +124,19 @@ class EdxappEnrollment(APIView):
         elif email:
             user_query['email'] = email
 
+        return user_query
+
+    def get(self, request, *args, **kwargs):
+        """
+        Get enrollments on edxapp
+        """
+        user_query = self.get_user_query(request)
         user = get_edxapp_user(**user_query)
+
+        course_id = self.query_params.get('course_id', None)
+
+        if not course_id:
+            raise ValidationError(detail='You have to provide a course_id')
 
         enrollment_query = {
             'username': user.username,
@@ -140,10 +153,15 @@ class EdxappEnrollment(APIView):
         """
         Delete enrollment on edxapp
         """
-        query_params = request.query_params
-        if not query_params and request.data:
-            query_params = request.data
-        delete_enrollment(**query_params)
+        user_query = self.get_user_query(request)
+        user = get_edxapp_user(**user_query)
+
+        course_id = self.query_params.get('course_id', None)
+
+        if not course_id:
+            raise ValidationError(detail='You have to provide a course_id')
+
+        delete_enrollment(user=user, course_id=course_id)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @staticmethod
