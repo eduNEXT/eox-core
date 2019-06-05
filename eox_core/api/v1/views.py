@@ -83,7 +83,13 @@ class EdxappEnrollment(APIView):
     permission_classes = (EoxCoreAPIPermission,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
-    # pylint: disable=too-many-locals
+    def __init__(self, *args, **kwargs):
+        """
+        Defines instance attributes
+        """
+        super(EdxappEnrollment, self).__init__(*args, **kwargs)
+        self.query_params = None
+
     def post(self, request, *args, **kwargs):
         """
         Creates the users on edxapp

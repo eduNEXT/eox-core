@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """ . """
-from mock import patch, Mock
+from mock import patch
 from django.test import TestCase
 from django.contrib.auth.models import User
 
@@ -114,7 +114,7 @@ class TestEnrollmentsAPI(TestCase):
             'user': 'test',  # this is the source value for the username field in the serializer
             'course_id': 'course-v1:org+course+run',
             'is_active': True,
-        },{
+        }, {
             'mode': 'audit',
             'user': 'test',
             'course_id': 'course-v1:org+course_2+run',
