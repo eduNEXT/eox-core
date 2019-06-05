@@ -25,7 +25,7 @@ class TestPreEnrollmentsAPI(TestCase):
         # Test empty request
         response = self.client.get('/api/v1/pre_enrollment/')
         self.assertEqual(response.status_code, 400)
-        self.assertIn('email', response.data.keys())
+        self.assertIn('email', response.data)
 
         # Test request with only email
         params = {
@@ -33,8 +33,7 @@ class TestPreEnrollmentsAPI(TestCase):
         }
         response = self.client.get('/api/v1/pre_enrollment/', params)
         self.assertEqual(response.status_code, 400)
-        self.assertIn('course_id', response.data.values()[0][0])
-        self.assertIn('bundle_id', response.data.values()[0][0])
+        self.assertIn('non_field_errors', response.data)
 
     @patch('eox_core.api.v1.views.get_pre_enrollment')
     @patch_permissions
@@ -62,7 +61,7 @@ class TestPreEnrollmentsAPI(TestCase):
         # Test empty request
         response = self.client.post('/api/v1/pre_enrollment/')
         self.assertEqual(response.status_code, 400)
-        self.assertIn('email', response.data.keys())
+        self.assertIn('email', response.data)
 
         # Test request with only email
         params = {
@@ -70,8 +69,7 @@ class TestPreEnrollmentsAPI(TestCase):
         }
         response = self.client.post('/api/v1/pre_enrollment/', params)
         self.assertEqual(response.status_code, 400)
-        self.assertIn('course_id', response.data.values()[0][0])
-        self.assertIn('bundle_id', response.data.values()[0][0])
+        self.assertIn('non_field_errors', response.data)
 
         # Test request: email, bundle_id, course_id
         params = {
@@ -81,8 +79,7 @@ class TestPreEnrollmentsAPI(TestCase):
         }
         response = self.client.post('/api/v1/pre_enrollment/', params)
         self.assertEqual(response.status_code, 400)
-        self.assertIn('course_id', response.data.values()[0][0])
-        self.assertIn('bundle_id', response.data.values()[0][0])
+        self.assertIn('non_field_errors', response.data)
 
     @patch('eox_core.api.v1.views.pre_enroll_on_program')
     @patch('eox_core.api.v1.views.create_pre_enrollment')
@@ -128,7 +125,7 @@ class TestPreEnrollmentsAPI(TestCase):
         # Test empty request
         response = self.client.put('/api/v1/pre_enrollment/')
         self.assertEqual(response.status_code, 400)
-        self.assertIn('email', response.data.keys())
+        self.assertIn('email', response.data)
 
         # Test request with only email
         params = {
@@ -136,8 +133,7 @@ class TestPreEnrollmentsAPI(TestCase):
         }
         response = self.client.put('/api/v1/pre_enrollment/', params)
         self.assertEqual(response.status_code, 400)
-        self.assertIn('course_id', response.data.values()[0][0])
-        self.assertIn('bundle_id', response.data.values()[0][0])
+        self.assertIn('non_field_errors', response.data)
 
     @patch('eox_core.api.v1.views.get_pre_enrollment')
     @patch('eox_core.api.v1.views.update_pre_enrollment')
@@ -178,7 +174,7 @@ class TestPreEnrollmentsAPI(TestCase):
         # Test empty request
         response = self.client.delete('/api/v1/pre_enrollment/')
         self.assertEqual(response.status_code, 400)
-        self.assertIn('email', response.data.keys())
+        self.assertIn('email', response.data)
 
         # Test request with only email
         params = {
@@ -186,8 +182,7 @@ class TestPreEnrollmentsAPI(TestCase):
         }
         response = self.client.delete('/api/v1/pre_enrollment/', params)
         self.assertEqual(response.status_code, 400)
-        self.assertIn('course_id', response.data.values()[0][0])
-        self.assertIn('bundle_id', response.data.values()[0][0])
+        self.assertIn('non_field_errors', response.data)
 
     @patch('eox_core.api.v1.views.get_pre_enrollment')
     @patch('eox_core.api.v1.views.delete_pre_enrollment')

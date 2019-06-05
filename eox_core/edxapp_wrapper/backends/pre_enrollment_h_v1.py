@@ -14,7 +14,7 @@ from opaque_keys import InvalidKeyError
 from rest_framework.exceptions import APIException, NotFound
 
 from eox_core.edxapp_wrapper.backends.edxfuture_i_v1 import get_program
-from eox_core.edxapp_wrapper.enrollments import validate_org, get_preferred_course_run
+from eox_core.edxapp_wrapper.enrollments import get_preferred_course_run
 from eox_core.edxapp_wrapper.courseware import get_courseware_courses
 from student.models import (
     CourseEnrollmentAllowed,
