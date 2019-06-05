@@ -67,17 +67,14 @@ def update_pre_enrollment(*args, **kwargs):
             }
         )
     """
-    kwargs = dict(kwargs)
-    email = kwargs.get('email')
     auto_enroll = kwargs.pop('auto_enroll', False)
-    course_id = kwargs.get('course_id')
+    pre_enrollment = kwargs.get('pre_enrollment')
     try:
-        pre_enrollment = get_pre_enrollment(**kwargs)
         pre_enrollment.auto_enroll = auto_enroll
         pre_enrollment.save()
-        LOG.info('Updating regular pre-enrollment for email: %s course_id: %s auto_enroll: %s', email, course_id, auto_enroll)
+        LOG.info('Updating regular pre-enrollment for email: %s course_id: %s auto_enroll: %s', pre_enrollment.email, pre_enrollment.course_id, auto_enroll)
     except Exception: # pylint: disable=broad-except
-        raise NotFound('Pre-enrollment not found for email: {} course_id: {}'.format(email, course_id))
+        raise NotFound('Pre-enrollment not found for email: {} course_id: {}'.format(pre_enrollment.email, pre_enrollment.course_id))
     return pre_enrollment
 
 def delete_pre_enrollment(*args, **kwargs):

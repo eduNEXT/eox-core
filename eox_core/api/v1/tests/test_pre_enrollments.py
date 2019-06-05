@@ -121,3 +121,64 @@ class TestPreEnrollmentsAPI(TestCase):
             program_uuid='bund_1245',
             auto_enroll=True,
         )
+
+    @patch_permissions
+    def test_api_put_input_validation(self, _):
+        """ Test the parameter validation of PUT method """
+        # Test empty request
+        response = self.client.put('/api/v1/pre_enrollment/')
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('email', response.data.keys())
+
+        # Test request with only email
+        params = {
+            'email': 'test@example.com',
+        }
+        response = self.client.put('/api/v1/pre_enrollment/', params)
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('course_id', response.data.values()[0][0])
+        self.assertIn('bundle_id', response.data.values()[0][0])
+
+        # Test request: email, bundle_id, course_id
+        params = {
+            'email': 'test@example.com',
+            'course_id': 'course-v1:org+course+run',
+            'bundle_id': 'bund_1245',
+        }
+        response = self.client.put('/api/v1/pre_enrollment/', params)
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('course_id', response.data.values()[0][0])
+        self.assertIn('bundle_id', response.data.values()[0][0])
+
+    @patch('eox_core.api.v1.views.get_pre_enrollment')
+    @patch('eox_core.api.v1.views.update_pre_enrollment')
+    @patch_permissions
+    def test_api_put(self, _, m_update_pre_enrollment, m_get_pre_enrollment):
+        """ Test that the GET method works under normal conditions """
+        m_update_pre_enrollment.return_value = None
+        m_pre_enrollment = {
+            "warning": "",
+            "course_id": "course-v1:org+course+run",
+            "auto_enroll": True,
+            "email": "test@example.com"
+        }
+        m_get_pre_enrollment.return_value = m_pre_enrollment
+
+        # Test update pre-enrollment
+        params = {
+            'email': 'test@example.com',
+            'course_id': 'course-v1:org+course+run',
+            'auto_enroll': True,
+        }
+        response = self.client.put('/api/v1/pre_enrollment/', params)
+        self.assertEqual(response.status_code, 200)
+
+        m_update_pre_enrollment.assert_called_once_with(
+            auto_enroll=True,
+            pre_enrollment=m_pre_enrollment,
+        )
+
+        m_get_pre_enrollment.assert_called_once_with(
+            email='test@example.com',
+            course_id='course-v1:org+course+run'
+        )

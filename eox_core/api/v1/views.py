@@ -327,8 +327,22 @@ class EdxappPreEnrollment(APIView):
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
         data.pop('bundle_id')
-        pre_enrollment = update_pre_enrollment(**data)
-        response = EdxappCoursePreEnrollmentSerializer(pre_enrollment).data
+        email = data.get('email')
+        course_id = data.get('course_id')
+        auto_enroll = data.pop('auto_enroll', False)
+
+        pre_enrollment_query = {
+            'email': email,
+            'course_id': course_id,
+        }
+
+        pre_enrollment = get_pre_enrollment(**pre_enrollment_query)
+        update_query = {
+            'pre_enrollment': pre_enrollment,
+            'auto_enroll': auto_enroll,
+        }
+        updated_pre_enrollment = update_pre_enrollment(**update_query)
+        response = EdxappCoursePreEnrollmentSerializer(updated_pre_enrollment).data
         return Response(response)
 
     def delete(self, request, *args, **kwargs):
