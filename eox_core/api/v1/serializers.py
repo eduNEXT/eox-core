@@ -84,10 +84,11 @@ class EdxappCourseEnrollmentSerializer(serializers.Serializer):
 
 class EdxappCourseEnrollmentQuerySerializer(EdxappCourseEnrollmentSerializer):
     """
-    Handles the serialization of the context data required to create an enrollemnt
+    Handles the serialization of the context data required to create an enrollment
     on different backends
     """
     username = serializers.CharField(max_length=30, default=None)
+    email = serializers.CharField(max_length=255, default=None)
     force = serializers.BooleanField(default=False)
     bundle_id = serializers.CharField(max_length=255, default=None)
 
