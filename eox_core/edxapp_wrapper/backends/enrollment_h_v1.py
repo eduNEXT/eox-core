@@ -42,8 +42,10 @@ def create_enrollment(*args, **kwargs):
 
     if program_uuid:
         return enroll_on_program(program_uuid, *args, **kwargs)
+    if course_id:
+        return enroll_on_course(course_id, *args, **kwargs)
 
-    return enroll_on_course(course_id, *args, **kwargs)
+    raise APIException("You have to provide a course_id or bundle_id")
 
 def update_enrollment(*args, **kwargs):
     """
@@ -263,9 +265,7 @@ def check_edxapp_enrollment_is_valid(*args, **kwargs):
     email = kwargs.get("email")
 
     if program_uuid and course_id:
-        return None, ['You have to provide a course_id or bundle_id but not both']
-    if not program_uuid and not course_id:
-        return None, ['You have to provide a course_id or bundle_id']
+        return ['You have to provide a course_id or bundle_id but not both']
     if not email and not username:
         return ['Email or username needed']
     if not check_edxapp_account_conflicts(email=email, username=username):
