@@ -88,7 +88,7 @@ class TestPreEnrollmentsAPI(TestCase):
     @patch('eox_core.api.v1.views.create_pre_enrollment')
     @patch_permissions
     def test_api_post(self, _, m_create_pre_enrollment, m_pre_enroll_on_program):
-        """ Test that the GET method works under normal conditions """
+        """ Test that the POST method works under normal conditions """
         m_create_pre_enrollment.return_value = None, None
         m_pre_enroll_on_program.return_value = []
 
@@ -139,22 +139,11 @@ class TestPreEnrollmentsAPI(TestCase):
         self.assertIn('course_id', response.data.values()[0][0])
         self.assertIn('bundle_id', response.data.values()[0][0])
 
-        # Test request: email, bundle_id, course_id
-        params = {
-            'email': 'test@example.com',
-            'course_id': 'course-v1:org+course+run',
-            'bundle_id': 'bund_1245',
-        }
-        response = self.client.put('/api/v1/pre_enrollment/', params)
-        self.assertEqual(response.status_code, 400)
-        self.assertIn('course_id', response.data.values()[0][0])
-        self.assertIn('bundle_id', response.data.values()[0][0])
-
     @patch('eox_core.api.v1.views.get_pre_enrollment')
     @patch('eox_core.api.v1.views.update_pre_enrollment')
     @patch_permissions
     def test_api_put(self, _, m_update_pre_enrollment, m_get_pre_enrollment):
-        """ Test that the GET method works under normal conditions """
+        """ Test that the PUT method works under normal conditions """
         m_update_pre_enrollment.return_value = None
         m_pre_enrollment = {
             "warning": "",
@@ -175,6 +164,55 @@ class TestPreEnrollmentsAPI(TestCase):
 
         m_update_pre_enrollment.assert_called_once_with(
             auto_enroll=True,
+            pre_enrollment=m_pre_enrollment,
+        )
+
+        m_get_pre_enrollment.assert_called_once_with(
+            email='test@example.com',
+            course_id='course-v1:org+course+run'
+        )
+
+    @patch_permissions
+    def test_api_delete_input_validation(self, _):
+        """ Test the parameter validation of DELETE method """
+        # Test empty request
+        response = self.client.delete('/api/v1/pre_enrollment/')
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('email', response.data.keys())
+
+        # Test request with only email
+        params = {
+            'email': 'test@example.com',
+        }
+        response = self.client.delete('/api/v1/pre_enrollment/', params)
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('course_id', response.data.values()[0][0])
+        self.assertIn('bundle_id', response.data.values()[0][0])
+
+    @patch('eox_core.api.v1.views.get_pre_enrollment')
+    @patch('eox_core.api.v1.views.delete_pre_enrollment')
+    @patch_permissions
+    def test_api_delete(self, _, m_delete_pre_enrollment, m_get_pre_enrollment):
+        """ Test that the DELETE method works under normal conditions """
+        m_delete_pre_enrollment.return_value = None
+        m_pre_enrollment = {
+            "warning": "",
+            "course_id": "course-v1:org+course+run",
+            "auto_enroll": True,
+            "email": "test@example.com"
+        }
+        m_get_pre_enrollment.return_value = m_pre_enrollment
+
+        # Test delete pre-enrollment
+        params = {
+            'email': 'test@example.com',
+            'course_id': 'course-v1:org+course+run',
+            'auto_enroll': True,
+        }
+        response = self.client.delete('/api/v1/pre_enrollment/', params)
+        self.assertEqual(response.status_code, 204)
+
+        m_delete_pre_enrollment.assert_called_once_with(
             pre_enrollment=m_pre_enrollment,
         )
 

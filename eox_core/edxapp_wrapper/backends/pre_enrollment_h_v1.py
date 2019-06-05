@@ -89,16 +89,12 @@ def delete_pre_enrollment(*args, **kwargs):
             }
         )
     """
-    kwargs = dict(kwargs)
-    email = kwargs.get('email')
-    course_id = kwargs.get('course_id')
-    pre_enrollment = get_pre_enrollment(**kwargs)
-
+    pre_enrollment = kwargs.get('pre_enrollment')
     try:
-        LOG.info('Deleting regular pre-enrollment for email: %s course_id: %s', email, course_id)
+        LOG.info('Deleting regular pre-enrollment for email: %s course_id: %s', pre_enrollment.email, pre_enrollment.course_id)
         pre_enrollment.delete()
     except Exception: # pylint: disable=broad-except
-        raise NotFound('Pre-enrollment not found for email: {} course_id: {}'.format(email, course_id))
+        raise NotFound('Pre-enrollment not found for email: {} course_id: {}'.format(pre_enrollment.email, pre_enrollment.course_id))
 
 def get_pre_enrollment(*args, **kwargs):
     """

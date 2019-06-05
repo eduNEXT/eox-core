@@ -349,11 +349,27 @@ class EdxappPreEnrollment(APIView):
         """
         Delete whitelistings on edxapp
         """
-        serializer = EdxappCoursePreEnrollmentQuerySerializer(data=request.data)
+        query_params = request.query_params
+        if not query_params:
+            query_params = request.data
+
+        serializer = EdxappCoursePreEnrollmentQuerySerializer(data=query_params)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
         data.pop('bundle_id')
-        delete_pre_enrollment(**data)
+        email = data.get('email')
+        course_id = data.get('course_id')
+
+        pre_enrollment_query = {
+            'email': email,
+            'course_id': course_id,
+        }
+
+        pre_enrollment = get_pre_enrollment(**pre_enrollment_query)
+        delete_query = {
+            'pre_enrollment': pre_enrollment,
+        }
+        delete_pre_enrollment(**delete_query)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def get(self, request, *args, **kwargs):
