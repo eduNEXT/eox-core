@@ -49,6 +49,10 @@ def plugin_settings(settings):  # pylint: disable=function-redefined
         'EOX_CORE_COURSES_BACKEND',
         settings.EOX_CORE_COURSES_BACKEND
     )
+    settings.EOX_CORE_COURSEKEY_BACKEND = getattr(settings, 'ENV_TOKENS', {}).get(
+        'EOX_CORE_COURSEKEY_BACKEND',
+        settings.EOX_CORE_COURSEKEY_BACKEND
+    )
     settings.EOX_CORE_SITE_CONFIGURATION = getattr(settings, 'ENV_TOKENS', {}).get(
         'EOX_CORE_SITE_CONFIGURATION',
         settings.EOX_CORE_SITE_CONFIGURATION
