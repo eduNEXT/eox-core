@@ -133,19 +133,39 @@ def create_edxapp_user(*args, **kwargs):
 def get_edxapp_user(**kwargs):
     """
     Retrieve an user by username and/or email
+
+    The user will be returned only if it belongs to the calling site
+
+    Examples:
+        >>> get_edxapp_user(
+            {
+                "username": "Bob",
+                "site": request.site
+            }
+        )
+        >>> get_edxapp_user(
+            {
+                "email": "Bob@mailserver.com",
+                "site": request.site
+            }
+        )
     """
     params = {key: kwargs.get(key) for key in ['username', 'email'] if key in kwargs}
     site = kwargs.get('site')
+    try:
+        domain = site.domain
+    except AttributeError:
+        domain = None
 
     try:
         user = User.objects.get(**params)
         for source_method in FetchUserSiteSources.get_enabled_source_methods():
-            if source_method(user, site.domain):
+            if source_method(user, domain):
                 break
         else:
             raise User.DoesNotExist
     except User.DoesNotExist:
-        raise APIException('No user found by {query} on site {site}.'.format(query=str(params), site=site.domain))
+        raise APIException('No user found by {query} on site {site}.'.format(query=str(params), site=domain))
     return user
 
 
@@ -168,23 +188,26 @@ class FetchUserSiteSources(object):
     get_enabled_source_methods that just brings an array of functions enabled to do so
     """
 
-    ALL_SOURCES = ['fetch_from_created_on_site_prop', 'fetch_from_user_signup_source']
-
     @classmethod
     def get_enabled_source_methods(cls):
         """ brings the array of methods to check if an user belongs to a site """
-        sources = getattr(settings, 'EOX_CORE_USER_ORIGIN_SITE_SOURCES', cls.ALL_SOURCES)
+        sources = getattr(settings, 'EOX_CORE_USER_ORIGIN_SITE_SOURCES')
         return [getattr(cls, source) for source in sources]
 
     @staticmethod
-    def fetch_from_created_on_site_prop(user, site):
+    def fetch_from_created_on_site_prop(user, domain):
         """ fetch option """
-        return UserAttribute.get_user_attribute(user, 'created_on_site') == site
+        return UserAttribute.get_user_attribute(user, 'created_on_site') == domain
 
     @staticmethod
-    def fetch_from_user_signup_source(user, site):
+    def fetch_from_user_signup_source(user, domain):
         """ fetch option """
-        return len(UserSignupSource.objects.filter(user=user, site=site)) > 0
+        return len(UserSignupSource.objects.filter(user=user, site=domain)) > 0
+
+    @staticmethod
+    def fetch_from_unfiltered_table(user, site):
+        """ fetch option that does not take into account the multi-tentancy model of the installation """
+        return bool(user)
 
 
 def get_course_enrollment():

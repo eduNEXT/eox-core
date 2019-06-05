@@ -5,11 +5,12 @@ API v1 views.
 from __future__ import absolute_import, unicode_literals
 import logging
 
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.authentication import SessionAuthentication
-from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
 from rest_framework import status
+from rest_framework.authentication import SessionAuthentication
+from rest_framework.exceptions import ValidationError, NotFound, APIException
+from rest_framework.response import Response
+from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
+from rest_framework.views import APIView
 
 from rest_framework_oauth.authentication import OAuth2Authentication
 from django.contrib.sites.shortcuts import get_current_site
@@ -64,7 +65,7 @@ class EdxappUser(APIView):
         """
         Retrieves an user from edxapp
         """
-        query = {key: request.GET[key] for key in ['username', 'email'] if key in request.GET}
+        query = {key: request.query_params[key] for key in ['username', 'email'] if key in request.query_params}
         query['site'] = get_current_site(request)
         user = get_edxapp_user(**query)
         admin_fields = getattr(settings, 'ACCOUNT_VISIBILITY_CONFIGURATION', {}).get('admin_fields', {})
@@ -82,34 +83,91 @@ class EdxappEnrollment(APIView):
     permission_classes = (EoxCoreAPIPermission,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
-    # pylint: disable=too-many-locals
+    def __init__(self, *args, **kwargs):
+        """
+        Defines instance attributes
+        """
+        super(EdxappEnrollment, self).__init__(*args, **kwargs)
+        self.query_params = None
+
     def post(self, request, *args, **kwargs):
         """
         Creates the users on edxapp
         """
-        data = dict(request.data)
+        data = request.data
         return EdxappEnrollment.prepare_multiresponse(data, create_enrollment)
 
     def put(self, request, *args, **kwargs):
         """
         Update enrollments on edxapp
         """
-        data = dict(request.data)
+        data = request.data
         return EdxappEnrollment.prepare_multiresponse(data, update_enrollment)
+
+    def get_user_query(self, request):
+        """
+        Utility to prepare the user query in a forgiving way
+
+        As a side effect it loads self.query_params also in a forgiving way
+        """
+        query_params = request.query_params
+        if not query_params and request.data:
+            query_params = request.data
+
+        self.query_params = query_params
+
+        username = query_params.get('username', None)
+        email = query_params.get('email', None)
+
+        if not email and not username:
+            raise ValidationError(detail='Email or username needed')
+
+        user_query = {}
+        if hasattr(request, 'site'):
+            user_query['site'] = request.site
+        if username:
+            user_query['username'] = username
+        elif email:
+            user_query['email'] = email
+
+        return user_query
 
     def get(self, request, *args, **kwargs):
         """
         Get enrollments on edxapp
         """
-        data = dict(request.data)
-        return EdxappEnrollment.prepare_multiresponse(data, get_enrollment)
+        user_query = self.get_user_query(request)
+        user = get_edxapp_user(**user_query)
+
+        course_id = self.query_params.get('course_id', None)
+
+        if not course_id:
+            raise ValidationError(detail='You have to provide a course_id')
+
+        enrollment_query = {
+            'username': user.username,
+            'course_id': course_id,
+        }
+        enrollment, errors = get_enrollment(**enrollment_query)
+
+        if errors:
+            raise NotFound(detail=errors)
+        response = EdxappCourseEnrollmentSerializer(enrollment).data
+        return Response(response)
 
     def delete(self, request, *args, **kwargs):
         """
         Delete enrollment on edxapp
         """
-        data = dict(request.data)
-        delete_enrollment(**data)
+        user_query = self.get_user_query(request)
+        user = get_edxapp_user(**user_query)
+
+        course_id = self.query_params.get('course_id', None)
+
+        if not course_id:
+            raise ValidationError(detail='You have to provide a course_id')
+
+        delete_enrollment(user=user, course_id=course_id)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @staticmethod
@@ -151,27 +209,10 @@ class EdxappEnrollment(APIView):
         """
         Handle exception: log it
         """
-        self.log('API Error', self.kwargs, exc)
-        return super(EdxappEnrollment, self).handle_exception(exc)
+        if isinstance(exc, APIException):
+            LOG.error('API Error: %s', repr(exc.detail))
 
-    def log(self, desc, data, exception=None):
-        """
-        log util for this view
-        """
-        username = data.get('username')
-        bundle_id = data.get('bundle_id')
-        course_id = data.get('course_id')
-        mode = data.get('mode')
-        is_active = data.get('is_active')
-        force = data.get('force')
-        id_val = bundle_id or course_id
-        id_str = 'bundle_id' if bundle_id else 'course_id'
-        logstr = id_str + ': %s, username: %s, mode: %s, is_active: %s, force: %s'
-        logarr = [id_val, username, mode, is_active, force]
-        if exception:
-            LOG.error(desc + ': Exception %s,' + logstr, repr(exception), *logarr)
-        else:
-            LOG.info(desc + ': ' + logstr, *logarr)
+        return super(EdxappEnrollment, self).handle_exception(exc)
 
 
 class UserInfo(APIView):
@@ -191,8 +232,11 @@ class UserInfo(APIView):
             # `django.contrib.auth.User` instance.
             'user': six.text_type(request.user.username),
             'email': six.text_type(request.user.email),
-            'is_staff': request.user.is_staff,
-            'is_superuser': request.user.is_superuser,
             'auth': six.text_type(request.auth)
         }
+
+        if request.user.is_staff:
+            content['is_superuser'] = request.user.is_superuser
+            content['is_staff'] = request.user.is_staff
+
         return Response(content)
