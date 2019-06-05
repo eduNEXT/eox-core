@@ -9,6 +9,7 @@ from __future__ import absolute_import, unicode_literals
 import datetime
 import logging
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from opaque_keys.edx.keys import CourseKey
 from opaque_keys import InvalidKeyError
@@ -263,6 +264,8 @@ def check_edxapp_enrollment_is_valid(*args, **kwargs):
 
     if program_uuid and course_id:
         return None, ['You have to provide a course_id or bundle_id but not both']
+    if not program_uuid and not course_id:
+        return None, ['You have to provide a course_id or bundle_id']
     if not email and not username:
         return ['Email or username needed']
     if not check_edxapp_account_conflicts(email=email, username=username):
@@ -312,7 +315,16 @@ def _force_create_enrollment(username, course_id, mode, is_active):
 def _validate_org(course_id):
     """
     Validates the course organization against all possible orgs for the site
+
+    To determine if the Org is valid we must look at 3 things
+    1 Orgs in the current site
+    2 Orgs in other sites
+    3 flag EOX_CORE_USER_ENABLE_MULTI_TENANCY
     """
+
+    if not settings.EOX_CORE_USER_ENABLE_MULTI_TENANCY:
+        return True
+
     course_key = CourseKey.from_string(course_id)
     current_site_orgs = get_current_site_orgs() or []
 

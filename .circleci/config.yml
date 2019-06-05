@@ -60,7 +60,7 @@ jobs:
             make python-quality-test
             make javascript-quality-test
             coverage run --source="." -m pytest ./eox_core
-            coverage report --fail-under=60
+            coverage report --fail-under=60 -m
 
       - store_artifacts:
           path: test-reports
@@ -108,7 +108,7 @@ jobs:
             make python-quality-test
             make javascript-quality-test
             coverage run --source="." -m pytest ./eox_core
-            coverage report --fail-under=60 --rcfile=.coveragerc
+            coverage report --fail-under=60 --rcfile=.coveragerc -m
 
       - store_artifacts:
           path: test-reports
