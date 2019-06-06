@@ -207,7 +207,7 @@ def _enroll_on_course(user, course_id, *args, **kwargs):
             LOG.info('Force create enrollment %s, %s, %s', username, course_id, mode)
             enrollment = _force_create_enrollment(username, course_id, mode, is_active)
         else:
-            raise APIException(repr(err))
+            raise APIException(err.message)
 
     if enrollment_attributes is not None:
         api.set_enrollment_attributes(username, course_id, enrollment_attributes)
@@ -278,6 +278,8 @@ def check_edxapp_enrollment_is_valid(*args, **kwargs):
 
     if program_uuid and course_id:
         return ['You have to provide a course_id or bundle_id but not both']
+    if not program_uuid and not course_id:
+        return ['You have to provide a course_id or bundle_id']
     if not email and not username:
         return ['Email or username needed']
     if not check_edxapp_account_conflicts(email=email, username=username):
