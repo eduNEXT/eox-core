@@ -146,3 +146,26 @@ class TestEnrollmentsAPI(TestCase):
         m_get_user.assert_called_once_with(username='test')
         m_delete_enrollment.assert_called_once_with(course_id='course-v1:org+course+run', user=m_get_user.return_value)
         self.assertEqual(response.status_code, 204)
+
+    @patch_permissions
+    @patch('eox_core.api.v1.serializers.check_edxapp_enrollment_is_valid')
+    @patch('eox_core.api.v1.views.create_enrollment')
+    def test_api_post_works_with_email(self, m_create_enrollment, m_check_enrollment, *_):
+        """ Test that the POST method works using only email as a reference of the user """
+
+        m_enrollment = {
+            'mode': 'audit',
+            'user': 'test',  # this is the source value for the username field in the serializer
+            'course_id': 'course-v1:org+course+run',
+            'is_active': True,
+        }
+        m_check_enrollment.return_value = []
+        m_create_enrollment.return_value = m_enrollment, None
+        params = {
+            'mode': 'audit',
+            'email': 'test@example.com',
+            'course_id': 'course-v1:org+course+run',
+        }
+        response = self.client.post('/api/v1/enrollment/', params)
+        m_check_enrollment.assert_called_once_with(email='test@example.com', bundle_id=None, course_id='course-v1:org+course+run', enrollment_attributes=[], force=False, is_active=True, mode=u'audit', username=None)
+        self.assertEqual(response.status_code, 200)
