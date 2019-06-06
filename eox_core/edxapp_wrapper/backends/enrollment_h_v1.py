@@ -21,7 +21,7 @@ from enrollment.errors import (CourseEnrollmentExistsError,
                                CourseModeNotFoundError)
 from eox_core.edxapp_wrapper.backends.edxfuture_i_v1 import get_program
 from eox_core.edxapp_wrapper.users import check_edxapp_account_conflicts
-from eox_core.edxapp_wrapper.coursekey import validate_org
+from eox_core.edxapp_wrapper.coursekey import validate_org, get_valid_course_key
 from openedx.core.djangoapps.content.course_overviews.models import \
     CourseOverview
 from openedx.core.lib.exceptions import CourseNotFoundError
@@ -142,7 +142,7 @@ def delete_enrollment(*args, **kwargs):
     course_id = kwargs.pop('course_id', None)
     user = kwargs.get('user')
     try:
-        course_key = CourseKey.from_string(course_id)
+        course_key = get_valid_course_key(course_id)
     except InvalidKeyError:
         raise NotFound('No course found by course id `{}`'.format(course_id))
 
@@ -297,9 +297,6 @@ def check_edxapp_enrollment_is_valid(*args, **kwargs):
         return ['User not found']
     if mode not in CourseMode.ALL_MODES:
         return ['Invalid mode given:' + mode]
-    if course_id:
-        if not validate_org(course_id):
-            errors.append('Enrollment not allowed for given org')
     if course_id and not force:
         try:
             api.validate_course_mode(course_id, mode, is_active=is_active)
@@ -329,7 +326,7 @@ def _force_create_enrollment(username, course_id, mode, is_active):
     forced create enrollment internal function
     """
     try:
-        course_key = CourseKey.from_string(course_id)
+        course_key = get_valid_course_key(course_id)
         user = User.objects.get(username=username)
         enrollment = CourseEnrollment.enroll(user, course_key, check_access=False)
         api._data_api()._update_enrollment(enrollment, is_active=is_active, mode=mode)

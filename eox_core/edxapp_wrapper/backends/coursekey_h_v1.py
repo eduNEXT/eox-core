@@ -38,7 +38,7 @@ def validate_org(course_id):
     if not settings.EOX_CORE_USER_ENABLE_MULTI_TENANCY:
         return True
 
-    course_key = CourseKey.from_string(course_id)
+    course_key = get_valid_course_key(course_id)
     current_site_orgs = get_current_site_orgs() or []
 
     if not current_site_orgs:
