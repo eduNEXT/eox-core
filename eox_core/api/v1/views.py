@@ -91,12 +91,21 @@ class EdxappEnrollment(APIView):
         self.query_params = None
         self.site = None
 
+    def single_enrollment_create(self, *args, **kwargs):
+        """
+        Handle one create at the time
+        """
+        user_query = self.get_user_query(None, query_params=kwargs)
+        user = get_edxapp_user(**user_query)
+
+        return create_enrollment(user, **kwargs)
+
     def post(self, request, *args, **kwargs):
         """
         Creates the users on edxapp
         """
         data = request.data
-        return EdxappEnrollment.prepare_multiresponse(data, create_enrollment)
+        return EdxappEnrollment.prepare_multiresponse(data, self.single_enrollment_create)
 
     def single_enrollment_update(self, *args, **kwargs):
         """

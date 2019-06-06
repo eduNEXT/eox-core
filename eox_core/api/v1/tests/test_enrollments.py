@@ -83,6 +83,7 @@ class TestEnrollmentsAPI(TestCase):
 
     @patch_permissions
     @patch('eox_core.api.v1.serializers.check_edxapp_enrollment_is_valid', return_value=[])
+    @patch('eox_core.api.v1.views.get_edxapp_user')
     @patch('eox_core.api.v1.views.create_enrollment')
     def test_api_post_works(self, m_create_enrollment, *_):
         """ Test that the POST method works in normal conditions """

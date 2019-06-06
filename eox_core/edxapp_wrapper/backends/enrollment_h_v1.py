@@ -32,18 +32,28 @@ from student.models import CourseEnrollment
 LOG = logging.getLogger(__name__)
 
 
-def create_enrollment(*args, **kwargs):
+def create_enrollment(user, *args, **kwargs):
     """
     backend function to create enrollment
+
+    Example:
+        >>>create_enrollment(
+            user_object,
+            {
+            "course_id": "course-v1-edX-DemoX-1T2015",
+            ...
+            }
+        )
+
     """
     kwargs = dict(kwargs)
     program_uuid = kwargs.pop('bundle_id', None)
     course_id = kwargs.pop('course_id', None)
 
     if program_uuid:
-        return enroll_on_program(program_uuid, *args, **kwargs)
+        return _enroll_on_program(user, program_uuid, *args, **kwargs)
     if course_id:
-        return enroll_on_course(course_id, *args, **kwargs)
+        return _enroll_on_course(user, course_id, *args, **kwargs)
 
     raise APIException("You have to provide a course_id or bundle_id")
 
@@ -115,6 +125,7 @@ def get_enrollment(*args, **kwargs):
     enrollment['course_id'] = course_id
     return enrollment, errors
 
+
 def delete_enrollment(*args, **kwargs):
     """
     Delete enrollment and enrollment attributes of given user in the course provided.
@@ -145,12 +156,12 @@ def delete_enrollment(*args, **kwargs):
         raise NotFound('Error: Enrollment could not be deleted for user: `{}` on course_id `{}`'.format(username, course_id))
 
 
-def enroll_on_course(course_id, *args, **kwargs):
+def _enroll_on_course(user, course_id, *args, **kwargs):
     """
     enroll user on a single course
 
     Example:
-        >>>enroll_on_course(
+        >>>_enroll_on_course(
             {
             "user": user_object,
             "course_id": course-v1-edX-DemoX-1T2015",
@@ -168,22 +179,23 @@ def enroll_on_course(course_id, *args, **kwargs):
         )
     """
     errors = []
-    email = kwargs.get("email")
-    username = kwargs.get('username')
-    mode = kwargs.get('mode')
+
+    username = user.username
+
+    mode = kwargs.get('mode', 'audit')
     is_active = kwargs.get('is_active', True)
     force = kwargs.get('force', False)
     enrollment_attributes = kwargs.get('enrollment_attributes', None)
-    validation_errors = check_edxapp_enrollment_is_valid(*args, **kwargs)
+
+    enrollment_valid_query = {
+        'course_id': course_id,
+        'force': force,
+        'mode': mode,
+        'username': username,
+    }
+    validation_errors = check_edxapp_enrollment_is_valid(**enrollment_valid_query)
     if validation_errors:
         return None, [", ".join(validation_errors)]
-    if email:
-        match = User.objects.filter(email=email).first()
-        if match is None:
-            raise NotFound('No user found with that email')
-        else:
-            username = match.username
-            email = match.email
 
     try:
         LOG.info('Creating regular enrollment %s, %s, %s', username, course_id, mode)
@@ -205,7 +217,7 @@ def enroll_on_course(course_id, *args, **kwargs):
     return enrollment, errors
 
 
-def enroll_on_program(program_uuid, *arg, **kwargs):
+def _enroll_on_program(user, program_uuid, *arg, **kwargs):
     """
     enroll user on each of the courses of a progam
     """
@@ -220,10 +232,10 @@ def enroll_on_program(program_uuid, *arg, **kwargs):
         raise NotFound("No courses found for this program")
     for course in data['courses']:
         if course['course_runs']:
-            course_run = get_preferred_course_run(course)
+            course_run = _get_preferred_course_run(course)
             LOG.info('Enrolling on course_run: %s', course_run['key'])
             course_id = course_run['key']
-            result, errors_list = enroll_on_course(course_id, *arg, **kwargs)
+            result, errors_list = _enroll_on_course(user, course_id, *arg, **kwargs)
             results.append(result)
             errors.append(errors_list)
         else:
@@ -231,7 +243,7 @@ def enroll_on_program(program_uuid, *arg, **kwargs):
     return results, errors
 
 
-def get_preferred_course_run(course):
+def _get_preferred_course_run(course):
     """
     Returns the course run more likely to be the intended one
     """
@@ -283,6 +295,7 @@ def check_edxapp_enrollment_is_valid(*args, **kwargs):
         except CourseNotFoundError:
             errors.append('Course not found')
     return errors
+
 
 def _create_or_update_enrollment(username, course_id, mode, is_active, try_update):
     """
