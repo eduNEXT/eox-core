@@ -118,7 +118,7 @@ class TestEnrollmentsAPI(TestCase):
             'is_active': True,
         }
 
-        m_update_enrollment.return_value = enrollments_response, [None]
+        m_update_enrollment.return_value = enrollments_response
         params = [{
             'mode': 'audit',
             'username': 'test',

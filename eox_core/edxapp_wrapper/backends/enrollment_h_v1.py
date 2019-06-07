@@ -78,7 +78,6 @@ def update_enrollment(user, course_id, mode, *args, **kwargs):
             }
         )
     """
-    errors = []
     username = user.username
 
     is_active = kwargs.get('is_active', True)
@@ -91,9 +90,13 @@ def update_enrollment(user, course_id, mode, *args, **kwargs):
     if enrollment_attributes is not None:
         api.set_enrollment_attributes(username, course_id, enrollment_attributes)
 
-    enrollment['enrollment_attributes'] = enrollment_attributes
-    enrollment['course_id'] = course_id
-    return enrollment, errors
+    return {
+        'user': enrollment['user'],
+        'course_id': course_id,
+        'mode': enrollment['mode'],
+        'is_active': enrollment['is_active'],
+        'enrollment_attributes': enrollment_attributes,
+    }
 
 
 def get_enrollment(*args, **kwargs):
@@ -207,7 +210,7 @@ def _enroll_on_course(user, course_id, *args, **kwargs):
             LOG.info('Force create enrollment %s, %s, %s', username, course_id, mode)
             enrollment = _force_create_enrollment(username, course_id, mode, is_active)
         else:
-            raise APIException(err.message)
+            raise APIException(detail=err)
 
     if enrollment_attributes is not None:
         api.set_enrollment_attributes(username, course_id, enrollment_attributes)
@@ -235,7 +238,16 @@ def _enroll_on_program(user, program_uuid, *arg, **kwargs):
             course_run = _get_preferred_course_run(course)
             LOG.info('Enrolling on course_run: %s', course_run['key'])
             course_id = course_run['key']
-            result, errors_list = _enroll_on_course(user, course_id, *arg, **kwargs)
+            try:
+                result, errors_list = _enroll_on_course(user, course_id, *arg, **kwargs)
+            except APIException as error:
+                result = {
+                    'username': user.username,
+                    'mode': None,
+                    'course_id': course_id,
+                }
+                errors_list = [error.detail]
+
             results.append(result)
             errors.append(errors_list)
         else:

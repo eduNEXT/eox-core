@@ -98,7 +98,20 @@ class EdxappEnrollment(APIView):
         user_query = self.get_user_query(None, query_params=kwargs)
         user = get_edxapp_user(**user_query)
 
-        return create_enrollment(user, **kwargs)
+        enrollments, msgs = create_enrollment(user, **kwargs)
+        # This logic block is needed to convert a single bundle_id enrollment in a list
+        # of course_id enrollments which are appended to the response individually
+        if not isinstance(enrollments, list):
+            enrollments = [enrollments]
+            msgs = [msgs]
+        response_data = []
+        for enrollment, msg in zip(enrollments, msgs):
+            data = EdxappCourseEnrollmentSerializer(enrollment).data
+            if msg:
+                data["messages"] = msg
+            response_data.append(data)
+
+        return response_data
 
     def post(self, request, *args, **kwargs):
         """
@@ -230,18 +243,12 @@ class EdxappEnrollment(APIView):
         for enrollment_query in data:
 
             try:
-                enrollments, msgs = action_method(**enrollment_query)
-                # This logic block is needed to convert a single bundle_id enrollment in a list
-                # of course_id enrollments which are appended to the response individually
-                if not isinstance(enrollments, list):
-                    enrollments = [enrollments]
-                    msgs = [msgs]
-                for enrollment, msg in zip(enrollments, msgs):
-                    response_data = EdxappCourseEnrollmentSerializer(enrollment).data
-                    if msg:
-                        response_data["messages"] = msg
-                    multiple_responses.append(response_data)
-
+                result = action_method(**enrollment_query)
+                # The result can be a list if the enrollment was in a bundle
+                if isinstance(result, list):
+                    multiple_responses += result
+                else:
+                    multiple_responses.append(result)
             except APIException as error:
                 errors_in_bulk_response = True
                 enrollment_query["error"] = {
