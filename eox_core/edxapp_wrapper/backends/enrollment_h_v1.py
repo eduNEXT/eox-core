@@ -297,6 +297,9 @@ def check_edxapp_enrollment_is_valid(*args, **kwargs):
         return ['User not found']
     if mode not in CourseMode.ALL_MODES:
         return ['Invalid mode given:' + mode]
+    if course_id:
+        if not validate_org(course_id):
+            errors.append('Enrollment not allowed for given org')
     if course_id and not force:
         try:
             api.validate_course_mode(course_id, mode, is_active=is_active)

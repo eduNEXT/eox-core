@@ -16,6 +16,7 @@ from openedx.core.djangoapps.site_configuration.helpers import (
     get_current_site_orgs,
 )
 
+
 def get_valid_course_key(course_id):
     """
     Return the CourseKey if the course_id is valid
@@ -24,6 +25,7 @@ def get_valid_course_key(course_id):
         return CourseKey.from_string(course_id)
     except InvalidKeyError:
         raise ValidationError("No valid course_id {}".format(course_id))
+
 
 def validate_org(course_id):
     """

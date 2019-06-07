@@ -18,6 +18,7 @@ def get_valid_course_key(course_id):
 
     return backend.get_valid_course_key(course_id)
 
+
 def validate_org(course_id):
     """
     Return a valid CourseKey for the given course_id

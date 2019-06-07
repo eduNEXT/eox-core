@@ -58,6 +58,7 @@ class EdxappEnrollmentAttributeSerializer(serializers.Serializer):
     name = serializers.CharField()
     value = serializers.CharField()
 
+
 class EdxappCourseKeyField(serializers.Field):
     """
     CourseKey Field

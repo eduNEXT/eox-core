@@ -8,6 +8,7 @@ from django.test import TestCase
 from rest_framework.serializers import ValidationError
 from ..serializers import EdxappCourseEnrollmentSerializer
 
+
 class TestCourseKeyValidation(TestCase):
     """ Tests for the CourseKey validations """
 
@@ -23,10 +24,10 @@ class TestCourseKeyValidation(TestCase):
             'is_active': True,
         }
 
-
-    @patch('eox_core.api.v1.serializers.get_valid_course_key')
+    @patch('eox_core.api.v1.serializers.validate_org')
     @patch('eox_core.api.v1.serializers.check_edxapp_enrollment_is_valid', return_value=[])
-    def test_incorrect_course_id(self, _, m_get_valid_course_key):
+    @patch('eox_core.api.v1.serializers.get_valid_course_key')
+    def test_incorrect_course_id(self, m_get_valid_course_key, *_):
         """ Test that the CourseKey validation fails due to invalid formatting """
         course_id = "test1234"
         m_get_valid_course_key.side_effect = ValidationError("No valid course_id {}".format(course_id))
@@ -35,7 +36,6 @@ class TestCourseKeyValidation(TestCase):
         with self.assertRaises(ValidationError):
             serializer.is_valid(raise_exception=True)
         m_get_valid_course_key.assert_called_once_with(course_id)
-
 
     @patch('eox_core.api.v1.serializers.validate_org')
     @patch('eox_core.api.v1.serializers.get_valid_course_key')

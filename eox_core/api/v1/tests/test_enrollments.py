@@ -82,6 +82,8 @@ class TestEnrollmentsAPI(TestCase):
         self.assertIn('non_field_errors', response.data)
 
     @patch_permissions
+    @patch('eox_core.api.v1.serializers.validate_org')
+    @patch('eox_core.api.v1.serializers.get_valid_course_key')
     @patch('eox_core.api.v1.serializers.check_edxapp_enrollment_is_valid', return_value=[])
     @patch('eox_core.api.v1.views.get_edxapp_user')
     @patch('eox_core.api.v1.views.create_enrollment')
@@ -105,6 +107,8 @@ class TestEnrollmentsAPI(TestCase):
         self.assertDictContainsSubset(params, response.data)
 
     @patch_permissions
+    @patch('eox_core.api.v1.serializers.validate_org')
+    @patch('eox_core.api.v1.serializers.get_valid_course_key')
     @patch('eox_core.api.v1.serializers.check_edxapp_enrollment_is_valid', return_value=[])
     @patch('eox_core.api.v1.views.get_edxapp_user')
     @patch('eox_core.api.v1.views.update_enrollment')
