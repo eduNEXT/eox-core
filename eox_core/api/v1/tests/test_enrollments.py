@@ -68,7 +68,7 @@ class TestEnrollmentsAPI(TestCase):
         params = {
             'mode': 'audit',
         }
-        response = self.client.post('/api/v1/enrollment/', params)
+        response = self.client.post('/api/v1/enrollment/', data=params)
         self.assertEqual(response.status_code, 400)
         self.assertIn('non_field_errors', response.data)
 
@@ -77,12 +77,13 @@ class TestEnrollmentsAPI(TestCase):
             'mode': 'audit',
             'username': 'test',
         }
-        response = self.client.post('/api/v1/enrollment/', params)
+        response = self.client.post('/api/v1/enrollment/', data=params)
         self.assertEqual(response.status_code, 400)
         self.assertIn('non_field_errors', response.data)
 
     @patch_permissions
     @patch('eox_core.api.v1.serializers.check_edxapp_enrollment_is_valid', return_value=[])
+    @patch('eox_core.api.v1.views.get_edxapp_user')
     @patch('eox_core.api.v1.views.create_enrollment')
     def test_api_post_works(self, m_create_enrollment, *_):
         """ Test that the POST method works in normal conditions """
@@ -99,34 +100,37 @@ class TestEnrollmentsAPI(TestCase):
             'username': 'test',
             'course_id': 'course-v1:org+course+run',
         }
-        response = self.client.post('/api/v1/enrollment/', params)
+        response = self.client.post('/api/v1/enrollment/', data=params)
         self.assertEqual(response.status_code, 200)
         self.assertDictContainsSubset(params, response.data)
 
     @patch_permissions
     @patch('eox_core.api.v1.serializers.check_edxapp_enrollment_is_valid', return_value=[])
+    @patch('eox_core.api.v1.views.get_edxapp_user')
     @patch('eox_core.api.v1.views.update_enrollment')
-    def test_api_put_works(self, m_update_enrollment, *_):
-        """ Test that the PUT method works in normal conditions with a bundle """
+    def test_api_put_works(self, m_update_enrollment, m_get_user, *_):
+        """ Test that the PUT method works in normal conditions with a list of enrollments """
 
-        enrollments_for_bundle = [{
+        enrollments_response = {
             'mode': 'audit',
             'user': 'test',  # this is the source value for the username field in the serializer
             'course_id': 'course-v1:org+course+run',
             'is_active': True,
-        }, {
-            'mode': 'audit',
-            'user': 'test',
-            'course_id': 'course-v1:org+course_2+run',
-            'is_active': True,
-        }]
-        m_update_enrollment.return_value = enrollments_for_bundle, [None, None]
-        params = {
+        }
+
+        m_update_enrollment.return_value = enrollments_response
+        params = [{
             'mode': 'audit',
             'username': 'test',
-            'bundle_id': '3019bf08-eb47-4541-9d84-d20c25ed8f7f',  # random uuid
-        }
-        response = self.client.put('/api/v1/enrollment/', params)
+            'course_id': 'course-v1:org+course+run',
+        }, {
+            'mode': 'audit',
+            'username': 'test',
+            'course_id': 'course-v1:org+course_2+run',
+        }]
+
+        response = self.client.put('/api/v1/enrollment/', data=params, format='json')
+        m_get_user.assert_called()
         self.assertEqual(response.status_code, 200)
         self.assertIn('course_id', response.data[0])
         self.assertIn('is_active', response.data[0])
@@ -146,26 +150,3 @@ class TestEnrollmentsAPI(TestCase):
         m_get_user.assert_called_once_with(username='test')
         m_delete_enrollment.assert_called_once_with(course_id='course-v1:org+course+run', user=m_get_user.return_value)
         self.assertEqual(response.status_code, 204)
-
-    @patch_permissions
-    @patch('eox_core.api.v1.serializers.check_edxapp_enrollment_is_valid')
-    @patch('eox_core.api.v1.views.create_enrollment')
-    def test_api_post_works_with_email(self, m_create_enrollment, m_check_enrollment, *_):
-        """ Test that the POST method works using only email as a reference of the user """
-
-        m_enrollment = {
-            'mode': 'audit',
-            'user': 'test',  # this is the source value for the username field in the serializer
-            'course_id': 'course-v1:org+course+run',
-            'is_active': True,
-        }
-        m_check_enrollment.return_value = []
-        m_create_enrollment.return_value = m_enrollment, None
-        params = {
-            'mode': 'audit',
-            'email': 'test@example.com',
-            'course_id': 'course-v1:org+course+run',
-        }
-        response = self.client.post('/api/v1/enrollment/', params)
-        m_check_enrollment.assert_called_once_with(email='test@example.com', bundle_id=None, course_id='course-v1:org+course+run', enrollment_attributes=[], force=False, is_active=True, mode=u'audit', username=None)
-        self.assertEqual(response.status_code, 200)

@@ -32,34 +32,43 @@ from student.models import CourseEnrollment
 LOG = logging.getLogger(__name__)
 
 
-def create_enrollment(*args, **kwargs):
+def create_enrollment(user, *args, **kwargs):
     """
     backend function to create enrollment
+
+    Example:
+        >>>create_enrollment(
+            user_object,
+            {
+            "course_id": "course-v1-edX-DemoX-1T2015",
+            ...
+            }
+        )
+
     """
     kwargs = dict(kwargs)
     program_uuid = kwargs.pop('bundle_id', None)
     course_id = kwargs.pop('course_id', None)
 
     if program_uuid:
-        return enroll_on_program(program_uuid, *args, **kwargs)
+        return _enroll_on_program(user, program_uuid, *args, **kwargs)
     if course_id:
-        return enroll_on_course(course_id, *args, **kwargs)
+        return _enroll_on_course(user, course_id, *args, **kwargs)
 
     raise APIException("You have to provide a course_id or bundle_id")
 
 
-def update_enrollment(*args, **kwargs):
+def update_enrollment(user, course_id, mode, *args, **kwargs):
     """
     Update enrollment of given user in the course provided.
 
     Example:
         >>>update_enrollment(
-            {
-            "username": "Bob",
-            "course_id": course-v1-edX-DemoX-1T2015",
-            "is_active": "False",
-            "mode": "audit",
-            "enrollment_attributes": [
+            user_object,
+            course_id,
+            mode,
+            is_active=False,
+            enrollment_attributes=[
                 {
                     "namespace": "credit",
                     "name": "provider_id",
@@ -70,31 +79,25 @@ def update_enrollment(*args, **kwargs):
             }
         )
     """
-    errors = []
-    course_id = kwargs.pop('course_id', None)
-    email = kwargs.get("email")
-    username = kwargs.get('username')
-    mode = kwargs.get('mode')
+    username = user.username
+
     is_active = kwargs.get('is_active', True)
     enrollment_attributes = kwargs.get('enrollment_attributes', None)
 
-    if email:
-        match = User.objects.filter(email=email).first()
-        if match is None:
-            raise NotFound('No user found with that email')
-        else:
-            username = match.username
-            email = match.email
     LOG.info('Updating enrollment for student: %s of course: %s mode: %s', username, course_id, mode)
     enrollment = api._data_api().update_course_enrollment(username, course_id, mode, is_active)
     if not enrollment:
-        raise NotFound('No enrollment found for {}'.format(username or email))
+        raise NotFound('No enrollment found for {}'.format(username))
     if enrollment_attributes is not None:
         api.set_enrollment_attributes(username, course_id, enrollment_attributes)
 
-    enrollment['enrollment_attributes'] = enrollment_attributes
-    enrollment['course_id'] = course_id
-    return enrollment, errors
+    return {
+        'user': enrollment['user'],
+        'course_id': course_id,
+        'mode': enrollment['mode'],
+        'is_active': enrollment['is_active'],
+        'enrollment_attributes': enrollment_attributes,
+    }
 
 
 def get_enrollment(*args, **kwargs):
@@ -157,27 +160,46 @@ def delete_enrollment(*args, **kwargs):
         raise NotFound('Error: Enrollment could not be deleted for user: `{}` on course_id `{}`'.format(username, course_id))
 
 
-def enroll_on_course(course_id, *args, **kwargs):
+def _enroll_on_course(user, course_id, *args, **kwargs):
     """
     enroll user on a single course
+
+    Example:
+        >>>_enroll_on_course(
+            {
+            "user": user_object,
+            "course_id": course-v1-edX-DemoX-1T2015",
+            "is_active": "False",
+            "mode": "audit",
+            "enrollment_attributes": [
+                {
+                    "namespace": "credit",
+                    "name": "provider_id",
+                    "value": "hogwarts",
+                },
+                {...}
+                ]
+            }
+        )
     """
     errors = []
-    email = kwargs.get("email")
-    username = kwargs.get('username')
-    mode = kwargs.get('mode')
+
+    username = user.username
+
+    mode = kwargs.get('mode', 'audit')
     is_active = kwargs.get('is_active', True)
     force = kwargs.get('force', False)
     enrollment_attributes = kwargs.get('enrollment_attributes', None)
-    validation_errors = check_edxapp_enrollment_is_valid(*args, **kwargs)
+
+    enrollment_valid_query = {
+        'course_id': course_id,
+        'force': force,
+        'mode': mode,
+        'username': username,
+    }
+    validation_errors = check_edxapp_enrollment_is_valid(**enrollment_valid_query)
     if validation_errors:
         return None, [", ".join(validation_errors)]
-    if email:
-        match = User.objects.filter(email=email).first()
-        if match is None:
-            raise NotFound('No user found with that email')
-        else:
-            username = match.username
-            email = match.email
 
     try:
         LOG.info('Creating regular enrollment %s, %s, %s', username, course_id, mode)
@@ -189,7 +211,7 @@ def enroll_on_course(course_id, *args, **kwargs):
             LOG.info('Force create enrollment %s, %s, %s', username, course_id, mode)
             enrollment = _force_create_enrollment(username, course_id, mode, is_active)
         else:
-            raise APIException(repr(err))
+            raise APIException(detail=err)
 
     if enrollment_attributes is not None:
         api.set_enrollment_attributes(username, course_id, enrollment_attributes)
@@ -199,9 +221,9 @@ def enroll_on_course(course_id, *args, **kwargs):
     return enrollment, errors
 
 
-def enroll_on_program(program_uuid, *arg, **kwargs):
+def _enroll_on_program(user, program_uuid, *arg, **kwargs):
     """
-    enroll user on each of the courses of a progam
+    enroll user on each of the courses of a program
     """
     results = []
     errors = []
@@ -214,10 +236,19 @@ def enroll_on_program(program_uuid, *arg, **kwargs):
         raise NotFound("No courses found for this program")
     for course in data['courses']:
         if course['course_runs']:
-            course_run = get_preferred_course_run(course)
+            course_run = _get_preferred_course_run(course)
             LOG.info('Enrolling on course_run: %s', course_run['key'])
             course_id = course_run['key']
-            result, errors_list = enroll_on_course(course_id, *arg, **kwargs)
+            try:
+                result, errors_list = _enroll_on_course(user, course_id, *arg, **kwargs)
+            except APIException as error:
+                result = {
+                    'username': user.username,
+                    'mode': None,
+                    'course_id': course_id,
+                }
+                errors_list = [error.detail]
+
             results.append(result)
             errors.append(errors_list)
         else:
@@ -225,7 +256,7 @@ def enroll_on_program(program_uuid, *arg, **kwargs):
     return results, errors
 
 
-def get_preferred_course_run(course):
+def _get_preferred_course_run(course):
     """
     Returns the course run more likely to be the intended one
     """
@@ -260,6 +291,8 @@ def check_edxapp_enrollment_is_valid(*args, **kwargs):
 
     if program_uuid and course_id:
         return ['You have to provide a course_id or bundle_id but not both']
+    if not program_uuid and not course_id:
+        return ['You have to provide a course_id or bundle_id']
     if not email and not username:
         return ['Email or username needed']
     if not check_edxapp_account_conflicts(email=email, username=username):

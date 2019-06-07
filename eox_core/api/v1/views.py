@@ -89,25 +89,64 @@ class EdxappEnrollment(APIView):
         """
         super(EdxappEnrollment, self).__init__(*args, **kwargs)
         self.query_params = None
+        self.site = None
+
+    def single_enrollment_create(self, *args, **kwargs):
+        """
+        Handle one create at the time
+        """
+        user_query = self.get_user_query(None, query_params=kwargs)
+        user = get_edxapp_user(**user_query)
+
+        enrollments, msgs = create_enrollment(user, **kwargs)
+        # This logic block is needed to convert a single bundle_id enrollment in a list
+        # of course_id enrollments which are appended to the response individually
+        if not isinstance(enrollments, list):
+            enrollments = [enrollments]
+            msgs = [msgs]
+        response_data = []
+        for enrollment, msg in zip(enrollments, msgs):
+            data = EdxappCourseEnrollmentSerializer(enrollment).data
+            if msg:
+                data["messages"] = msg
+            response_data.append(data)
+
+        return response_data
 
     def post(self, request, *args, **kwargs):
         """
-        Creates the users on edxapp
+        Handle creation of single or bulk enrollments
         """
         data = request.data
-        return EdxappEnrollment.prepare_multiresponse(data, create_enrollment)
+        return EdxappEnrollment.prepare_multiresponse(data, self.single_enrollment_create)
+
+    def single_enrollment_update(self, *args, **kwargs):
+        """
+        Handle one update at the time
+        """
+        user_query = self.get_user_query(None, query_params=kwargs)
+        user = get_edxapp_user(**user_query)
+
+        course_id = kwargs.pop('course_id', None)
+        if not course_id:
+            raise ValidationError(detail='You have to provide a course_id for updates')
+        mode = kwargs.pop('mode', None)
+
+        return update_enrollment(user, course_id, mode, **kwargs)
 
     def put(self, request, *args, **kwargs):
         """
         Update enrollments on edxapp
         """
+        if hasattr(request, 'site'):
+            self.site = request.site
+
         data = request.data
-        return EdxappEnrollment.prepare_multiresponse(data, update_enrollment)
+        return EdxappEnrollment.prepare_multiresponse(data, self.single_enrollment_update)
 
-    def get_user_query(self, request):
+    def get_query_params(self, request):
         """
-        Utility to prepare the user query in a forgiving way
-
+        Utility to read the query params in a forgiving way
         As a side effect it loads self.query_params also in a forgiving way
         """
         query_params = request.query_params
@@ -116,6 +155,18 @@ class EdxappEnrollment(APIView):
 
         self.query_params = query_params
 
+        if hasattr(request, 'site'):
+            self.site = request.site
+
+        return query_params
+
+    def get_user_query(self, request, query_params=None):
+        """
+        Utility to prepare the user query
+        """
+        if not query_params:
+            query_params = self.get_query_params(request)
+
         username = query_params.get('username', None)
         email = query_params.get('email', None)
 
@@ -123,8 +174,8 @@ class EdxappEnrollment(APIView):
             raise ValidationError(detail='Email or username needed')
 
         user_query = {}
-        if hasattr(request, 'site'):
-            user_query['site'] = request.site
+        if hasattr(self, 'site') and self.site:
+            user_query['site'] = self.site
         if username:
             user_query['username'] = username
         elif email:
@@ -181,6 +232,7 @@ class EdxappEnrollment(APIView):
         Returns: List of responses
         """
         multiple_responses = []
+        errors_in_bulk_response = False
         many = isinstance(request_data, list)
         serializer = EdxappCourseEnrollmentQuerySerializer(data=request_data, many=many)
         serializer.is_valid(raise_exception=True)
@@ -189,21 +241,30 @@ class EdxappEnrollment(APIView):
             data = [data]
 
         for enrollment_query in data:
-            enrollments, msgs = action_method(**enrollment_query)
-            if not isinstance(enrollments, list):
-                enrollments = [enrollments]
-                msgs = [msgs]
-            for enrollment, msg in zip(enrollments, msgs):
-                response_data = EdxappCourseEnrollmentSerializer(enrollment).data
-                if msg:
-                    response_data["messages"] = msg
-                multiple_responses.append(response_data)
+
+            try:
+                result = action_method(**enrollment_query)
+                # The result can be a list if the enrollment was in a bundle
+                if isinstance(result, list):
+                    multiple_responses += result
+                else:
+                    multiple_responses.append(result)
+            except APIException as error:
+                errors_in_bulk_response = True
+                enrollment_query["error"] = {
+                    "detail": error.detail,
+                }
+                multiple_responses.append(enrollment_query)
 
         if many or 'bundle_id' in request_data:
             response = multiple_responses
         else:
             response = multiple_responses[0]
-        return Response(response)
+
+        response_status = status.HTTP_200_OK
+        if errors_in_bulk_response:
+            response_status = status.HTTP_202_ACCEPTED
+        return Response(response, status=response_status)
 
     def handle_exception(self, exc):
         """
