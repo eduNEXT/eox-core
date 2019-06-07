@@ -115,7 +115,7 @@ class EdxappEnrollment(APIView):
 
     def post(self, request, *args, **kwargs):
         """
-        Creates the users on edxapp
+        Handle creation of single or bulk enrollments
         """
         data = request.data
         return EdxappEnrollment.prepare_multiresponse(data, self.single_enrollment_create)

@@ -57,6 +57,7 @@ def create_enrollment(user, *args, **kwargs):
 
     raise APIException("You have to provide a course_id or bundle_id")
 
+
 def update_enrollment(user, course_id, mode, *args, **kwargs):
     """
     Update enrollment of given user in the course provided.
@@ -222,7 +223,7 @@ def _enroll_on_course(user, course_id, *args, **kwargs):
 
 def _enroll_on_program(user, program_uuid, *arg, **kwargs):
     """
-    enroll user on each of the courses of a progam
+    enroll user on each of the courses of a program
     """
     results = []
     errors = []
