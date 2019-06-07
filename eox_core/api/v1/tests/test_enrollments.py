@@ -124,7 +124,7 @@ class TestEnrollmentsAPI(TestCase):
         params = {
             'mode': 'audit',
             'username': 'test',
-            'bundle_id': '3019bf08-eb47-4541-9d84-d20c25ed8f7f', # random uuid
+            'bundle_id': '3019bf08-eb47-4541-9d84-d20c25ed8f7f',  # random uuid
         }
         response = self.client.put('/api/v1/enrollment/', params)
         self.assertEqual(response.status_code, 200)

@@ -47,6 +47,7 @@ def create_enrollment(*args, **kwargs):
 
     raise APIException("You have to provide a course_id or bundle_id")
 
+
 def update_enrollment(*args, **kwargs):
     """
     Update enrollment of given user in the course provided.
@@ -124,6 +125,7 @@ def get_enrollment(*args, **kwargs):
     enrollment['enrollment_attributes'] = api.get_enrollment_attributes(username, course_id)
     enrollment['course_id'] = course_id
     return enrollment, errors
+
 
 def delete_enrollment(*args, **kwargs):
     """
@@ -275,6 +277,7 @@ def check_edxapp_enrollment_is_valid(*args, **kwargs):
         except CourseNotFoundError:
             errors.append('Course not found')
     return errors
+
 
 def _create_or_update_enrollment(username, course_id, mode, is_active, try_update):
     """
