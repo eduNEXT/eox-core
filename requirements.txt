@@ -42,6 +42,7 @@ more-itertools==4.3.0     # via pytest
 pbr==4.2.0                # via mock, stevedore
 pluggy==0.6.0             # via pytest
 py==1.6.0                 # via pytest
+pycodestyle==2.5.0
 pycryptodomex==3.7.0      # via edx-proctoring
 pylint==1.9.3
 pymongo==3.7.2            # via edx-opaque-keys

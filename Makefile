@@ -31,6 +31,7 @@ test: clean ## Run tests
 
 python-quality-test:
 	pylint ./eox_core
+	pycodestyle ./eox_core
 
 javascript-quality-test:
 	./node_modules/.bin/eslint ./eox_core/**/*.js*
