@@ -11,6 +11,7 @@ from eox_core.edxapp_wrapper.coursekey import validate_org, get_valid_course_key
 from eox_core.edxapp_wrapper.pre_enrollments import validate_pre_enrollment
 
 
+
 class EdxappWithWarningSerializer(serializers.Serializer):
     """
     Mixin serializer to add a warning field to Edxapp serializers
@@ -22,6 +23,7 @@ class EdxappWithWarningSerializer(serializers.Serializer):
         if self.context:
             return self.context
         return ''
+
 
 class EdxappUserSerializer(serializers.Serializer):
     """
@@ -157,6 +159,7 @@ class EdxappCoursePreEnrollmentQuerySerializer(EdxappCoursePreEnrollmentSerializ
     on different backends
     """
     bundle_id = serializers.CharField(max_length=255, default=None)
+
 
 def EdxappUserReadOnlySerializer(*args, **kwargs):   # pylint: disable=invalid-name
     """

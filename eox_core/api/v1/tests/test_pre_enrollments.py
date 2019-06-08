@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""
+Test module for PreEnrollments under the open-release/hawthorn.beta1 tag
+"""
 from mock import patch
 from django.test import TestCase
 from django.contrib.auth.models import User
@@ -7,23 +10,24 @@ from django.contrib.auth.models import User
 from rest_framework.test import APIClient
 
 
-class TestPreEnrollmentsAPI(TestCase):
+class PreEnrollmentsAPITest(TestCase):
     """ Tests for the pre-enrollments endpoint """
 
     patch_permissions = patch('eox_core.api.v1.permissions.EoxCoreAPIPermission.has_permission', return_value=True)
 
     def setUp(self):
         """ setup """
-        super(TestPreEnrollmentsAPI, self).setUp()
+        super(PreEnrollmentsAPITest, self).setUp()
         self.api_user = User('test', 'test@example.com', 'test')
         self.client = APIClient()
+        self.url = '/api/v1/pre-enrollment/'
         self.client.force_authenticate(user=self.api_user)
 
     @patch_permissions
     def test_api_get_input_validation(self, _):
         """ Test the parameter validation of GET method """
         # Test empty request
-        response = self.client.get('/api/v1/pre_enrollment/')
+        response = self.client.get(self.url)
         self.assertEqual(response.status_code, 400)
         self.assertIn('email', response.data)
 
@@ -31,7 +35,7 @@ class TestPreEnrollmentsAPI(TestCase):
         params = {
             'email': 'test@example.com',
         }
-        response = self.client.get('/api/v1/pre_enrollment/', params)
+        response = self.client.get(self.url, params)
         self.assertEqual(response.status_code, 400)
         self.assertIn('non_field_errors', response.data)
 
@@ -46,7 +50,7 @@ class TestPreEnrollmentsAPI(TestCase):
             'course_id': 'course-v1:org+course+run',
             'auto_enroll': True,
         }
-        response = self.client.get('/api/v1/pre_enrollment/', params)
+        response = self.client.get(self.url, params)
         self.assertEqual(response.status_code, 200)
 
         m_get_pre_enrollment.assert_called_once_with(
@@ -59,7 +63,7 @@ class TestPreEnrollmentsAPI(TestCase):
     def test_api_post_input_validation(self, _):
         """ Test the parameter validation of POST method """
         # Test empty request
-        response = self.client.post('/api/v1/pre_enrollment/')
+        response = self.client.post(self.url)
         self.assertEqual(response.status_code, 400)
         self.assertIn('email', response.data)
 
@@ -67,7 +71,7 @@ class TestPreEnrollmentsAPI(TestCase):
         params = {
             'email': 'test@example.com',
         }
-        response = self.client.post('/api/v1/pre_enrollment/', params)
+        response = self.client.post(self.url, params)
         self.assertEqual(response.status_code, 400)
         self.assertIn('non_field_errors', response.data)
 
@@ -77,7 +81,7 @@ class TestPreEnrollmentsAPI(TestCase):
             'course_id': 'course-v1:org+course+run',
             'bundle_id': 'bund_1245',
         }
-        response = self.client.post('/api/v1/pre_enrollment/', params)
+        response = self.client.post(self.url, params)
         self.assertEqual(response.status_code, 400)
         self.assertIn('non_field_errors', response.data)
 
@@ -95,7 +99,7 @@ class TestPreEnrollmentsAPI(TestCase):
             'course_id': 'course-v1:org+course+run',
             'auto_enroll': True,
         }
-        response = self.client.post('/api/v1/pre_enrollment/', params)
+        response = self.client.post(self.url, params)
         self.assertEqual(response.status_code, 200)
 
         m_create_pre_enrollment.assert_called_once_with(
@@ -110,7 +114,7 @@ class TestPreEnrollmentsAPI(TestCase):
             'bundle_id': 'bund_1245',
             'auto_enroll': True,
         }
-        response = self.client.post('/api/v1/pre_enrollment/', params)
+        response = self.client.post(self.url, params)
         self.assertEqual(response.status_code, 200)
 
         m_pre_enroll_on_program.assert_called_once_with(
@@ -123,7 +127,7 @@ class TestPreEnrollmentsAPI(TestCase):
     def test_api_put_input_validation(self, _):
         """ Test the parameter validation of PUT method """
         # Test empty request
-        response = self.client.put('/api/v1/pre_enrollment/')
+        response = self.client.put(self.url)
         self.assertEqual(response.status_code, 400)
         self.assertIn('email', response.data)
 
@@ -131,7 +135,7 @@ class TestPreEnrollmentsAPI(TestCase):
         params = {
             'email': 'test@example.com',
         }
-        response = self.client.put('/api/v1/pre_enrollment/', params)
+        response = self.client.put(self.url, params)
         self.assertEqual(response.status_code, 400)
         self.assertIn('non_field_errors', response.data)
 
@@ -155,7 +159,7 @@ class TestPreEnrollmentsAPI(TestCase):
             'course_id': 'course-v1:org+course+run',
             'auto_enroll': True,
         }
-        response = self.client.put('/api/v1/pre_enrollment/', params)
+        response = self.client.put(self.url, params)
         self.assertEqual(response.status_code, 200)
 
         m_update_pre_enrollment.assert_called_once_with(
@@ -169,10 +173,10 @@ class TestPreEnrollmentsAPI(TestCase):
         )
 
     @patch_permissions
-    def test_api_delete_input_validation(self, _):
+    def test_api_delete_validation(self, _):
         """ Test the parameter validation of DELETE method """
         # Test empty request
-        response = self.client.delete('/api/v1/pre_enrollment/')
+        response = self.client.delete(self.url)
         self.assertEqual(response.status_code, 400)
         self.assertIn('email', response.data)
 
@@ -180,7 +184,7 @@ class TestPreEnrollmentsAPI(TestCase):
         params = {
             'email': 'test@example.com',
         }
-        response = self.client.delete('/api/v1/pre_enrollment/', params)
+        response = self.client.delete(self.url, params)
         self.assertEqual(response.status_code, 400)
         self.assertIn('non_field_errors', response.data)
 
@@ -204,7 +208,7 @@ class TestPreEnrollmentsAPI(TestCase):
             'course_id': 'course-v1:org+course+run',
             'auto_enroll': True,
         }
-        response = self.client.delete('/api/v1/pre_enrollment/', params)
+        response = self.client.delete(self.url, params)
         self.assertEqual(response.status_code, 204)
 
         m_delete_pre_enrollment.assert_called_once_with(

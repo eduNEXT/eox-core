@@ -54,6 +54,7 @@ def create_pre_enrollment(*args, **kwargs):
         warnings = ['Course with course_id:{} does not exist'.format(course_id)]
     return pre_enrollment, warnings
 
+
 def update_pre_enrollment(*args, **kwargs):
     """
     Update pre-enrollment of given user in the course provided.
@@ -73,9 +74,10 @@ def update_pre_enrollment(*args, **kwargs):
         pre_enrollment.auto_enroll = auto_enroll
         pre_enrollment.save()
         LOG.info('Updating regular pre-enrollment for email: %s course_id: %s auto_enroll: %s', pre_enrollment.email, pre_enrollment.course_id, auto_enroll)
-    except Exception: # pylint: disable=broad-except
+    except Exception:  # pylint: disable=broad-except
         raise NotFound('Pre-enrollment not found for email: {} course_id: {}'.format(pre_enrollment.email, pre_enrollment.course_id))
     return pre_enrollment
+
 
 def delete_pre_enrollment(*args, **kwargs):
     """
@@ -93,8 +95,9 @@ def delete_pre_enrollment(*args, **kwargs):
     try:
         LOG.info('Deleting regular pre-enrollment for email: %s course_id: %s', pre_enrollment.email, pre_enrollment.course_id)
         pre_enrollment.delete()
-    except Exception: # pylint: disable=broad-except
+    except Exception:  # pylint: disable=broad-except
         raise NotFound('Pre-enrollment not found for email: {} course_id: {}'.format(pre_enrollment.email, pre_enrollment.course_id))
+
 
 def get_pre_enrollment(*args, **kwargs):
     """
@@ -117,6 +120,7 @@ def get_pre_enrollment(*args, **kwargs):
     except CourseEnrollmentAllowed.DoesNotExist:
         raise NotFound('Pre-enrollment not found for email: {} course_id: {}'.format(email, course_id))
     return pre_enrollment
+
 
 def pre_enroll_on_program(program_uuid, *arg, **kwargs):
     """

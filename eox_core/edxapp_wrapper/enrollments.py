@@ -53,6 +53,7 @@ def check_edxapp_enrollment_is_valid(*args, **kwargs):
 
     return backend.check_edxapp_enrollment_is_valid(*args, **kwargs)
 
+
 def get_preferred_course_run(course_id):
     """
     Return the course run most suitable for the enrollment date
