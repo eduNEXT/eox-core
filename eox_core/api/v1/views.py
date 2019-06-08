@@ -380,18 +380,22 @@ class EdxappPreEnrollment(APIView):
         """
         log util for this view
         """
-        email = data.get('email')
-        bundle_id = data.get('bundle_id')
-        course_id = data.get('course_id')
-        auto_enroll = data.get('auto_enroll')
-        id_val = bundle_id or course_id
-        id_str = 'bundle_id' if bundle_id else 'course_id'
-        logstr = id_str + ': %s, email: %s, auto_enroll: %s'
-        logarr = [id_val, email, auto_enroll]
-        if exception:
-            LOG.error(desc + ': Exception %s, ' + logstr, repr(exception), *logarr)
+        log_data = []
+        log_data.append(desc)
+        log_data.append('Exception:')
+        if isinstance(exception, APIException):
+            log_data.append(repr(exception.detail))
         else:
-            LOG.info(desc + ': ' + logstr, *logarr)
+            log_data.append(repr(exception))
+
+        log_data.append('Request data:')
+        if not data:
+            log_data.append('Empty request')
+        else:
+            for key, value in data.items():
+                log_data.append("{}: {}".format(key, value))
+
+        LOG.error(' '.join(log_data))
 
 
 class UserInfo(APIView):
