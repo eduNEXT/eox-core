@@ -9,14 +9,12 @@ from rest_framework.serializers import ValidationError
 from ..serializers import EdxappCourseEnrollmentSerializer
 
 
-class TestCourseKeyValidation(TestCase):
+class CourseKeyValidationTest(TestCase):
     """ Tests for the CourseKey validations """
-
-    patch_permissions = patch('eox_core.api.v1.permissions.EoxCoreAPIPermission.has_permission', return_value=True)
 
     def setUp(self):
         """ setup """
-        super(TestCourseKeyValidation, self).setUp()
+        super(CourseKeyValidationTest, self).setUp()
         self.enrollment_serializer = EdxappCourseEnrollmentSerializer
         self.m_enrollment = {
             'mode': 'audit',
