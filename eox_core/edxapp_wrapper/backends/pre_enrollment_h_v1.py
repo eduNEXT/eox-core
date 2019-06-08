@@ -9,11 +9,10 @@ from __future__ import absolute_import, unicode_literals
 import logging
 
 from django.db import IntegrityError
-from opaque_keys.edx.keys import CourseKey
-from opaque_keys import InvalidKeyError
 from rest_framework.exceptions import NotFound
 
 from eox_core.edxapp_wrapper.courseware import get_courseware_courses
+from eox_core.edxapp_wrapper.coursekey import get_valid_course_key
 from student.models import (
     CourseEnrollmentAllowed,
 )
@@ -40,7 +39,7 @@ def create_pre_enrollment(*args, **kwargs):
     course_id = kwargs.pop('course_id')
 
     try:
-        course_key = get_course_key(course_id)
+        course_key = get_valid_course_key(course_id)
         pre_enrollment = CourseEnrollmentAllowed.objects.create(course_id=course_key, **kwargs)
         # Check if the course exists otherwise add a warning
         course = get_courseware_courses().get_course(course_key)
@@ -112,19 +111,9 @@ def get_pre_enrollment(*args, **kwargs):
     email = kwargs.get('email')
     course_id = kwargs.pop('course_id')
     try:
-        course_key = get_course_key(course_id)
+        course_key = get_valid_course_key(course_id)
         pre_enrollment = CourseEnrollmentAllowed.objects.get(course_id=course_key, email=email)
         LOG.info('Getting regular pre-enrollment for email: %s course_id: %s', email, course_id)
     except CourseEnrollmentAllowed.DoesNotExist:
         raise NotFound('Pre-enrollment not found for email: {} course_id: {}'.format(email, course_id))
     return pre_enrollment
-
-
-def get_course_key(course_id):
-    """
-    Return the CourseKey if the course_id is valid
-    """
-    try:
-        return CourseKey.from_string(course_id)
-    except InvalidKeyError:
-        raise NotFound("No valid course_id {}".format(course_id))
