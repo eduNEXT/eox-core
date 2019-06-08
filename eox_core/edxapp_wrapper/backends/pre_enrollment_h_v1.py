@@ -11,10 +11,8 @@ import logging
 from django.db import IntegrityError
 from opaque_keys.edx.keys import CourseKey
 from opaque_keys import InvalidKeyError
-from rest_framework.exceptions import APIException, NotFound
+from rest_framework.exceptions import NotFound
 
-from eox_core.edxapp_wrapper.backends.edxfuture_i_v1 import get_program
-from eox_core.edxapp_wrapper.enrollments import get_preferred_course_run
 from eox_core.edxapp_wrapper.courseware import get_courseware_courses
 from student.models import (
     CourseEnrollmentAllowed,
@@ -120,34 +118,6 @@ def get_pre_enrollment(*args, **kwargs):
     except CourseEnrollmentAllowed.DoesNotExist:
         raise NotFound('Pre-enrollment not found for email: {} course_id: {}'.format(email, course_id))
     return pre_enrollment
-
-
-def pre_enroll_on_program(program_uuid, *arg, **kwargs):
-    """
-    Pre-enroll user on each of the courses of a progam
-    """
-    results = []
-    LOG.info('Pre-enrolling on program: %s', program_uuid)
-    try:
-        data = get_program(program_uuid)
-    except Exception as err:  # pylint: disable=broad-except
-        raise NotFound(repr(err))
-    if not data['courses']:
-        raise NotFound("No courses found for this program")
-    for course in data['courses']:
-        if course['course_runs']:
-            course_run = get_preferred_course_run(course)
-            LOG.info('Pre-enrolling on course_run: %s', course_run['key'])
-            course_id = course_run['key']
-            try:
-                result, warning = create_pre_enrollment(course_id=course_id, *arg, **kwargs)
-            except APIException as error:
-                results.append({'Error': '{} for course_id:{}'.format(error.detail, course_id)})
-            else:
-                results.append({'pre_enrollment': result, 'warning': warning})
-        else:
-            results.append({'Error': 'No course runs available for this course_id {}'.format(course)})
-    return results
 
 
 def get_course_key(course_id):

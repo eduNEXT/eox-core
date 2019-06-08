@@ -24,7 +24,6 @@ from eox_core.api.v1.serializers import (
     EdxappCourseEnrollmentQuerySerializer,
     EdxappUserReadOnlySerializer,
     EdxappCoursePreEnrollmentSerializer,
-    EdxappCoursePreEnrollmentQuerySerializer,
 )
 from eox_core.edxapp_wrapper.users import create_edxapp_user, get_edxapp_user
 from eox_core.edxapp_wrapper.enrollments import (
@@ -38,7 +37,6 @@ from eox_core.edxapp_wrapper.pre_enrollments import (
     update_pre_enrollment,
     delete_pre_enrollment,
     get_pre_enrollment,
-    pre_enroll_on_program,
 )
 
 LOG = logging.getLogger(__name__)
@@ -292,29 +290,14 @@ class EdxappPreEnrollment(APIView):
     permission_classes = (EoxCoreAPIPermission,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
-    # pylint: disable=too-many-locals
     def post(self, request, *args, **kwargs):
         """
         Create whitelistings on edxapp
         """
-        serializer = EdxappCoursePreEnrollmentQuerySerializer(data=request.data)
+        serializer = EdxappCoursePreEnrollmentSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
-        program_uuid = data.pop('bundle_id', None)
         course_id = data.pop('course_id', None)
-
-        if program_uuid:
-            results = pre_enroll_on_program(program_uuid=program_uuid, **data)
-            response_results = []
-            for result in results:
-                if 'pre_enrollment' in result:
-                    pre_enrollment = result['pre_enrollment']
-                    warning = result['warning']
-                    response_results.append(EdxappCoursePreEnrollmentSerializer(pre_enrollment, context=warning).data)
-                else:
-                    response_results.append(result)
-            return Response(response_results)
-
         pre_enrollment, warning = create_pre_enrollment(course_id=course_id, **data)
         response_data = EdxappCoursePreEnrollmentSerializer(pre_enrollment, context=warning).data
         return Response(response_data)
@@ -323,10 +306,9 @@ class EdxappPreEnrollment(APIView):
         """
         Update whitelistings on edxapp
         """
-        serializer = EdxappCoursePreEnrollmentQuerySerializer(data=request.data)
+        serializer = EdxappCoursePreEnrollmentSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
-        data.pop('bundle_id')
         email = data.get('email')
         course_id = data.get('course_id')
         auto_enroll = data.pop('auto_enroll', False)
@@ -353,10 +335,9 @@ class EdxappPreEnrollment(APIView):
         if not query_params:
             query_params = request.data
 
-        serializer = EdxappCoursePreEnrollmentQuerySerializer(data=query_params)
+        serializer = EdxappCoursePreEnrollmentSerializer(data=query_params)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
-        data.pop('bundle_id')
         email = data.get('email')
         course_id = data.get('course_id')
 
@@ -380,10 +361,9 @@ class EdxappPreEnrollment(APIView):
         if not query_params:
             query_params = request.data
 
-        serializer = EdxappCoursePreEnrollmentQuerySerializer(data=query_params)
+        serializer = EdxappCoursePreEnrollmentSerializer(data=query_params)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
-        data.pop('bundle_id')
         pre_enrollment = get_pre_enrollment(**data)
         response = EdxappCoursePreEnrollmentSerializer(pre_enrollment).data
         return Response(response)

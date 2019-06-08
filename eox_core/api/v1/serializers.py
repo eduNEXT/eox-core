@@ -153,14 +153,6 @@ class EdxappCoursePreEnrollmentSerializer(EdxappWithWarningSerializer):
         return attrs
 
 
-class EdxappCoursePreEnrollmentQuerySerializer(EdxappCoursePreEnrollmentSerializer):
-    """
-    Handles the serialization of the context data required to create a course whitelisting
-    on different backends
-    """
-    bundle_id = serializers.CharField(max_length=255, default=None)
-
-
 def EdxappUserReadOnlySerializer(*args, **kwargs):   # pylint: disable=invalid-name
     """
     Fake class to lazily retrieve UserReadOnlySerializer
