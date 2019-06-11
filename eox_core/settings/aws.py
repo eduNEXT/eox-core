@@ -17,6 +17,10 @@ def plugin_settings(settings):  # pylint: disable=function-redefined
         'EOX_CORE_ENROLLMENT_BACKEND',
         settings.EOX_CORE_ENROLLMENT_BACKEND
     )
+    settings.EOX_CORE_PRE_ENROLLMENT_BACKEND = getattr(settings, 'ENV_TOKENS', {}).get(
+        'EOX_CORE_PRE_ENROLLMENT_BACKEND',
+        settings.EOX_CORE_PRE_ENROLLMENT_BACKEND
+    )
     settings.EOX_CORE_CERTIFICATES_BACKEND = getattr(settings, 'ENV_TOKENS', {}).get(
         'EOX_CORE_CERTIFICATES_BACKEND',
         settings.EOX_CORE_CERTIFICATES_BACKEND

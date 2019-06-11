@@ -23,6 +23,7 @@ from eox_core.api.v1.serializers import (
     EdxappCourseEnrollmentSerializer,
     EdxappCourseEnrollmentQuerySerializer,
     EdxappUserReadOnlySerializer,
+    EdxappCoursePreEnrollmentSerializer,
 )
 from eox_core.edxapp_wrapper.users import create_edxapp_user, get_edxapp_user
 from eox_core.edxapp_wrapper.enrollments import (
@@ -31,7 +32,12 @@ from eox_core.edxapp_wrapper.enrollments import (
     get_enrollment,
     delete_enrollment,
 )
-
+from eox_core.edxapp_wrapper.pre_enrollments import (
+    create_pre_enrollment,
+    update_pre_enrollment,
+    delete_pre_enrollment,
+    get_pre_enrollment,
+)
 
 LOG = logging.getLogger(__name__)
 
@@ -274,6 +280,122 @@ class EdxappEnrollment(APIView):
             LOG.error('API Error: %s', repr(exc.detail))
 
         return super(EdxappEnrollment, self).handle_exception(exc)
+
+
+class EdxappPreEnrollment(APIView):
+    """
+    Handles API requests to manage whitelistings (pre-enrollments)
+    """
+    authentication_classes = (OAuth2Authentication, SessionAuthentication)
+    permission_classes = (EoxCoreAPIPermission,)
+    renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
+
+    def post(self, request, *args, **kwargs):
+        """
+        Create whitelistings on edxapp
+        """
+        serializer = EdxappCoursePreEnrollmentSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+        course_id = data.pop('course_id', None)
+        pre_enrollment, warning = create_pre_enrollment(course_id=course_id, **data)
+        response_data = EdxappCoursePreEnrollmentSerializer(pre_enrollment, context=warning).data
+        return Response(response_data)
+
+    def put(self, request, *args, **kwargs):
+        """
+        Update whitelistings on edxapp
+        """
+        serializer = EdxappCoursePreEnrollmentSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+        email = data.get('email')
+        course_id = data.get('course_id')
+        auto_enroll = data.pop('auto_enroll', False)
+
+        pre_enrollment_query = {
+            'email': email,
+            'course_id': course_id,
+        }
+
+        pre_enrollment = get_pre_enrollment(**pre_enrollment_query)
+        update_query = {
+            'pre_enrollment': pre_enrollment,
+            'auto_enroll': auto_enroll,
+        }
+        updated_pre_enrollment = update_pre_enrollment(**update_query)
+        response = EdxappCoursePreEnrollmentSerializer(updated_pre_enrollment).data
+        return Response(response)
+
+    def delete(self, request, *args, **kwargs):
+        """
+        Delete whitelistings on edxapp
+        """
+        query_params = request.query_params
+        if not query_params:
+            query_params = request.data
+
+        serializer = EdxappCoursePreEnrollmentSerializer(data=query_params)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+        email = data.get('email')
+        course_id = data.get('course_id')
+
+        pre_enrollment_query = {
+            'email': email,
+            'course_id': course_id,
+        }
+
+        pre_enrollment = get_pre_enrollment(**pre_enrollment_query)
+        delete_query = {
+            'pre_enrollment': pre_enrollment,
+        }
+        delete_pre_enrollment(**delete_query)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def get(self, request, *args, **kwargs):
+        """
+        Get whitelistings on edxapp
+        """
+        query_params = request.query_params
+        if not query_params:
+            query_params = request.data
+
+        serializer = EdxappCoursePreEnrollmentSerializer(data=query_params)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+        pre_enrollment = get_pre_enrollment(**data)
+        response = EdxappCoursePreEnrollmentSerializer(pre_enrollment).data
+        return Response(response)
+
+    def handle_exception(self, exc):
+        """
+        Handle exception: log it
+        """
+        data = self.request.data or self.request.query_params
+        self.log('API Error', data, exc)
+        return super(EdxappPreEnrollment, self).handle_exception(exc)
+
+    def log(self, desc, data, exception=None):
+        """
+        log util for this view
+        """
+        log_data = []
+        log_data.append(desc)
+        log_data.append('Exception:')
+        if isinstance(exception, APIException):
+            log_data.append(repr(exception.detail))
+        else:
+            log_data.append(repr(exception))
+
+        log_data.append('Request data:')
+        if not data:
+            log_data.append('Empty request')
+        else:
+            for key, value in data.items():
+                log_data.append("{}: {}".format(key, value))
+
+        LOG.error(' '.join(log_data))
 
 
 class UserInfo(APIView):
