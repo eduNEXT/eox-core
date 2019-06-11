@@ -28,7 +28,7 @@ class CourseKeyValidationTest(TestCase):
     def test_incorrect_course_id(self, m_get_valid_course_key, *_):
         """ Test that the CourseKey validation fails due to invalid formatting """
         course_id = "test1234"
-        m_get_valid_course_key.side_effect = ValidationError("No valid course_id {}".format(course_id))
+        m_get_valid_course_key.side_effect = ValidationError("Invalid course_id {}".format(course_id))
         self.m_enrollment['course_id'] = course_id
         serializer = self.enrollment_serializer(data=self.m_enrollment)
         with self.assertRaises(ValidationError):

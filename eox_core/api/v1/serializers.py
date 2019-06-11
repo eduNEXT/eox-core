@@ -96,7 +96,7 @@ class EdxappValidatedCourseIDField(serializers.Field):
         if validate_org(data):
             return str(get_valid_course_key(data))
         else:
-            raise serializers.ValidationError('Course_id not allowed for given organization')
+            raise serializers.ValidationError('Invalid course_id {}'.format(data))
 
 
 class EdxappCourseEnrollmentSerializer(serializers.Serializer):
