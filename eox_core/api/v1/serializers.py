@@ -59,7 +59,7 @@ class EdxappEnrollmentAttributeSerializer(serializers.Serializer):
     value = serializers.CharField()
 
 
-class EdxappCourseKeyField(serializers.Field):
+class EdxappValidatedCourseIDField(serializers.Field):
     """
     CourseKey Field
     """
@@ -88,7 +88,7 @@ class EdxappCourseEnrollmentSerializer(serializers.Serializer):
     is_active = serializers.BooleanField(default=True)
     mode = serializers.CharField(max_length=100)
     enrollment_attributes = EdxappEnrollmentAttributeSerializer(many=True, default=[])
-    course_id = EdxappCourseKeyField()
+    course_id = EdxappValidatedCourseIDField()
 
     def validate(self, attrs):
         """
@@ -108,7 +108,7 @@ class EdxappCourseEnrollmentQuerySerializer(EdxappCourseEnrollmentSerializer):
     username = serializers.CharField(max_length=30, default=None)
     email = serializers.CharField(max_length=255, default=None)
     force = serializers.BooleanField(default=False)
-    course_id = EdxappCourseKeyField(default=None)
+    course_id = EdxappValidatedCourseIDField(default=None)
     bundle_id = serializers.CharField(max_length=255, default=None)
 
 
