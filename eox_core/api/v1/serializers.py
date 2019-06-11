@@ -7,6 +7,7 @@ from __future__ import absolute_import, unicode_literals
 from rest_framework import serializers
 from eox_core.edxapp_wrapper.users import check_edxapp_account_conflicts, get_user_read_only_serializer
 from eox_core.edxapp_wrapper.enrollments import check_edxapp_enrollment_is_valid
+from eox_core.edxapp_wrapper.coursekey import validate_org, get_valid_course_key
 
 
 class EdxappUserSerializer(serializers.Serializer):
@@ -58,6 +59,23 @@ class EdxappEnrollmentAttributeSerializer(serializers.Serializer):
     value = serializers.CharField()
 
 
+class EdxappValidatedCourseIDField(serializers.Field):
+    """
+    CourseKey Field
+    """
+    def to_representation(self, value):
+        return str(value)
+
+    def to_internal_value(self, data):
+        """
+        Check course_id has the correct format and that it is allowed inside the org
+        """
+        if validate_org(data):
+            return str(get_valid_course_key(data))
+        else:
+            raise serializers.ValidationError('Course_id not allowed for given organization')
+
+
 class EdxappCourseEnrollmentSerializer(serializers.Serializer):
     """Serializes CourseEnrollment
 
@@ -70,7 +88,7 @@ class EdxappCourseEnrollmentSerializer(serializers.Serializer):
     is_active = serializers.BooleanField(default=True)
     mode = serializers.CharField(max_length=100)
     enrollment_attributes = EdxappEnrollmentAttributeSerializer(many=True, default=[])
-    course_id = serializers.CharField(max_length=255, default=None)
+    course_id = EdxappValidatedCourseIDField()
 
     def validate(self, attrs):
         """
@@ -90,6 +108,7 @@ class EdxappCourseEnrollmentQuerySerializer(EdxappCourseEnrollmentSerializer):
     username = serializers.CharField(max_length=30, default=None)
     email = serializers.CharField(max_length=255, default=None)
     force = serializers.BooleanField(default=False)
+    course_id = EdxappValidatedCourseIDField(default=None)
     bundle_id = serializers.CharField(max_length=255, default=None)
 
 

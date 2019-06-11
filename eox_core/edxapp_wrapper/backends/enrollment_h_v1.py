@@ -9,7 +9,6 @@ from __future__ import absolute_import, unicode_literals
 import datetime
 import logging
 
-from django.conf import settings
 from django.contrib.auth.models import User
 from opaque_keys.edx.keys import CourseKey
 from opaque_keys import InvalidKeyError
@@ -22,10 +21,9 @@ from enrollment.errors import (CourseEnrollmentExistsError,
                                CourseModeNotFoundError)
 from eox_core.edxapp_wrapper.backends.edxfuture_i_v1 import get_program
 from eox_core.edxapp_wrapper.users import check_edxapp_account_conflicts
+from eox_core.edxapp_wrapper.coursekey import validate_org, get_valid_course_key
 from openedx.core.djangoapps.content.course_overviews.models import \
     CourseOverview
-from openedx.core.djangoapps.site_configuration.helpers import (get_all_orgs,
-                                                                get_current_site_orgs)
 from openedx.core.lib.exceptions import CourseNotFoundError
 from student.models import CourseEnrollment
 
@@ -144,7 +142,7 @@ def delete_enrollment(*args, **kwargs):
     course_id = kwargs.pop('course_id', None)
     user = kwargs.get('user')
     try:
-        course_key = CourseKey.from_string(course_id)
+        course_key = get_valid_course_key(course_id)
     except InvalidKeyError:
         raise NotFound('No course found by course id `{}`'.format(course_id))
 
@@ -300,7 +298,7 @@ def check_edxapp_enrollment_is_valid(*args, **kwargs):
     if mode not in CourseMode.ALL_MODES:
         return ['Invalid mode given:' + mode]
     if course_id:
-        if not _validate_org(course_id):
+        if not validate_org(course_id):
             errors.append('Enrollment not allowed for given org')
     if course_id and not force:
         try:
@@ -331,34 +329,10 @@ def _force_create_enrollment(username, course_id, mode, is_active):
     forced create enrollment internal function
     """
     try:
-        course_key = CourseKey.from_string(course_id)
+        course_key = get_valid_course_key(course_id)
         user = User.objects.get(username=username)
         enrollment = CourseEnrollment.enroll(user, course_key, check_access=False)
         api._data_api()._update_enrollment(enrollment, is_active=is_active, mode=mode)
     except Exception as err:  # pylint: disable=broad-except
         raise APIException(repr(err))
     return enrollment
-
-
-def _validate_org(course_id):
-    """
-    Validates the course organization against all possible orgs for the site
-
-    To determine if the Org is valid we must look at 3 things
-    1 Orgs in the current site
-    2 Orgs in other sites
-    3 flag EOX_CORE_USER_ENABLE_MULTI_TENANCY
-    """
-
-    if not settings.EOX_CORE_USER_ENABLE_MULTI_TENANCY:
-        return True
-
-    course_key = CourseKey.from_string(course_id)
-    current_site_orgs = get_current_site_orgs() or []
-
-    if not current_site_orgs:
-        if course_key.org in get_all_orgs():
-            return False
-        return True
-    else:
-        return course_key.org in current_site_orgs
