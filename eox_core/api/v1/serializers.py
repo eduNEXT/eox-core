@@ -130,7 +130,7 @@ class EdxappCoursePreEnrollmentSerializer(EdxappWithWarningSerializer):
 
     Handles the serialization of the context data required to create a course whitelisting or pre-enrollments for a user
     """
-    course_id = EdxappCourseKeyField()
+    course_id = EdxappValidatedCourseIDField()
     auto_enroll = serializers.BooleanField(default=True)
     email = serializers.EmailField()
 
