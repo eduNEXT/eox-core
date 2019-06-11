@@ -14,13 +14,23 @@ class EdxappWithWarningSerializer(serializers.Serializer):
     """
     Mixin serializer to add a warning field to Edxapp serializers
     """
-    warning = serializers.SerializerMethodField('set_warning')
+    def __init__(self, *args, **kwargs):
+        """
+        Conditionally adds a warning field if a context is passed
+        """
+        super(EdxappWithWarningSerializer, self).__init__(*args, **kwargs)
 
-    def set_warning(self, obj):
+        # This field should only exist if a context is actually passed to the serializer
+        if self.context:
+            self.fields['warning'] = serializers.SerializerMethodField(read_only=True)
+
+    warning = serializers.CharField(read_only=True, required=False)
+
+    def get_warning(self, obj):
         """Set the warning from the context"""
         if self.context:
             return self.context
-        return ''
+        return None
 
 
 class EdxappUserSerializer(serializers.Serializer):
