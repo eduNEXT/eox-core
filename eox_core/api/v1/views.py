@@ -42,7 +42,59 @@ from eox_core.edxapp_wrapper.pre_enrollments import (
 LOG = logging.getLogger(__name__)
 
 
-class EdxappUser(APIView):
+class UserQueryMixin(object):
+    """
+    Provides tools to create user queries
+    """
+    def __init__(self, *args, **kwargs):
+        """
+        Defines instance attributes
+        """
+        super(UserQueryMixin, self).__init__(*args, **kwargs)
+        self.query_params = None
+        self.site = None
+
+    def get_query_params(self, request):
+        """
+        Utility to read the query params in a forgiving way
+        As a side effect it loads self.query_params also in a forgiving way
+        """
+        query_params = request.query_params
+        if not query_params and request.data:
+            query_params = request.data
+
+        self.query_params = query_params
+
+        if hasattr(request, 'site'):
+            self.site = request.site
+
+        return query_params
+
+    def get_user_query(self, request, query_params=None):
+        """
+        Utility to prepare the user query
+        """
+        if not query_params:
+            query_params = self.get_query_params(request)
+
+        username = query_params.get('username', None)
+        email = query_params.get('email', None)
+
+        if not email and not username:
+            raise ValidationError(detail='Email or username needed')
+
+        user_query = {}
+        if hasattr(self, 'site') and self.site:
+            user_query['site'] = self.site
+        if username:
+            user_query['username'] = username
+        elif email:
+            user_query['email'] = email
+
+        return user_query
+
+
+class EdxappUser(UserQueryMixin, APIView):
     """
     Handles API requests to create users
     """
@@ -69,33 +121,28 @@ class EdxappUser(APIView):
 
     def get(self, request, *args, **kwargs):
         """
-        Retrieves an user from edxapp
+        Retrieve an user from edxapp
         """
-        query = {key: request.query_params[key] for key in ['username', 'email'] if key in request.query_params}
-        query['site'] = get_current_site(request)
+        query = self.get_user_query(request)
         user = get_edxapp_user(**query)
         admin_fields = getattr(settings, 'ACCOUNT_VISIBILITY_CONFIGURATION', {}).get('admin_fields', {})
         serialized_user = EdxappUserReadOnlySerializer(user, custom_fields=admin_fields, context={'request': request})
         response_data = serialized_user.data
+        # Show a warning if the request is providing email and username
+        # to let the client know we're giving priority to the username
+        if 'username' and 'email' in self.query_params:
+            response_data['warning'] = 'The username prevails over the email when both are provided to get the user.'
 
         return Response(response_data)
 
 
-class EdxappEnrollment(APIView):
+class EdxappEnrollment(UserQueryMixin, APIView):
     """
     Handles API requests to create users
     """
     authentication_classes = (OAuth2Authentication, SessionAuthentication)
     permission_classes = (EoxCoreAPIPermission,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
-
-    def __init__(self, *args, **kwargs):
-        """
-        Defines instance attributes
-        """
-        super(EdxappEnrollment, self).__init__(*args, **kwargs)
-        self.query_params = None
-        self.site = None
 
     def single_enrollment_create(self, *args, **kwargs):
         """
@@ -149,45 +196,6 @@ class EdxappEnrollment(APIView):
 
         data = request.data
         return EdxappEnrollment.prepare_multiresponse(data, self.single_enrollment_update)
-
-    def get_query_params(self, request):
-        """
-        Utility to read the query params in a forgiving way
-        As a side effect it loads self.query_params also in a forgiving way
-        """
-        query_params = request.query_params
-        if not query_params and request.data:
-            query_params = request.data
-
-        self.query_params = query_params
-
-        if hasattr(request, 'site'):
-            self.site = request.site
-
-        return query_params
-
-    def get_user_query(self, request, query_params=None):
-        """
-        Utility to prepare the user query
-        """
-        if not query_params:
-            query_params = self.get_query_params(request)
-
-        username = query_params.get('username', None)
-        email = query_params.get('email', None)
-
-        if not email and not username:
-            raise ValidationError(detail='Email or username needed')
-
-        user_query = {}
-        if hasattr(self, 'site') and self.site:
-            user_query['site'] = self.site
-        if username:
-            user_query['username'] = username
-        elif email:
-            user_query['email'] = email
-
-        return user_query
 
     def get(self, request, *args, **kwargs):
         """

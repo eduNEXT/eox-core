@@ -10,7 +10,7 @@ import logging
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import transaction
-from rest_framework.exceptions import APIException
+from rest_framework.exceptions import NotFound
 
 from openedx.core.djangoapps.lang_pref import (  # pylint: disable=import-error
     LANGUAGE_KEY
@@ -165,7 +165,7 @@ def get_edxapp_user(**kwargs):
         else:
             raise User.DoesNotExist
     except User.DoesNotExist:
-        raise APIException('No user found by {query} on site {site}.'.format(query=str(params), site=domain))
+        raise NotFound('No user found by {query} on site {site}.'.format(query=str(params), site=domain))
     return user
 
 
