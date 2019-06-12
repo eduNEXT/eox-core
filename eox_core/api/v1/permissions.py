@@ -3,7 +3,7 @@
 """
 Custom API permissions module
 """
-from rest_framework import permissions
+from rest_framework import permissions, exceptions
 from django.conf import settings
 from django.contrib.auth.models import Permission, User
 from django.contrib.contenttypes.models import ContentType
@@ -32,10 +32,22 @@ def load_permissions():
 class EoxCoreAPIPermission(permissions.BasePermission):
     """
     Defines a custom permissions to access eox-core API
+    These permissions make sure that a token is created with the client credentials of the same site is being used on.
     """
 
     def has_permission(self, request, view):
         """
-        To grant accees, checks if the request user either can call eox-core API or if it's an admin user.
+        To grant access, checks if the requesting user either can call eox-core API or if it's an admin user.
         """
+        try:
+            allowed_for_site = request.user.is_staff or request.get_host() in request.auth.client.url
+        except Exception:  # pylint: disable=broad-except
+            allowed_for_site = False
+
+        if not allowed_for_site:
+            # If we get here either someone is using a token created on one site in a different site
+            # or there was a missconfiguration of the oauth client.
+            # To prevent leaking important information we return the most basic message.
+            raise exceptions.NotAuthenticated(detail="Invalid token")
+
         return request.user.has_perm('auth.can_call_eox_core') or request.user.is_staff
