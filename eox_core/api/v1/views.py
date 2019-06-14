@@ -54,6 +54,15 @@ class UserQueryMixin(object):
         self.query_params = None
         self.site = None
 
+    def initial(self, request, *args, **kwargs):
+        """
+        Loads the site into the object for every kind of request
+        """
+        super(UserQueryMixin, self).initial(request, *args, **kwargs)
+
+        if hasattr(request, 'site'):
+            self.site = request.site
+
     def get_query_params(self, request):
         """
         Utility to read the query params in a forgiving way
@@ -64,9 +73,6 @@ class UserQueryMixin(object):
             query_params = request.data
 
         self.query_params = query_params
-
-        if hasattr(request, 'site'):
-            self.site = request.site
 
         return query_params
 
@@ -191,9 +197,6 @@ class EdxappEnrollment(UserQueryMixin, APIView):
         """
         Update enrollments on edxapp
         """
-        if hasattr(request, 'site'):
-            self.site = request.site
-
         data = request.data
         return EdxappEnrollment.prepare_multiresponse(data, self.single_enrollment_update)
 

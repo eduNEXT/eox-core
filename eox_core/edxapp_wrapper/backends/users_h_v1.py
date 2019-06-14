@@ -197,7 +197,9 @@ class FetchUserSiteSources(object):
     @staticmethod
     def fetch_from_created_on_site_prop(user, domain):
         """ fetch option """
-        return UserAttribute.get_user_attribute(user, 'created_on_site') == domain
+        if domain:
+            return UserAttribute.get_user_attribute(user, 'created_on_site') == domain
+        return False
 
     @staticmethod
     def fetch_from_user_signup_source(user, domain):
