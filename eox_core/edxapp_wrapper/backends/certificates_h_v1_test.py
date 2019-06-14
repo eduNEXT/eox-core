@@ -2,14 +2,14 @@
 Test backend to get GenerateCertificates Model.
 """
 
-from django.db import models
+from django.contrib.auth.models import Permission
 
 
 def get_generated_certificate():
-    """ get test GeneratedCertificate model. """
+    """
+    Get test GeneratedCertificate model.
 
-    class CertificatesDummyModel(models.Model):
-        """ Dummy model for testing. """
-        pass
-
-    return CertificatesDummyModel
+    We return any django model that already exists so that
+    django-filters is happy and no migrations are created.
+    """
+    return Permission

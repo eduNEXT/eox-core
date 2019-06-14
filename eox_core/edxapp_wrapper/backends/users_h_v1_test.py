@@ -2,14 +2,14 @@
 Test backend to get CourseEnrollment Model.
 """
 
-from django.db import models
+from django.contrib.auth.models import Permission
 
 
 def get_course_enrollment():
-    """ get Test CourseEnrollment model """
+    """
+    Get Test CourseEnrollment model.
 
-    class CourseEnrollmentDummyModel(models.Model):
-        """ Dummy model for testing. """
-        pass
-
-    return CourseEnrollmentDummyModel
+    We return any django model that already exists so that
+    django-filters is happy and no migrations are created.
+    """
+    return Permission
