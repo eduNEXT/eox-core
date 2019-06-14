@@ -7,7 +7,7 @@ from django.contrib.auth.models import Permission
 
 def get_course_enrollment():
     """
-    get Test CourseEnrollment model
+    Get Test CourseEnrollment model.
 
     We return any django model that already exists so that
     django-filters is happy and no migrations are created.

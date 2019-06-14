@@ -190,25 +190,25 @@ class FetchUserSiteSources(object):
 
     @classmethod
     def get_enabled_source_methods(cls):
-        """ brings the array of methods to check if an user belongs to a site """
+        """ Brings the array of methods to check if an user belongs to a site. """
         sources = getattr(settings, 'EOX_CORE_USER_ORIGIN_SITE_SOURCES')
         return [getattr(cls, source) for source in sources]
 
     @staticmethod
     def fetch_from_created_on_site_prop(user, domain):
-        """ fetch option """
-        if domain:
-            return UserAttribute.get_user_attribute(user, 'created_on_site') == domain
-        return False
+        """ Fetch option. """
+        if not domain:
+            return False
+        return UserAttribute.get_user_attribute(user, 'created_on_site') == domain
 
     @staticmethod
     def fetch_from_user_signup_source(user, domain):
-        """ fetch option """
+        """ Read the signup source. """
         return len(UserSignupSource.objects.filter(user=user, site=domain)) > 0
 
     @staticmethod
     def fetch_from_unfiltered_table(user, site):
-        """ fetch option that does not take into account the multi-tentancy model of the installation """
+        """ Fetch option that does not take into account the multi-tentancy model of the installation. """
         return bool(user)
 
 

@@ -56,7 +56,7 @@ class UserQueryMixin(object):
 
     def initial(self, request, *args, **kwargs):
         """
-        Loads the site into the object for every kind of request
+        Loads the site into the object for every kind of request.
         """
         super(UserQueryMixin, self).initial(request, *args, **kwargs)
 
