@@ -10,7 +10,7 @@ import logging
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import transaction
-from rest_framework.exceptions import NotFound
+from rest_framework.exceptions import NotFound, ValidationError
 
 from openedx.core.djangoapps.lang_pref import (  # pylint: disable=import-error
     LANGUAGE_KEY
@@ -134,7 +134,7 @@ def create_edxapp_user(*args, **kwargs):
 
     return user, errors
 
-def update_edxapp_user(*args, **kwargs):
+def update_edxapp_user(user, **kwargs):
     """
     Update a user on the open edx django site using calls to
     functions defined in the edx-platform codebase
@@ -150,24 +150,22 @@ def update_edxapp_user(*args, **kwargs):
         'gender': 'f',
         'bio': '...'
     }
-    msg = update_edxapp_user(**data)
+    user = update_edxapp_user(**data)
 
     """
-    errors = []
     try:
-        username = kwargs.pop('username')
-        site = kwargs.pop('site')
-        data = {'username': username, 'site': site}
-        user = get_edxapp_user(**data)
         update_account_settings(requesting_user=user, update=kwargs)
-    except AccountValidationError as acc_exp:
-        for error in acc_exp.field_errors:
-            err_msg = acc_exp.field_errors[error]['user_message']
-            errors.append('Error: {}'.format(err_msg))
-    except AccountUpdateError:
-        errors.append('Fatal: Update process failed')
+    except (AccountValidationError, AccountUpdateError) as exp:
+        errors = []
+        if hasattr(exp, 'field_errors'):
+            for error in exp.field_errors:
+                err_msg = exp.field_errors[error]['user_message']
+                errors.append("{}:{}".format(error, err_msg))
+            raise ValidationError(errors)
+        else:
+            raise NotFound("Error: the update could not be processed, please review your request ")
 
-    return errors or 'User {} updated'.format(username)
+    return user
 
 def get_edxapp_user(**kwargs):
     """

@@ -106,6 +106,13 @@ class UserQueryMixin(object):
 
         return user_query
 
+    def get_serialized_user(self, request, user):
+        """
+        Utility to get the serialized user with the proper account visibility configurations.
+        """
+        admin_fields = getattr(settings, 'ACCOUNT_VISIBILITY_CONFIGURATION', {}).get('admin_fields', {})
+        serialized_user = EdxappUserReadOnlySerializer(user, custom_fields=admin_fields, context={'request': request})
+        return serialized_user.data
 
 class EdxappUser(UserQueryMixin, APIView):
     """
@@ -136,12 +143,16 @@ class EdxappUser(UserQueryMixin, APIView):
         """
         Update the user on edxapp
         """
-        data = request.data
-        data['site'] = get_current_site(request)
-        msg = update_edxapp_user(**data)
+        user_query = self.get_user_query(request)
+        user = get_edxapp_user(**user_query)
+        update_request = request.data
+        # Exclude fields that can't be updated
+        for key in user_query:
+            if key in update_request:
+                update_request.pop(key)
+        update_edxapp_user(user, **update_request)
+        response_data = self.get_serialized_user(request, user)
 
-        if msg:
-            response_data = msg
         return Response(response_data)
 
     def get(self, request, *args, **kwargs):
@@ -150,9 +161,7 @@ class EdxappUser(UserQueryMixin, APIView):
         """
         query = self.get_user_query(request)
         user = get_edxapp_user(**query)
-        admin_fields = getattr(settings, 'ACCOUNT_VISIBILITY_CONFIGURATION', {}).get('admin_fields', {})
-        serialized_user = EdxappUserReadOnlySerializer(user, custom_fields=admin_fields, context={'request': request})
-        response_data = serialized_user.data
+        response_data = self.get_serialized_user(request, user)
         # Show a warning if the request is providing email and username
         # to let the client know we're giving priority to the username
         if 'username' and 'email' in self.query_params:
