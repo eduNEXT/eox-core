@@ -19,7 +19,7 @@ from openedx.core.djangoapps.user_api.accounts.api import (  # pylint: disable=i
     check_account_exists,
     update_account_settings,
 )
-from openedx.core.djangoapps.user_api.errors import ( # pylint: disable=import-error
+from openedx.core.djangoapps.user_api.errors import (  # pylint: disable=import-error
     AccountUpdateError,
     AccountValidationError,
 )
@@ -134,6 +134,7 @@ def create_edxapp_user(*args, **kwargs):
 
     return user, errors
 
+
 def update_edxapp_user(user, **kwargs):
     """
     Update a user on the open edx django site using calls to
@@ -166,6 +167,19 @@ def update_edxapp_user(user, **kwargs):
             raise NotFound("Error: the update could not be processed, please review your request ")
 
     return user
+
+
+def delete_edxapp_user(user):
+    """
+    Delete an user means inactive the user thus isolating it from the openedx plataform,
+    no data is actually deleted
+    """
+    try:
+        user.is_active = False
+        user.save()
+    except Exception:  # pylint: disable=broad-except
+        raise NotFound("The deletion could not be completed")
+
 
 def get_edxapp_user(**kwargs):
     """

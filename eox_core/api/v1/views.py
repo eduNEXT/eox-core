@@ -30,6 +30,7 @@ from eox_core.edxapp_wrapper.users import (
     create_edxapp_user,
     get_edxapp_user,
     update_edxapp_user,
+    delete_edxapp_user,
 )
 
 
@@ -114,6 +115,7 @@ class UserQueryMixin(object):
         serialized_user = EdxappUserReadOnlySerializer(user, custom_fields=admin_fields, context={'request': request})
         return serialized_user.data
 
+
 class EdxappUser(UserQueryMixin, APIView):
     """
     Handles API requests to create users
@@ -154,6 +156,17 @@ class EdxappUser(UserQueryMixin, APIView):
         response_data = self.get_serialized_user(request, user)
 
         return Response(response_data)
+
+    def delete(self, request, *args, **kwargs):
+        """
+        Delete an user means inactive the user thus isolating it from the openedx plataform,
+        no data is actually deleted
+        """
+        user_query = self.get_user_query(request)
+        user = get_edxapp_user(**user_query)
+        delete_edxapp_user(user)
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     def get(self, request, *args, **kwargs):
         """
