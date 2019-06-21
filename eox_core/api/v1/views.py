@@ -139,6 +139,7 @@ class EdxappUser(UserQueryMixin, APIView):
         response_data = serialized_user.data
         if msg:
             response_data["messages"] = msg
+        LOG.info('Admin user: %s created user: %s, site:%s', request.auth.user, user.username, self.site)
         return Response(response_data)
 
     def put(self, request, *args, **kwargs):
@@ -152,6 +153,8 @@ class EdxappUser(UserQueryMixin, APIView):
         for key in user_query:
             if key in update_request:
                 update_request.pop(key)
+
+        LOG.info('Admin user: %s updated user: %s, site:%s,  update_params:%s ', request.auth.user, user.username, self.site, str(update_request))
         update_edxapp_user(user, **update_request)
         response_data = self.get_serialized_user(request, user)
 
@@ -165,6 +168,8 @@ class EdxappUser(UserQueryMixin, APIView):
         user_query = self.get_user_query(request)
         user = get_edxapp_user(**user_query)
         delete_edxapp_user(user)
+
+        LOG.info('Admin user: %s deleted user: %s, site:%s', request.auth.user, user.username, self.site)
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -180,7 +185,39 @@ class EdxappUser(UserQueryMixin, APIView):
         if 'username' and 'email' in self.query_params:
             response_data['warning'] = 'The username prevails over the email when both are provided to get the user.'
 
+        LOG.info('Admin user: %s requested user: %s information, site:%s',
+         request.auth.user, user.username, self.site)
         return Response(response_data)
+
+    def handle_exception(self, exc):
+        """
+        Handle exception: log it
+        """
+        data = self.request.data or self.request.query_params
+        user = self.request.auth.user
+        self.log('API Error, Admin user: {}'.format(user), data, exc)
+        return super(EdxappUser, self).handle_exception(exc)
+
+    def log(self, desc, data, exception=None):
+        """
+        log util for this view
+        """
+        log_data = []
+        log_data.append(desc)
+        log_data.append('Exception:')
+        if isinstance(exception, APIException):
+            log_data.append(repr(exception.detail))
+        else:
+            log_data.append(repr(exception))
+
+        log_data.append('Request data:')
+        if not data:
+            log_data.append('Empty request')
+        else:
+            for key, value in data.items():
+                log_data.append("{}: {}".format(key, value))
+
+        LOG.error(' '.join(log_data))
 
 
 class EdxappEnrollment(UserQueryMixin, APIView):
