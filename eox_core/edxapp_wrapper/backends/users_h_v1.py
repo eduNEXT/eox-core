@@ -171,11 +171,14 @@ def update_edxapp_user(user, **kwargs):
 
 def delete_edxapp_user(user):
     """
-    Delete an user means inactive the user thus isolating it from the openedx plataform,
-    no data is actually deleted
+    Delete an user as a first approach means inactive the user thus isolating
+    it from the openedx plataform, no data is actually deleted
     """
     try:
         user.is_active = False
+        retired_email = user.email
+        retired_email = retired_email.replace(u'@', u'+')
+        user.email = '{}@retired.edunext.co'.format(retired_email)
         user.save()
     except Exception:  # pylint: disable=broad-except
         raise NotFound("The deletion could not be completed")
