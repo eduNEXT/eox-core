@@ -149,14 +149,10 @@ class EdxappUser(UserQueryMixin, APIView):
         user_query = self.get_user_query(request)
         user = get_edxapp_user(**user_query)
         update_request = request.data
-        # Exclude fields that can't be updated
-        for key in user_query:
-            if key in update_request:
-                update_request.pop(key)
-
-        LOG.info('Admin user: %s updated user: %s, site:%s,  update_params:%s ', request.auth.user, user.username, self.site, str(update_request))
+        update_request.pop('username')
         update_edxapp_user(user, **update_request)
         response_data = self.get_serialized_user(request, user)
+        LOG.info('Admin user: %s updated user: %s, site:%s,  update_params:%s ', request.auth.user, user.username, self.site, str(update_request))
 
         return Response(response_data)
 
