@@ -5,7 +5,12 @@ import mock
 
 from django.conf import settings
 from django.test import TestCase
-from ..users import create_edxapp_user
+from ..users import (
+    create_edxapp_user,
+    delete_edxapp_user,
+    update_edxapp_user,
+    get_edxapp_user,
+)
 
 
 class CreateEdxappUserTest(TestCase):
@@ -31,3 +36,12 @@ class CreateEdxappUserTest(TestCase):
 
         create_edxapp_user(data)
         m_user_backend.create_edxapp_user.assert_called_with(data)
+
+        update_edxapp_user(data)
+        m_user_backend.update_edxapp_user.assert_called_with(data)
+
+        delete_edxapp_user(data)
+        m_user_backend.delete_edxapp_user.assert_called_with(data)
+
+        get_edxapp_user(data)
+        m_user_backend.get_edxapp_user.assert_called_with(data)

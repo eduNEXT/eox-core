@@ -12,7 +12,7 @@ from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework.exceptions import NotFound, ValidationError
-from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
+from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers  # pylint: disable=import-error
 
 from openedx.core.djangoapps.lang_pref import (  # pylint: disable=import-error
     LANGUAGE_KEY
@@ -31,13 +31,19 @@ from openedx.core.djangoapps.user_api.accounts.serializers import (   # pylint: 
 from openedx.core.djangoapps.user_api.preferences import api as preferences_api  # pylint: disable=import-error
 from student.forms import AccountCreationForm  # pylint: disable=import-error
 from student.helpers import (  # pylint: disable=import-error
-    create_or_set_user_attribute_created_on_site
+    create_or_set_user_attribute_created_on_site,
+    do_create_account,
 )
-from student.helpers import do_create_account  # pylint: disable=import-error
-from student.models import CourseEnrollment  # pylint: disable=import-error
-from student.models import (LoginFailures, UserAttribute, UserSignupSource,  # pylint: disable=import-error
-                            create_comments_service_user, email_exists_or_retired,)
-from util.password_policy_validators import validate_password
+from student.models import (  # pylint: disable=import-error
+    CourseEnrollment,
+	create_comments_service_user,
+    email_exists_or_retired,
+	LoginFailures,
+    UserAttribute,
+    UserSignupSource,
+)
+# pylint: disable=import-error
+from util.password_policy_validators import validate_password  # pylint: disable=no-name-in-module
 
 LOG = logging.getLogger(__name__)
 User = get_user_model()  # pylint: disable=invalid-name
@@ -162,7 +168,6 @@ def update_edxapp_user(user, **kwargs):
     try:
         update_fields = kwargs
         force = kwargs.pop('force', False)
-        reason = kwargs.pop('reason', False)
         new_email = update_fields.pop('email', None)
         new_password = update_fields.pop('password', None)
 
@@ -173,20 +178,16 @@ def update_edxapp_user(user, **kwargs):
                 if field['field_name'] not in extended_profile_field_names:
                     raise ValidationError('Invalid extended profile field {}'.format(field['field_name']))
 
-        # Update the email and password of the user only if it's explicitly 
+        # Update the email and password of the user only if it's explicitly
         # requested by setting the force param to true. A reason for the change must be given.
         if force:
-
-            if not reason:
-                raise NotFound("The 'force' param is set, a reason for the change must be given.")
-
             if new_email and not email_exists_or_retired(new_email):
                 user.email = new_email
 
-            # Explicit checking that the password is not None, because an empty password 
+            # Explicit checking that the password is not None, because an empty password
             # could be valid and should be validated
             if new_password is not None and validate_password(new_password, user=user) is None:
-                user.set_password(new_password) 
+                user.set_password(new_password)
 
         update_account_settings(requesting_user=user, update=update_fields)
         user.save()

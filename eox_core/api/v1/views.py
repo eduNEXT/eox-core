@@ -139,7 +139,7 @@ class EdxappUser(UserQueryMixin, APIView):
         response_data = serialized_user.data
         if msg:
             response_data["messages"] = msg
-        LOG.info('Admin user: %s created user: %s, site:%s', request.auth.user, user.username, self.site)
+        LOG.info('Admin user: %s created user: %s, site:%s', request.user, user.username, self.site)
         return Response(response_data)
 
     def put(self, request, *args, **kwargs):
@@ -150,9 +150,16 @@ class EdxappUser(UserQueryMixin, APIView):
         user = get_edxapp_user(**user_query)
         update_request = request.data
         update_request.pop('username')
+        force = update_request.get('force', False)
+        reason = update_request.get('reason', False)
+
+        # A reason for the change of email or password must be given.
+        if force and not reason:
+            raise NotFound("The 'force' param is set, a reason for the change of password or email must be given.")
+
         update_edxapp_user(user, **update_request)
         response_data = self.get_serialized_user(request, user)
-        LOG.info('Admin user: %s updated user: %s, site:%s,  update_params:%s ', request.auth.user, user.username, self.site, str(update_request))
+        LOG.info('Admin user: %s updated user: %s, site:%s,  update_params:%s ', request.user, user.username, self.site, str(update_request))
 
         return Response(response_data)
 
@@ -165,7 +172,7 @@ class EdxappUser(UserQueryMixin, APIView):
         user = get_edxapp_user(**user_query)
         delete_edxapp_user(user)
 
-        LOG.info('Admin user: %s deleted user: %s, site:%s', request.auth.user, user.username, self.site)
+        LOG.info('Admin user: %s deleted user: %s, site:%s', request.user, user.username, self.site)
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -182,7 +189,7 @@ class EdxappUser(UserQueryMixin, APIView):
             response_data['warning'] = 'The username prevails over the email when both are provided to get the user.'
 
         LOG.info('Admin user: %s requested user: %s information, site:%s',
-         request.auth.user, user.username, self.site)
+                 request.user, user.username, self.site)
         return Response(response_data)
 
     def handle_exception(self, exc):
@@ -190,7 +197,7 @@ class EdxappUser(UserQueryMixin, APIView):
         Handle exception: log it
         """
         data = self.request.data or self.request.query_params
-        user = self.request.auth.user
+        user = self.request.user
         self.log('API Error, Admin user: {}'.format(user), data, exc)
         return super(EdxappUser, self).handle_exception(exc)
 

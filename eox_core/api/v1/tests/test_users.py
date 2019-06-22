@@ -4,10 +4,11 @@
 Test module for Users API under the open-release/hawthorn.beta1 tag
 """
 from mock import patch, Mock
+
 from django.test import TestCase
-from rest_framework.exceptions import NotFound
 from django.contrib.auth.models import User
 
+from rest_framework.exceptions import NotFound
 from rest_framework.test import APIClient
 
 
@@ -59,7 +60,7 @@ class UserAPITest(TestCase):
     @patch_permissions
     @patch('eox_core.api.v1.views.EdxappUserReadOnlySerializer')
     @patch('eox_core.api.v1.views.get_edxapp_user')
-    def test_api_get(self, m_get_edxapp_user, m_EdxappUserReadOnlySerializer, *_):
+    def test_api_get(self, m_get_edxapp_user, m_EdxappUserReadOnlySerializer, *_):  # pylint: disable=invalid-name
         """ Test that the GET method works under normal conditions """
         m_get_edxapp_user.return_value = Mock()
         m_EdxappUserReadOnlySerializer.return_value = self
@@ -108,7 +109,7 @@ class UserAPITest(TestCase):
     @patch('eox_core.api.v1.views.EdxappUserReadOnlySerializer')
     @patch('eox_core.api.v1.views.update_edxapp_user')
     @patch('eox_core.api.v1.views.get_edxapp_user')
-    def test_api_put(self, m_get_edxapp_user, m_update_edxapp_user, m_EdxappUserReadOnlySerializer, *_):
+    def test_api_put(self, m_get_edxapp_user, m_update_edxapp_user, m_EdxappUserReadOnlySerializer, *_):  # pylint: disable=invalid-name
         """ Test that the PUT method works under normal conditions """
         m_user = User(2, 'test@example.com', 'test')
         self.data['name'] = 'Updated name'
@@ -126,3 +127,50 @@ class UserAPITest(TestCase):
         m_get_edxapp_user.assert_called_once()
         self.assertDictContainsSubset(self.data, response.data)
         m_update_edxapp_user.assert_called_once_with(m_user, name='Updated name')
+
+    @patch_permissions
+    @patch('eox_core.api.v1.views.get_edxapp_user')
+    def test_api_put_force_validation(self, m_get_edxapp_user, *_):
+        """
+        Test that the PUT method validates a reason is given when setting
+        the force param to change email or password
+        """
+        m_user = User(2, 'test@example.com', 'test')
+        m_get_edxapp_user.return_value = m_user
+
+        params = {
+            'username': 'test',
+            'email': 'updated_test@example.com',
+            'force': True,
+        }
+
+        response = self.client.put(self.url, data=params, format='json')
+        self.assertEqual(response.status_code, 404)
+        m_get_edxapp_user.assert_called_once()
+        self.assertIn('reason', response.data['detail'])
+
+    @patch_permissions
+    @patch('eox_core.api.v1.views.EdxappUserReadOnlySerializer')
+    @patch('eox_core.api.v1.views.update_edxapp_user')
+    @patch('eox_core.api.v1.views.get_edxapp_user')
+    def test_api_put_force(self, m_get_edxapp_user, m_update_edxapp_user, m_EdxappUserReadOnlySerializer, *_):  # pylint: disable=invalid-name
+        """ Test that the PUT method with force works under normal conditions """
+        m_user = User(2, 'test@example.com', 'test')
+        self.data['email'] = 'updated_test@example.com'
+        m_EdxappUserReadOnlySerializer.return_value = self
+        m_get_edxapp_user.return_value = m_user
+        m_update_edxapp_user.return_value = None
+
+        params = {
+            'username': 'test',
+            'email': 'updated_test@example.com',
+            'force': True,
+            'reason': '...',
+        }
+
+        response = self.client.put(self.url, data=params, format='json')
+        self.assertEqual(response.status_code, 200)
+        m_get_edxapp_user.assert_called_once()
+        self.assertDictContainsSubset(self.data, response.data)
+        params.pop('username')
+        m_update_edxapp_user.assert_called_once_with(m_user, **params)
