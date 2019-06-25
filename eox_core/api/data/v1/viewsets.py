@@ -1,9 +1,11 @@
 """
 Controllers for the data-api. Used in the report generation process
 """
+import six
 import random
 from datetime import datetime
 
+from django.db.models import Q
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
@@ -18,6 +20,8 @@ from rest_framework_oauth.authentication import OAuth2Authentication
 from eox_core.edxapp_wrapper.certificates import get_generated_certificate
 from eox_core.edxapp_wrapper.users import get_course_enrollment
 
+from microsite_configuration import microsite
+
 from .filters import (CourseEnrollmentFilter, GeneratedCerticatesFilter,
                       ProctoredExamStudentAttemptFilter, UserFilter)
 from .paginators import DataApiResultsSetPagination
@@ -25,7 +29,6 @@ from .serializers import (CertificateSerializer, CourseEnrollmentSerializer,
                           ProctoredExamStudentAttemptSerializer,
                           UserSerializer)
 from .tasks import EnrollmentsGrades
-from .utils import filter_queryset_by_microsite
 
 
 class DataApiViewSet(mixins.ListModelMixin,
@@ -41,6 +44,7 @@ class DataApiViewSet(mixins.ListModelMixin,
     prefetch_fields = False
     # Microsite enforcement filter settings
     enforce_microsite_filter = False
+    is_microsite_set = False
     enforce_microsite_filter_lookup_field = "test_lookup_field"
     enforce_microsite_filter_term = "org_in_course_id"
 
@@ -85,12 +89,61 @@ class DataApiViewSet(mixins.ListModelMixin,
         site = self.request.query_params.get('site', None)
         if not site:
             return queryset.none()
-        queryset = filter_queryset_by_microsite(
+
+        # Set microsite for site query param
+        self.set_microsite_from_domain(site)
+        orgs_filter = microsite.get_value("course_org_filter", None)
+
+        queryset = self.filter_queryset_by_orgs(
             queryset,
-            site,
-            self.enforce_microsite_filter_lookup_field,
-            self.enforce_microsite_filter_term
+            orgs_filter
         )
+        return queryset
+
+    def set_microsite_from_domain(self, domain):
+        """
+        Set the microsite from te given domain
+        """
+        if self.is_microsite_set:
+            return
+        microsite.clear()
+        microsite.set_by_domain(domain)
+        self.is_microsite_set = True
+        return
+
+    def filter_queryset_by_orgs(self, queryset, org_filters):
+        """
+        This method filters a given queryset based on the org filters belonging
+        to a microsite.
+        """
+        if not org_filters:
+            return queryset.none()
+
+        term_types = {
+            "org_exact": "{}",
+            "org_in_course_id": ":{}+"
+        }
+        term = term_types.get(self.enforce_microsite_filter_term, "{}")
+
+        # Handling the case when the course_org_filter value is a string
+        if isinstance(org_filters, six.string_types):
+            term_search = term.format(org_filters)
+            kwargs_filter = {
+                self.enforce_microsite_filter_lookup_field: term_search
+            }
+            queryset = queryset.filter(**kwargs_filter)
+            return queryset
+
+        # Handling the case when the course_org_filter value is a list
+        query = Q()
+        for org in org_filters:
+            term_search = term.format(org)
+            kwargs_filter = {
+                self.enforce_microsite_filter_lookup_field: term_search
+            }
+            query = query | Q(**kwargs_filter)
+
+        queryset = queryset.filter(query)
         return queryset
 
 
