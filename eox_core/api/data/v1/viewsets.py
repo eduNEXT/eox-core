@@ -25,6 +25,7 @@ from .serializers import (CertificateSerializer, CourseEnrollmentSerializer,
                           ProctoredExamStudentAttemptSerializer,
                           UserSerializer)
 from .tasks import EnrollmentsGrades
+from .utils import filter_queryset_by_microsite
 
 
 class DataApiViewSet(mixins.ListModelMixin,
@@ -38,11 +39,18 @@ class DataApiViewSet(mixins.ListModelMixin,
     pagination_class = DataApiResultsSetPagination
     filter_backends = (filters.DjangoFilterBackend,)
     prefetch_fields = False
+    # Microsite enforcement filter settings
+    enforce_microsite_filter = False
+    enforce_microsite_filter_lookup = "test_lookup"
+    enforce_microsite_filter_term = "org_in_course_id"
 
     def get_queryset(self):
-        if not self.prefetch_fields:
-            return self.queryset
-        return self.add_prefetch_fields_to_queryset(self.queryset, self.prefetch_fields)
+        queryset = self.queryset
+        if self.prefetch_fields:
+            queryset = self.add_prefetch_fields_to_queryset(queryset, self.prefetch_fields)
+        if self.enforce_microsite_filter:
+            queryset = self.enforce_microsite_filter_queryset(queryset)
+        return queryset
 
     def add_prefetch_fields_to_queryset(self, queryset, fields=None):
         """
@@ -57,6 +65,21 @@ class DataApiViewSet(mixins.ListModelMixin,
             else:
                 queryset = queryset.select_related(val.get("name", ""))
 
+        return queryset
+
+    def enforce_microsite_filter_queryset(self, queryset):
+        """
+        TODO: add-me
+        """
+        site = self.request.query_params.get('site', None)
+        if not site:
+            return queryset.none()
+        queryset = filter_queryset_by_microsite(
+            queryset,
+            site,
+            self.enforce_microsite_filter_lookup,
+            self.enforce_microsite_filter_term
+        )
         return queryset
 
 
@@ -86,6 +109,10 @@ class CourseEnrollmentViewset(DataApiViewSet):  # pylint: disable=too-many-ances
     serializer_class = CourseEnrollmentSerializer
     queryset = get_course_enrollment().objects.all()
     filter_class = CourseEnrollmentFilter
+    # Microsite enforcement filter settings
+    enforce_microsite_filter = True
+    enforce_microsite_filter_lookup = "course__id__contains"
+    enforce_microsite_filter_term = "org_in_course_id"
 
 
 class CourseEnrollmentWithGradesViewset(DataApiViewSet):  # pylint: disable=too-many-ancestors
@@ -98,6 +125,10 @@ class CourseEnrollmentWithGradesViewset(DataApiViewSet):  # pylint: disable=too-
     serializer_class = CourseEnrollmentSerializer
     queryset = get_course_enrollment().objects.all()
     filter_class = CourseEnrollmentFilter
+    # Microsite enforcement filter settings
+    enforce_microsite_filter = True
+    enforce_microsite_filter_lookup = "course__id__contains"
+    enforce_microsite_filter_term = "org_in_course_id"
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
@@ -140,8 +171,11 @@ class CertificateViewSet(DataApiViewSet):  # pylint: disable=too-many-ancestors
             "name": "user",
             "type": "select"
         }
-
     ]
+    # Microsite enforcement filter settings
+    enforce_microsite_filter = True
+    enforce_microsite_filter_lookup = "course_id__contains"
+    enforce_microsite_filter_term = "org_in_course_id"
 
 
 class ProctoredExamStudentViewSet(DataApiViewSet):  # pylint: disable=too-many-ancestors
@@ -161,5 +195,8 @@ class ProctoredExamStudentViewSet(DataApiViewSet):  # pylint: disable=too-many-a
             "name": "proctored_exam",
             "type": "select"
         }
-
     ]
+    # Microsite enforcement filter settings
+    enforce_microsite_filter = True
+    enforce_microsite_filter_lookup = "proctored_exam__course_id__contains"
+    enforce_microsite_filter_term = "org_in_course_id"
