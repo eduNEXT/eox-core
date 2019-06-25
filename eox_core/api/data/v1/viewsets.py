@@ -49,7 +49,7 @@ class DataApiViewSet(mixins.ListModelMixin,
         if self.prefetch_fields:
             queryset = self.add_prefetch_fields_to_queryset(queryset, self.prefetch_fields)
         if self.enforce_microsite_filter:
-            queryset = self.enforce_microsite_filter_queryset(queryset)
+            queryset = self.enforce_microsite_filter_qset(queryset)
         return queryset
 
     def add_prefetch_fields_to_queryset(self, queryset, fields=None):
@@ -67,7 +67,7 @@ class DataApiViewSet(mixins.ListModelMixin,
 
         return queryset
 
-    def enforce_microsite_filter_queryset(self, queryset):
+    def enforce_microsite_filter_qset(self, queryset):
         """
         TODO: add-me
         """

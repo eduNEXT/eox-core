@@ -56,12 +56,7 @@ def get_org_filters_from_microsite(domain):
     return org_filters
 
 
-def filter_queryset_by_microsite(
-    queryset,
-    domain,
-    lookup,
-    term_type
-):
+def filter_queryset_by_microsite(queryset, domain, lookup, term_type):
     """
     TODO: add me
     """
