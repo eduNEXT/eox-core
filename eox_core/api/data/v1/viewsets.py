@@ -3,7 +3,9 @@ Controllers for the data-api. Used in the report generation process
 """
 import random
 from datetime import datetime
+import six
 
+from django.db.models import Q
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
@@ -17,6 +19,7 @@ from rest_framework_oauth.authentication import OAuth2Authentication
 
 from eox_core.edxapp_wrapper.certificates import get_generated_certificate
 from eox_core.edxapp_wrapper.users import get_course_enrollment
+from eox_core.edxapp_wrapper.microsite_configuration import get_microsite
 
 from .filters import (CourseEnrollmentFilter, GeneratedCerticatesFilter,
                       ProctoredExamStudentAttemptFilter, UserFilter)
@@ -38,15 +41,27 @@ class DataApiViewSet(mixins.ListModelMixin,
     pagination_class = DataApiResultsSetPagination
     filter_backends = (filters.DjangoFilterBackend,)
     prefetch_fields = False
+    # Microsite enforcement filter settings
+    enforce_microsite_filter = False
+    microsite_module = None
+    enforce_microsite_filter_lookup_field = "test_lookup_field"
+    enforce_microsite_filter_term = "org_in_course_id"
 
     def get_queryset(self):
-        if not self.prefetch_fields:
-            return self.queryset
-        return self.add_prefetch_fields_to_queryset(self.queryset, self.prefetch_fields)
+        """
+        This method returns the queryset to be processed by the viewset
+        """
+        queryset = self.queryset
+        if self.prefetch_fields:
+            queryset = self.add_prefetch_fields_to_queryset(queryset, self.prefetch_fields)
+        if self.enforce_microsite_filter:
+            queryset = self.enforce_microsite_filter_qset(queryset)
+        return queryset
 
     def add_prefetch_fields_to_queryset(self, queryset, fields=None):
         """
-        TODO: add me
+        This method adds prefetched fields to the queryset in order to
+        reduce the number of hits to the database
         """
         if not fields:
             fields = []
@@ -57,6 +72,78 @@ class DataApiViewSet(mixins.ListModelMixin,
             else:
                 queryset = queryset.select_related(val.get("name", ""))
 
+        return queryset
+
+    def enforce_microsite_filter_qset(self, queryset):
+        """
+        This method enforces the filtering of the queryset based on the
+        organization filters belonging to the queried site (which should map
+        to a microsite).
+        """
+        # Check if multitenancy is enabled
+        if not settings.EOX_CORE_USER_ENABLE_MULTI_TENANCY:
+            return queryset
+
+        # Getting site query param
+        site = self.request.query_params.get('site', None)
+        if not site:
+            return queryset.none()
+
+        # Set microsite for site query param
+        self.set_microsite_from_domain(site)
+        orgs_filter = self.microsite_module.get_value("course_org_filter", None)
+
+        queryset = self.filter_queryset_by_orgs(
+            queryset,
+            orgs_filter
+        )
+        return queryset
+
+    def set_microsite_from_domain(self, domain):
+        """
+        Set the microsite from te given domain
+        """
+        if self.microsite_module:
+            return
+
+        self.microsite_module = get_microsite()
+        self.microsite_module.clear()
+        self.microsite_module.set_by_domain(domain)
+        return
+
+    def filter_queryset_by_orgs(self, queryset, org_filters):
+        """
+        This method filters a given queryset based on the org filters belonging
+        to a microsite.
+        """
+        if not org_filters:
+            return queryset.none()
+
+        term_types = {
+            "org_exact": "{}",
+            "org_in_course_id": ":{}+"
+        }
+        term = term_types.get(self.enforce_microsite_filter_term, "{}")
+
+        # Handling the case when the course_org_filter value is a string
+        if isinstance(org_filters, six.string_types):
+            term_search = term.format(org_filters)
+            kwargs_filter = {
+                self.enforce_microsite_filter_lookup_field: term_search
+            }
+            queryset = queryset.filter(**kwargs_filter)
+            return queryset
+
+        # Handling the case when the course_org_filter value is a list
+        query = Q()
+        for org in org_filters:
+            term_search = term.format(org)
+            kwargs_filter = {
+                self.enforce_microsite_filter_lookup_field: term_search
+            }
+            query = query | Q(**kwargs_filter)
+
+        queryset = queryset.filter(query)
         return queryset
 
 
@@ -86,6 +173,10 @@ class CourseEnrollmentViewset(DataApiViewSet):  # pylint: disable=too-many-ances
     serializer_class = CourseEnrollmentSerializer
     queryset = get_course_enrollment().objects.all()
     filter_class = CourseEnrollmentFilter
+    # Microsite enforcement filter settings
+    enforce_microsite_filter = True
+    enforce_microsite_filter_lookup_field = "course__id__contains"
+    enforce_microsite_filter_term = "org_in_course_id"
 
 
 class CourseEnrollmentWithGradesViewset(DataApiViewSet):  # pylint: disable=too-many-ancestors
@@ -98,6 +189,10 @@ class CourseEnrollmentWithGradesViewset(DataApiViewSet):  # pylint: disable=too-
     serializer_class = CourseEnrollmentSerializer
     queryset = get_course_enrollment().objects.all()
     filter_class = CourseEnrollmentFilter
+    # Microsite enforcement filter settings
+    enforce_microsite_filter = True
+    enforce_microsite_filter_lookup_field = "course__id__contains"
+    enforce_microsite_filter_term = "org_in_course_id"
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
@@ -140,8 +235,11 @@ class CertificateViewSet(DataApiViewSet):  # pylint: disable=too-many-ancestors
             "name": "user",
             "type": "select"
         }
-
     ]
+    # Microsite enforcement filter settings
+    enforce_microsite_filter = True
+    enforce_microsite_filter_lookup_field = "course_id__contains"
+    enforce_microsite_filter_term = "org_in_course_id"
 
 
 class ProctoredExamStudentViewSet(DataApiViewSet):  # pylint: disable=too-many-ancestors
@@ -161,5 +259,8 @@ class ProctoredExamStudentViewSet(DataApiViewSet):  # pylint: disable=too-many-a
             "name": "proctored_exam",
             "type": "select"
         }
-
     ]
+    # Microsite enforcement filter settings
+    enforce_microsite_filter = True
+    enforce_microsite_filter_lookup_field = "proctored_exam__course_id__contains"
+    enforce_microsite_filter_term = "org_in_course_id"

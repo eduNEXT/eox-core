@@ -12,7 +12,7 @@ class SettingsClass(object):
     pass
 
 
-def plugin_settings(settings):  # pylint: disable=function-redefined
+def plugin_settings_local(settings):  # pylint: disable=function-redefined
     """
     Defines eox-core settings when app is used as a plugin to edx-platform.
     See: https://github.com/edx/edx-platform/blob/master/openedx/core/djangoapps/plugins/README.rst
@@ -31,6 +31,7 @@ def plugin_settings(settings):  # pylint: disable=function-redefined
 
 SETTINGS = SettingsClass()
 plugin_settings(SETTINGS)
+plugin_settings_local(SETTINGS)
 vars().update(SETTINGS.__dict__)
 
 INSTALLED_APPS += ('eox_core', )
