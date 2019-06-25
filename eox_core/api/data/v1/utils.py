@@ -2,6 +2,7 @@
 Util functions for reporting
 """
 import copy
+import six
 
 from django.db.models import Q
 
@@ -71,7 +72,7 @@ def filter_queryset_by_microsite(queryset, domain, lookup, term_type):
     term = term_types.get(term_type, "{}")
 
     # Handling the case when the course_org_filter value is a string
-    if isinstance(org_filters, (unicode, str)):
+    if isinstance(org_filters, six.string_types):
         term_search = term.format(org_filters)
         kwargs_filter = {
             lookup: term_search
