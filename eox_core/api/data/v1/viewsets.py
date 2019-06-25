@@ -41,10 +41,13 @@ class DataApiViewSet(mixins.ListModelMixin,
     prefetch_fields = False
     # Microsite enforcement filter settings
     enforce_microsite_filter = False
-    enforce_microsite_filter_lookup = "test_lookup"
+    enforce_microsite_filter_lookup_field = "test_lookup_field"
     enforce_microsite_filter_term = "org_in_course_id"
 
     def get_queryset(self):
+        """
+        This method returns the queryset to be processed by the viewset
+        """
         queryset = self.queryset
         if self.prefetch_fields:
             queryset = self.add_prefetch_fields_to_queryset(queryset, self.prefetch_fields)
@@ -54,7 +57,8 @@ class DataApiViewSet(mixins.ListModelMixin,
 
     def add_prefetch_fields_to_queryset(self, queryset, fields=None):
         """
-        TODO: add me
+        This method adds prefetched fields to the queryset in order to
+        reduce the number of hits to the database
         """
         if not fields:
             fields = []
@@ -69,15 +73,22 @@ class DataApiViewSet(mixins.ListModelMixin,
 
     def enforce_microsite_filter_qset(self, queryset):
         """
-        TODO: add-me
+        This method enforces the filtering of the queryset based on the
+        organization filters belonging to the queried site (which should map
+        to a microsite).
         """
+        # Check if multitenancy is enabled
+        if not settings.EOX_CORE_USER_ENABLE_MULTI_TENANCY:
+            return queryset
+
+        # Getting site query param
         site = self.request.query_params.get('site', None)
         if not site:
             return queryset.none()
         queryset = filter_queryset_by_microsite(
             queryset,
             site,
-            self.enforce_microsite_filter_lookup,
+            self.enforce_microsite_filter_lookup_field,
             self.enforce_microsite_filter_term
         )
         return queryset
@@ -111,7 +122,7 @@ class CourseEnrollmentViewset(DataApiViewSet):  # pylint: disable=too-many-ances
     filter_class = CourseEnrollmentFilter
     # Microsite enforcement filter settings
     enforce_microsite_filter = True
-    enforce_microsite_filter_lookup = "course__id__contains"
+    enforce_microsite_filter_lookup_field = "course__id__contains"
     enforce_microsite_filter_term = "org_in_course_id"
 
 
@@ -127,7 +138,7 @@ class CourseEnrollmentWithGradesViewset(DataApiViewSet):  # pylint: disable=too-
     filter_class = CourseEnrollmentFilter
     # Microsite enforcement filter settings
     enforce_microsite_filter = True
-    enforce_microsite_filter_lookup = "course__id__contains"
+    enforce_microsite_filter_lookup_field = "course__id__contains"
     enforce_microsite_filter_term = "org_in_course_id"
 
     def list(self, request, *args, **kwargs):
@@ -174,7 +185,7 @@ class CertificateViewSet(DataApiViewSet):  # pylint: disable=too-many-ancestors
     ]
     # Microsite enforcement filter settings
     enforce_microsite_filter = True
-    enforce_microsite_filter_lookup = "course_id__contains"
+    enforce_microsite_filter_lookup_field = "course_id__contains"
     enforce_microsite_filter_term = "org_in_course_id"
 
 
@@ -198,5 +209,5 @@ class ProctoredExamStudentViewSet(DataApiViewSet):  # pylint: disable=too-many-a
     ]
     # Microsite enforcement filter settings
     enforce_microsite_filter = True
-    enforce_microsite_filter_lookup = "proctored_exam__course_id__contains"
+    enforce_microsite_filter_lookup_field = "proctored_exam__course_id__contains"
     enforce_microsite_filter_term = "org_in_course_id"

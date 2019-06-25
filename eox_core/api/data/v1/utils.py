@@ -1,67 +1,53 @@
 """
 Util functions for reporting
 """
-import copy
 import six
 
 from django.db.models import Q
 
 
-def get_microsite_backend():
+def get_microsite_module():
     """
-    Get the current microsite backend
+    Get the current microsite module
     """
     try:
         from eox_tenant.edxapp_wrapper import get_microsite_configuration
-        return get_microsite_configuration.get_microsite().BACKEND
+        return get_microsite_configuration.get_microsite()
     except ImportError:
-        from microsite_configuration import microsite
-        return microsite.BACKEND
+        from microsite_configuration import microsite as microsite_module
+        return microsite_module
 
 
-def get_microsite_config_by_domain(domain):
+def get_value_from_microsite_domain(domain, val_name, default=None):
     """
-    Get microsite config from a given domain
-    """
-    values = {}
-    backend = get_microsite_backend()
-    # If the backend support the get_config_by_domain method, just use it
-    if getattr(backend, "get_config_by_domain"):
-        values, __ = backend.get_config_by_domain(domain)
-        return values
-
-    # Handle classic backends
-    # Save old microsite backend config
-    old_config = copy.deepcopy(backend.current_request_configuration.data)
-    # Set config in microsite backend according to the passed domain
-    backend.set_config_by_domain(domain)
-    if backend.current_request_configuration.data.get('site_domain') == domain:
-        values = copy.deepcopy(backend.current_request_configuration.data)
-
-    backend.current_request_configuration.data = old_config
-    return values
-
-
-def get_org_filters_from_microsite(domain):
-    """
-    Get course_org_filter setting from microsite having the given domain
+    Get val_name setting from the microsite that maps the given domain
     """
     if not domain:
         return None
 
-    config_by_domain = get_microsite_config_by_domain(domain)
-    if not config_by_domain:
-        return None
+    microsite = get_microsite_module()
+    microsite.clear()
+    microsite.set_by_domain(domain)
 
-    org_filters = config_by_domain.get("course_org_filter", [])
-    return org_filters
+    return microsite.get_value(val_name, default)
 
 
-def filter_queryset_by_microsite(queryset, domain, lookup, term_type):
+def filter_queryset_by_microsite(queryset, domain, lookup_field, term_type):
     """
-    TODO: add me
+    This method filters a given queryset based on the org filters belonging
+    to a microsite. The microsite is loaded from the given domain.
+    Parameters:
+        queryset: the queryset to filter
+        domain: the doamin to load the microsite from
+        lookup_field: the field used to filter based on the org
+        term_type: type of coincidence with the passed lookup_field. Now
+        two are supported:
+            1) org_exact: exact coincidence with the field
+            2) org_in_course_id: coincidence with the string ":<org>+"
     """
-    org_filters = get_org_filters_from_microsite(domain)
+    org_filters = get_value_from_microsite_domain(
+        domain, "course_org_filter"
+    )
     if not org_filters:
         return queryset.none()
 
@@ -75,7 +61,7 @@ def filter_queryset_by_microsite(queryset, domain, lookup, term_type):
     if isinstance(org_filters, six.string_types):
         term_search = term.format(org_filters)
         kwargs_filter = {
-            lookup: term_search
+            lookup_field: term_search
         }
         queryset = queryset.filter(**kwargs_filter)
         return queryset
@@ -85,7 +71,7 @@ def filter_queryset_by_microsite(queryset, domain, lookup, term_type):
     for org in org_filters:
         term_search = term.format(org)
         kwargs_filter = {
-            lookup: term_search
+            lookup_field: term_search
         }
         query = query | Q(**kwargs_filter)
 
