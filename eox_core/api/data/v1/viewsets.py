@@ -1,9 +1,9 @@
 """
 Controllers for the data-api. Used in the report generation process
 """
-import six
 import random
 from datetime import datetime
+import six
 
 from django.db.models import Q
 from django.conf import settings
@@ -19,8 +19,7 @@ from rest_framework_oauth.authentication import OAuth2Authentication
 
 from eox_core.edxapp_wrapper.certificates import get_generated_certificate
 from eox_core.edxapp_wrapper.users import get_course_enrollment
-
-from microsite_configuration import microsite
+from eox_core.edxapp_wrapper.microsite_configuration import get_microsite
 
 from .filters import (CourseEnrollmentFilter, GeneratedCerticatesFilter,
                       ProctoredExamStudentAttemptFilter, UserFilter)
@@ -44,7 +43,7 @@ class DataApiViewSet(mixins.ListModelMixin,
     prefetch_fields = False
     # Microsite enforcement filter settings
     enforce_microsite_filter = False
-    is_microsite_set = False
+    microsite_module = None
     enforce_microsite_filter_lookup_field = "test_lookup_field"
     enforce_microsite_filter_term = "org_in_course_id"
 
@@ -92,7 +91,7 @@ class DataApiViewSet(mixins.ListModelMixin,
 
         # Set microsite for site query param
         self.set_microsite_from_domain(site)
-        orgs_filter = microsite.get_value("course_org_filter", None)
+        orgs_filter = self.microsite_module.get_value("course_org_filter", None)
 
         queryset = self.filter_queryset_by_orgs(
             queryset,
@@ -104,11 +103,12 @@ class DataApiViewSet(mixins.ListModelMixin,
         """
         Set the microsite from te given domain
         """
-        if self.is_microsite_set:
+        if self.microsite_module:
             return
-        microsite.clear()
-        microsite.set_by_domain(domain)
-        self.is_microsite_set = True
+
+        self.microsite_module = get_microsite()
+        self.microsite_module.clear()
+        self.microsite_module.set_by_domain(domain)
         return
 
     def filter_queryset_by_orgs(self, queryset, org_filters):
