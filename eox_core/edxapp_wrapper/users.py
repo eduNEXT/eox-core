@@ -60,3 +60,21 @@ def get_course_team_user(*args, **kwargs):
     backend = import_module(backend_function)
 
     return backend.get_course_team_user(*args, **kwargs)
+
+
+def get_user_signup_source():
+    """ Gets the UserSignupSource model """
+
+    backend_function = settings.EOX_CORE_USERS_BACKEND
+    backend = import_module(backend_function)
+
+    return backend.get_user_signup_source()
+
+
+def get_login_failures():
+    """ Gets the LoginFailures model """
+
+    backend_function = settings.EOX_CORE_USERS_BACKEND
+    backend = import_module(backend_function)
+
+    return backend.get_login_failures()

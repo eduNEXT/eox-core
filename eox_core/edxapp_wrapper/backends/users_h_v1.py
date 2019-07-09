@@ -28,7 +28,7 @@ from student.helpers import (  # pylint: disable=import-error
 )
 from student.helpers import do_create_account  # pylint: disable=import-error
 from student.models import CourseEnrollment  # pylint: disable=import-error
-from student.models import (UserAttribute, UserSignupSource,  # pylint: disable=import-error
+from student.models import (LoginFailures, UserAttribute, UserSignupSource,  # pylint: disable=import-error
                             create_comments_service_user)
 
 LOG = logging.getLogger(__name__)
@@ -215,3 +215,13 @@ class FetchUserSiteSources(object):
 def get_course_enrollment():
     """ get CourseEnrollment model """
     return CourseEnrollment
+
+
+def get_user_signup_source():
+    """ get UserSignupSource model """
+    return UserSignupSource
+
+
+def get_login_failures():
+    """ get LoginFailures model """
+    return LoginFailures
