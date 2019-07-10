@@ -84,3 +84,8 @@ def plugin_settings(settings):  # pylint: disable=function-redefined
         'EOX_CORE_USER_ORIGIN_SITE_SOURCES',
         user_origin_sources
     )
+
+    if settings.SERVICE_VARIANT == "lms":
+        settings.MIDDLEWARE_CLASSES += [
+            'eox_core.middleware.PathRedirectionMiddleware',
+        ]
