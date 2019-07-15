@@ -1,3 +1,6 @@
+[pylint]
+ignore = migrations,CVS
+
 [MESSAGES CONTROL]
 disable=
 	unused-argument,
@@ -6,4 +9,5 @@ disable=
 	fixme,
 	line-too-long,
 	arguments-differ,
-	duplicate-code
+	duplicate-code,
+	invalid-name

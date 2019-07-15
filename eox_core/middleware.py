@@ -12,10 +12,15 @@ import re
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.auth.views import redirect_to_login
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 from django.http import Http404, HttpResponseRedirect
 
 from eox_core.edxapp_wrapper.configuration_helpers import get_configuration_helper
+from eox_core.models import Redirection
+
+from eox_core.utils import cache, fasthash
 
 
 configuration_helper = get_configuration_helper()  # pylint: disable=invalid-name
@@ -119,3 +124,59 @@ class PathRedirectionMiddleware(object):
         if not request.user.is_authenticated():
             return HttpResponseRedirect(values[key])
         return None
+
+
+class RedirectionsMiddleware(object):
+    """
+    Middleware for Redirecting microsites to other domains or to error pages
+    """
+
+    def process_request(self, request):
+        """
+        This middleware handles redirections and error pages according to the
+        business logic at edunext
+        """
+        if not settings.FEATURES.get('USE_REDIRECTION_MIDDLEWARE', True):
+            return None
+
+        domain = request.META.get('HTTP_HOST', "")
+
+        # First handle the event where a domain has a redirect target
+        cache_key = "redirect_cache." + fasthash(domain)
+        target = cache.get(cache_key)  # pylint: disable=maybe-no-member
+
+        if not target:
+            try:
+                target = Redirection.objects.get(domain__iexact=domain)  # pylint: disable=no-member
+            except Redirection.DoesNotExist:  # pylint: disable=no-member
+                target = '##none'
+
+            cache.set(  # pylint: disable=maybe-no-member
+                cache_key, target, 5 * 60
+            )
+
+        if target != '##none':
+            # If we are already at the target, just return
+            if domain == target.target and request.scheme == target.scheme:  # pylint: disable=no-member
+                return None
+
+            to_url = '{scheme}://{host}{path}'.format(
+                scheme=target.scheme,  # pylint: disable=no-member
+                host=target.target,  # pylint: disable=no-member
+                path=request.path,  # pylint: disable=no-member
+            )
+
+            return HttpResponseRedirect(
+                to_url,
+                status=target.status,  # pylint: disable=no-member
+            )
+        return None
+
+    @staticmethod
+    @receiver(post_save, sender=Redirection)
+    def clear_cache(sender, instance, **kwargs):  # pylint: disable=unused-argument
+        """
+        Clear the cached template when the model is saved
+        """
+        cache_key = "redirect_cache." + fasthash(instance.domain)
+        cache.delete(cache_key)  # pylint: disable=maybe-no-member
