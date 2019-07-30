@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 from django.contrib import admin
 from django.contrib.admin.sites import AlreadyRegistered
 
+from eox_core.models import Redirection
 from eox_core.edxapp_wrapper.users import get_user_signup_source, get_login_failures
 
 
@@ -27,6 +28,18 @@ class LoginFailuresAdmin(admin.ModelAdmin):
     search_fields = ('user__username', 'user__email',)
 
 
+class RedirectionAdmin(admin.ModelAdmin):
+    """
+    Admin view to see and edit edunext redirection objects.
+    """
+    list_display = [
+        'target',
+        'domain',
+        'scheme',
+    ]
+    search_fields = ('target', 'domain',)
+
+
 try:
     admin.site.register(LoginFailures, LoginFailuresAdmin)
 except AlreadyRegistered:
@@ -36,3 +49,5 @@ try:
     admin.site.register(UserSignupSource, UserSignupSourceAdmin)
 except AlreadyRegistered:
     pass
+
+admin.site.register(Redirection, RedirectionAdmin)
