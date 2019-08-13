@@ -79,3 +79,20 @@ Otherwise, if you want to compile for use in production environment, run this co
 npm run build-prod
 
 This command is defined in the package.json file and export two bundles (a build.js and course-management.bundle.css) inside of eox_core/static folder.
+
+## EOX core migration notes
+
+**Migrating to version 2.0.0**
+
+From version **2.0.0**, middlewares **RedirectionsMiddleware** and **PathRedirectionMiddleware** are now included in this plugin. These middlewares were moved from the **eox-tenant** plugin [here](https://github.com/eduNEXT/eox-tenant/).
+
+if you installed **eox-core** alongside **eox-tenant** plugin, follow the steps below:
+
+- Upgrade eox-tenant to version **1.0.0** (previous releases are not compatible with eox-core 2.0.0)
+- Run the plugin migrations as indicated below:
+```
+   $ python manage.py lms migrate eox_tenant --settings=<your app settings>
+   $ python manage.py lms migrate eox_core --fake-initial --settings=<your app settings>
+```
+
+In the case eox-tenant is not installed in the platform, just run the eox-core migrations normally.
