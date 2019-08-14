@@ -36,13 +36,28 @@ class PathRedirectionMiddleware(object):
 
     def process_request(self, request):
         """
-        This middleware processes the path of every request and determines if there
-        is a configured action to take.
+        Process the path of every request and
+        determine the correct custom redirect.
         """
 
-        if not configuration_helper.has_override_value("EDNX_CUSTOM_PATH_REDIRECTS"):
-            return None
+        custom_configs = {
+            "MKTG_REDIRECTS": "process_mktg_redirect",
+            "EDNX_CUSTOM_PATH_REDIRECTS": "process_custom_path_redirect",
+        }
 
+        for key, value in six.iteritems(custom_configs):
+            if configuration_helper.has_override_value(key):
+                action = getattr(self, value)
+                response = action(request)
+                if response:
+                    return response
+
+        return None
+
+    def process_custom_path_redirect(self, request):
+        """
+        Redirect the request according to the configured action to take.
+        """
         redirects = configuration_helper.get_value("EDNX_CUSTOM_PATH_REDIRECTS", {})
 
         path = request.path_info
@@ -65,6 +80,34 @@ class PathRedirectionMiddleware(object):
                     return action(request=request, key=key, values=values, path=path)
                 except Http404:  # we expect 404 to be raised
                     raise
+                except Exception as error:  # pylint: disable=broad-except
+                    LOG.error("The PathRedirectionMiddleware generated an error at: %s%s",
+                              request.get_host(),
+                              request.get_full_path())
+                    LOG.error(error)
+                    return None
+        return None
+
+    def process_mktg_redirect(self, request):
+        """
+        Redirect the request if there are mktg custom settings
+        present that match the request path.
+        """
+        redirects = configuration_helper.get_value("MKTG_REDIRECTS", {})
+
+        path = request.path_info
+
+        for key, value in six.iteritems(redirects):
+
+            # Strip off html extension to have backwards
+            # compatibility to keys defined with template style.
+            key = key.replace('.html', '')
+            path = path.replace('/', '')
+
+            if path == key:
+                try:
+                    values = {key: value}
+                    return self.redirect_always(key=key, values=values)
                 except Exception as error:  # pylint: disable=broad-except
                     LOG.error("The PathRedirectionMiddleware generated an error at: %s%s",
                               request.get_host(),
