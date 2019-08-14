@@ -1,6 +1,6 @@
 #!/usr/bin/python
 """
-TODO: add me
+Test module for the custom Middlewares
 """
 import mock
 
@@ -22,29 +22,45 @@ class PathRedirectionMiddlewareTest(TestCase):
         self.request_factory = RequestFactory()
         self.middleware_instance = PathRedirectionMiddleware()
 
+    @mock.patch('eox_core.middleware.PathRedirectionMiddleware.process_mktg_redirect')
+    @mock.patch('eox_core.middleware.PathRedirectionMiddleware.process_custom_path_redirect')
     @mock.patch('eox_core.middleware.configuration_helper')
-    def test_no_redirection_set(self, conf_help_mock):
+    def test_no_redirection_set(self, conf_help_mock,
+                                m_process_custom_path_redirect,
+                                m_process_mktg_redirect):
         """
         Test the middleware is not redirecting because EDNX_CUSTOM_PATH_REDIRECTS
-        setting is not set in conf helpers
+        and MKTG_REDIRECTS setting are not set in conf helpers
         """
         request = self.request_factory.get('/custom/path/')
         conf_help_mock.has_override_value.return_value = None
         result = self.middleware_instance.process_request(request)
-        conf_help_mock.has_override_value.assert_called_once()
+        conf_help_mock.has_override_value.assert_called()
+        m_process_custom_path_redirect.assert_not_called()
+        m_process_mktg_redirect.assert_not_called()
         self.assertIsNone(result)
 
     @mock.patch('eox_core.middleware.configuration_helper')
-    def test_empty_redirection_object(self, conf_help_mock):
+    def test_empty_redirection_custom(self, conf_help_mock):
         """
         Test the middleware is not redirecting because EDNX_CUSTOM_PATH_REDIRECTS
         setting is set to an empty value.
         """
         request = self.request_factory.get('/custom/path/')
-        conf_help_mock.has_override_value.return_value = True
         conf_help_mock.get_value.return_value = {}
-        result = self.middleware_instance.process_request(request)
-        conf_help_mock.has_override_value.assert_called_once()
+        result = self.middleware_instance.process_custom_path_redirect(request)
+        conf_help_mock.get_value.assert_called_once()
+        self.assertIsNone(result)
+
+    @mock.patch('eox_core.middleware.configuration_helper')
+    def test_empty_redirection_mktg(self, conf_help_mock):
+        """
+        Test the middleware is not redirecting because MKTG_REDIRECTS
+        setting is set to an empty value.
+        """
+        request = self.request_factory.get('/custom/path/')
+        conf_help_mock.get_value.return_value = {}
+        result = self.middleware_instance.process_mktg_redirect(request)
         conf_help_mock.get_value.assert_called_once()
         self.assertIsNone(result)
 
@@ -76,10 +92,14 @@ class PathRedirectionMiddlewareTest(TestCase):
         Test if a request with a path associated to the login required value is
         being redirected to the /login.
         """
+
+        def has_override_value(value):
+            """ Mock configuration helper response. """
+            return value == "EDNX_CUSTOM_PATH_REDIRECTS"
+
         request = self.request_factory.get('/custom/path/')
         request.user = AnonymousUser()
-
-        conf_help_mock.has_override_value.return_value = True
+        conf_help_mock.has_override_value.side_effect = has_override_value
         conf_help_mock.get_dict.return_value = {'ednx_custom_login_link': '/login'}
         redirection = {
             '/custom/path/': 'login_required'
@@ -87,6 +107,24 @@ class PathRedirectionMiddlewareTest(TestCase):
         conf_help_mock.get_value.return_value = redirection
         result = self.middleware_instance.process_request(request)
         self.assertIn('/login', result.url)
+
+    @mock.patch('eox_core.middleware.configuration_helper')
+    def test_mktg_redirection(self, conf_help_mock):
+        """
+        Test if a request with a path associated to the mktg redirects is
+        being redirected to the correct url.
+        """
+        def has_override_value(value):
+            """ Mock configuration helper response. """
+            return value == "MKTG_REDIRECTS"
+
+        request = self.request_factory.get('/tos')
+
+        conf_help_mock.has_override_value.return_value = has_override_value
+        target_url = '/host.domain/terms'
+        conf_help_mock.get_value.return_value = {'tos.html': target_url}
+        result = self.middleware_instance.process_request(request)
+        self.assertIn(target_url, result.url)
 
 
 class RedirectionMiddlewareTest(TestCase):

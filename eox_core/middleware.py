@@ -38,14 +38,18 @@ class PathRedirectionMiddleware(object):
         """
         Process the path of every request and
         determine the correct custom redirect.
+
+        Each custom_redirection_setting is equal in terms of importance,
+        but to have order, 'MKTG_REDIRECTS' is defined
+        as the one with highest priority.
         """
 
-        custom_configs = {
+        custom_redirection_settings = {
             "MKTG_REDIRECTS": "process_mktg_redirect",
             "EDNX_CUSTOM_PATH_REDIRECTS": "process_custom_path_redirect",
         }
 
-        for key, value in six.iteritems(custom_configs):
+        for key, value in six.iteritems(custom_redirection_settings):
             if configuration_helper.has_override_value(key):
                 action = getattr(self, value)
                 response = action(request)
@@ -94,7 +98,6 @@ class PathRedirectionMiddleware(object):
         present that match the request path.
         """
         redirects = configuration_helper.get_value("MKTG_REDIRECTS", {})
-
         path = request.path_info
 
         for key, value in six.iteritems(redirects):
@@ -102,7 +105,7 @@ class PathRedirectionMiddleware(object):
             # Strip off html extension to have backwards
             # compatibility to keys defined with template style.
             key = key.replace('.html', '')
-            path = path.replace('/', '')
+            key = '/{}'.format(key)
 
             if path == key:
                 try:
