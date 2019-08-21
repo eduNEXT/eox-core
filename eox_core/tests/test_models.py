@@ -1,6 +1,6 @@
 #!/usr/bin/python
 """
-TODO: add me
+Test module for RedirectionModel
 """
 from django.test import TestCase
 from django.core.exceptions import ValidationError

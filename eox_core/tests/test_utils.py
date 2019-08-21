@@ -1,6 +1,6 @@
 #!/usr/bin/python
 """
-TODO: add me
+Test module for Utils
 """
 from django.test import TestCase
 
