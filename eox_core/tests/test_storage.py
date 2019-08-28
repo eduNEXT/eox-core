@@ -14,7 +14,7 @@ class StaticStoragesTest(TestCase):
     Testing the extended storages
     """
     @mock.patch('eox_core.test_utils.TestStorage.url')
-    def test_calling_parent_storage_url_method(self, test_url_mock):
+    def test_calling_parent_storage_url_method(self, test_url_mock):  # pylint: disable=invalid-name
         """
         Test the case when the storages have to call the url parent method
         """
@@ -32,7 +32,7 @@ class StaticStoragesTest(TestCase):
         self.assertEqual(result, "/static/images/logo.png")
 
     @mock.patch('eox_core.test_utils.TestStorage.url')
-    def test_returning_absolute_url_asset(self, test_url_mock):
+    def test_returning_absolute_url_asset(self, test_url_mock):  # pylint: disable=invalid-name
         """
         Test the case when the storages don't have to call the url parent method
         """

@@ -36,4 +36,7 @@ class TestStorage(object):
     This is a storage used for testing purposes
     """
     def url(self, name):
+        """
+        return the name of the asset
+        """
         return name

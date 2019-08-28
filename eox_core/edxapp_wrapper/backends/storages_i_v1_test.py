@@ -1,9 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""
+Storages test backend
+"""
 from eox_core.test_utils import TestStorage
 
 
-def get_edxapp_production_staticfiles_storage():
+def get_edxapp_production_staticfiles_storage():  # pylint: disable=invalid-name
     """
     Return the edx-platform production staticfiles storage
     """
@@ -14,7 +17,7 @@ def get_edxapp_production_staticfiles_storage():
     return ProductionStorage
 
 
-def get_edxapp_development_staticfiles_storage():
+def get_edxapp_development_staticfiles_storage():  # pylint: disable=invalid-name
     """
     Return the edx-platform development staticfiles storage
     """

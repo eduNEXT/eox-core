@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Users public function definitions
+Storages public function definitions
 """
 from importlib import import_module
 from django.conf import settings
 
 
-def get_edxapp_production_staticfiles_storage():
+def get_edxapp_production_staticfiles_storage():  # pylint: disable=invalid-name
     """
     Return the edx-platform production staticfiles storage
     """
@@ -17,7 +17,7 @@ def get_edxapp_production_staticfiles_storage():
     return backend.get_edxapp_production_staticfiles_storage()
 
 
-def get_edxapp_development_staticfiles_storage():
+def get_edxapp_development_staticfiles_storage():  # pylint: disable=invalid-name
     """
     Return the edx-platform production staticfiles storage
     """
