@@ -24,6 +24,7 @@ class EoxCoreConfig(AppConfig):
                 'test': {'relative_path': 'settings.test'},
                 'common': {'relative_path': 'settings.common'},
                 'aws': {'relative_path': 'settings.aws'},
+                'devstack': {'relative_path': 'settings.devstack'},
             },
         },
     }

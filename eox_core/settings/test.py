@@ -26,6 +26,7 @@ def plugin_settings(settings):  # pylint: disable=function-redefined
     settings.EOX_CORE_COURSEWARE_BACKEND = "eox_core.edxapp_wrapper.backends.courseware_h_v1"
     settings.EOX_CORE_GRADES_BACKEND = "eox_core.edxapp_wrapper.backends.grades_h_v1"
     settings.EOX_CORE_MICROSITES_BACKEND = "eox_core.edxapp_wrapper.backends.microsite_configuration_h_v1"
+    settings.EOX_CORE_STORAGES_BACKEND = "eox_core.edxapp_wrapper.backends.storages_i_v1_test"
     settings.EOX_CORE_LOAD_PERMISSIONS = False
     settings.DATA_API_DEF_PAGE_SIZE = 1000
     settings.DATA_API_MAX_PAGE_SIZE = 5000
