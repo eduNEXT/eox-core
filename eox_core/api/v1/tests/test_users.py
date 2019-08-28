@@ -1,24 +1,22 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Test module for Users API under the open-release/hawthorn.beta1 tag
+Test module for Users API.
 """
-from mock import patch, Mock
-
-from django.test import TestCase
 from django.contrib.auth.models import User
-
+from django.test import TestCase
+from mock import Mock, patch
 from rest_framework.exceptions import NotFound
 from rest_framework.test import APIClient
 
 
 class UserAPITest(TestCase):
-    """ Tests for the User API """
+    """ Tests for the User API. """
 
     patch_permissions = patch('eox_core.api.v1.permissions.EoxCoreAPIPermission.has_permission', return_value=True)
 
     def setUp(self):
-        """ setup """
+        """ Setup. """
         super(UserAPITest, self).setUp()
         self.api_user = User(1, 'api_client@example.com', 'client')
         self.client = APIClient()
@@ -35,7 +33,7 @@ class UserAPITest(TestCase):
     @patch_permissions
     @patch('eox_core.api.v1.views.get_edxapp_user')
     def test_api_get_validation(self, m_get_edxapp_user, *_):
-        """ Test the paremeter validation of the GET method"""
+        """ Test the paremeter validation of the GET method. """
         m_get_edxapp_user.return_value = None
 
         # Test empty request
@@ -47,7 +45,7 @@ class UserAPITest(TestCase):
     @patch_permissions
     @patch('eox_core.api.v1.views.get_edxapp_user')
     def test_api_get_invalid_user(self, m_get_edxapp_user, *_):
-        """ Test the GET method fails for an invalid user"""
+        """ Test the GET method fails for an invalid user. """
         params = {
             'email': 'test@test.com',
         }
@@ -61,7 +59,7 @@ class UserAPITest(TestCase):
     @patch('eox_core.api.v1.views.EdxappUserReadOnlySerializer')
     @patch('eox_core.api.v1.views.get_edxapp_user')
     def test_api_get(self, m_get_edxapp_user, m_EdxappUserReadOnlySerializer, *_):  # pylint: disable=invalid-name
-        """ Test that the GET method works under normal conditions """
+        """ Test that the GET method works under normal conditions. """
         m_get_edxapp_user.return_value = Mock()
         m_EdxappUserReadOnlySerializer.return_value = self
 
@@ -77,7 +75,7 @@ class UserAPITest(TestCase):
     @patch('eox_core.api.v1.views.delete_edxapp_user')
     @patch('eox_core.api.v1.views.get_edxapp_user')
     def test_api_delete_invalid_user(self, m_get_edxapp_user, m_delete_edxapp_user, *_):
-        """ Test the DELETE method fails for an invalid user"""
+        """ Test the DELETE method fails for an invalid user. """
         params = {
             'email': 'test@test.com',
         }
@@ -92,7 +90,7 @@ class UserAPITest(TestCase):
     @patch('eox_core.api.v1.views.delete_edxapp_user')
     @patch('eox_core.api.v1.views.get_edxapp_user')
     def test_api_delete(self, m_get_edxapp_user, m_delete_edxapp_user, *_):
-        """ Test that the DELETE method works under normal conditions """
+        """ Test that the DELETE method works under normal conditions. """
         m_user = User(2, 'test@example.com', 'test')
         m_get_edxapp_user.return_value = m_user
         m_delete_edxapp_user.return_value = None
@@ -110,7 +108,7 @@ class UserAPITest(TestCase):
     @patch('eox_core.api.v1.views.update_edxapp_user')
     @patch('eox_core.api.v1.views.get_edxapp_user')
     def test_api_put(self, m_get_edxapp_user, m_update_edxapp_user, m_EdxappUserReadOnlySerializer, *_):  # pylint: disable=invalid-name
-        """ Test that the PUT method works under normal conditions """
+        """ Test that the PUT method works under normal conditions. """
         m_user = User(2, 'test@example.com', 'test')
         self.data['name'] = 'Updated name'
         m_EdxappUserReadOnlySerializer.return_value = self
@@ -133,7 +131,7 @@ class UserAPITest(TestCase):
     def test_api_put_force_validation(self, m_get_edxapp_user, *_):
         """
         Test that the PUT method validates a reason is given when setting
-        the force param to change email or password
+        the force param to change email or password.
         """
         m_user = User(2, 'test@example.com', 'test')
         m_get_edxapp_user.return_value = m_user
@@ -154,7 +152,7 @@ class UserAPITest(TestCase):
     @patch('eox_core.api.v1.views.update_edxapp_user')
     @patch('eox_core.api.v1.views.get_edxapp_user')
     def test_api_put_force(self, m_get_edxapp_user, m_update_edxapp_user, m_EdxappUserReadOnlySerializer, *_):  # pylint: disable=invalid-name
-        """ Test that the PUT method with force works under normal conditions """
+        """ Test that the PUT method with force works under normal conditions. """
         m_user = User(2, 'test@example.com', 'test')
         self.data['email'] = 'updated_test@example.com'
         m_EdxappUserReadOnlySerializer.return_value = self

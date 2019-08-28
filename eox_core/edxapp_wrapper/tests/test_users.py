@@ -8,8 +8,8 @@ from django.test import TestCase
 from ..users import (
     create_edxapp_user,
     delete_edxapp_user,
-    update_edxapp_user,
     get_edxapp_user,
+    update_edxapp_user,
 )
 
 

@@ -27,7 +27,7 @@ def create_edxapp_user(*args, **kwargs):
 
 
 def update_edxapp_user(*args, **kwargs):
-    """ Update the edxapp user """
+    """ Update the edxapp user. """
 
     backend_function = settings.EOX_CORE_USERS_BACKEND
     backend = import_module(backend_function)
@@ -36,7 +36,7 @@ def update_edxapp_user(*args, **kwargs):
 
 
 def delete_edxapp_user(*args, **kwargs):
-    """ Delete the edxapp user """
+    """ Delete the edxapp user. """
 
     backend_function = settings.EOX_CORE_USERS_BACKEND
     backend = import_module(backend_function)

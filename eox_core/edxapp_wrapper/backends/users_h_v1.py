@@ -9,24 +9,22 @@ import logging
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.db import transaction
 from django.core.exceptions import ValidationError as DjangoValidationError
+from django.db import transaction
 from rest_framework.exceptions import NotFound, ValidationError
-from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers  # pylint: disable=import-error
 
 from openedx.core.djangoapps.lang_pref import (  # pylint: disable=import-error
     LANGUAGE_KEY
 )
+from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers  # pylint: disable=import-error
 from openedx.core.djangoapps.user_api.accounts.api import (  # pylint: disable=import-error
     check_account_exists,
     update_account_settings,
 )
+from openedx.core.djangoapps.user_api.accounts.serializers import UserReadOnlySerializer  # pylint: disable=import-error
 from openedx.core.djangoapps.user_api.errors import (  # pylint: disable=import-error
     AccountUpdateError,
     AccountValidationError,
-)
-from openedx.core.djangoapps.user_api.accounts.serializers import (   # pylint: disable=import-error
-    UserReadOnlySerializer
 )
 from openedx.core.djangoapps.user_api.preferences import api as preferences_api  # pylint: disable=import-error
 from student.forms import AccountCreationForm  # pylint: disable=import-error
@@ -36,9 +34,9 @@ from student.helpers import (  # pylint: disable=import-error
 )
 from student.models import (  # pylint: disable=import-error
     CourseEnrollment,
-	create_comments_service_user,
+    create_comments_service_user,
     email_exists_or_retired,
-	LoginFailures,
+    LoginFailures,
     UserAttribute,
     UserSignupSource,
 )
@@ -147,7 +145,7 @@ def create_edxapp_user(*args, **kwargs):
 def update_edxapp_user(user, **kwargs):
     """
     Update a user on the open edx django site using calls to
-    functions defined in the edx-platform codebase
+    functions defined in the edx-platform codebase.
 
     Example call:
 
@@ -194,9 +192,10 @@ def update_edxapp_user(user, **kwargs):
 
     except (AccountValidationError, AccountUpdateError) as exp:
         errors = []
+
         if hasattr(exp, 'field_errors'):
             for error in exp.field_errors:
-                err_msg = exp.field_errors[error]['user_message']
+                err_msg = exp.field_errors[error]['user_message'] if 'user_message' in exp.field_errors[error] else 'Field error'
                 errors.append("{}:{}".format(error, err_msg))
             raise ValidationError(errors)
         else:
@@ -209,14 +208,19 @@ def update_edxapp_user(user, **kwargs):
 
 def delete_edxapp_user(user):
     """
-    Delete an user as a first approach means inactive the user thus isolating
-    it from the openedx plataform, no data is actually deleted
+    Delete a user.
+
+    To delete a user we're deactivating in the platform,
+    so it no longer has access however no user
+    data is deleted, this is just the first step in
+    the retirement pipeline (pending).
     """
     try:
         user.is_active = False
         retired_email = user.email
         retired_email = retired_email.replace(u'@', u'+')
-        user.email = '{}@retired.edunext.co'.format(retired_email)
+        user.email = '{}@{}'.format(retired_email,
+                                    settings.EOX_CORE_USER_EMAIL_RETIRED_SUFFIX)
         user.save()
     except Exception:  # pylint: disable=broad-except
         raise NotFound("The deletion could not be completed")
@@ -224,7 +228,7 @@ def delete_edxapp_user(user):
 
 def get_edxapp_user(**kwargs):
     """
-    Retrieve an user by username and/or email
+    Retrieve a user by username and/or email
 
     The user will be returned only if it belongs to the calling site
 

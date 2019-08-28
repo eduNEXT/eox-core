@@ -40,6 +40,7 @@ def plugin_settings(settings):
     settings.EOX_CORE_COURSE_MANAGEMENT_REQUEST_TIMEOUT = 1000
     settings.EOX_CORE_USER_ENABLE_MULTI_TENANCY = True
     settings.EOX_CORE_USER_ORIGIN_SITE_SOURCES = ['fetch_from_unfiltered_table', ]
+    settings.EOX_CORE_USER_EMAIL_RETIRED_SUFFIX = 'retired.edunext.co'
 
     if settings.EOX_CORE_USER_ENABLE_MULTI_TENANCY:
         settings.EOX_CORE_USER_ORIGIN_SITE_SOURCES = [
