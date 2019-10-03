@@ -101,8 +101,13 @@ def plugin_settings(settings):  # pylint: disable=function-redefined
         user_origin_sources
     )
 
+    settings.EOX_CORE_APPEND_LMS_MIDDLEWARE_CLASSES = getattr(settings, 'ENV_TOKENS', {}).get(
+        'EOX_CORE_APPEND_LMS_MIDDLEWARE_CLASSES',
+        settings.EOX_CORE_APPEND_LMS_MIDDLEWARE_CLASSES
+    )
     if settings.SERVICE_VARIANT == "lms":
-        settings.MIDDLEWARE_CLASSES += [
-            'eox_core.middleware.PathRedirectionMiddleware',
-            'eox_core.middleware.RedirectionsMiddleware'
-        ]
+        if settings.EOX_CORE_APPEND_LMS_MIDDLEWARE_CLASSES:
+            settings.MIDDLEWARE_CLASSES += [
+                'eox_core.middleware.PathRedirectionMiddleware',
+                'eox_core.middleware.RedirectionsMiddleware'
+            ]
