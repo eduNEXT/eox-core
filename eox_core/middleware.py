@@ -107,16 +107,20 @@ class PathRedirectionMiddleware(object):
             key = key.replace('.html', '')
             key = '/{}'.format(key)
 
-            if path == key:
-                try:
-                    values = {key: value}
-                    return self.redirect_always(key=key, values=values)
-                except Exception as error:  # pylint: disable=broad-except
-                    LOG.error("The PathRedirectionMiddleware generated an error at: %s%s",
-                              request.get_host(),
-                              request.get_full_path())
-                    LOG.error(error)
-                    return None
+            # Just continue if the path does not match or the redirect value is empty
+            # TODO: validate that the key corresponds to a Marketing path
+            if path != key or not value:
+                continue
+
+            try:
+                values = {key: value}
+                return self.redirect_always(key=key, values=values)
+            except Exception as error:  # pylint: disable=broad-except
+                LOG.error("The PathRedirectionMiddleware generated an error at: %s%s",
+                          request.get_host(),
+                          request.get_full_path())
+                LOG.error(error)
+                return None
         return None
 
     def login_required(self, request, path, **kwargs):  # pylint: disable=unused-argument
