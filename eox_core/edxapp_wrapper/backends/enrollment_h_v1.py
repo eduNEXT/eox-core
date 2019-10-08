@@ -209,13 +209,17 @@ def _enroll_on_course(user, course_id, *args, **kwargs):
             LOG.info('Force create enrollment %s, %s, %s', username, course_id, mode)
             enrollment = _force_create_enrollment(username, course_id, mode, is_active)
         else:
+            if not str(err):
+                err = err.__class__.__name__
             raise APIException(detail=err)
 
     if enrollment_attributes is not None:
         api.set_enrollment_attributes(username, course_id, enrollment_attributes)
-
-    enrollment['enrollment_attributes'] = enrollment_attributes
-    enrollment['course_id'] = course_id
+    try:
+        enrollment['enrollment_attributes'] = enrollment_attributes
+        enrollment['course_id'] = course_id
+    except TypeError:
+        pass
     return enrollment, errors
 
 
