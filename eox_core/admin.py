@@ -15,17 +15,20 @@ UserSignupSource = get_user_signup_source()  # pylint: disable=invalid-name
 
 class UserSignupSourceAdmin(admin.ModelAdmin):
     """ Admin interface for the UserSignupSource model. """
-    list_display = ('user', 'site',)
-    list_filter = ('user', 'site',)
+    list_display = ('user', 'site')
+    list_per_page = 20
     raw_id_fields = ('user',)
     search_fields = ('site', 'user__username', 'user__email',)
+    # Prevent expensive duplicated COUNT query
+    show_full_result_count = False
 
 
 class LoginFailuresAdmin(admin.ModelAdmin):
     """ Admin interface for the LoginFailures model. """
     list_display = ('user', 'failure_count', 'lockout_until',)
-    list_filter = ('user', 'lockout_until',)
     search_fields = ('user__username', 'user__email',)
+    # Prevent expensive duplicated COUNT query
+    show_full_result_count = False
 
 
 class RedirectionAdmin(admin.ModelAdmin):
