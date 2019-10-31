@@ -82,3 +82,12 @@ def get_login_failures():
     except ImportError:
         LoginFailures = object
     return LoginFailures
+
+
+def get_user_profile():
+    """ Gets the UserProfile model """
+    try:
+        from student.models import UserProfile
+    except ImportError:
+        UserProfile = object
+    return UserProfile

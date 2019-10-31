@@ -78,3 +78,12 @@ def get_login_failures():
     backend = import_module(backend_function)
 
     return backend.get_login_failures()
+
+
+def get_user_profile():
+    """ Gets the UserProfile model """
+
+    backend_function = settings.EOX_CORE_USERS_BACKEND
+    backend = import_module(backend_function)
+
+    return backend.get_user_profile()
