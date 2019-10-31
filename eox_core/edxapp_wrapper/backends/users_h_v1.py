@@ -29,7 +29,7 @@ from student.helpers import (  # pylint: disable=import-error
 from student.helpers import do_create_account  # pylint: disable=import-error
 from student.models import CourseEnrollment  # pylint: disable=import-error
 from student.models import (LoginFailures, UserAttribute, UserSignupSource,  # pylint: disable=import-error
-                            create_comments_service_user)
+                            UserProfile, create_comments_service_user)
 
 LOG = logging.getLogger(__name__)
 User = get_user_model()  # pylint: disable=invalid-name
@@ -225,3 +225,9 @@ def get_user_signup_source():
 def get_login_failures():
     """ get LoginFailures model """
     return LoginFailures
+
+
+def get_user_profile():
+    """ Gets the UserProfile model """
+
+    return UserProfile
