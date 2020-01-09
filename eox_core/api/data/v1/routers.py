@@ -15,7 +15,7 @@ from .viewsets import (
 ROUTER = routers.DefaultRouter()
 ROUTER.register(r'users', UsersViewSet)
 ROUTER.register(r'course-enrollments', CourseEnrollmentViewset)
-ROUTER.register(r'certificates', CertificateViewSet)
+ROUTER.register(r'certificates', CertificateViewSet, base_name='generated_certificate')
 ROUTER.register(r'proctored-exams-attempts', ProctoredExamStudentViewSet)
 # Async operations
 ROUTER.register(r'async/course-enrollments-grades', CourseEnrollmentWithGradesViewset)

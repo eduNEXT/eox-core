@@ -33,10 +33,6 @@ def plugin_settings(settings):  # pylint: disable=function-redefined
         'EOX_CORE_GRADES_BACKEND',
         settings.EOX_CORE_GRADES_BACKEND
     )
-    settings.EOX_CORE_MICROSITES_BACKEND = getattr(settings, 'ENV_TOKENS', {}).get(
-        'EOX_CORE_MICROSITES_BACKEND',
-        settings.EOX_CORE_MICROSITES_BACKEND
-    )
     settings.EOX_CORE_STORAGES_BACKEND = getattr(settings, 'ENV_TOKENS', {}).get(
         'EOX_CORE_STORAGES_BACKEND',
         settings.EOX_CORE_STORAGES_BACKEND

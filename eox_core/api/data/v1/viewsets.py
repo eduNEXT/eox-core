@@ -19,7 +19,6 @@ from rest_framework_oauth.authentication import OAuth2Authentication
 
 from eox_core.edxapp_wrapper.certificates import get_generated_certificate
 from eox_core.edxapp_wrapper.users import get_course_enrollment
-from eox_core.edxapp_wrapper.microsite_configuration import get_microsite
 
 from .filters import (CourseEnrollmentFilter, GeneratedCerticatesFilter,
                       ProctoredExamStudentAttemptFilter, UserFilter)
@@ -43,7 +42,6 @@ class DataApiViewSet(mixins.ListModelMixin,
     prefetch_fields = False
     # Microsite enforcement filter settings
     enforce_microsite_filter = False
-    microsite_module = None
     enforce_microsite_filter_lookup_field = "test_lookup_field"
     enforce_microsite_filter_term = "org_in_course_id"
 
@@ -84,32 +82,13 @@ class DataApiViewSet(mixins.ListModelMixin,
         if not settings.EOX_CORE_USER_ENABLE_MULTI_TENANCY:
             return queryset
 
-        # Getting site query param
-        site = self.request.query_params.get('site', None)
-        if not site:
-            return queryset.none()
-
-        # Set microsite for site query param
-        self.set_microsite_from_domain(site)
-        orgs_filter = self.microsite_module.get_value("course_org_filter", None)
+        orgs_filter = getattr(settings, 'course_org_filter', set([]))
 
         queryset = self.filter_queryset_by_orgs(
             queryset,
             orgs_filter
         )
         return queryset
-
-    def set_microsite_from_domain(self, domain):
-        """
-        Set the microsite from te given domain
-        """
-        if self.microsite_module:
-            return
-
-        self.microsite_module = get_microsite()
-        self.microsite_module.clear()
-        self.microsite_module.set_by_domain(domain)
-        return
 
     def filter_queryset_by_orgs(self, queryset, org_filters):
         """
@@ -228,7 +207,6 @@ class CertificateViewSet(DataApiViewSet):  # pylint: disable=too-many-ancestors
     A viewset for viewing certificates generated for users.
     """
     serializer_class = CertificateSerializer
-    queryset = get_generated_certificate().objects.all()
     filter_class = GeneratedCerticatesFilter
     prefetch_fields = [
         {
@@ -240,6 +218,10 @@ class CertificateViewSet(DataApiViewSet):  # pylint: disable=too-many-ancestors
     enforce_microsite_filter = True
     enforce_microsite_filter_lookup_field = "course_id__contains"
     enforce_microsite_filter_term = "org_in_course_id"
+
+    def get_queryset(self):
+        self.queryset = get_generated_certificate().objects.all()
+        return super(CertificateViewSet, self).get_queryset()
 
 
 class ProctoredExamStudentViewSet(DataApiViewSet):  # pylint: disable=too-many-ancestors
