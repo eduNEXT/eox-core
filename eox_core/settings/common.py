@@ -46,3 +46,6 @@ def plugin_settings(settings):
             'fetch_from_created_on_site_prop',
             'fetch_from_user_signup_source',
         ]
+
+    # Sentry Integration
+    settings.EOX_CORE_SENTRY_INTEGRATION_DSN = None

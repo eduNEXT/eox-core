@@ -67,6 +67,23 @@ $ source /path/to/venv/bin/activate
 (venv)$ pip-compile
 ```
 
+## Integrations with third party services
+
+The plugin offers some integrations listed below:
+
+1. **Sentry**: this service allows to track the errors generated on edx-platform. Check more details in https://sentry.io/welcome/. To enable the integration, follow the steps below:
+
+	* Install the plugin with Sentry support (extras_require [sentry])
+	* Sign up/in to your sentry account and create a new Django application integration.
+	* Get the DSN for your integration. This is an unique identifier for your application.
+	* Setup the following configuration values for edx-platform:
+
+		```yaml
+		EOX_CORE_SENTRY_INTEGRATION_DSN: <your DSN value>
+		```
+
+	By default, **EOX_CORE_SENTRY_INTEGRATION_DSN** setting is None, which disables the sentry integration.
+
 ## Course Management automation compilation
 
 We use webpack to bundle the React js application and its dependencies,

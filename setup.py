@@ -31,6 +31,9 @@ setup(
     description="eduNEXT Openedx extensions",
     long_description="",
     install_requires=[],
+    extras_require={
+        "sentry": ["sentry-sdk==0.14.2"],
+    },
     scripts=[],
     license="AGPL",
     platforms=["any"],
