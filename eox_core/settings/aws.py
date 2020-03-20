@@ -3,6 +3,12 @@ Settings for eox_core project meant to be called on the edx-platform/*/envs/aws.
 """
 from .common import *  # pylint: disable=wildcard-import, unused-wildcard-import
 
+try:
+    import sentry_sdk
+    from sentry_sdk.integrations.django import DjangoIntegration
+except ImportError:
+    sentry_sdk = DjangoIntegration = None
+
 
 def plugin_settings(settings):  # pylint: disable=function-redefined
     """
@@ -107,3 +113,18 @@ def plugin_settings(settings):  # pylint: disable=function-redefined
                 'eox_core.middleware.PathRedirectionMiddleware',
                 'eox_core.middleware.RedirectionsMiddleware'
             ]
+
+    # Sentry Integration
+    sentry_integration_dsn = getattr(settings, 'ENV_TOKENS', {}).get(
+        'EOX_CORE_SENTRY_INTEGRATION_DSN',
+        settings.EOX_CORE_SENTRY_INTEGRATION_DSN
+    )
+    if sentry_sdk is not None and sentry_integration_dsn is not None:
+        sentry_sdk.init(
+            dsn=sentry_integration_dsn,
+            integrations=[DjangoIntegration()],
+
+            # If you wish to associate users to errors (assuming you are using
+            # django.contrib.auth) you may enable sending PII data.
+            send_default_pii=True
+        )
