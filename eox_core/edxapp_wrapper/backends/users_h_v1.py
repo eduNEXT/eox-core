@@ -15,6 +15,7 @@ from rest_framework.exceptions import APIException
 from openedx.core.djangoapps.lang_pref import (  # pylint: disable=import-error
     LANGUAGE_KEY
 )
+from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers  # pylint: disable=import-error
 from openedx.core.djangoapps.user_api.accounts.api import (  # pylint: disable=import-error
     check_account_exists
 )
@@ -168,12 +169,16 @@ class FetchUserSiteSources(object):
     get_enabled_source_methods that just brings an array of functions enabled to do so
     """
 
+    # Not including unfiltered source
     ALL_SOURCES = ['fetch_from_created_on_site_prop', 'fetch_from_user_signup_source']
 
     @classmethod
     def get_enabled_source_methods(cls):
         """ brings the array of methods to check if an user belongs to a site """
-        sources = getattr(settings, 'EOX_CORE_USER_ORIGIN_SITE_SOURCES', cls.ALL_SOURCES)
+        sources = configuration_helpers.get_value(
+            'EOX_CORE_USER_ORIGIN_SITE_SOURCES',
+            getattr(settings, 'EOX_CORE_USER_ORIGIN_SITE_SOURCES', cls.ALL_SOURCES)
+        )
         return [getattr(cls, source) for source in sources]
 
     @staticmethod
@@ -185,6 +190,11 @@ class FetchUserSiteSources(object):
     def fetch_from_user_signup_source(user, site):
         """ fetch option """
         return len(UserSignupSource.objects.filter(user=user, site=site)) > 0
+
+    @staticmethod
+    def fetch_from_unfiltered_table(user, site):
+        """ Fetch option that does not take into account the multi-tentancy model of the installation. """
+        return bool(user)
 
 
 def get_course_enrollment():

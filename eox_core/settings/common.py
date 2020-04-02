@@ -31,3 +31,8 @@ def plugin_settings(settings):
     settings.EOX_CORE_COURSES_BACKEND = "eox_core.edxapp_wrapper.backends.courses_h_v1"
     settings.EOX_CORE_SITE_CONFIGURATION = "eox_core.edxapp_wrapper.backends.site_configuration_h_v1"
     settings.EOX_CORE_COURSE_MANAGEMENT_REQUEST_TIMEOUT = 1000
+
+    settings.EOX_CORE_USER_ORIGIN_SITE_SOURCES = [
+        'fetch_from_created_on_site_prop',
+        'fetch_from_user_signup_source',
+    ]

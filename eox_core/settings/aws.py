@@ -57,3 +57,8 @@ def plugin_settings(settings):  # pylint: disable=function-redefined
         'EOX_CORE_COURSE_MANAGEMENT_REQUEST_TIMEOUT',
         settings.EOX_CORE_COURSE_MANAGEMENT_REQUEST_TIMEOUT
     )
+
+    settings.EOX_CORE_USER_ORIGIN_SITE_SOURCES = getattr(settings, 'ENV_TOKENS', {}).get(
+        'EOX_CORE_USER_ORIGIN_SITE_SOURCES',
+        settings.EOX_CORE_USER_ORIGIN_SITE_SOURCES
+    )
