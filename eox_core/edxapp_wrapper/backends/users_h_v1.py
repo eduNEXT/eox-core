@@ -15,6 +15,7 @@ from rest_framework.exceptions import NotFound
 from openedx.core.djangoapps.lang_pref import (  # pylint: disable=import-error
     LANGUAGE_KEY
 )
+from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers  # pylint: disable=import-error
 from openedx.core.djangoapps.user_api.accounts.api import (  # pylint: disable=import-error
     check_account_exists
 )
@@ -191,7 +192,10 @@ class FetchUserSiteSources(object):
     @classmethod
     def get_enabled_source_methods(cls):
         """ Brings the array of methods to check if an user belongs to a site. """
-        sources = getattr(settings, 'EOX_CORE_USER_ORIGIN_SITE_SOURCES')
+        sources = configuration_helpers.get_value(
+            'EOX_CORE_USER_ORIGIN_SITE_SOURCES',
+            getattr(settings, 'EOX_CORE_USER_ORIGIN_SITE_SOURCES')
+        )
         return [getattr(cls, source) for source in sources]
 
     @staticmethod
