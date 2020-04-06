@@ -27,7 +27,7 @@ def before_send(event, hint):
     See: https://github.com/getsentry/sentry-python/issues/149#issuecomment-434448781
     """
     ignored_errors = ()
-    for error in settings.SENTRY_IGNORED_ERRORS:
+    for error in settings.EOX_CORE_SENTRY_IGNORED_ERRORS:
         try:
             error_class = load_class(error)
             ignored_errors += (error_class,)
