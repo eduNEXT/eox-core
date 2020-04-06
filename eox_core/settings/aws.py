@@ -119,8 +119,15 @@ def plugin_settings(settings):  # pylint: disable=function-redefined
         'EOX_CORE_SENTRY_INTEGRATION_DSN',
         settings.EOX_CORE_SENTRY_INTEGRATION_DSN
     )
+    settings.EOX_CORE_SENTRY_IGNORED_ERRORS = getattr(settings, 'ENV_TOKENS', {}).get(
+        'EOX_CORE_SENTRY_IGNORED_ERRORS',
+        settings.EOX_CORE_SENTRY_IGNORED_ERRORS
+    )
+
     if sentry_sdk is not None and sentry_integration_dsn is not None:
+        from eox_core.integrations.sentry import before_send
         sentry_sdk.init(
+            before_send=before_send,
             dsn=sentry_integration_dsn,
             integrations=[DjangoIntegration()],
 
