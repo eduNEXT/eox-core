@@ -49,3 +49,4 @@ def plugin_settings(settings):
 
     # Sentry Integration
     settings.EOX_CORE_SENTRY_INTEGRATION_DSN = None
+    settings.EOX_CORE_SENTRY_IGNORED_ERRORS = []

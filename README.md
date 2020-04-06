@@ -80,9 +80,19 @@ The plugin offers some integrations listed below:
 
 		```yaml
 		EOX_CORE_SENTRY_INTEGRATION_DSN: <your DSN value>
+		EOX_CORE_SENTRY_IGNORED_ERRORS: [] # optional
 		```
 
 	By default, **EOX_CORE_SENTRY_INTEGRATION_DSN** setting is None, which disables the sentry integration.
+
+	**EOX_CORE_SENTRY_IGNORED_ERRORS** is optional. It is a list of exceptions that wants to be ignored by sentry. For instance, it can be defined as:
+
+		```yaml
+		EOX_CORE_SENTRY_IGNORED_ERRORS: [
+			'xmodule.exceptions.NotFoundError',
+			'openedx.core.djangoapps.user_authn.exceptions.AuthFailedError',
+		]
+		```
 
 ## Course Management automation compilation
 
