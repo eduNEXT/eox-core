@@ -5,7 +5,7 @@ from .common import *  # pylint: disable=wildcard-import, unused-wildcard-import
 
 try:
     import sentry_sdk
-    from sentry_sdk.integrations.django import DjangoIntegration
+    from sentry_sdk.integrations.django import DjangoIntegration, CeleryIntegration
 except ImportError:
     sentry_sdk = DjangoIntegration = None
 
@@ -129,7 +129,10 @@ def plugin_settings(settings):  # pylint: disable=function-redefined
         sentry_sdk.init(
             before_send=before_send,
             dsn=sentry_integration_dsn,
-            integrations=[DjangoIntegration()],
+            integrations=[
+                DjangoIntegration(),
+                CeleryIntegration(),
+            ],
 
             # If you wish to associate users to errors (assuming you are using
             # django.contrib.auth) you may enable sending PII data.
