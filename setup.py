@@ -32,7 +32,7 @@ setup(
     long_description="",
     install_requires=[],
     extras_require={
-        "sentry": ["sentry-sdk==0.14.2"],
+        "sentry": ["sentry-sdk==0.14.3"],
     },
     scripts=[],
     license="AGPL",
