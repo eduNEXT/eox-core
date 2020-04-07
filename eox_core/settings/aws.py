@@ -5,7 +5,8 @@ from .common import *  # pylint: disable=wildcard-import, unused-wildcard-import
 
 try:
     import sentry_sdk
-    from sentry_sdk.integrations.django import DjangoIntegration, CeleryIntegration
+    from sentry_sdk.integrations.django import DjangoIntegration
+    from sentry_sdk.integrations.celery import CeleryIntegration
 except ImportError:
     sentry_sdk = DjangoIntegration = None
 
