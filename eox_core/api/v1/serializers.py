@@ -5,9 +5,15 @@ API v1 serializers.
 from __future__ import absolute_import, unicode_literals
 
 from rest_framework import serializers
-from eox_core.edxapp_wrapper.users import check_edxapp_account_conflicts, get_user_read_only_serializer
+from eox_core.edxapp_wrapper.users import (
+    check_edxapp_account_conflicts,
+    get_user_read_only_serializer,
+    get_username_max_length,
+)
 from eox_core.edxapp_wrapper.enrollments import check_edxapp_enrollment_is_valid
 from eox_core.edxapp_wrapper.coursekey import validate_org, get_valid_course_key
+
+USERNAME_MAX_LENGTH = get_username_max_length()
 
 
 class EdxappWithWarningSerializer(serializers.Serializer):
@@ -40,7 +46,7 @@ class EdxappUserSerializer(serializers.Serializer):
     """
 
     email = serializers.EmailField()
-    username = serializers.CharField(max_length=30)  # Can be updated to 150 after django 1.11 has settled in
+    username = serializers.CharField(max_length=USERNAME_MAX_LENGTH)
     password = serializers.CharField(
         style={'input_type': 'password'},
         write_only=True,
@@ -107,7 +113,7 @@ class EdxappCourseEnrollmentSerializer(serializers.Serializer):
 
     """
 
-    username = serializers.CharField(max_length=30, default=None, source='user')
+    username = serializers.CharField(max_length=USERNAME_MAX_LENGTH, default=None, source='user')
     is_active = serializers.BooleanField(default=True)
     mode = serializers.CharField(max_length=100)
     enrollment_attributes = EdxappEnrollmentAttributeSerializer(many=True, default=[])
@@ -128,7 +134,7 @@ class EdxappCourseEnrollmentQuerySerializer(EdxappCourseEnrollmentSerializer):
     Handles the serialization of the context data required to create an enrollment
     on different backends
     """
-    username = serializers.CharField(max_length=30, default=None)
+    username = serializers.CharField(max_length=USERNAME_MAX_LENGTH, default=None)
     email = serializers.CharField(max_length=255, default=None)
     force = serializers.BooleanField(default=False)
     course_id = EdxappValidatedCourseIDField(default=None)

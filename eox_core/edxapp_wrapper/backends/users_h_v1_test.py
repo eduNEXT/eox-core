@@ -4,6 +4,8 @@ Test backend to get CourseEnrollment Model.
 
 from django.contrib.auth.models import Permission
 
+USERNAME_MAX_LENGTH = 30
+
 
 def get_edxapp_user(**kwargs):
     """
