@@ -87,3 +87,10 @@ def get_user_profile():
     backend = import_module(backend_function)
 
     return backend.get_user_profile()
+
+
+def get_username_max_length():
+    """ Gets max length allowed for the username"""
+    backend_function = settings.EOX_CORE_USERS_BACKEND
+    backend = import_module(backend_function)
+    return backend.USERNAME_MAX_LENGTH

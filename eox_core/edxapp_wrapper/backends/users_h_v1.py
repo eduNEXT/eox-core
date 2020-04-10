@@ -34,6 +34,7 @@ from student.models import (LoginFailures, UserAttribute, UserSignupSource,  # p
 
 LOG = logging.getLogger(__name__)
 User = get_user_model()  # pylint: disable=invalid-name
+USERNAME_MAX_LENGTH = 30
 
 
 def get_user_read_only_serializer():
