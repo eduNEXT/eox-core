@@ -16,6 +16,7 @@ from openedx.core.djangoapps.lang_pref import (  # pylint: disable=import-error
     LANGUAGE_KEY
 )
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers  # pylint: disable=import-error
+from openedx.core.djangoapps.user_api.accounts import USERNAME_MAX_LENGTH  # pylint: disable=import-error,unused-import
 from openedx.core.djangoapps.user_api.accounts.api import (  # pylint: disable=import-error
     check_account_exists
 )
@@ -34,7 +35,6 @@ from student.models import (LoginFailures, UserAttribute, UserSignupSource,  # p
 
 LOG = logging.getLogger(__name__)
 User = get_user_model()  # pylint: disable=invalid-name
-USERNAME_MAX_LENGTH = 30
 
 
 def get_user_read_only_serializer():
