@@ -4,7 +4,11 @@ Extensions to the regular defined third party auth backends
 import logging
 
 from django.conf import settings
-from social_core.backends.open_id_connect import OpenIdConnectAuth
+
+try:
+    from social_core.backends.open_id_connect import OpenIdConnectAuth
+except ImportError:
+    OpenIdConnectAuth = object
 
 from eox_core.edxapp_wrapper.configuration_helpers import get_configuration_helper
 
