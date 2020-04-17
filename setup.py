@@ -33,6 +33,7 @@ setup(
     install_requires=[],
     extras_require={
         "sentry": ["sentry-sdk==0.14.3"],
+        "tpa": ["social-auth-core[openidconnect]"],
     },
     scripts=[],
     license="AGPL",
