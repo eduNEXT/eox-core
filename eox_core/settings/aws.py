@@ -6,7 +6,6 @@ from .common import *  # pylint: disable=wildcard-import, unused-wildcard-import
 try:
     import sentry_sdk
     from sentry_sdk.integrations.django import DjangoIntegration
-    from sentry_sdk.integrations.celery import CeleryIntegration
 except ImportError:
     sentry_sdk = DjangoIntegration = None
 
@@ -132,7 +131,6 @@ def plugin_settings(settings):  # pylint: disable=function-redefined
             dsn=sentry_integration_dsn,
             integrations=[
                 DjangoIntegration(),
-                CeleryIntegration(),
             ],
 
             # If you wish to associate users to errors (assuming you are using
