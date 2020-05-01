@@ -125,9 +125,9 @@ def plugin_settings(settings):  # pylint: disable=function-redefined
     )
 
     if sentry_sdk is not None and sentry_integration_dsn is not None:
-        from eox_core.integrations.sentry import before_send
+        from eox_core.integrations.sentry import ExceptionFilterSentry
         sentry_sdk.init(
-            before_send=before_send,
+            before_send=ExceptionFilterSentry(),
             dsn=sentry_integration_dsn,
             integrations=[
                 DjangoIntegration(),
