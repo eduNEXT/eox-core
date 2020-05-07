@@ -3,11 +3,14 @@ This file implements utils used for sentry integration.
 
 See: https://github.com/eduNEXT/eox-core#integrations-with-third-party-services
 """
+import logging
 import re
 import importlib
 import six
 
 from django.conf import settings
+
+LOG = logging.getLogger(__name__)
 
 
 def load_class(full_class_string):
@@ -84,7 +87,12 @@ class ExceptionFilterSentry(object):
 
         ignore_event = False
         for rule in settings.EOX_CORE_SENTRY_IGNORED_ERRORS:
-            ignore_event = self.validate_single_ignore_rule(rule)
+            try:
+                ignore_event = self.validate_single_ignore_rule(rule)
+            except Exception as err:  # pylint: disable=broad-except
+                ignore_event = False
+                LOG.warning('Could not evaluate Sentry ignore rule %s on event %s. Reason: %s', rule, event, err)
+
             # If the event meet the conditions to be ignored, break the loop
             if ignore_event:
                 return None
