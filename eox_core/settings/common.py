@@ -49,4 +49,20 @@ def plugin_settings(settings):
 
     # Sentry Integration
     settings.EOX_CORE_SENTRY_INTEGRATION_DSN = None
+
+    # The setting EOX_CORE_SENTRY_IGNORED_ERRORS is a list of rules that defines which exceptions to ignore.
+    # An example below:
+    # EOX_CORE_SENTRY_IGNORED_ERRORS = [
+    #     {
+    #         "exc_class": "openedx.core.djangoapps.user_authn.exceptions.AuthFailedError",
+    #         "exc_text": ["AuthFailedError.*Email or password is incorrect"]
+    #     },
+    # ]
+    # Every rule support only 2 keys for now:
+    # - exc_class: the path to the exception class we want to ignore. It can only be one
+    # - exc_text: a list of regex expressions to search on the last traceback frame text of the exception
+
+    # In this example we have only one rule. We are ignoring AuthFailedError exceptions whose traceback text
+    # has a match with the regex provided in the exc_text unique element. If exc_text contains more than one
+    # regex, the exception is ignored if any of the regex matches the traceback text.
     settings.EOX_CORE_SENTRY_IGNORED_ERRORS = []
