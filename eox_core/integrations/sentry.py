@@ -46,6 +46,14 @@ class ExceptionFilterSentry(object):
     In this example we have only one rule. We are ignoring AuthFailedError exceptions whose traceback text
     has a match with the regex provided in the exc_text unique element. If exc_text contains more than one
     regex, the exception is ignored if any of the regex matches the traceback text.
+
+    NOTE: This implementation supports the legacy configuration where only a list of ignored exception classes
+    was specified:
+    EOX_CORE_SENTRY_IGNORED_ERRORS = [
+        "openedx.core.djangoapps.user_authn.exceptions.AuthFailedError",
+        "xmodule.exceptions.NotFoundError",
+    ]
+    In this mode, all instances of the listed exception classes will be ignored by Sentry
     """
     hint = None
     exc_text = ''
@@ -103,6 +111,12 @@ class ExceptionFilterSentry(object):
         """
         Validates if a given ignored exception rule matches the current exception
         """
+        # Adding support for legacy ignored exception classes list in EOX_CORE_SENTRY_IGNORED_ERRORS
+        if isinstance(rule, six.string_types):
+            rule = {
+                "exc_class": rule
+            }
+
         for key, value in six.iteritems(rule):
             # Try to get the validation method based on the current key of the rule
             validate_method = self.validation_exc_methods.get(key, None)
