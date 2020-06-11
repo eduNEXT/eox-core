@@ -3,26 +3,35 @@
 # Check https://circleci.com/docs/2.0/language-python/ for more details
 #
 
-version: 2
+version: 2.1
 workflows:
-  version: 2
+  version: 2.1
   test:
     jobs:
-      - test-3.6
-      - test-2.7
+      - test:
+          matrix:
+            parameters:
+              python_version: ["2.7.16", "3.5.7"]
+              debian_version: ["stretch"]
+
 jobs:
-  test-3.6:
+  test:
+    parameters:
+      python_version:
+        type: string
+      debian_version:
+        type: string
     docker:
       # specify the version you desire here
       # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
-      - image: circleci/python:3.6.8-node
+      - image: circleci/python:<< parameters.python_version >>-<< parameters.debian_version >>-node
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/
       # - image: circleci/postgres:9.4
 
-    working_directory: ~/repo
+    working_directory: ~/repo<< parameters.python_version >>
 
     steps:
       - checkout
@@ -30,14 +39,14 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - v2-dependencies-{{ checksum "requirements.txt" }}-npm-deps-{{ checksum "package.json" }}
+          - v2-<< parameters.python_version >>-dependencies-{{ checksum "requirements.txt" }}-npm-deps-{{ checksum "package.json" }}
           # fallback to using the latest cache if no exact match is found
-          - v2-dependencies-
+          - v2-<< parameters.python_version >>-dependencies-
 
       - run:
           name: install dependencies
           command: |
-            test -d venv || virtualenv -p python3 ./venv
+            test -d venv || virtualenv venv
             . venv/bin/activate
             pip install -r requirements.txt
             npm install
@@ -46,7 +55,7 @@ jobs:
           paths:
             - ./venv
             - ./node_modules
-          key: v2-dependencies-{{ checksum "requirements.txt" }}-npm-deps-{{ checksum "package.json" }}
+          key: v2-<< parameters.python_version >>-dependencies-{{ checksum "requirements.txt" }}-npm-deps-{{ checksum "package.json" }}
 
       # run tests!
       # this example uses Django's built-in test-runner
@@ -61,53 +70,6 @@ jobs:
             make javascript-quality-test
             coverage run --source="." -m pytest ./eox_core
             coverage report --fail-under=70 -m
-
-      - store_artifacts:
-          path: test-reports
-          destination: test-reports
-  # Based on answer https://discuss.circleci.com/t/run-tests-on-multiple-versions-of-python/15462
-  test-2.7:
-    docker:
-      - image: circleci/python:2.7-jessie-node-browsers-legacy
-    working_directory: ~/repo27
-
-    steps:
-      - checkout
-
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-          - v2-27-dependencies-{{ checksum "requirements.txt" }}-npm-deps-{{ checksum "package.json" }}
-          # fallback to using the latest cache if no exact match is found
-          - v2-27-dependencies-
-
-      - run:
-          name: install dependencies
-          command: |
-            test -d venv || virtualenv ./venv
-            . venv/bin/activate
-            pip install -r requirements.txt
-            npm install
-
-      - save_cache:
-          paths:
-            - ./venv
-            - ./node_modules
-          key: v2-27-dependencies-{{ checksum "requirements.txt" }}-npm-deps-{{ checksum "package.json" }}
-
-      # run tests!
-      # this example uses Django's built-in test-runner
-      # other common Python testing frameworks include pytest and nose
-      # https://pytest.org
-      # https://nose.readthedocs.io
-      - run:
-          name: run tests
-          command: |
-            . venv/bin/activate
-            make python-quality-test
-            make javascript-quality-test
-            coverage run --source="." -m pytest ./eox_core
-            coverage report --fail-under=70 --rcfile=.coveragerc -m
 
       - store_artifacts:
           path: test-reports
