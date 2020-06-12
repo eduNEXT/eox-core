@@ -9,6 +9,9 @@ except ImportError:
     from distutils.core import setup
 
 
+with open("README.rst", "r") as fh:
+    README = fh.read()
+
 def get_version(*file_paths):
     """Retrieves the version from the main app __init__.py"""
     filename = os.path.join(os.path.dirname(__file__), *file_paths)
@@ -29,8 +32,25 @@ setup(
     author_email="contact@edunext.co",
     url="https://github.com/eduNEXT/eox-core",
     description="eduNEXT Openedx extensions",
-    long_description="",
-    install_requires=[],
+    long_description=README,
+    long_description_content_type='text/x-rst',
+    classifiers=[
+        'Development Status :: 5 - Production/Stable',
+        'Framework :: Django :: 1.11',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: GNU Affero General Public License v3',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.5',
+    ],
+    install_requires=[
+        "celery",
+        "django",
+        "djangorestframework",
+        "edx-opaque-keys[django]",
+    ],
     extras_require={
         "sentry": ["sentry-sdk==0.14.3"],
         "tpa": ["social-auth-core[openidconnect]"],
