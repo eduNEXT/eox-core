@@ -1,5 +1,5 @@
 Change Log
-----------
+==========
 
 ..
    All enhancements and patches to eox-core will be documented
@@ -10,14 +10,14 @@ Change Log
    This project adheres to Semantic Versioning (http://semver.org/).
 .. There should always be an "Unreleased" section for changes pending release.
 Unreleased
-~~~~~~~~~~
+----------
 
 *
 
 [2.13.0] - 2020-06-17
-~~~~~~~~~~~~~~~~~~~~~
+---------------------
 
 Added
------
+~~~~~
 
 * First release on PyPI.
