@@ -11,3 +11,13 @@ Change Log
 .. There should always be an "Unreleased" section for changes pending release.
 Unreleased
 ~~~~~~~~~~
+
+*
+
+[2.13.0] - 2020-06-17
+~~~~~~~~~~~~~~~~~~~~~
+
+Added
+-----
+
+* First release on PyPI.
