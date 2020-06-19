@@ -69,3 +69,12 @@ Removed
 ~~~~~~~
 
 * Remove microsite configuration mentions.
+
+[0.14.0] - 2019-05-09
+---------------------
+
+Added
+~~~~~
+
+* Course management automation. This new Studio module allows you to make changes to the course configuration for several courses at once. More information: https://github.com/eduNEXT/eox-core#course-management-automation
+* Linting tests: Now, pylint and eslint tests are running on CircleCI tests.
