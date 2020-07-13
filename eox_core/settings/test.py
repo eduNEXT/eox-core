@@ -50,6 +50,8 @@ DATABASES = {
     }
 }
 
+ENV_ROOT = '.'
+
 FEATURES = {}
 FEATURES['USE_REDIRECTION_MIDDLEWARE'] = True
 
@@ -58,3 +60,27 @@ COURSE_ID_PATTERN = COURSE_KEY_PATTERN.replace('course_key_string', 'course_id')
 
 USERNAME_REGEX_PARTIAL = r'[\w .@_+-]+'
 USERNAME_PATTERN = r'(?P<username>{regex})'.format(regex=USERNAME_REGEX_PARTIAL)
+
+PROCTORING_SETTINGS = {
+    'LINK_URLS': {
+        'contact_us': 'http://test-link.com/contact',
+        'faq': 'http://test-link.com/faq',
+        'online_proctoring_rules': 'http://test-link.com/rules',
+        'tech_requirements': 'http://test-link.com/tech',
+    },
+    'SITE_NAME': 'test-site-name',
+    'PLATFORM_NAME': 'test-platform-name',
+}
+
+PROCTORING_BACKENDS = {
+    'software_secure': {
+        'crypto_key': 'test-key',
+        'exam_register_endpoint': 'test-enpoint',
+        'exam_sponsor': 'test-sponsor',
+        'organization': 'test-org',
+        'secret_key': 'test-secret-key',
+        'secret_key_id': 'test-secret-key-id',
+        'software_download_url': 'http://test.com/url',
+    },
+    'DEFAULT': 'software_secure',
+}

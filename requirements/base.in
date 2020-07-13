@@ -1,0 +1,12 @@
+# Main requirements of your plugin application.
+-c constraints.txt
+-r github.in
+
+celery
+Django
+djangorestframework
+django-filter
+django-oauth2-provider
+django-waffle
+edx-proctoring
+edx-opaque-keys[django]
