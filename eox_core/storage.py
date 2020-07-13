@@ -4,9 +4,10 @@
 Eox-core storages
 """
 from eox_core.edxapp_wrapper.storages import (
-    get_edxapp_production_staticfiles_storage,
     get_edxapp_development_staticfiles_storage,
+    get_edxapp_production_staticfiles_storage,
 )
+
 EdxappProductionStorage = get_edxapp_production_staticfiles_storage()  # pylint: disable=invalid-name
 EdxappDevelopmentStorage = get_edxapp_development_staticfiles_storage()  # pylint: disable=invalid-name
 

@@ -6,15 +6,10 @@ Test module for PreEnrollments under the open-release/hawthorn.beta1 tag
 from __future__ import absolute_import, unicode_literals
 
 import mock
-
 from django.conf import settings
 from django.test import TestCase
-from ..pre_enrollments import (
-    create_pre_enrollment,
-    update_pre_enrollment,
-    delete_pre_enrollment,
-    get_pre_enrollment,
-)
+
+from ..pre_enrollments import create_pre_enrollment, delete_pre_enrollment, get_pre_enrollment, update_pre_enrollment
 
 
 class PreEnrollmentTest(TestCase):

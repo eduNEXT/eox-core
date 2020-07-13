@@ -9,17 +9,17 @@ import re
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse, HttpResponseNotFound
+from django.http import HttpResponseNotFound, JsonResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_http_methods
 from opaque_keys.edx.keys import CourseKey  # pylint: disable=import-error
 from rest_framework import status
 
 from eox_core.edxapp_wrapper.courses import (
-    get_courses_accessible_to_user,
-    get_process_courses_list,
     get_course_details_fields,
+    get_courses_accessible_to_user,
     get_first_course_key,
+    get_process_courses_list,
 )
 from eox_core.edxapp_wrapper.edxmako_module import render_to_response
 from eox_core.edxapp_wrapper.users import get_course_team_user

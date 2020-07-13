@@ -3,9 +3,7 @@ Helpers module.
 """
 
 import waffle
-
 from django.http import HttpResponseNotFound
-
 
 ENABLE_COURSE_MANAGEMENT_AUTOMATION = 'course_management_automation_module'
 

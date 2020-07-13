@@ -2,9 +2,9 @@
 Functions copied from a version higer than hawthorn (for backwards compatibility with it)
 Must be deleted some day and replaced with calls to the actual functions
 """
+from django.conf import settings
 # pylint: disable=import-error
 from django.core.cache import cache
-from django.conf import settings
 from openedx.core.djangoapps.catalog.models import CatalogIntegration
 from openedx.core.djangoapps.catalog.utils import create_catalog_api_client
 

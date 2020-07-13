@@ -2,9 +2,9 @@
 from __future__ import absolute_import, unicode_literals
 
 import mock
-
 from django.conf import settings
 from django.test import TestCase
+
 from ..users import create_edxapp_user
 
 

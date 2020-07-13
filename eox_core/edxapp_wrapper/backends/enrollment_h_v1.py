@@ -9,23 +9,21 @@ from __future__ import absolute_import, unicode_literals
 import datetime
 import logging
 
+from course_modes.models import CourseMode
 from django.contrib.auth.models import User
-from opaque_keys.edx.keys import CourseKey
+from enrollment import api
+from enrollment.errors import CourseEnrollmentExistsError, CourseModeNotFoundError
 from opaque_keys import InvalidKeyError
+from opaque_keys.edx.keys import CourseKey
+from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
+from openedx.core.lib.exceptions import CourseNotFoundError
 from pytz import utc
 from rest_framework.exceptions import APIException, NotFound
-
-from course_modes.models import CourseMode
-from enrollment import api
-from enrollment.errors import (CourseEnrollmentExistsError,
-                               CourseModeNotFoundError)
-from eox_core.edxapp_wrapper.backends.edxfuture_i_v1 import get_program
-from eox_core.edxapp_wrapper.users import check_edxapp_account_conflicts
-from eox_core.edxapp_wrapper.coursekey import validate_org, get_valid_course_key
-from openedx.core.djangoapps.content.course_overviews.models import \
-    CourseOverview
-from openedx.core.lib.exceptions import CourseNotFoundError
 from student.models import CourseEnrollment
+
+from eox_core.edxapp_wrapper.backends.edxfuture_i_v1 import get_program
+from eox_core.edxapp_wrapper.coursekey import get_valid_course_key, validate_org
+from eox_core.edxapp_wrapper.users import check_edxapp_account_conflicts
 
 LOG = logging.getLogger(__name__)
 

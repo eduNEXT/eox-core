@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 """ . """
-from mock import patch
-from django.test import TestCase
 from django.contrib.auth.models import User
-
+from django.test import TestCase
+from mock import patch
 from rest_framework.test import APIClient
 
 

@@ -3,11 +3,11 @@ This file implements utils used for sentry integration.
 
 See: https://github.com/eduNEXT/eox-core#integrations-with-third-party-services
 """
+import importlib
 import logging
 import re
-import importlib
-import six
 
+import six
 from django.conf import settings
 
 LOG = logging.getLogger(__name__)

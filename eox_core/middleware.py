@@ -8,21 +8,18 @@ A microsite enables the following features:
 """
 import logging
 import re
-import six
 
+import six
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.auth.views import redirect_to_login
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-
 from django.http import Http404, HttpResponseRedirect
 
 from eox_core.edxapp_wrapper.configuration_helpers import get_configuration_helper
 from eox_core.models import Redirection
-
 from eox_core.utils import cache, fasthash
-
 
 configuration_helper = get_configuration_helper()  # pylint: disable=invalid-name
 

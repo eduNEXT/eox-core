@@ -10,28 +10,24 @@ import logging
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import transaction
-from rest_framework.exceptions import NotFound
-
-from openedx.core.djangoapps.lang_pref import (  # pylint: disable=import-error
-    LANGUAGE_KEY
-)
+from openedx.core.djangoapps.lang_pref import LANGUAGE_KEY  # pylint: disable=import-error
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers  # pylint: disable=import-error
-from openedx.core.djangoapps.user_api.accounts import USERNAME_MAX_LENGTH  # pylint: disable=import-error,unused-import
-from openedx.core.djangoapps.user_api.accounts.api import (  # pylint: disable=import-error
-    check_account_exists
-)
-from openedx.core.djangoapps.user_api.accounts.serializers import (   # pylint: disable=import-error
-    UserReadOnlySerializer
-)
+from openedx.core.djangoapps.user_api.accounts.api import check_account_exists  # pylint: disable=import-error
+from openedx.core.djangoapps.user_api.accounts.serializers import UserReadOnlySerializer  # pylint: disable=import-error
 from openedx.core.djangoapps.user_api.preferences import api as preferences_api  # pylint: disable=import-error
+from rest_framework.exceptions import NotFound
 from student.forms import AccountCreationForm  # pylint: disable=import-error
-from student.helpers import (  # pylint: disable=import-error
-    create_or_set_user_attribute_created_on_site
+from student.helpers import create_or_set_user_attribute_created_on_site  # pylint: disable=import-error
+from student.models import (  # pylint: disable=import-error
+    LoginFailures,
+    UserAttribute,
+    UserProfile,
+    UserSignupSource,
+    create_comments_service_user,
 )
-from student.helpers import do_create_account  # pylint: disable=import-error
-from student.models import CourseEnrollment  # pylint: disable=import-error
-from student.models import (LoginFailures, UserAttribute, UserSignupSource,  # pylint: disable=import-error
-                            UserProfile, create_comments_service_user)
+
+from student.helpers import do_create_account  # pylint: disable=import-error; pylint: disable=import-error
+from student.models import CourseEnrollment  # pylint: disable=import-error; pylint: disable=import-error
 
 LOG = logging.getLogger(__name__)
 User = get_user_model()  # pylint: disable=invalid-name

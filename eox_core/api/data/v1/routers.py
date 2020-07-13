@@ -4,13 +4,12 @@ TODO: add me
 from rest_framework import routers
 
 from .viewsets import (
-    UsersViewSet,
+    CertificateViewSet,
     CourseEnrollmentViewset,
     CourseEnrollmentWithGradesViewset,
-    CertificateViewSet,
-    ProctoredExamStudentViewSet
+    ProctoredExamStudentViewSet,
+    UsersViewSet,
 )
-
 
 ROUTER = routers.DefaultRouter()
 ROUTER.register(r'users', UsersViewSet)

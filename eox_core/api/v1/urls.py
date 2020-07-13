@@ -1,6 +1,7 @@
 """ urls.py """
 
 from django.conf.urls import url
+
 from eox_core.api.v1 import views
 
 urlpatterns = [  # pylint: disable=invalid-name

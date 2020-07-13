@@ -3,7 +3,7 @@
 Tests for the pipeline module used in third party auth.
 """
 from django.test import TestCase
-from mock import MagicMock, patch, PropertyMock
+from mock import MagicMock, PropertyMock, patch
 
 from eox_core.pipeline import ensure_user_has_profile
 

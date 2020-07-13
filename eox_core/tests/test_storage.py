@@ -3,10 +3,9 @@
 Test module for the custom storages
 """
 import mock
-
 from django.test import TestCase
 
-from eox_core.storage import ProductionStorage, DevelopmentStorage
+from eox_core.storage import DevelopmentStorage, ProductionStorage
 
 
 class StaticStoragesTest(TestCase):

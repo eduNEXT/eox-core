@@ -3,41 +3,37 @@ API v1 views.
 """
 
 from __future__ import absolute_import, unicode_literals
+
 import logging
 
-from rest_framework import status
-from rest_framework.authentication import SessionAuthentication
-from rest_framework.exceptions import ValidationError, NotFound, APIException
-from rest_framework.response import Response
-from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
-from rest_framework.views import APIView
-
-from rest_framework_oauth.authentication import OAuth2Authentication
+from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils import six
-from django.conf import settings
+from rest_framework import status
+from rest_framework.authentication import SessionAuthentication
+from rest_framework.exceptions import APIException, NotFound, ValidationError
+from rest_framework.renderers import BrowsableAPIRenderer, JSONRenderer
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework_oauth.authentication import OAuth2Authentication
+
 from eox_core.api.v1.permissions import EoxCoreAPIPermission
 from eox_core.api.v1.serializers import (
-    EdxappUserQuerySerializer,
-    EdxappUserSerializer,
-    EdxappCourseEnrollmentSerializer,
     EdxappCourseEnrollmentQuerySerializer,
-    EdxappUserReadOnlySerializer,
+    EdxappCourseEnrollmentSerializer,
     EdxappCoursePreEnrollmentSerializer,
+    EdxappUserQuerySerializer,
+    EdxappUserReadOnlySerializer,
+    EdxappUserSerializer,
 )
-from eox_core.edxapp_wrapper.users import create_edxapp_user, get_edxapp_user
-from eox_core.edxapp_wrapper.enrollments import (
-    create_enrollment,
-    update_enrollment,
-    get_enrollment,
-    delete_enrollment,
-)
+from eox_core.edxapp_wrapper.enrollments import create_enrollment, delete_enrollment, get_enrollment, update_enrollment
 from eox_core.edxapp_wrapper.pre_enrollments import (
     create_pre_enrollment,
-    update_pre_enrollment,
     delete_pre_enrollment,
     get_pre_enrollment,
+    update_pre_enrollment,
 )
+from eox_core.edxapp_wrapper.users import create_edxapp_user, get_edxapp_user
 
 LOG = logging.getLogger(__name__)
 
