@@ -4,8 +4,10 @@ from __future__ import absolute_import, unicode_literals
 
 from django.test import TestCase
 from rest_framework.test import APIRequestFactory, force_authenticate
+
 import eox_core
 from eox_core.api.v1.views import UserInfo
+
 from ..test_utils import SuperUserFactory
 
 JSON_CONTENT_TYPE = 'application/json'

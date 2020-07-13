@@ -5,13 +5,14 @@ API v1 serializers.
 from __future__ import absolute_import, unicode_literals
 
 from rest_framework import serializers
+
+from eox_core.edxapp_wrapper.coursekey import get_valid_course_key, validate_org
+from eox_core.edxapp_wrapper.enrollments import check_edxapp_enrollment_is_valid
 from eox_core.edxapp_wrapper.users import (
     check_edxapp_account_conflicts,
     get_user_read_only_serializer,
     get_username_max_length,
 )
-from eox_core.edxapp_wrapper.enrollments import check_edxapp_enrollment_is_valid
-from eox_core.edxapp_wrapper.coursekey import validate_org, get_valid_course_key
 
 USERNAME_MAX_LENGTH = get_username_max_length()
 

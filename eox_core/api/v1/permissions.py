@@ -3,11 +3,11 @@
 """
 Custom API permissions module
 """
-from rest_framework import permissions, exceptions
 from django.conf import settings
 from django.contrib.auth.models import Permission, User
 from django.contrib.contenttypes.models import ContentType
 from django.db.utils import ProgrammingError
+from rest_framework import exceptions, permissions
 
 
 def load_permissions():

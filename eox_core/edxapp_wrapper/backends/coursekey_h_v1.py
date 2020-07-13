@@ -7,14 +7,10 @@ Backend for the CourseKey validations that works under the open-release/hawthorn
 from __future__ import absolute_import, unicode_literals
 
 from django.conf import settings
-from opaque_keys.edx.keys import CourseKey
 from opaque_keys import InvalidKeyError
+from opaque_keys.edx.keys import CourseKey
+from openedx.core.djangoapps.site_configuration.helpers import get_all_orgs, get_current_site_orgs
 from rest_framework.serializers import ValidationError
-
-from openedx.core.djangoapps.site_configuration.helpers import (
-    get_all_orgs,
-    get_current_site_orgs,
-)
 
 
 def get_valid_course_key(course_id):

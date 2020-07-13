@@ -1,12 +1,8 @@
 """ urls.py """
 
 from django.conf.urls import url
-from eox_core.cms.views import (
-    management_view,
-    course_team,
-    get_courses_by_course_regex,
-)
 
+from eox_core.cms.views import course_team, get_courses_by_course_regex, management_view
 
 urlpatterns = [  # pylint: disable=invalid-name
     url(r'^courses$', management_view, name='management-courses-view'),

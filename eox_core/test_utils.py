@@ -1,13 +1,13 @@
 """ Utils for testing"""
 from datetime import datetime
+
 import factory
-from factory.django import DjangoModelFactory
 from django.contrib.auth.models import User
 
 DEFAULT_PASSWORD = 'test'
 
 
-class SuperUserFactory(DjangoModelFactory):
+class SuperUserFactory(factory.django.DjangoModelFactory):
     """
     A Factory for User objects.
     """

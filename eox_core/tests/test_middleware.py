@@ -3,13 +3,11 @@
 Test module for the custom Middlewares
 """
 import mock
-
 from django.contrib.auth.models import AnonymousUser
 from django.http import Http404
-from django.test import TestCase, RequestFactory
+from django.test import RequestFactory, TestCase
 
 from eox_core.middleware import PathRedirectionMiddleware, RedirectionsMiddleware
-
 from eox_core.models import Redirection
 
 

@@ -3,14 +3,13 @@ Controllers for the data-api. Used in the report generation process
 """
 import random
 from datetime import datetime
-import six
 
-from django.db.models import Q
+import six
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from edx_proctoring.models import \
-    ProctoredExamStudentAttempt  # pylint: disable=import-error
+from django.db.models import Q
+from edx_proctoring.models import ProctoredExamStudentAttempt  # pylint: disable=import-error
 from rest_framework import filters, mixins, status, viewsets
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAdminUser
@@ -20,12 +19,14 @@ from rest_framework_oauth.authentication import OAuth2Authentication
 from eox_core.edxapp_wrapper.certificates import get_generated_certificate
 from eox_core.edxapp_wrapper.users import get_course_enrollment
 
-from .filters import (CourseEnrollmentFilter, GeneratedCerticatesFilter,
-                      ProctoredExamStudentAttemptFilter, UserFilter)
+from .filters import CourseEnrollmentFilter, GeneratedCerticatesFilter, ProctoredExamStudentAttemptFilter, UserFilter
 from .paginators import DataApiResultsSetPagination
-from .serializers import (CertificateSerializer, CourseEnrollmentSerializer,
-                          ProctoredExamStudentAttemptSerializer,
-                          UserSerializer)
+from .serializers import (
+    CertificateSerializer,
+    CourseEnrollmentSerializer,
+    ProctoredExamStudentAttemptSerializer,
+    UserSerializer,
+)
 from .tasks import EnrollmentsGrades
 
 

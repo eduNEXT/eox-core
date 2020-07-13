@@ -3,11 +3,9 @@
 Tests the separation layer between edxapp and the plugin
 """
 from django.test import TestCase
-from mock import patch, Mock
+from mock import Mock, patch
 
-from eox_core.edxapp_wrapper import (
-    configuration_helpers,
-)
+from eox_core.edxapp_wrapper import configuration_helpers
 
 
 class ConfigurationHelpersTest(TestCase):

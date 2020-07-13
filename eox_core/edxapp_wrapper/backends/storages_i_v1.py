@@ -3,7 +3,7 @@
 """
 Storages backend
 """
-from openedx.core.storage import ProductionStorage, DevelopmentStorage  # pylint: disable=import-error
+from openedx.core.storage import DevelopmentStorage, ProductionStorage  # pylint: disable=import-error
 
 
 def get_edxapp_production_staticfiles_storage():  # pylint: disable=invalid-name

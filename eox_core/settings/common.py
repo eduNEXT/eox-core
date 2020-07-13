@@ -3,7 +3,6 @@ Settings for eox-core
 """
 from __future__ import absolute_import, unicode_literals
 
-
 SECRET_KEY = 'a-not-to-be-trusted-secret-key'
 INSTALLED_APPS = (
     'django.contrib.auth',

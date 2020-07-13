@@ -3,8 +3,7 @@ TODO: add me
 """
 import django_filters
 from django.contrib.auth.models import User
-from edx_proctoring.models import \
-    ProctoredExamStudentAttempt  # pylint: disable=import-error
+from edx_proctoring.models import ProctoredExamStudentAttempt  # pylint: disable=import-error
 from opaque_keys.edx.keys import CourseKey  # pylint: disable=import-error
 from rest_framework import filters
 

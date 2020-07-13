@@ -6,13 +6,10 @@ Test module for CourseKey under the open-release/hawthorn.beta1 tag
 from __future__ import absolute_import, unicode_literals
 
 import mock
-
 from django.conf import settings
 from django.test import TestCase
-from ..coursekey import (
-    validate_org,
-    get_valid_course_key,
-)
+
+from ..coursekey import get_valid_course_key, validate_org
 
 
 class CourseKeyTest(TestCase):

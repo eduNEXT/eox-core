@@ -3,9 +3,10 @@
 """
 Test module for CourseKey validations under the open-release/hawthorn.beta1 tag
 """
-from mock import patch
 from django.test import TestCase
+from mock import patch
 from rest_framework.serializers import ValidationError
+
 from ..serializers import EdxappCourseEnrollmentSerializer
 
 
