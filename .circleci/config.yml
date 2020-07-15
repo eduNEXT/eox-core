@@ -50,7 +50,7 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - v2-<< parameters.python_version >>-dependencies-{{ checksum "requirements.txt" }}-npm-deps-{{ checksum "package.json" }}
+          - v2-<< parameters.python_version >>-dependencies-{{ checksum "requirements/test.txt" }}-npm-deps-{{ checksum "package.json" }}
           # fallback to using the latest cache if no exact match is found
           - v2-<< parameters.python_version >>-dependencies-
 
@@ -59,14 +59,14 @@ jobs:
           command: |
             test -d venv || virtualenv venv
             . venv/bin/activate
-            pip install -r requirements.txt
+            pip install -r requirements/test.txt
             npm install
 
       - save_cache:
           paths:
             - ./venv
             - ./node_modules
-          key: v2-<< parameters.python_version >>-dependencies-{{ checksum "requirements.txt" }}-npm-deps-{{ checksum "package.json" }}
+          key: v2-<< parameters.python_version >>-dependencies-{{ checksum "requirements/test.txt" }}-npm-deps-{{ checksum "package.json" }}
 
       # run tests!
       # this example uses Django's built-in test-runner

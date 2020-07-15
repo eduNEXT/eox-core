@@ -1,0 +1,11 @@
+-c constraints.txt
+-r base.txt
+
+coverage
+factory-boy
+mock
+pycodestyle
+pylint
+pytest
+pytest-django
+testfixtures
