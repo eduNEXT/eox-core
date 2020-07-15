@@ -77,10 +77,7 @@ jobs:
           name: run tests
           command: |
             . venv/bin/activate
-            make python-quality-test
-            make javascript-quality-test
-            coverage run --source="." -m pytest ./eox_core
-            coverage report --fail-under=70 -m
+            make run-tests
 
       - store_artifacts:
           path: test-reports
