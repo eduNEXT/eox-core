@@ -12,6 +12,7 @@ from django.contrib.auth import get_user_model
 from django.db import transaction
 from openedx.core.djangoapps.lang_pref import LANGUAGE_KEY  # pylint: disable=import-error
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers  # pylint: disable=import-error
+from openedx.core.djangoapps.user_api.accounts import USERNAME_MAX_LENGTH  # pylint: disable=import-error,unused-import
 from openedx.core.djangoapps.user_api.accounts.api import check_account_exists  # pylint: disable=import-error
 from openedx.core.djangoapps.user_api.accounts.serializers import UserReadOnlySerializer  # pylint: disable=import-error
 from openedx.core.djangoapps.user_api.preferences import api as preferences_api  # pylint: disable=import-error
