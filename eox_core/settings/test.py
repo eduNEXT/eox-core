@@ -30,6 +30,8 @@ def plugin_settings(settings):  # pylint: disable=function-redefined
     settings.EOX_CORE_LOAD_PERMISSIONS = False
     settings.DATA_API_DEF_PAGE_SIZE = 1000
     settings.DATA_API_MAX_PAGE_SIZE = 5000
+    settings.EOX_CORE_ENABLE_UPDATE_USERS = True
+    settings.EOX_CORE_USER_UPDATE_SAFE_FIELDS = ["is_active", "password", "fullname"]
 
 
 SETTINGS = SettingsClass()
