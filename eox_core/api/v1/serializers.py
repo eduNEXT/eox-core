@@ -55,7 +55,7 @@ class EdxappUserSerializer(serializers.Serializer):
     fullname = serializers.CharField(max_length=255, write_only=True)  # write_only so the user object does not complain for having the name at get_full_name()
 
     # Extra info to be returned by the api after creating the user
-    is_active = serializers.BooleanField(read_only=True)
+    is_active = serializers.BooleanField()
     is_staff = serializers.BooleanField(read_only=True)
     is_superuser = serializers.BooleanField(read_only=True)
 
