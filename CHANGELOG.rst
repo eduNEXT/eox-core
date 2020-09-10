@@ -14,6 +14,14 @@ Unreleased
 
 * Add proctoring test settings since this had the wrong proctoring version.
 
+[2.14.0] - 2020-09-09
+---------------------
+
+Added
+~~~~~
+
+* Added a new configurable view to update edxapp users.
+
 [2.13.0] - 2020-06-17
 ---------------------
 
