@@ -39,6 +39,8 @@ def plugin_settings(settings):
     settings.EOX_CORE_USER_ENABLE_MULTI_TENANCY = True
     settings.EOX_CORE_USER_ORIGIN_SITE_SOURCES = ['fetch_from_unfiltered_table', ]
     settings.EOX_CORE_APPEND_LMS_MIDDLEWARE_CLASSES = False
+    settings.EOX_CORE_ENABLE_UPDATE_USERS = True
+    settings.EOX_CORE_USER_UPDATE_SAFE_FIELDS = ["is_active", "password", "fullname"]
 
     if settings.EOX_CORE_USER_ENABLE_MULTI_TENANCY:
         settings.EOX_CORE_USER_ORIGIN_SITE_SOURCES = [

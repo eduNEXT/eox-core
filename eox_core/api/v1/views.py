@@ -25,6 +25,7 @@ from eox_core.api.v1.serializers import (
     EdxappUserQuerySerializer,
     EdxappUserReadOnlySerializer,
     EdxappUserSerializer,
+    WrittableEdxappUserSerializer,
 )
 from eox_core.edxapp_wrapper.enrollments import create_enrollment, delete_enrollment, get_enrollment, update_enrollment
 from eox_core.edxapp_wrapper.pre_enrollments import (
@@ -136,6 +137,50 @@ class EdxappUser(UserQueryMixin, APIView):
             response_data['warning'] = 'The username prevails over the email when both are provided to get the user.'
 
         return Response(response_data)
+
+
+class EdxappUserUpdater(UserQueryMixin, APIView):
+    """
+    Handles API requests to partially update users.
+    """
+    authentication_classes = (OAuth2Authentication, SessionAuthentication)
+    permission_classes = (EoxCoreAPIPermission,)
+    renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
+
+    def patch(self, request, *args, **kwargs):
+        """
+        Partially update a user from edxapp. Not all the fields can be updated, just the ones thought as `safe`.
+
+        For example:
+
+        **Requests**:
+            PATCH <domain>/eox-core/api/v1/user/
+
+        **Request body**
+            {
+                "email"=<USER_EMAIL>,
+                "is_active": true,
+                "password": "new password"
+            }
+
+        **Response values**
+            User serialized.
+        """
+        # Pop identification
+        data = request.data.copy()
+        query_params = {
+            "email": data.pop("email", None),
+        }
+        query = self.get_user_query(request, query_params=query_params)
+        user = get_edxapp_user(**query)
+
+        serializer = WrittableEdxappUserSerializer(user, data=data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        admin_fields = getattr(settings, 'ACCOUNT_VISIBILITY_CONFIGURATION', {}).get('admin_fields', {})
+        serialized_user = EdxappUserReadOnlySerializer(user, custom_fields=admin_fields, context={'request': request})
+        return Response(serialized_user.data)
 
 
 class EdxappEnrollment(UserQueryMixin, APIView):

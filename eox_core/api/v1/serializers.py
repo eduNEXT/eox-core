@@ -4,6 +4,7 @@ API v1 serializers.
 # pylint: disable=abstract-method
 from __future__ import absolute_import, unicode_literals
 
+from django.conf import settings
 from rest_framework import serializers
 
 from eox_core.edxapp_wrapper.coursekey import get_valid_course_key, validate_org
@@ -11,8 +12,13 @@ from eox_core.edxapp_wrapper.enrollments import check_edxapp_enrollment_is_valid
 from eox_core.edxapp_wrapper.users import (
     check_edxapp_account_conflicts,
     get_user_read_only_serializer,
+    get_user_signup_source,
     get_username_max_length,
 )
+
+UserSignupSource = get_user_signup_source()  # pylint: disable=invalid-name
+
+MAX_SIGNUP_SOURCES_ALLOWED = 1
 
 USERNAME_MAX_LENGTH = get_username_max_length()
 
@@ -69,6 +75,54 @@ class EdxappUserSerializer(serializers.Serializer):
         if conflicts:
             raise serializers.ValidationError("Account already exists with the provided: {}".format(", ".join(conflicts)))
         return attrs
+
+
+class WrittableEdxappUserSerializer(EdxappUserSerializer):
+    """
+    Handles the serialization of the user data required to update an edxapp user.
+    """
+    password = serializers.CharField(
+        style={'input_type': 'password'},
+    )
+    is_active = serializers.BooleanField()
+
+    def validate(self, attrs):
+        """
+        When an update is being made, then it checks that the user:
+            - Is not staff or superuser.
+            - Has just one signup source.
+            - The field being updated is a safe field.
+        """
+        # If at least one of these conditions is true, then the user can't be updated.
+        safe_fields = getattr(settings, "EOX_CORE_USER_UPDATE_SAFE_FIELDS", [])
+
+        for attr in attrs:
+            if attr not in safe_fields:
+                raise serializers.ValidationError({"detail": "You are not allowed to update {}.".format(attr)})
+
+        if self.instance.is_staff or self.instance.is_superuser:
+            raise serializers.ValidationError({"detail": "You can't update users with roles like staff or superuser."})
+
+        if UserSignupSource.objects.filter(user__email=self.instance.email).count() > MAX_SIGNUP_SOURCES_ALLOWED:
+            raise serializers.ValidationError({"detail": "You can't update users with more than one sign up source."})
+
+        return attrs
+
+    def update(self, instance, validated_data):
+        """
+        Update method for safe fields.
+        """
+        for key, value in validated_data.items():
+
+            if key == "password":
+                instance.set_password(value)
+            else:
+                setattr(instance, key, value)
+
+        if validated_data:
+            instance.save()
+
+        return instance
 
 
 class EdxappUserQuerySerializer(EdxappUserSerializer):
