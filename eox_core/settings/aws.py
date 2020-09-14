@@ -6,8 +6,9 @@ from .common import *  # pylint: disable=wildcard-import, unused-wildcard-import
 try:
     import sentry_sdk
     from sentry_sdk.integrations.django import DjangoIntegration
+    from sentry_sdk.integrations.celery import CeleryIntegration
 except ImportError:
-    sentry_sdk = DjangoIntegration = None
+    sentry_sdk = DjangoIntegration = CeleryIntegration = None
 
 
 def plugin_settings(settings):  # pylint: disable=function-redefined
@@ -114,6 +115,12 @@ def plugin_settings(settings):  # pylint: disable=function-redefined
                 'eox_core.middleware.RedirectionsMiddleware'
             ]
 
+    # Checking if it's async env
+    settings.IS_EDXAPP_ASYNC_ENV = getattr(settings, 'ENV_TOKENS', {}).get(
+        'IS_EDXAPP_ASYNC_ENV',
+        False
+    )
+
     # Sentry Integration
     sentry_integration_dsn = getattr(settings, 'ENV_TOKENS', {}).get(
         'EOX_CORE_SENTRY_INTEGRATION_DSN',
@@ -126,13 +133,19 @@ def plugin_settings(settings):  # pylint: disable=function-redefined
 
     if sentry_sdk is not None and sentry_integration_dsn is not None:
         from eox_core.integrations.sentry import ExceptionFilterSentry
+        # Defining integrations to use
+        sentry_integrations = [
+            DjangoIntegration(),
+        ]
+        if settings.IS_EDXAPP_ASYNC_ENV:
+            sentry_integrations = [
+                CeleryIntegration(),
+            ]
+
         sentry_sdk.init(
             before_send=ExceptionFilterSentry(),
             dsn=sentry_integration_dsn,
-            integrations=[
-                DjangoIntegration(),
-            ],
-
+            integrations=sentry_integrations,
             # If you wish to associate users to errors (assuming you are using
             # django.contrib.auth) you may enable sending PII data.
             send_default_pii=True
