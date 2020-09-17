@@ -4,36 +4,27 @@
 #
 #    make upgrade
 #
--e git+https://github.com/edx/django-rest-framework-oauth.git@0a43e8525f1e3048efe4bc70c03de308a277197c#egg=djangorestframework-oauth==1.1.1  # via -r requirements/base.txt
--e git+https://github.com/edx/django-rest-framework.git@1ceda7c086fddffd1c440cc86856441bbf0bd9cb#egg=djangorestframework==3.6.3  # via -c requirements/constraints.txt, -r requirements/base.txt, edx-drf-extensions, edx-proctoring, rest-condition
 amqp==1.4.9               # via -r requirements/base.txt, kombu
 anyjson==0.3.3            # via -r requirements/base.txt, kombu
 astroid==1.6.6            # via pylint
 atomicwrites==1.4.0       # via pytest
-attrs==19.3.0             # via pytest
+attrs==20.2.0             # via pytest
 backports.functools-lru-cache==1.6.1  # via astroid, isort, pylint
 billiard==3.3.0.23        # via -r requirements/base.txt, celery
-celery==3.1.25            # via -c requirements/constraints.txt, -r requirements/base.txt
 certifi==2020.6.20        # via -r requirements/base.txt, requests
 chardet==3.0.4            # via -r requirements/base.txt, requests
 configparser==4.0.2       # via pylint
-coverage==5.2             # via -r requirements/test.in
-django-crum==0.7.6        # via -r requirements/base.txt, edx-proctoring
-django-filter==1.0.4      # via -c requirements/constraints.txt, -r requirements/base.txt
-django-ipware==3.0.0      # via -r requirements/base.txt, edx-proctoring
-django-model-utils==3.0.0  # via -c requirements/constraints.txt, -r requirements/base.txt, edx-proctoring
+coverage==5.3             # via -r requirements/test.in
+django-crum==0.7.7        # via -r requirements/base.txt, edx-proctoring
+django-ipware==3.0.1      # via -r requirements/base.txt, edx-proctoring
 django-oauth2-provider==0.2.6.1  # via -c requirements/constraints.txt, -r requirements/base.txt
-django-waffle==0.12.0     # via -c requirements/constraints.txt, -r requirements/base.txt, edx-django-utils, edx-drf-extensions, edx-proctoring
 django-webpack-loader==0.7.0  # via -r requirements/base.txt, edx-proctoring
-django==1.11.29           # via -c requirements/constraints.txt, -r requirements/base.txt, django-crum, django-model-utils, edx-django-utils, edx-drf-extensions, edx-opaque-keys, edx-proctoring, event-tracking, jsonfield, rest-condition
 djangorestframework-jwt==1.11.0  # via -r requirements/base.txt, edx-drf-extensions
-edx-django-utils==3.2.3   # via -r requirements/base.txt, edx-drf-extensions, edx-rest-api-client
-edx-drf-extensions==2.0.1  # via -c requirements/constraints.txt, -r requirements/base.txt, edx-proctoring
+edx-django-utils==3.8.0   # via -r requirements/base.txt, edx-drf-extensions, edx-rest-api-client
 edx-opaque-keys[django]==0.4.4  # via -c requirements/constraints.txt, -r requirements/base.txt, edx-drf-extensions, edx-proctoring
-edx-proctoring==1.5.7     # via -c requirements/constraints.txt, -r requirements/base.txt
 edx-rest-api-client==5.2.1  # via -r requirements/base.txt, edx-proctoring
 enum34==1.1.10            # via astroid
-event-tracking==0.3.3     # via -r requirements/base.txt, edx-proctoring
+event-tracking==1.0.0     # via -r requirements/base.txt, edx-proctoring
 factory-boy==2.10.0       # via -c requirements/constraints.txt, -r requirements/test.in
 faker==3.0.1              # via factory-boy
 funcsigs==1.0.2           # via mock, pytest
@@ -44,12 +35,12 @@ ipaddress==1.0.23         # via faker
 isort==4.3.21             # via pylint
 jsonfield==2.0.2          # via -c requirements/constraints.txt, -r requirements/base.txt, edx-proctoring
 kombu==3.0.37             # via -r requirements/base.txt, celery
-lazy-object-proxy==1.5.0  # via astroid
+lazy-object-proxy==1.5.1  # via astroid
 mccabe==0.6.1             # via pylint
 mock==3.0.5               # via -r requirements/test.in
 more-itertools==5.0.0     # via pytest
-newrelic==5.14.1.144      # via -r requirements/base.txt, edx-django-utils
-pbr==5.4.5                # via -r requirements/base.txt, stevedore
+newrelic==5.18.0.148      # via -r requirements/base.txt, edx-django-utils
+pbr==5.5.0                # via -r requirements/base.txt, stevedore
 pluggy==0.6.0             # via pytest
 psutil==1.2.1             # via -r requirements/base.txt, edx-django-utils, edx-drf-extensions
 py==1.9.0                 # via pytest
@@ -58,7 +49,7 @@ pycryptodomex==3.9.8      # via -r requirements/base.txt, edx-proctoring, pyjwke
 pyjwkest==1.3.2           # via -r requirements/base.txt, edx-drf-extensions
 pyjwt==1.7.1              # via -r requirements/base.txt, djangorestframework-jwt, edx-rest-api-client
 pylint==1.9.3             # via -c requirements/constraints.txt, -r requirements/test.in
-pymongo==3.10.1           # via -r requirements/base.txt, edx-opaque-keys, event-tracking
+pymongo==3.11.0           # via -r requirements/base.txt, edx-opaque-keys, event-tracking
 pytest-django==3.3.3      # via -c requirements/constraints.txt, -r requirements/test.in
 pytest==3.6.3             # via -c requirements/constraints.txt, -r requirements/test.in, pytest-django
 python-dateutil==2.8.1    # via -r requirements/base.txt, edx-drf-extensions, edx-proctoring, faker
@@ -70,10 +61,10 @@ shortuuid==0.5.0          # via -r requirements/base.txt, django-oauth2-provider
 singledispatch==3.4.0.3   # via astroid, pylint
 six==1.15.0               # via -r requirements/base.txt, astroid, edx-drf-extensions, edx-opaque-keys, event-tracking, faker, mock, more-itertools, pyjwkest, pylint, pytest, python-dateutil, singledispatch, stevedore
 slumber==0.7.1            # via -r requirements/base.txt, edx-rest-api-client
-stevedore==1.32.0         # via -r requirements/base.txt, edx-opaque-keys
+stevedore==1.32.0         # via -r requirements/base.txt, edx-django-utils, edx-opaque-keys
 testfixtures==6.4.3       # via -c requirements/constraints.txt, -r requirements/test.in
 text-unidecode==1.3       # via faker
-urllib3==1.25.9           # via -r requirements/base.txt, requests
+urllib3==1.25.10          # via -r requirements/base.txt, requests
 wrapt==1.12.1             # via astroid
 
 # The following packages are considered to be unsafe in a requirements file:

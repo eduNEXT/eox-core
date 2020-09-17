@@ -4,40 +4,39 @@
 #
 #    make upgrade
 #
--e git+https://github.com/edx/django-rest-framework-oauth.git@0a43e8525f1e3048efe4bc70c03de308a277197c#egg=djangorestframework-oauth==1.1.1  # via -r requirements/github.in
--e git+https://github.com/edx/django-rest-framework.git@1ceda7c086fddffd1c440cc86856441bbf0bd9cb#egg=djangorestframework==3.6.3  # via -c requirements/constraints.txt, -r requirements/base.in, -r requirements/github.in, edx-drf-extensions, edx-proctoring, rest-condition
 amqp==1.4.9               # via kombu
 anyjson==0.3.3            # via kombu
 billiard==3.3.0.23        # via celery
-celery==3.1.25            # via -c requirements/constraints.txt, -r requirements/base.in
+celery==3.1.25            # via -c requirements/constraints.txt, -r requirements/base.in, event-tracking
 certifi==2020.6.20        # via requests
 chardet==3.0.4            # via requests
-django-crum==0.7.6        # via edx-proctoring
+django-crum==0.7.7        # via edx-proctoring
 django-filter==1.0.4      # via -c requirements/constraints.txt, -r requirements/base.in
-django-ipware==3.0.0      # via edx-proctoring
+django-ipware==3.0.1      # via edx-proctoring
 django-model-utils==3.0.0  # via -c requirements/constraints.txt, edx-proctoring
 django-oauth2-provider==0.2.6.1  # via -c requirements/constraints.txt, -r requirements/base.in
 django-waffle==0.12.0     # via -c requirements/constraints.txt, -r requirements/base.in, edx-django-utils, edx-drf-extensions, edx-proctoring
 django-webpack-loader==0.7.0  # via edx-proctoring
-django==1.11.29           # via -c requirements/constraints.txt, -r requirements/base.in, django-crum, django-model-utils, edx-django-utils, edx-drf-extensions, edx-opaque-keys, edx-proctoring, event-tracking, jsonfield, rest-condition
+django==1.11.29           # via -c requirements/constraints.txt, django-crum, django-model-utils, edx-django-utils, edx-drf-extensions, edx-opaque-keys, edx-proctoring, event-tracking, jsonfield, rest-condition
 djangorestframework-jwt==1.11.0  # via edx-drf-extensions
-edx-django-utils==3.2.3   # via edx-drf-extensions, edx-rest-api-client
+djangorestframework==3.6.3  # via -c requirements/constraints.txt, -r requirements/base.in, edx-drf-extensions, edx-proctoring, rest-condition
+edx-django-utils==3.8.0   # via edx-drf-extensions, edx-rest-api-client
 edx-drf-extensions==2.0.1  # via -c requirements/constraints.txt, edx-proctoring
 edx-opaque-keys[django]==0.4.4  # via -c requirements/constraints.txt, -r requirements/base.in, edx-drf-extensions, edx-proctoring
 edx-proctoring==1.5.7     # via -c requirements/constraints.txt, -r requirements/base.in
 edx-rest-api-client==5.2.1  # via edx-proctoring
-event-tracking==0.3.3     # via edx-proctoring
+event-tracking==1.0.0     # via edx-proctoring
 future==0.18.2            # via pyjwkest
 idna==2.10                # via requests
 jsonfield==2.0.2          # via -c requirements/constraints.txt, edx-proctoring
 kombu==3.0.37             # via celery
-newrelic==5.14.1.144      # via edx-django-utils
-pbr==5.4.5                # via stevedore
+newrelic==5.18.0.148      # via edx-django-utils
+pbr==5.5.0                # via stevedore
 psutil==1.2.1             # via edx-django-utils, edx-drf-extensions
 pycryptodomex==3.9.8      # via edx-proctoring, pyjwkest
 pyjwkest==1.3.2           # via edx-drf-extensions
 pyjwt==1.7.1              # via djangorestframework-jwt, edx-rest-api-client
-pymongo==3.10.1           # via edx-opaque-keys, event-tracking
+pymongo==3.11.0           # via edx-opaque-keys, event-tracking
 python-dateutil==2.8.1    # via edx-drf-extensions, edx-proctoring
 pytz==2020.1              # via celery, django, edx-proctoring, event-tracking
 requests==2.24.0          # via edx-drf-extensions, edx-rest-api-client, pyjwkest, slumber
@@ -46,5 +45,5 @@ semantic-version==2.8.5   # via edx-drf-extensions
 shortuuid==0.5.0          # via django-oauth2-provider
 six==1.15.0               # via edx-drf-extensions, edx-opaque-keys, event-tracking, pyjwkest, python-dateutil, stevedore
 slumber==0.7.1            # via edx-rest-api-client
-stevedore==1.32.0         # via edx-opaque-keys
-urllib3==1.25.9           # via requests
+stevedore==1.32.0         # via edx-django-utils, edx-opaque-keys
+urllib3==1.25.10          # via requests
