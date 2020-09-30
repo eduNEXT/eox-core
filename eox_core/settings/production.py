@@ -113,7 +113,7 @@ def plugin_settings(settings):  # pylint: disable=function-redefined
     )
     if settings.SERVICE_VARIANT == "lms":
         if settings.EOX_CORE_APPEND_LMS_MIDDLEWARE_CLASSES:
-            settings.MIDDLEWARE_CLASSES += [
+            settings.MIDDLEWARE += [
                 'eox_core.middleware.PathRedirectionMiddleware',
                 'eox_core.middleware.RedirectionsMiddleware'
             ]

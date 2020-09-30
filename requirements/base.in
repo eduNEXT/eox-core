@@ -5,6 +5,7 @@ celery
 djangorestframework
 django-filter
 django-oauth2-provider
+django-oauth-toolkit
 django-waffle
 edx-proctoring
 edx-opaque-keys[django]

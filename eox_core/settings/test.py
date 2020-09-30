@@ -39,7 +39,11 @@ SETTINGS = SettingsClass()
 plugin_settings(SETTINGS)
 vars().update(SETTINGS.__dict__)
 
-INSTALLED_APPS += ('eox_core', )
+try:
+    import edx_when  # pylint: disable=unused-import
+    INSTALLED_APPS += ('eox_core', 'edx_when.apps.EdxWhenConfig')
+except ImportError:
+    INSTALLED_APPS += ('eox_core',)
 
 ROOT_URLCONF = 'eox_core.urls'
 ALLOWED_HOSTS = ['*']

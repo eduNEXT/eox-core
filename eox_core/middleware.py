@@ -16,6 +16,7 @@ from django.contrib.auth.views import redirect_to_login
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.http import Http404, HttpResponseRedirect
+from django.utils.deprecation import MiddlewareMixin
 
 from eox_core.edxapp_wrapper.configuration_helpers import get_configuration_helper
 from eox_core.models import Redirection
@@ -26,7 +27,7 @@ configuration_helper = get_configuration_helper()  # pylint: disable=invalid-nam
 LOG = logging.getLogger(__name__)
 
 
-class PathRedirectionMiddleware(object):
+class PathRedirectionMiddleware(MiddlewareMixin):
     """
     Middleware to create custom responses based on the request path
     """
@@ -125,7 +126,7 @@ class PathRedirectionMiddleware(object):
         Action: a user session must exist.
         If it does not, redirect to the login page
         """
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             return None
         resolved_login_url = configuration_helper.get_dict("FEATURES", {}).get(
             "ednx_custom_login_link", settings.LOGIN_URL)
@@ -141,14 +142,14 @@ class PathRedirectionMiddleware(object):
         """
         Action: return 404 error for users which have a session
         """
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             raise Http404
 
     def not_found_loggedout(self, request, **kwargs):  # pylint: disable=unused-argument
         """
         Action: return 404 error for users that don't have a session
         """
-        if not request.user.is_authenticated():
+        if not request.user.is_authenticated:
             raise Http404
 
     def redirect_always(self, key, values, **kwargs):  # pylint: disable=unused-argument
@@ -161,7 +162,7 @@ class PathRedirectionMiddleware(object):
         """
         Action: redirect logged users to the given target
         """
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             return HttpResponseRedirect(values[key])
         return None
 
@@ -169,12 +170,12 @@ class PathRedirectionMiddleware(object):
         """
         Action: redirect external visitors to the given target
         """
-        if not request.user.is_authenticated():
+        if not request.user.is_authenticated:
             return HttpResponseRedirect(values[key])
         return None
 
 
-class RedirectionsMiddleware(object):
+class RedirectionsMiddleware(MiddlewareMixin):
     """
     Middleware for Redirecting microsites to other domains or to error pages
     """
