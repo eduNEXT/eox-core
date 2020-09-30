@@ -7,10 +7,11 @@ from datetime import datetime
 import six
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
 from django.db.models import Q
+from django.urls import reverse
+from django_filters import rest_framework as filters
 from edx_proctoring.models import ProctoredExamStudentAttempt  # pylint: disable=import-error
-from rest_framework import filters, mixins, status, viewsets
+from rest_framework import mixins, status, viewsets
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
