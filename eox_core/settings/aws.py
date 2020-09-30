@@ -15,6 +15,10 @@ def plugin_settings(settings):  # pylint: disable=function-redefined
     Set of plugin settings used by the Open Edx platform.
     More info: https://github.com/edx/edx-platform/blob/master/openedx/core/djangoapps/plugins/README.rst
     """
+    settings.EOX_CORE_BEARER_AUTHENTICATION = getattr(settings, 'ENV_TOKENS', {}).get(
+        'EOX_CORE_BEARER_AUTHENTICATION',
+        settings.EOX_CORE_BEARER_AUTHENTICATION
+    )
     settings.EOX_CORE_USERS_BACKEND = getattr(settings, 'ENV_TOKENS', {}).get(
         'EOX_CORE_USERS_BACKEND',
         settings.EOX_CORE_USERS_BACKEND

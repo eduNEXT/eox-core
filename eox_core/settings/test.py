@@ -32,6 +32,7 @@ def plugin_settings(settings):  # pylint: disable=function-redefined
     settings.DATA_API_MAX_PAGE_SIZE = 5000
     settings.EOX_CORE_ENABLE_UPDATE_USERS = True
     settings.EOX_CORE_USER_UPDATE_SAFE_FIELDS = ["is_active", "password", "fullname"]
+    settings.EOX_CORE_BEARER_AUTHENTICATION = 'eox_core.edxapp_wrapper.backends.bearer_authentication_j_v1_test'
 
 
 SETTINGS = SettingsClass()

@@ -15,7 +15,6 @@ from rest_framework.exceptions import APIException, NotFound, ValidationError
 from rest_framework.renderers import BrowsableAPIRenderer, JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_oauth.authentication import OAuth2Authentication
 
 from eox_core.api.v1.permissions import EoxCoreAPIPermission
 from eox_core.api.v1.serializers import (
@@ -27,6 +26,7 @@ from eox_core.api.v1.serializers import (
     EdxappUserSerializer,
     WrittableEdxappUserSerializer,
 )
+from eox_core.edxapp_wrapper.bearer_authentication import BearerAuthentication
 from eox_core.edxapp_wrapper.enrollments import create_enrollment, delete_enrollment, get_enrollment, update_enrollment
 from eox_core.edxapp_wrapper.pre_enrollments import (
     create_pre_enrollment,
@@ -102,7 +102,7 @@ class EdxappUser(UserQueryMixin, APIView):
     Handles API requests to create users
     """
 
-    authentication_classes = (OAuth2Authentication, SessionAuthentication)
+    authentication_classes = (BearerAuthentication, SessionAuthentication)
     permission_classes = (EoxCoreAPIPermission,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
@@ -143,7 +143,7 @@ class EdxappUserUpdater(UserQueryMixin, APIView):
     """
     Handles API requests to partially update users.
     """
-    authentication_classes = (OAuth2Authentication, SessionAuthentication)
+    authentication_classes = (BearerAuthentication, SessionAuthentication)
     permission_classes = (EoxCoreAPIPermission,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
@@ -187,7 +187,7 @@ class EdxappEnrollment(UserQueryMixin, APIView):
     """
     Handles API requests to create users
     """
-    authentication_classes = (OAuth2Authentication, SessionAuthentication)
+    authentication_classes = (BearerAuthentication, SessionAuthentication)
     permission_classes = (EoxCoreAPIPermission,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
@@ -338,7 +338,7 @@ class EdxappPreEnrollment(APIView):
     """
     Handles API requests to manage whitelistings (pre-enrollments)
     """
-    authentication_classes = (OAuth2Authentication, SessionAuthentication)
+    authentication_classes = (BearerAuthentication, SessionAuthentication)
     permission_classes = (EoxCoreAPIPermission,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
@@ -455,7 +455,7 @@ class UserInfo(APIView):
     Auth-only view to check some basic info about the current user
     Can use Oauth2/Session
     """
-    authentication_classes = (OAuth2Authentication, SessionAuthentication)
+    authentication_classes = (BearerAuthentication, SessionAuthentication)
     permission_classes = (EoxCoreAPIPermission,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 

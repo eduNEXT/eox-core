@@ -14,8 +14,8 @@ from rest_framework import filters, mixins, status, viewsets
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
-from rest_framework_oauth.authentication import OAuth2Authentication
 
+from eox_core.edxapp_wrapper.bearer_authentication import BearerAuthentication
 from eox_core.edxapp_wrapper.certificates import get_generated_certificate
 from eox_core.edxapp_wrapper.users import get_course_enrollment
 
@@ -35,7 +35,7 @@ class DataApiViewSet(mixins.ListModelMixin,
     """
     A generic viewset for all the instances of the data-api
     """
-    authentication_classes = (OAuth2Authentication, SessionAuthentication)
+    authentication_classes = (BearerAuthentication, SessionAuthentication)
     permission_classes = (IsAdminUser,)
 
     pagination_class = DataApiResultsSetPagination
