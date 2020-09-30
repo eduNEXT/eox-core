@@ -12,14 +12,18 @@ Change Log
 Unreleased
 ----------
 
+[3.0.0] - 2020-09-30
+---------------------
+
 Added
 ~~~~~
-
+* Juniper support.
 * Add proctoring test settings since this had the wrong proctoring version.
 * Adding bearer_authentication to support django-oauth2-provider and django-oauth-toolkit
 
 Removed
 ~~~~~~~
+* Ironwood support.
 * LoginFailures andUserSignupsource admin models.
 
 [2.14.0] - 2020-09-09
