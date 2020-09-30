@@ -41,6 +41,7 @@ def plugin_settings(settings):
     settings.EOX_CORE_APPEND_LMS_MIDDLEWARE_CLASSES = False
     settings.EOX_CORE_ENABLE_UPDATE_USERS = True
     settings.EOX_CORE_USER_UPDATE_SAFE_FIELDS = ["is_active", "password", "fullname"]
+    settings.EOX_CORE_BEARER_AUTHENTICATION = 'eox_core.edxapp_wrapper.backends.bearer_authentication_j_v1'
 
     if settings.EOX_CORE_USER_ENABLE_MULTI_TENANCY:
         settings.EOX_CORE_USER_ORIGIN_SITE_SOURCES = [
