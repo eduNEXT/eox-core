@@ -75,17 +75,6 @@ def get_user_signup_source():
     return UserSignupSource
 
 
-def get_login_failures():
-    """
-    Get test LoginFailures model
-    """
-    try:
-        from student.models import LoginFailures
-    except ImportError:
-        LoginFailures = object
-    return LoginFailures
-
-
 def get_user_profile():
     """ Gets the UserProfile model """
     try:

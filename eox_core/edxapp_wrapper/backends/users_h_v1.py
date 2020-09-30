@@ -20,7 +20,6 @@ from rest_framework.exceptions import NotFound
 from student.forms import AccountCreationForm  # pylint: disable=import-error
 from student.helpers import create_or_set_user_attribute_created_on_site  # pylint: disable=import-error
 from student.models import (  # pylint: disable=import-error
-    LoginFailures,
     UserAttribute,
     UserProfile,
     UserSignupSource,
@@ -222,11 +221,6 @@ def get_course_enrollment():
 def get_user_signup_source():
     """ get UserSignupSource model """
     return UserSignupSource
-
-
-def get_login_failures():
-    """ get LoginFailures model """
-    return LoginFailures
 
 
 def get_user_profile():
