@@ -56,8 +56,8 @@ Installation on Open edX Devstack
 	cd /edx/src/edxapp/eox-core
 	pip install -e .
 
-Development
-===========
+Dependency Management
+=====================
 
 EOX core now follows OEP-18 so the correct way to update dependencies is to run ``make upgrade`` inside your virtualenv.
 
