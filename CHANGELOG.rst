@@ -12,6 +12,8 @@ Change Log
 Unreleased
 ----------
 
+* Change how dependencies are specified to comply with OEP-18.
+
 [3.0.0] - 2020-09-30
 ---------------------
 

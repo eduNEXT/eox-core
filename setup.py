@@ -25,6 +25,30 @@ def get_version(*file_paths):
 version = get_version("eox_core", "__init__.py")
 
 
+def load_requirements(*requirements_path):
+    """
+    Load all requirements from the specified requirements files
+    Returns a list of requirement strings.
+    """
+    requirements = set()
+    for path in requirements_path:
+        with open(path) as reqs:
+            requirements.update(
+                    line.split('#')[0].strip() for line in reqs
+                    if is_requirement(line.strip())
+            )
+
+    return list(requirements)
+
+
+def is_requirement(line):
+    """
+    Return True if the requirement line is a package requirement;
+    that is, it is not blank, a comment, a URL, or an included file.
+    """
+    return line and not line.startswith(('-r', '#', '-e', 'git+', '-c'))
+
+
 setup(
     name="eox-core",
     version=version,
@@ -45,15 +69,10 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.5',
     ],
-    install_requires=[
-        "celery",
-        "django",
-        "djangorestframework",
-        "edx-opaque-keys[django]",
-    ],
+    install_requires=load_requirements('requirements/base.in'),
     extras_require={
-        "sentry": ["sentry-sdk==0.14.3"],
-        "tpa": ["social-auth-core[openidconnect]"],
+        "sentry": load_requirements('requirements/sentry.in'),
+        "tpa": load_requirements('requirements/tpa.in')
     },
     scripts=[],
     license="AGPL",
