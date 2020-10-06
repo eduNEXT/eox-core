@@ -1,4 +1,7 @@
 include AUTHORS.txt
 include LICENSE.txt
 include README.rst
+include requirements/base.in
+include requirements/sentry.in
+include requirements/tpa.in
 recursive-include eox_core *.html *.png *.gif *js *.css *jpg *jpeg *svg *py
