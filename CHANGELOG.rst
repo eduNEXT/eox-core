@@ -23,6 +23,11 @@ Added
 * Add proctoring test settings since this had the wrong proctoring version.
 * Adding bearer_authentication to support django-oauth2-provider and django-oauth-toolkit
 
+Changed
+~~~~~~~
+* **BREAKING CHANGE**: Default backend for edxapp users now is not compatible with Ironwood. In order to use Ironwood, make sure that 
+  the Django setting EOX_CORE_USERS_BACKEND is equal to "eox_core.edxapp_wrapper.backends.users_h_v1".
+
 Removed
 ~~~~~~~
 * Ironwood support.
