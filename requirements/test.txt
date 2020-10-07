@@ -17,7 +17,6 @@ configparser==4.0.2       # via pylint
 coverage==5.3             # via -r requirements/test.in
 django-crum==0.7.7        # via -r requirements/base.txt, edx-proctoring
 django-ipware==3.0.1      # via -r requirements/base.txt, edx-proctoring
-django-oauth2-provider==0.2.6.1  # via -c requirements/constraints.txt, -r requirements/base.txt
 django-webpack-loader==0.7.0  # via -r requirements/base.txt, edx-proctoring
 djangorestframework-jwt==1.11.0  # via -r requirements/base.txt, edx-drf-extensions
 edx-django-utils==3.8.0   # via -r requirements/base.txt, edx-drf-extensions, edx-rest-api-client
@@ -39,7 +38,7 @@ lazy-object-proxy==1.5.1  # via astroid
 mccabe==0.6.1             # via pylint
 mock==3.0.5               # via -r requirements/test.in
 more-itertools==5.0.0     # via pytest
-newrelic==5.18.0.148      # via -r requirements/base.txt, edx-django-utils
+newrelic==5.20.1.150      # via -r requirements/base.txt, edx-django-utils
 oauthlib==3.1.0           # via -r requirements/base.txt, django-oauth-toolkit
 pbr==5.5.0                # via -r requirements/base.txt, stevedore
 pluggy==0.6.0             # via pytest
@@ -58,7 +57,6 @@ pytz==2020.1              # via -r requirements/base.txt, celery, django, edx-pr
 requests==2.24.0          # via -r requirements/base.txt, django-oauth-toolkit, edx-drf-extensions, edx-rest-api-client, pyjwkest, slumber
 rest-condition==1.0.3     # via -r requirements/base.txt, edx-drf-extensions
 semantic-version==2.8.5   # via -r requirements/base.txt, edx-drf-extensions
-shortuuid==0.5.0          # via -r requirements/base.txt, django-oauth2-provider
 singledispatch==3.4.0.3   # via astroid, pylint
 six==1.15.0               # via -r requirements/base.txt, astroid, edx-drf-extensions, edx-opaque-keys, event-tracking, faker, mock, more-itertools, pyjwkest, pylint, pytest, python-dateutil, singledispatch, stevedore
 slumber==0.7.1            # via -r requirements/base.txt, edx-rest-api-client
