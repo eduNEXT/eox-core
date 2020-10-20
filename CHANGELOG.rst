@@ -6,12 +6,21 @@ Change Log
    in this file.  It adheres to the structure of http://keepachangelog.com/ ,
    but in reStructuredText instead of Markdown (for ease of incorporation into
    Sphinx documentation and the PyPI description).
-   
+
    This project adheres to Semantic Versioning (http://semver.org/).
 .. There should always be an "Unreleased" section for changes pending release.
 Unreleased
 ----------
 
+[3.1.0] - 2020-10-20
+--------------------
+
+Added
+~~~~~
+* Add support for DOT clients in the EoxPermissions for API calls
+
+Changed
+~~~~~~~
 * Change how dependencies are specified to comply with OEP-18.
 
 [3.0.0] - 2020-09-30
