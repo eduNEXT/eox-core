@@ -5,7 +5,6 @@ Test module for the permissions class
 """
 from django.test import TestCase
 from mock import MagicMock
-
 from rest_framework.exceptions import NotAuthenticated
 
 from ..permissions import EoxCoreAPIPermission
