@@ -14,6 +14,14 @@ Unreleased
 
 * Change how dependencies are specified to comply with OEP-18.
 
+[3.1.0] - 2020-10-20
+---------------------
+
+Added
+~~~~~
+
+* Updating permission file to accept dot and dop tokens
+
 [3.0.0] - 2020-09-30
 ---------------------
 

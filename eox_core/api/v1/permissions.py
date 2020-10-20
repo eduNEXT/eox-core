@@ -39,8 +39,13 @@ class EoxCoreAPIPermission(permissions.BasePermission):
         """
         To grant access, checks if the requesting user either can call eox-core API or if it's an admin user.
         """
+        if request.user.is_staff:
+            return request.user.is_staff
         try:
-            allowed_for_site = request.user.is_staff or request.get_host() in request.auth.client.url
+            if hasattr(request.auth, 'application'):
+                allowed_for_site = request.auth.application.redirect_uri_allowed(request.build_absolute_uri('/'))
+            else:
+                allowed_for_site = request.get_host() in request.auth.client.url
         except Exception:  # pylint: disable=broad-except
             allowed_for_site = False
 
@@ -50,4 +55,4 @@ class EoxCoreAPIPermission(permissions.BasePermission):
             # To prevent leaking important information we return the most basic message.
             raise exceptions.NotAuthenticated(detail="Invalid token")
 
-        return request.user.has_perm('auth.can_call_eox_core') or request.user.is_staff
+        return request.user.has_perm('auth.can_call_eox_core')
