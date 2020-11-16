@@ -17,6 +17,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.http import Http404, HttpResponseRedirect
 from django.utils.deprecation import MiddlewareMixin
+from django.shortcuts import redirect
 
 from eox_core.edxapp_wrapper.configuration_helpers import get_configuration_helper
 from eox_core.models import Redirection
@@ -25,6 +26,24 @@ from eox_core.utils import cache, fasthash
 configuration_helper = get_configuration_helper()  # pylint: disable=invalid-name
 
 LOG = logging.getLogger(__name__)
+
+
+class StudioRedirectMiddleware(MiddlewareMixin):
+    """
+    Middleware class to restrict access to LMS-Studio login tenant.
+    """
+    def process_request(self, request):
+        """
+        Method to process incoming request to LMS-Studio tenant. It checks whether the user is already
+        authenticated to redirect it to Studio.
+        """
+        studio_redirect_url = getattr(settings, "EDNX_REDIRECT_STUDIO_LOGIN", None)
+
+        if not studio_redirect_url:
+            return None
+
+        if request.user.is_authenticated:
+            return redirect(studio_redirect_url)
 
 
 class PathRedirectionMiddleware(MiddlewareMixin):

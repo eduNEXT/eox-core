@@ -44,6 +44,10 @@ def plugin_settings(settings):
     settings.EOX_CORE_USER_UPDATE_SAFE_FIELDS = ["is_active", "password", "fullname"]
     settings.EOX_CORE_BEARER_AUTHENTICATION = 'eox_core.edxapp_wrapper.backends.bearer_authentication_j_v1'
 
+    settings.MIDDLEWARE += [
+        'eox_core.middleware.StudioRedirectMiddleware',
+        ]
+
     if settings.EOX_CORE_USER_ENABLE_MULTI_TENANCY:
         settings.EOX_CORE_USER_ORIGIN_SITE_SOURCES = [
             'fetch_from_created_on_site_prop',
