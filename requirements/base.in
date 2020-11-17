@@ -3,7 +3,8 @@
 
 celery
 djangorestframework
-django-filter
+django-filter==1.1.0; python_version == '2.7'
+django-filter==2.2.0; python_version > '2.7'
 django-oauth-toolkit
 django-waffle
 edx-proctoring
