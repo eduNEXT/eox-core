@@ -30,16 +30,16 @@ class UserFilter(BaseDataApiFilter):
     date_joined = django_filters.DateTimeFromToRangeFilter()
 
     # Filtering by user profile fields
-    name = django_filters.CharFilter(name="profile__name", lookup_expr="icontains")
-    language = django_filters.CharFilter(name="profile__language", lookup_expr="iexact")
-    year_of_birth = django_filters.RangeFilter(name="profile__year_of_birth")
-    gender = django_filters.CharFilter(name="profile__gender", lookup_expr="iexact")
-    mailing_address = django_filters.CharFilter(name="profile__mailing_address", lookup_expr="iexact")
-    city = django_filters.CharFilter(name="profile__city", lookup_expr="icontains")
-    country = django_filters.CharFilter(name="profile__country", lookup_expr="icontains")
+    name = django_filters.CharFilter(field_name="profile__name", lookup_expr="icontains")
+    language = django_filters.CharFilter(field_name="profile__language", lookup_expr="iexact")
+    year_of_birth = django_filters.RangeFilter(field_name="profile__year_of_birth")
+    gender = django_filters.CharFilter(field_name="profile__gender", lookup_expr="iexact")
+    mailing_address = django_filters.CharFilter(field_name="profile__mailing_address", lookup_expr="iexact")
+    city = django_filters.CharFilter(field_name="profile__city", lookup_expr="icontains")
+    country = django_filters.CharFilter(field_name="profile__country", lookup_expr="icontains")
 
     # Filtering by user signup source fields
-    site = django_filters.CharFilter(name="usersignupsource__site", lookup_expr='iexact')
+    site = django_filters.CharFilter(field_name="usersignupsource__site", lookup_expr='iexact')
 
     class Meta(object):
         """
@@ -73,7 +73,7 @@ class CourseEnrollmentFilter(BaseDataApiFilter):
     created = django_filters.DateTimeFromToRangeFilter()
     is_active = django_filters.BooleanFilter()
     mode = django_filters.CharFilter(lookup_expr='icontains')
-    site = django_filters.CharFilter(name="user__usersignupsource__site", lookup_expr='iexact')
+    site = django_filters.CharFilter(field_name="user__usersignupsource__site", lookup_expr='iexact')
 
     def filter_course_id(self, queryset, name, value):
         """
@@ -119,8 +119,8 @@ class GeneratedCerticatesFilter(BaseDataApiFilter):
     DOWNLOADABLE = 'downloadable'
     ALL = 'all'
 
-    site = django_filters.CharFilter(name="user__usersignupsource__site", lookup_expr='iexact')
-    username = django_filters.CharFilter(name="user__username", lookup_expr='icontains')
+    site = django_filters.CharFilter(field_name="user__usersignupsource__site", lookup_expr='iexact')
+    username = django_filters.CharFilter(field_name="user__username", lookup_expr='icontains')
     created_date = django_filters.DateTimeFromToRangeFilter()
     course_id = django_filters.CharFilter(method="filter_course_id")
     status = django_filters.CharFilter(method="filter_status")
@@ -184,9 +184,9 @@ class ProctoredExamStudentAttemptFilter(BaseDataApiFilter):
     """
     TODO: add me
     """
-    site = django_filters.CharFilter(name="user__usersignupsource__site", lookup_expr='iexact')
-    course_id = django_filters.CharFilter(name="proctored_exam__course_id", lookup_expr='iexact')
-    exam_name = django_filters.CharFilter(name="proctored_exam__exam_name", lookup_expr='iexact')
+    site = django_filters.CharFilter(field_name="user__usersignupsource__site", lookup_expr='iexact')
+    course_id = django_filters.CharFilter(field_name="proctored_exam__course_id", lookup_expr='iexact')
+    exam_name = django_filters.CharFilter(field_name="proctored_exam__exam_name", lookup_expr='iexact')
 
     class Meta(object):
         """
