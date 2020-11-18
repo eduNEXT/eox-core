@@ -12,6 +12,14 @@ Change Log
 Unreleased
 ----------
 
+[3.2.0] - 2020-11-18
+--------------------
+
+Added
+~~~~~
+* Add support for django-filter versions superior to 2.0.0.
+* Add support to enrollments API in Juniper.
+
 [3.1.0] - 2020-10-20
 --------------------
 
