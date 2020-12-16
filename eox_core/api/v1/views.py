@@ -456,7 +456,6 @@ class UserInfo(APIView):
     Can use Oauth2/Session
     """
     authentication_classes = (BearerAuthentication, SessionAuthentication)
-    permission_classes = (EoxCoreAPIPermission,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
     def get(self, request, format=None):  # pylint: disable=redefined-builtin
