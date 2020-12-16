@@ -12,6 +12,10 @@ Change Log
 Unreleased
 ----------
 
+Removed
+~~~~~~~
+* EoxCoreAPIPermission from UserInfo APIView
+
 [3.2.0] - 2020-11-18
 --------------------
 
