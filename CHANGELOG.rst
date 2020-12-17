@@ -12,6 +12,9 @@ Change Log
 Unreleased
 ----------
 
+[3.4.0] - 2020-12-16
+--------------------
+
 Added
 ~~~~~
 * Revert previous change in order to add EoxCoreAPIPermission to UserInfo APIView.
