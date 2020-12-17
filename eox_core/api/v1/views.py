@@ -12,6 +12,7 @@ from django.utils import six
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.exceptions import APIException, NotFound, ValidationError
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.renderers import BrowsableAPIRenderer, JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -26,7 +27,7 @@ from eox_core.api.v1.serializers import (
     EdxappUserSerializer,
     WrittableEdxappUserSerializer,
 )
-from eox_core.edxapp_wrapper.bearer_authentication import BearerAuthentication
+from eox_core.edxapp_wrapper.bearer_authentication import BearerAuthentication, BearerAuthenticationAllowInactiveUser
 from eox_core.edxapp_wrapper.enrollments import create_enrollment, delete_enrollment, get_enrollment, update_enrollment
 from eox_core.edxapp_wrapper.pre_enrollments import (
     create_pre_enrollment,
@@ -455,7 +456,8 @@ class UserInfo(APIView):
     Auth-only view to check some basic info about the current user
     Can use Oauth2/Session
     """
-    authentication_classes = (BearerAuthentication, SessionAuthentication)
+    authentication_classes = (BearerAuthenticationAllowInactiveUser, SessionAuthentication)
+    permission_classes = (IsAuthenticated,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
     def get(self, request, format=None):  # pylint: disable=redefined-builtin

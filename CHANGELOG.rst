@@ -12,6 +12,11 @@ Change Log
 Unreleased
 ----------
 
+Added
+~~~~~
+* BearerAuthenticationAllowInactiveUser backend.
+* IsAuthenticated permission to UserInfo api view.
+
 [3.3.0] - 2020-12-16
 --------------------
 
