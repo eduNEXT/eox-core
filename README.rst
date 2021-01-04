@@ -36,7 +36,7 @@ Usage
 
 Installation on Open edX Devstack
 =================================
-- Install the Ironwood version of the `Open edX devstack`_
+- Install either the Ironwood or Juniper version of the `Open edX devstack`_
 
 - Clone the git repo:
 
@@ -53,21 +53,14 @@ Installation on Open edX Devstack
 
 	cd ~/Documents/eoxstack/devstack  # Change for your devstack path (if you are using devstack)
 	make lms-shell  # Enter the devstack machine (or server where lms process lives)
-	sudo su edxapp -s /bin/bash  # if you are using devstack you need to use edxapp user
-	source /edx/app/edxapp/venvs/edxapp/bin/activate
 	cd /edx/src/edxapp/eox-core
 	pip install -e .
 
-Development
-===========
+Dependency Management
+=====================
 
-To update dependencies you must edit the .in files (not requirements.txt directly) and compile them using pip-tools:
+EOX core now follows OEP-18 so the correct way to update dependencies is to run ``make upgrade`` inside your virtualenv.
 
-.. code-block:: bash
-
-	$ source /path/to/venv/bin/activate
-	(venv)$ pip install pip-tools
-	(venv)$ pip-compile
 
 Integrations with third party services
 ======================================
