@@ -6,6 +6,7 @@ from __future__ import absolute_import, unicode_literals
 
 import logging
 
+import edx_api_doc_tools as apidocs
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils import six
@@ -43,6 +44,7 @@ class UserQueryMixin:
     """
     Provides tools to create user queries
     """
+
     def __init__(self, *args, **kwargs):
         """
         Defines instance attributes
@@ -191,6 +193,271 @@ class EdxappEnrollment(UserQueryMixin, APIView):
     permission_classes = (EoxCoreAPIPermission,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
+    @apidocs.schema(
+        body=EdxappCourseEnrollmentSerializer,
+        responses={
+            200: EdxappCourseEnrollmentSerializer,
+            202: "User doesn't belong to site.",
+            400: "Bad request, invalid course_id or missing either email or username.",
+        }
+    )
+    def post(self, request, *args, **kwargs):
+        """
+        Handle creation of single or bulk enrollments
+
+        **Example Requests**
+
+            POST /eox-core/api/v1/enrollment/
+
+            Request data: {
+              "username": "johndoe",
+              "course_id": "course-v1:edX+DemoX+Demo_Course",
+              "mode": "audit",
+              "is_active": "False",
+              "enrollment_attributes": [
+                {
+                  "namespace": "credit",
+                  "name": "provider_id",
+                  "value": "institution_name"
+                }
+              ]
+            }
+
+        **Parameters**
+
+        - `username` (**required**, string, _body_):
+            The username used to identify the user you want to enroll.  Use either username or email.
+
+        - `email` (**required**, string, _body_):
+            The email used to identify the user you to enroll.  Use either username or email.
+
+        - `course_id` (**required**, string, _body_):
+            The id of the course in which you want to enroll the user.
+
+        - `mode` (**required**, string, _body_):
+            The course mode for the enrollment.  Must be available for the course.
+
+        - `is_active` (boolean, _body_):
+            Flag indicating whether the enrollment is active.
+
+        - `enrollment_attributes` (list, _body_):
+            List of enrollment attributes. An enrollment attribute can be used to add extra parameters for a specific course mode.
+            It must be a dictionary containing the following:
+            - namespace: namespace of the attribute
+            - name: name of the attribute
+            - value: value of the attribute
+
+        In case the case of bulk enrollments, you must provide a list of dictionaries containing
+        the parameters specified above; the same restrictions apply.
+        For example:
+
+            [{
+              "username": "johndoe",
+              "course_id": "course-v1:edX+DemoX+Demo_Course",
+              "mode": "audit",
+              "is_active": "False",
+              "enrollment_attributes": [
+                {
+                  "namespace": "credit",
+                  "name": "provider_id",
+                  "value": "institution_name"
+                }
+              ]
+             },
+             {
+              "email": "janedoe@example.com",
+              "course_id": "course-v1:edX+DemoX+Demo_Course",
+              "mode": "audit",
+              "is_active": "True",
+              "enrollment_attributes": []
+             },
+            ]
+
+        **Returns**
+
+        - 200: Success, enrollment created.
+        - 202: User doesn't belong to site.
+        - 400: Bad request, invalid course_id or missing either email or username.
+        """
+        data = request.data
+        return EdxappEnrollment.prepare_multiresponse(data, self.single_enrollment_create)
+
+    @apidocs.schema(
+        body=EdxappCourseEnrollmentSerializer,
+        responses={
+            200: EdxappCourseEnrollmentSerializer,
+            202: "User or enrollment doesn't belong to site.",
+            400: "Bad request, invalid course_id or missing either email or username.",
+        }
+    )
+    def put(self, request, *args, **kwargs):
+        """
+        Update enrollments on edxapp
+
+        **Example Requests**
+
+            PUT /eox-core/api/v1/enrollment/
+
+            Request data: {
+              "username": "johndoe",
+              "course_id": "course-v1:edX+DemoX+Demo_Course",
+              "mode": "audit",
+              "is_active": "False",
+              "enrollment_attributes": [
+                {
+                  "namespace": "credit",
+                  "name": "provider_id",
+                  "value": "institution_name"
+                }
+              ]
+            }
+
+        **Parameters**
+
+        - `username` (**required**, string, _body_):
+            The username used to identify a user enrolled on the course. Use either username or email.
+
+        - `email` (**required**, string, _body_):
+            The email used to identify a user enrolled on the course. Use either username or email.
+
+        - `course_id` (**required**, string, _body_):
+            The course id for the enrollment you want to update.
+
+        - `mode` (**required**, string, _body_):
+            The course mode for the enrollment. Must be available for the course.
+
+        - `is_active` (boolean, _body_):
+            Flag indicating whether the enrollment is active.
+
+        - `enrollment_attributes` (list, _body_):
+            An enrollment attribute can be used to add extra parameters for a specific course mode.
+            It must be a dictionary containing the following:
+            - namespace: namespace of the attribute
+            - name: name of the attribute
+            - value: value of the attribute
+
+        **Returns**
+
+        - 200: Success, enrollment updated.
+        - 202: User or enrollment doesn't belong to site.
+        - 400: Bad request, invalid course_id or missing either email or username.
+        """
+        data = request.data
+        return EdxappEnrollment.prepare_multiresponse(data, self.single_enrollment_update)
+
+    @apidocs.schema(
+        parameters=[
+            apidocs.query_parameter(
+                name='username',
+                param_type=str,
+                description='**required**, The username used to identify a user enrolled on the course. Use either username or email.'
+            ),
+            apidocs.query_parameter(
+                name='email',
+                param_type=str,
+                description='**required**, The email used to identify a user enrolled on the course. Use either username or email.'
+            ),
+            apidocs.query_parameter(
+                name='course_id',
+                param_type=str,
+                description='**required**, The course id for the enrollment you want to check.'
+            ),
+        ],
+        responses={
+            200: EdxappCourseEnrollmentSerializer,
+            400: 'Bad request, missing course_id or either email or username',
+            404: 'User or course not found',
+        }
+
+    )
+    def get(self, request, *args, **kwargs):
+        """
+        Retrieves enrollment information given a user and a course_id
+
+        **Example Requests**
+
+            GET /eox-core/api/v1/enrollment/?username=johndoe&
+            course_id=course-v1:edX+DemoX+Demo_Course
+
+            Request data: {
+              "username": "johndoe",
+              "course_id": "course-v1:edX+DemoX+Demo_Course",
+            }
+
+        **Returns**
+
+        - 200: Success, enrollment found.
+        - 400: Bad request, missing course_id or either email or username
+        - 404: User or course not found
+        """
+        user_query = self.get_user_query(request)
+        user = get_edxapp_user(**user_query)
+
+        course_id = self.query_params.get('course_id', None)
+
+        if not course_id:
+            raise ValidationError(detail='You have to provide a course_id')
+
+        enrollment_query = {
+            'username': user.username,
+            'course_id': course_id,
+        }
+        enrollment, errors = get_enrollment(**enrollment_query)
+
+        if errors:
+            raise NotFound(detail=errors)
+        response = EdxappCourseEnrollmentSerializer(enrollment).data
+        return Response(response)
+
+    @apidocs.schema(
+        parameters=[
+            apidocs.query_parameter(
+                name='username',
+                param_type=str,
+                description='**required**, The username used to identify a user enrolled on the course. Use either username or email.'
+            ),
+            apidocs.query_parameter(
+                name='email',
+                param_type=str,
+                description='**required**, The email used to identify a user enrolled on the course. Use either username or email.'
+            ),
+            apidocs.query_parameter(
+                name='course_id',
+                param_type=str,
+                description='**required**, The course id for the enrollment you want to check.'
+            ),
+        ],
+        responses={
+            204: 'Empty response',
+            400: 'Bad request, missing course_id or either email or username',
+            404: 'User or course not found',
+        }
+
+    )
+    def delete(self, request, *args, **kwargs):
+        """
+        Delete enrollment on edxapp
+
+        **Example Requests**
+
+            DELETE /eox-core/api/v1/enrollment/
+
+            Request data: {
+              "username": "johndoe",
+              "course_id": "course-v1:edX+DemoX+Demo_Course",
+            }
+        """
+        user_query = self.get_user_query(request)
+        user = get_edxapp_user(**user_query)
+
+        course_id = self.query_params.get('course_id', None)
+
+        if not course_id:
+            raise ValidationError(detail='You have to provide a course_id')
+
+        delete_enrollment(user=user, course_id=course_id)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
     def single_enrollment_create(self, *args, **kwargs):
         """
         Handle one create at the time
@@ -213,13 +480,6 @@ class EdxappEnrollment(UserQueryMixin, APIView):
 
         return response_data
 
-    def post(self, request, *args, **kwargs):
-        """
-        Handle creation of single or bulk enrollments
-        """
-        data = request.data
-        return EdxappEnrollment.prepare_multiresponse(data, self.single_enrollment_create)
-
     def single_enrollment_update(self, *args, **kwargs):
         """
         Handle one update at the time
@@ -234,57 +494,12 @@ class EdxappEnrollment(UserQueryMixin, APIView):
 
         return update_enrollment(user, course_id, mode, **kwargs)
 
-    def put(self, request, *args, **kwargs):
-        """
-        Update enrollments on edxapp
-        """
-        data = request.data
-        return EdxappEnrollment.prepare_multiresponse(data, self.single_enrollment_update)
-
-    def get(self, request, *args, **kwargs):
-        """
-        Get enrollments on edxapp
-        """
-        user_query = self.get_user_query(request)
-        user = get_edxapp_user(**user_query)
-
-        course_id = self.query_params.get('course_id', None)
-
-        if not course_id:
-            raise ValidationError(detail='You have to provide a course_id')
-
-        enrollment_query = {
-            'username': user.username,
-            'course_id': course_id,
-        }
-        enrollment, errors = get_enrollment(**enrollment_query)
-
-        if errors:
-            raise NotFound(detail=errors)
-        response = EdxappCourseEnrollmentSerializer(enrollment).data
-        return Response(response)
-
-    def delete(self, request, *args, **kwargs):
-        """
-        Delete enrollment on edxapp
-        """
-        user_query = self.get_user_query(request)
-        user = get_edxapp_user(**user_query)
-
-        course_id = self.query_params.get('course_id', None)
-
-        if not course_id:
-            raise ValidationError(detail='You have to provide a course_id')
-
-        delete_enrollment(user=user, course_id=course_id)
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
     @staticmethod
     def prepare_multiresponse(request_data, action_method):
         """
         Prepare a multiple part response according to the request_data and the action_method provided
         Args:
-            request_data: Data dictionary containing the query o queries to be processed
+            request_data: Data dictionary containing the query or queries to be processed
             action_method: Function to be applied to the queries (create, update)
 
         Returns: List of responses

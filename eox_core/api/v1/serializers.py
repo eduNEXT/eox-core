@@ -4,6 +4,8 @@ API v1 serializers.
 # pylint: disable=abstract-method
 from __future__ import absolute_import, unicode_literals
 
+from collections import OrderedDict
+
 from django.conf import settings
 from rest_framework import serializers
 
@@ -171,8 +173,24 @@ class EdxappCourseEnrollmentSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=USERNAME_MAX_LENGTH, default=None, source='user')
     is_active = serializers.BooleanField(default=True)
     mode = serializers.CharField(max_length=100)
-    enrollment_attributes = EdxappEnrollmentAttributeSerializer(many=True, default=[])
+    enrollment_attributes = EdxappEnrollmentAttributeSerializer(many=True, required=False)
     course_id = EdxappValidatedCourseIDField()
+
+    class Meta:
+        """
+        Add extra details for swagger
+        """
+        swagger_schema_fields = {
+            "example": OrderedDict(
+                [
+                    ("username", "johndoe"),
+                    ("is_active", True),
+                    ("mode", "audit"),
+                    ("enrollment_attributes", []),
+                    ("course_id", "course-v1:edX+DemoX+Demo_Course")
+                ]
+            ),
+        }
 
     def validate(self, attrs):
         """

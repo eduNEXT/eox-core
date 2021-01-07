@@ -12,6 +12,9 @@ Change Log
 Unreleased
 ----------
 
+* Add swagger support
+* Improve internal documentation
+
 [3.4.0] - 2020-12-16
 --------------------
 
