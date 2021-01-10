@@ -26,7 +26,7 @@ def load_class(full_class_string):
     return getattr(module, class_str)
 
 
-class ExceptionFilterSentry(object):
+class ExceptionFilterSentry:
     """
     This class is a helper to filter exception events before send them to
     sentry.io service (See: https://github.com/getsentry/sentry-python/issues/149#issuecomment-434448781).

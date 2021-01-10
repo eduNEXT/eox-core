@@ -94,7 +94,7 @@ def course_team(request, *args, **kwargs):  # pylint: disable=too-many-locals
     courses_iter, in_process_course_actions = get_courses_accessible_to_user(request, org)
     active_courses, archived_courses = get_process_courses_list(courses_iter, in_process_course_actions)  # pylint: disable=unused-variable
 
-    if not org:
+    if not org:  # pylint: disable=no-else-return
         data = {
             'message': 'Incorrect organization name.',
             'status': 'Failed'

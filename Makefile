@@ -55,7 +55,4 @@ upgrade: ## update the requirements/*.txt files with the latest packages satisfy
 	$(PIP_COMPILE) -o requirements/base.txt requirements/base.in
 	$(PIP_COMPILE) -o requirements/test.txt requirements/test.in
 	$(PIP_COMPILE) -o requirements/tox.txt requirements/tox.in
-	# Let tox control the Django, and django-filter version for tests
-	grep -e "^django==" -e "^django-filter==" -e "^celery==" -e "^djangorestframework==" -e "^django-model-utils==" -e "^django-oauth-toolkit==" -e "^django-waffle==" -e "^edx-drf-extensions==" -e "^edx-opaque-keys==" -e "^edx-proctoring==" requirements/test.txt > requirements/django.txt
-	sed '/^[dD]jango==/d;/^django-filter==/d;/^celery==/d;/^djangorestframework==/d;/^django-model-utils==/d;/^django-oauth-toolkit==/d;/^django-waffle==/d;/^edx-drf-extensions==/d;/^edx-opaque-keys==/d;/^edx-proctoring==/d' requirements/test.txt > requirements/test.tmp
-	mv requirements/test.tmp requirements/test.txt
+

@@ -39,7 +39,7 @@ def validate_org(course_id):
     course_key = get_valid_course_key(course_id)
     current_site_orgs = get_current_site_orgs() or []
 
-    if not current_site_orgs:
+    if not current_site_orgs:  # pylint: disable=no-else-return
         if course_key.org in get_all_orgs():
             return False
         return True

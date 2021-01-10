@@ -154,7 +154,7 @@ class EdxappValidatedCourseIDField(serializers.Field):
         """
         Check course_id has the correct format and that it is allowed inside the org
         """
-        if validate_org(data):
+        if validate_org(data):  # pylint: disable=no-else-return
             return str(get_valid_course_key(data))
         else:
             raise serializers.ValidationError('Invalid course_id {}'.format(data))

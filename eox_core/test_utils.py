@@ -11,7 +11,7 @@ class SuperUserFactory(factory.django.DjangoModelFactory):
     """
     A Factory for User objects.
     """
-    class Meta(object):
+    class Meta:
         """ Meta """
         model = User
         django_get_or_create = ('email', 'username')
@@ -31,7 +31,7 @@ class SuperUserFactory(factory.django.DjangoModelFactory):
     date_joined = datetime(2011, 1, 1)
 
 
-class TestStorage(object):
+class TestStorage:
     """
     This is a storage used for testing purposes
     """

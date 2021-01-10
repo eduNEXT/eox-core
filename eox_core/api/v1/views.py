@@ -39,7 +39,7 @@ from eox_core.edxapp_wrapper.users import create_edxapp_user, get_edxapp_user
 LOG = logging.getLogger(__name__)
 
 
-class UserQueryMixin(object):
+class UserQueryMixin:
     """
     Provides tools to create user queries
     """

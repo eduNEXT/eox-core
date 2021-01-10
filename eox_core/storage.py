@@ -12,7 +12,7 @@ EdxappProductionStorage = get_edxapp_production_staticfiles_storage()  # pylint:
 EdxappDevelopmentStorage = get_edxapp_development_staticfiles_storage()  # pylint: disable=invalid-name
 
 
-class AbsoluteUrlAssetsMixin(object):
+class AbsoluteUrlAssetsMixin:
     """
     Mixin that overrides the url method on storages
     """
@@ -31,11 +31,9 @@ class ProductionStorage(AbsoluteUrlAssetsMixin, EdxappProductionStorage):
     """
     Eox-core production extended static files storage
     """
-    pass
 
 
 class DevelopmentStorage(AbsoluteUrlAssetsMixin, EdxappDevelopmentStorage):
     """
     Eox-core development extended static files storage
     """
-    pass
