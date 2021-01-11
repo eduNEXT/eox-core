@@ -9,7 +9,7 @@ def get_bearer_authentication():
         BearerAuthentication function.
     """
     try:
-        from openedx.core.lib.api.authentication import BearerAuthentication
+        from openedx.core.lib.api.authentication import BearerAuthentication  # pylint: disable=import-outside-toplevel
     except ImportError:
         BearerAuthentication = object
     return BearerAuthentication

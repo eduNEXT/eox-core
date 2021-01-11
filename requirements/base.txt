@@ -4,46 +4,237 @@
 #
 #    make upgrade
 #
-amqp==1.4.9               # via kombu
-anyjson==0.3.3            # via kombu
-billiard==3.3.0.23        # via celery
-celery==3.1.25            # via -c requirements/constraints.txt, -r requirements/base.in, event-tracking
-certifi==2020.11.8        # via requests
-chardet==3.0.4            # via requests
-django-crum==0.7.9        # via edx-django-utils, edx-proctoring
-django-filter==1.1.0 ; python_version == "2.7"  # via -r requirements/base.in
-django-ipware==3.0.2      # via edx-proctoring
-django-model-utils==3.0.0  # via -c requirements/constraints.txt, edx-proctoring
-django-oauth-toolkit==1.1.3  # via -c requirements/constraints.txt, -r requirements/base.in
-django-waffle==0.12.0     # via -c requirements/constraints.txt, -r requirements/base.in, edx-django-utils, edx-drf-extensions, edx-proctoring
-django-webpack-loader==0.7.0  # via edx-proctoring
-django==1.11.29           # via django-crum, django-model-utils, django-oauth-toolkit, edx-django-utils, edx-drf-extensions, edx-opaque-keys, edx-proctoring, event-tracking, jsonfield, rest-condition
-djangorestframework-jwt==1.11.0  # via edx-drf-extensions
-djangorestframework==3.6.3  # via -c requirements/constraints.txt, -r requirements/base.in, edx-drf-extensions, edx-proctoring, rest-condition
-edx-django-utils==3.11.0  # via edx-drf-extensions, edx-rest-api-client
-edx-drf-extensions==2.0.1  # via -c requirements/constraints.txt, edx-proctoring
-edx-opaque-keys[django]==0.4.4  # via -c requirements/constraints.txt, -r requirements/base.in, edx-drf-extensions, edx-proctoring
-edx-proctoring==1.5.7     # via -c requirements/constraints.txt, -r requirements/base.in
-edx-rest-api-client==5.2.1  # via edx-proctoring
-event-tracking==1.0.0     # via edx-proctoring
-future==0.18.2            # via pyjwkest
-idna==2.10                # via requests
-jsonfield==2.0.2          # via -c requirements/constraints.txt, edx-proctoring
-kombu==3.0.37             # via celery
-newrelic==5.22.1.152      # via edx-django-utils
-oauthlib==3.1.0           # via django-oauth-toolkit
-pbr==5.5.1                # via stevedore
-psutil==1.2.1             # via edx-django-utils, edx-drf-extensions
-pycryptodomex==3.9.9      # via edx-proctoring, pyjwkest
-pyjwkest==1.3.2           # via edx-drf-extensions
-pyjwt==1.7.1              # via djangorestframework-jwt, edx-rest-api-client
-pymongo==3.11.0           # via edx-opaque-keys, event-tracking
-python-dateutil==2.8.1    # via edx-drf-extensions, edx-proctoring
-pytz==2020.4              # via celery, django, edx-proctoring, event-tracking
-requests==2.25.0          # via django-oauth-toolkit, edx-drf-extensions, edx-rest-api-client, pyjwkest, slumber
-rest-condition==1.0.3     # via edx-drf-extensions
-semantic-version==2.8.5   # via edx-drf-extensions
-six==1.15.0               # via edx-drf-extensions, edx-opaque-keys, event-tracking, pyjwkest, python-dateutil, stevedore
-slumber==0.7.1            # via edx-rest-api-client
-stevedore==1.32.0         # via edx-django-utils, edx-opaque-keys
-urllib3==1.26.2           # via requests
+amqp==1.4.9
+    # via kombu
+anyjson==0.3.3
+    # via kombu
+appdirs==1.4.4
+    # via fs
+billiard==3.3.0.23
+    # via celery
+celery==3.1.26.post2
+    # via
+    #   -c requirements/constraints.txt
+    #   -r requirements/base.in
+    #   event-tracking
+certifi==2020.12.5
+    # via requests
+chardet==4.0.0
+    # via requests
+coreapi==2.3.3
+    # via drf-yasg
+coreschema==0.0.4
+    # via
+    #   coreapi
+    #   drf-yasg
+django-crum==0.7.9
+    # via
+    #   edx-django-utils
+    #   edx-proctoring
+django-filter==2.2.0
+    # via
+    #   -c requirements/constraints.txt
+    #   -r requirements/base.in
+django-ipware==3.0.2
+    # via edx-proctoring
+django-model-utils==4.0.0
+    # via
+    #   -c requirements/constraints.txt
+    #   edx-proctoring
+    #   edx-when
+django-oauth-toolkit==1.3.2
+    # via
+    #   -c requirements/constraints.txt
+    #   -r requirements/base.in
+django-oauth2-provider==0.2.6.1
+    # via -r requirements/base.in
+django-waffle==0.18.0
+    # via
+    #   -c requirements/constraints.txt
+    #   -r requirements/base.in
+    #   edx-django-utils
+    #   edx-drf-extensions
+    #   edx-proctoring
+django-webpack-loader==0.7.0
+    # via edx-proctoring
+django==2.2.17
+    # via
+    #   django-crum
+    #   django-filter
+    #   django-model-utils
+    #   django-oauth-toolkit
+    #   drf-jwt
+    #   drf-yasg
+    #   edx-api-doc-tools
+    #   edx-django-utils
+    #   edx-drf-extensions
+    #   edx-opaque-keys
+    #   edx-proctoring
+    #   edx-when
+    #   event-tracking
+    #   jsonfield2
+    #   rest-condition
+djangorestframework==3.9.4
+    # via
+    #   -c requirements/constraints.txt
+    #   -r requirements/base.in
+    #   drf-jwt
+    #   drf-yasg
+    #   edx-api-doc-tools
+    #   edx-drf-extensions
+    #   edx-proctoring
+    #   rest-condition
+drf-jwt==1.14.0
+    # via edx-drf-extensions
+drf-yasg==1.17.1
+    # via edx-api-doc-tools
+edx-api-doc-tools==1.4.0
+    # via -r requirements/base.in
+edx-django-utils==3.13.0
+    # via
+    #   edx-drf-extensions
+    #   edx-rest-api-client
+    #   edx-when
+edx-drf-extensions==6.0.0
+    # via
+    #   -c requirements/constraints.txt
+    #   edx-proctoring
+    #   edx-when
+edx-opaque-keys[django]==2.1.0
+    # via
+    #   -c requirements/constraints.txt
+    #   -r requirements/base.in
+    #   edx-drf-extensions
+    #   edx-proctoring
+    #   edx-when
+edx-proctoring==2.4.0
+    # via
+    #   -c requirements/constraints.txt
+    #   -r requirements/base.in
+edx-rest-api-client==5.2.3
+    # via edx-proctoring
+edx-when==1.3.0
+    # via edx-proctoring
+event-tracking==1.0.3
+    # via edx-proctoring
+fs==2.4.11
+    # via xblock
+future==0.18.2
+    # via pyjwkest
+idna==2.10
+    # via requests
+inflection==0.5.1
+    # via drf-yasg
+itypes==1.2.0
+    # via coreapi
+jinja2==2.11.2
+    # via coreschema
+jsonfield2==3.0.3
+    # via
+    #   -c requirements/constraints.txt
+    #   edx-proctoring
+kombu==3.0.37
+    # via celery
+lxml==4.6.2
+    # via xblock
+markupsafe==1.1.1
+    # via
+    #   jinja2
+    #   xblock
+newrelic==5.24.0.153
+    # via edx-django-utils
+oauthlib==3.1.0
+    # via django-oauth-toolkit
+packaging==20.8
+    # via drf-yasg
+pbr==5.5.1
+    # via stevedore
+psutil==5.8.0
+    # via edx-django-utils
+pycryptodomex==3.9.9
+    # via
+    #   edx-proctoring
+    #   pyjwkest
+pyjwkest==1.4.2
+    # via edx-drf-extensions
+pyjwt==1.7.1
+    # via
+    #   drf-jwt
+    #   edx-rest-api-client
+pymongo==3.11.2
+    # via
+    #   edx-opaque-keys
+    #   event-tracking
+pyparsing==2.4.7
+    # via packaging
+python-dateutil==2.8.1
+    # via
+    #   edx-drf-extensions
+    #   edx-proctoring
+    #   xblock
+pytz==2020.5
+    # via
+    #   celery
+    #   django
+    #   edx-proctoring
+    #   event-tracking
+    #   fs
+    #   xblock
+pyyaml==5.3.1
+    # via xblock
+requests==2.25.1
+    # via
+    #   coreapi
+    #   django-oauth-toolkit
+    #   edx-drf-extensions
+    #   edx-rest-api-client
+    #   pyjwkest
+    #   slumber
+rest-condition==1.0.3
+    # via edx-drf-extensions
+ruamel.yaml.clib==0.2.2
+    # via ruamel.yaml
+ruamel.yaml==0.16.12
+    # via drf-yasg
+rules==2.2
+    # via edx-proctoring
+semantic-version==2.8.5
+    # via edx-drf-extensions
+shortuuid==1.0.1
+    # via django-oauth2-provider
+six==1.15.0
+    # via
+    #   drf-yasg
+    #   edx-drf-extensions
+    #   edx-opaque-keys
+    #   event-tracking
+    #   fs
+    #   pyjwkest
+    #   python-dateutil
+    #   stevedore
+    #   xblock
+slumber==0.7.1
+    # via edx-rest-api-client
+sqlparse==0.4.1
+    # via django
+stevedore==1.32.0
+    # via
+    #   edx-django-utils
+    #   edx-opaque-keys
+typing==3.7.4.3
+    # via fs
+uritemplate==3.0.1
+    # via
+    #   coreapi
+    #   drf-yasg
+urllib3==1.26.2
+    # via requests
+web-fragments==0.3.2
+    # via xblock
+webob==1.8.6
+    # via xblock
+xblock==1.4.0
+    # via edx-when
+
+# The following packages are considered to be unsafe in a requirements file:
+# setuptools

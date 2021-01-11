@@ -175,12 +175,12 @@ def get_course_team_user(*args, **kwargs):
     of the cms only.
     """
     if settings.SERVICE_VARIANT == 'cms':
-        from contentstore.views.user import _course_team_user  # pylint: disable=import-error
+        from contentstore.views.user import _course_team_user  # pylint: disable=import-error,import-outside-toplevel
         return _course_team_user(*args, **kwargs)
     return None
 
 
-class FetchUserSiteSources(object):
+class FetchUserSiteSources:
     """
     Methods to make the comparison to check if an user belongs to a site plus the
     get_enabled_source_methods that just brings an array of functions enabled to do so

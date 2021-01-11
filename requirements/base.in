@@ -3,9 +3,10 @@
 
 celery
 djangorestframework
-django-filter==1.1.0; python_version == '2.7'
-django-filter==2.2.0; python_version > '2.7'
+django-filter
 django-oauth-toolkit
+django-oauth2-provider
 django-waffle
 edx-proctoring
 edx-opaque-keys[django]
+edx-api-doc-tools

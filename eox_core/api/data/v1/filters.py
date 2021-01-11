@@ -1,7 +1,7 @@
 """
 TODO: add me
 """
-import django_filters
+import django_filters  # pylint: disable=import-error
 from django.contrib.auth.models import User
 from edx_proctoring.models import ProctoredExamStudentAttempt  # pylint: disable=import-error
 from opaque_keys.edx.keys import CourseKey  # pylint: disable=import-error
@@ -41,7 +41,7 @@ class UserFilter(BaseDataApiFilter):
     # Filtering by user signup source fields
     site = django_filters.CharFilter(field_name="usersignupsource__site", lookup_expr='iexact')
 
-    class Meta(object):
+    class Meta:
         """
         TODO: add me
         """
@@ -97,7 +97,7 @@ class CourseEnrollmentFilter(BaseDataApiFilter):
 
         return queryset
 
-    class Meta(object):
+    class Meta:
         """
         TODO: add me
         """
@@ -163,7 +163,7 @@ class GeneratedCerticatesFilter(BaseDataApiFilter):
 
         return queryset
 
-    class Meta(object):
+    class Meta:
         """
         TODO: add me
         """
@@ -188,7 +188,7 @@ class ProctoredExamStudentAttemptFilter(BaseDataApiFilter):
     course_id = django_filters.CharFilter(field_name="proctored_exam__course_id", lookup_expr='iexact')
     exam_name = django_filters.CharFilter(field_name="proctored_exam__exam_name", lookup_expr='iexact')
 
-    class Meta(object):
+    class Meta:
         """
         TODO: add me
         """

@@ -9,7 +9,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.urls import reverse
-from django_filters import rest_framework as filters
+from django_filters import rest_framework as filters  # pylint: disable=import-error
 from edx_proctoring.models import ProctoredExamStudentAttempt  # pylint: disable=import-error
 from rest_framework import mixins, status, viewsets
 from rest_framework.authentication import SessionAuthentication
