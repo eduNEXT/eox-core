@@ -12,8 +12,22 @@ Change Log
 Unreleased
 ----------
 
-* Add swagger support
-* Improve internal documentation
+[4.0.0] - 2021-1-14
+--------------------
+
+Added
+~~~~~
+* Add swagger support.
+* Improve internal documentation for the Enrollment API.
+* New suite of Enrollment integration tests.
+
+Changed
+~~~~~~~
+* **BREAKING CHANGE**: The requirements are not compatible with Ironwood anymore.".
+
+Removed
+~~~~~~~
+* Support for Ironwood.
 
 [3.4.0] - 2020-12-16
 --------------------
