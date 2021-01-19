@@ -7,6 +7,11 @@ from django.db.models.signals import post_save
 
 from eox_core.edxapp_wrapper.users import get_user_profile
 
+try:
+    from social_core.exceptions import NotAllowedToDisconnect
+except ImportError:
+    NotAllowedToDisconnect = object
+
 LOG = logging.getLogger(__name__)
 
 
@@ -64,3 +69,22 @@ def force_user_post_save_callback(auth_entry, is_new, user=None, *args, **kwargs
             instance=user,
             created=False
         )
+
+
+def check_disconnect_pipeline_enabled(backend, *args, **kwargs):
+    """
+    This pipeline function checks whether disconnection from the auth provider is enabled or not. That's
+    done checking for `disableDisconnectPipeline` setting defined in the provider configuration.
+
+    For example:
+        To avoid disconnection from SAML, add the following to `Other config str` in your SAMLConfiguration:
+
+        "BACKEND_OPTIONS": { "disableDisconnectPipeline":true },
+
+        Now, to avoid disconnection from an Oauth2Provider, add the same setting to `Other settings` in your
+        Oauth2Provider.
+
+    It's recommended to place this function at the beginning of the pipeline.
+    """
+    if backend and backend.setting("BACKEND_OPTIONS", {}).get("disableDisconnectPipeline"):
+        raise NotAllowedToDisconnect()  # pylint: disable=raising-non-exception
