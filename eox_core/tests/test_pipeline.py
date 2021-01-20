@@ -5,7 +5,7 @@ Tests for the pipeline module used in third party auth.
 from django.test import TestCase
 from mock import MagicMock, PropertyMock, patch
 
-from eox_core.pipeline import ensure_user_has_profile
+from eox_core.pipeline import check_disconnect_pipeline_enabled, ensure_user_has_profile
 
 
 class EnsureUserProfileTest(TestCase):
@@ -39,3 +39,36 @@ class EnsureUserProfileTest(TestCase):
 
         ensure_user_has_profile(self.backend_mock, {}, user=self.user_mock)
         backend().get_user_profile().objects.create.assert_called()
+
+
+class TestDisconnectionPipeline(TestCase):
+    """Test disconnection from TPA provider."""
+
+    def setUp(self):
+        self.backend_mock = MagicMock()
+
+    def test_disable_disconnect_pipeline(self):
+        """
+        Test disabling disconnection pipeline through TPA provider settings.
+        """
+        self.backend_mock.setting.return_value.get.return_value = True
+
+        with self.assertRaises(Exception):
+            check_disconnect_pipeline_enabled(self.backend_mock)
+
+    def test_disconnect_pipeline_enable_explicit(self):
+        """
+        Test explicitly enable disconnection pipeline through TPA provider settings.
+        """
+        self.backend_mock.setting.return_value.get.return_value = False
+
+        self.assertIsNone(check_disconnect_pipeline_enabled(self.backend_mock))
+
+    def test_disconnect_pipeline_enable_implicit(self):
+        """
+        Test enable disconnection pipeline by not defining disable setting through TPA
+        provider settings.
+        """
+        self.backend_mock.setting.return_value.get.return_value = None
+
+        self.assertIsNone(check_disconnect_pipeline_enabled(self.backend_mock))
