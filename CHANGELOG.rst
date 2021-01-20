@@ -12,6 +12,13 @@ Change Log
 Unreleased
 ----------
 
+[4.0.0] - 2021-1-20
+--------------------
+Added
+~~~~~
+* Pipeline function to avoid disconnection from TPA provider.
+
+
 [4.0.0] - 2021-1-14
 --------------------
 
