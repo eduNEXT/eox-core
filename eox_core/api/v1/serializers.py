@@ -229,3 +229,42 @@ def EdxappUserReadOnlySerializer(*args, **kwargs):   # pylint: disable=invalid-n
     Fake class to lazily retrieve UserReadOnlySerializer
     """
     return get_user_read_only_serializer()(*args, **kwargs)
+
+
+class EdxappSectionBreakdownSerializer(serializers.Serializer):
+    """
+    Serializes the `section_breakdown` portion of the Grades API.
+    """
+    attempted = serializers.BooleanField()
+    assignment_type = serializers.CharField()
+    percent = serializers.FloatField()
+    score_earned = serializers.FloatField()
+    score_possible = serializers.FloatField()
+    subsection_name = serializers.CharField()
+
+
+class EdxappGradingRawPolicySerializer(serializers.Serializer):
+    """
+    Serializes the items in the GRADER part of grading policy.
+    """
+    assignment_type = serializers.CharField(source='type')
+    count = serializers.IntegerField(source='min_count')
+    dropped = serializers.IntegerField(source='drop_count')
+    weight = serializers.FloatField()
+
+
+class EdxappGradingPolicySerializer(serializers.Serializer):
+    """
+    Serializes the course grading policy
+    """
+    grader = EdxappGradingRawPolicySerializer(many=True, required=False, source="GRADER")
+    grade_cutoffs = serializers.DictField(child=serializers.FloatField(), source="GRADE_CUTOFFS")
+
+
+class EdxappGradeSerializer(serializers.Serializer):
+    """
+    Serializes the grades data for a user in a given course
+    """
+    earned_grade = serializers.FloatField()
+    grading_policy = EdxappGradingPolicySerializer(required=False)
+    section_breakdown = EdxappSectionBreakdownSerializer(many=True, required=False)
