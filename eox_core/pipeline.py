@@ -2,14 +2,16 @@
 The pipeline module defines functions that are used in the third party authentication flow
 """
 import logging
+import re
 
 from django.db.models.signals import post_save
 
 from eox_core.edxapp_wrapper.users import get_user_profile
 
 try:
-    from social_core.exceptions import NotAllowedToDisconnect
+    from social_core.exceptions import AuthFailed, NotAllowedToDisconnect
 except ImportError:
+    AuthFailed = object
     NotAllowedToDisconnect = object
 
 LOG = logging.getLogger(__name__)
@@ -87,4 +89,31 @@ def check_disconnect_pipeline_enabled(backend, *args, **kwargs):
     It's recommended to place this function at the beginning of the pipeline.
     """
     if backend and backend.setting("BACKEND_OPTIONS", {}).get("disableDisconnectPipeline"):
+        LOG.exception("Disconnection pipeline is disabled, users are not allowed to disconnect.")
         raise NotAllowedToDisconnect()  # pylint: disable=raising-non-exception
+
+
+def check_user_email_domain(user, backend, *args, **kwargs):
+    """
+    This pipeline function checks whether the email's domain of the user trying to authenticate matches a
+    pattern defined in the Configuration Provider. If the pattern is defined and the email does not match,
+    then an Auth exception will be raised.
+
+    For example:
+        To allow just emails with domain "example.com", then you must add:
+
+        "BACKEND_OPTIONS": { "emailDomainPattern":"example\.com$" },
+    """
+    domain_pattern = backend.setting("BACKEND_OPTIONS", {}).get("emailDomainPattern") if backend else None
+
+    if user and domain_pattern:
+
+        email_domain = re.search("@.+", user.email).group(0)
+
+        if not re.search(domain_pattern, email_domain):
+            LOG.exception(
+                "Credentials not allowed: user %s's email (%s) does not match the required pattern.",
+                user.username,
+                user.email,
+            )
+            raise AuthFailed(backend)  # pylint: disable=raising-non-exception
