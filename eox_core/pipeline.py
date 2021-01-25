@@ -8,8 +8,9 @@ from django.db.models.signals import post_save
 from eox_core.edxapp_wrapper.users import get_user_profile
 
 try:
-    from social_core.exceptions import NotAllowedToDisconnect
+    from social_core.exceptions import AuthFailed, NotAllowedToDisconnect
 except ImportError:
+    AuthFailed = object
     NotAllowedToDisconnect = object
 
 LOG = logging.getLogger(__name__)
@@ -87,4 +88,35 @@ def check_disconnect_pipeline_enabled(backend, *args, **kwargs):
     It's recommended to place this function at the beginning of the pipeline.
     """
     if backend and backend.setting("BACKEND_OPTIONS", {}).get("disableDisconnectPipeline"):
+        LOG.exception("Disconnection pipeline is disabled, users are not allowed to disconnect.")
         raise NotAllowedToDisconnect()  # pylint: disable=raising-non-exception
+
+
+def assert_user_information(details, user, backend, *args, **kwargs):
+    """
+    This pipeline function checks whether the user information from the LMS matches the information
+    returned by the provider.
+
+    For example:
+        To avoid connection when the user's email from the LMS differs from the email returned by the provider,
+        add the setting:
+
+        "BACKEND_OPTIONS": { "assertUserInformationMatchFields":["email",...] }
+
+    It's recommended to place this step after the user is available (ie. after ensure_user_information step) and
+    before user association (ie. before user_association step)
+    """
+    if not (user and backend):
+        return
+
+    defined_fields = backend.setting("BACKEND_OPTIONS", {}).get("assertUserInformationMatchFields", [])
+
+    for field in defined_fields:
+
+        if str(details.get(field, "")) != str(getattr(user, field, "")):
+            LOG.exception(
+                "Credentials not allowed: field %s returned by provider does not match with the user %s information.",
+                field,
+                user.username,
+            )
+            raise AuthFailed(backend, "Credentials not allowed.")  # pylint: disable=raising-non-exception

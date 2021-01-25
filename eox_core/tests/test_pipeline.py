@@ -2,10 +2,11 @@
 """
 Tests for the pipeline module used in third party auth.
 """
+from django.contrib.auth.models import User
 from django.test import TestCase
 from mock import MagicMock, PropertyMock, patch
 
-from eox_core.pipeline import check_disconnect_pipeline_enabled, ensure_user_has_profile
+from eox_core.pipeline import assert_user_information, check_disconnect_pipeline_enabled, ensure_user_has_profile
 
 
 class EnsureUserProfileTest(TestCase):
@@ -41,7 +42,7 @@ class EnsureUserProfileTest(TestCase):
         backend().get_user_profile().objects.create.assert_called()
 
 
-class TestDisconnectionPipeline(TestCase):
+class DisconnectionPipelineTest(TestCase):
     """Test disconnection from TPA provider."""
 
     def setUp(self):
@@ -72,3 +73,53 @@ class TestDisconnectionPipeline(TestCase):
         self.backend_mock.setting.return_value.get.return_value = None
 
         self.assertIsNone(check_disconnect_pipeline_enabled(self.backend_mock))
+
+
+class ConnectionPipelineTest(TestCase):
+    """Test custom pipeline steps for connection to a TPA provider."""
+
+    def setUp(self):
+        self.backend_mock = MagicMock()
+        self.user_mock = MagicMock(spec=User)
+        self.user_mock.email = "test.example.com"
+        self.user_mock.username = "test"
+
+    def test_connect_matching_users(self):
+        """
+        Test connection pipeline when the information from the user from the LMS matches
+        the information returned by the TPA provider.
+        """
+        details = {
+            "email": "test.example.com",
+            "username": "test",
+        }
+        self.backend_mock.setting.return_value.get.return_value = ["email", "username"]
+
+        self.assertIsNone(assert_user_information(details, self.user_mock, self.backend_mock))
+
+    def test_connect_unmatching_users(self):
+        """
+        Test connection pipeline when user's information from the LMS does not match
+        the information returned by the TPA provider.
+        """
+        details = {
+            "email": "test.notexample.com",
+            "username": "test",
+        }
+        self.backend_mock.setting.return_value.get.return_value = ["email", "username"]
+
+        with self.assertRaises(Exception):
+            assert_user_information(details, self.user_mock, self.backend_mock)
+
+    def test_connect_any_user(self):
+        """
+        Test connection pipeline when matching fields are not defined. This means that
+        does not matter if the users match or not.
+        """
+        details = {
+            "email": "test.notExample.com",
+            "username": "testExample",
+        }
+        self.backend_mock.setting.return_value.get.return_value = []
+
+        self.assertIsNone(assert_user_information(details, self.user_mock, self.backend_mock))
