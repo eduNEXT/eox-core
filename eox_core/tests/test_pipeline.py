@@ -5,7 +5,7 @@ Tests for the pipeline module used in third party auth.
 from django.test import TestCase
 from mock import MagicMock, PropertyMock, patch
 
-from eox_core.pipeline import check_disconnect_pipeline_enabled, ensure_user_has_profile
+from eox_core.pipeline import check_disconnect_pipeline_enabled, check_user_email_domain, ensure_user_has_profile
 
 
 class EnsureUserProfileTest(TestCase):
@@ -41,7 +41,7 @@ class EnsureUserProfileTest(TestCase):
         backend().get_user_profile().objects.create.assert_called()
 
 
-class TestDisconnectionPipeline(TestCase):
+class DisconnectionPipelineTest(TestCase):
     """Test disconnection from TPA provider."""
 
     def setUp(self):
@@ -72,3 +72,42 @@ class TestDisconnectionPipeline(TestCase):
         self.backend_mock.setting.return_value.get.return_value = None
 
         self.assertIsNone(check_disconnect_pipeline_enabled(self.backend_mock))
+
+
+class ConnectionPipelineTest(TestCase):
+    """Test connection to a TPA provider."""
+
+    def setUp(self):
+        self.backend_mock = MagicMock()
+        self.user_mock = MagicMock()
+
+    def test_correct_email_domain(self):
+        """
+        Test connection to a TPA provider using an email with domain defined in TPA
+        provider settings.
+        """
+        self.backend_mock.setting.return_value.get.return_value = "^example[.]com$"
+        self.user_mock.email = "test_user@example.com"
+
+        self.assertIsNone(check_user_email_domain(self.user_mock, self.backend_mock))
+
+    def test_incorrect_email_domain(self):
+        """
+        Test connection to a TPA provider using an email with domain different from the
+        one defined in TPA provider settings.
+        """
+        self.backend_mock.setting.return_value.get.return_value = "^example[.]com$"
+        self.user_mock.email = "test_user@notexample.com"
+
+        with self.assertRaises(Exception):
+            check_user_email_domain(self.user_mock, self.backend_mock)
+
+    def test_not_defined_email_domain(self):
+        """
+        Test connection to a TPA provider without defining an email pattern in the TPA
+        provider settings.
+        """
+        self.backend_mock.setting.return_value.get.return_value = None
+        self.user_mock.email = "test_user@example.com"
+
+        self.assertIsNone(check_user_email_domain(self.user_mock, self.backend_mock))

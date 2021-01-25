@@ -102,13 +102,16 @@ def check_user_email_domain(user, backend, *args, **kwargs):
     For example:
         To allow just emails with domain "example.com", then you must add:
 
-        "BACKEND_OPTIONS": { "emailDomainPattern":"example\.com$" },
+        "BACKEND_OPTIONS": { "emailDomainPattern":"example[.]com$" },
+
+    To avoid connection it's recommended to place this function before `social_core.pipeline.social_auth.associate_user`
+    and after "third_party_auth.pipeline.ensure_user_information".
     """
     domain_pattern = backend.setting("BACKEND_OPTIONS", {}).get("emailDomainPattern") if backend else None
 
     if user and domain_pattern:
 
-        email_domain = re.search("@.+", user.email).group(0)
+        email_domain = re.search("@.+", user.email).group(0)[1:]
 
         if not re.search(domain_pattern, email_domain):
             LOG.exception(
@@ -116,4 +119,4 @@ def check_user_email_domain(user, backend, *args, **kwargs):
                 user.username,
                 user.email,
             )
-            raise AuthFailed(backend)  # pylint: disable=raising-non-exception
+            raise AuthFailed(backend, "Credentials not allowed.")  # pylint: disable=raising-non-exception
