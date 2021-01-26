@@ -22,13 +22,17 @@ from eox_core.api.v1.serializers import (
     EdxappCourseEnrollmentQuerySerializer,
     EdxappCourseEnrollmentSerializer,
     EdxappCoursePreEnrollmentSerializer,
+    EdxappGradeSerializer,
     EdxappUserQuerySerializer,
     EdxappUserReadOnlySerializer,
     EdxappUserSerializer,
     WrittableEdxappUserSerializer,
 )
 from eox_core.edxapp_wrapper.bearer_authentication import BearerAuthentication
+from eox_core.edxapp_wrapper.coursekey import get_valid_course_key
+from eox_core.edxapp_wrapper.courseware import get_courseware_courses
 from eox_core.edxapp_wrapper.enrollments import create_enrollment, delete_enrollment, get_enrollment, update_enrollment
+from eox_core.edxapp_wrapper.grades import get_course_grade_factory
 from eox_core.edxapp_wrapper.pre_enrollments import (
     create_pre_enrollment,
     delete_pre_enrollment,
@@ -59,7 +63,7 @@ class UserQueryMixin:
         """
         super(UserQueryMixin, self).initial(request, *args, **kwargs)
 
-        if hasattr(request, 'site'):
+        if hasattr(request, "site"):
             self.site = request.site
 
     def get_query_params(self, request):
@@ -82,19 +86,19 @@ class UserQueryMixin:
         if not query_params:
             query_params = self.get_query_params(request)
 
-        username = query_params.get('username', None)
-        email = query_params.get('email', None)
+        username = query_params.get("username", None)
+        email = query_params.get("email", None)
 
         if not email and not username:
-            raise ValidationError(detail='Email or username needed')
+            raise ValidationError(detail="Email or username needed")
 
         user_query = {}
-        if hasattr(self, 'site') and self.site:
-            user_query['site'] = self.site
+        if hasattr(self, "site") and self.site:
+            user_query["site"] = self.site
         if username:
-            user_query['username'] = username
+            user_query["username"] = username
         elif email:
-            user_query['email'] = email
+            user_query["email"] = email
 
         return user_query
 
@@ -115,7 +119,7 @@ class EdxappUser(UserQueryMixin, APIView):
         serializer = EdxappUserQuerySerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
-        data['site'] = get_current_site(request)
+        data["site"] = get_current_site(request)
         user, msg = create_edxapp_user(**data)
 
         serialized_user = EdxappUserSerializer(user)
@@ -130,13 +134,19 @@ class EdxappUser(UserQueryMixin, APIView):
         """
         query = self.get_user_query(request)
         user = get_edxapp_user(**query)
-        admin_fields = getattr(settings, 'ACCOUNT_VISIBILITY_CONFIGURATION', {}).get('admin_fields', {})
-        serialized_user = EdxappUserReadOnlySerializer(user, custom_fields=admin_fields, context={'request': request})
+        admin_fields = getattr(settings, "ACCOUNT_VISIBILITY_CONFIGURATION", {}).get(
+            "admin_fields", {}
+        )
+        serialized_user = EdxappUserReadOnlySerializer(
+            user, custom_fields=admin_fields, context={"request": request}
+        )
         response_data = serialized_user.data
         # Show a warning if the request is providing email and username
         # to let the client know we're giving priority to the username
-        if 'username' and 'email' in self.query_params:
-            response_data['warning'] = 'The username prevails over the email when both are provided to get the user.'
+        if "username" and "email" in self.query_params:
+            response_data[
+                "warning"
+            ] = "The username prevails over the email when both are provided to get the user."
 
         return Response(response_data)
 
@@ -145,6 +155,7 @@ class EdxappUserUpdater(UserQueryMixin, APIView):
     """
     Handles API requests to partially update users.
     """
+
     authentication_classes = (BearerAuthentication, SessionAuthentication)
     permission_classes = (EoxCoreAPIPermission,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
@@ -180,8 +191,12 @@ class EdxappUserUpdater(UserQueryMixin, APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
-        admin_fields = getattr(settings, 'ACCOUNT_VISIBILITY_CONFIGURATION', {}).get('admin_fields', {})
-        serialized_user = EdxappUserReadOnlySerializer(user, custom_fields=admin_fields, context={'request': request})
+        admin_fields = getattr(settings, "ACCOUNT_VISIBILITY_CONFIGURATION", {}).get(
+            "admin_fields", {}
+        )
+        serialized_user = EdxappUserReadOnlySerializer(
+            user, custom_fields=admin_fields, context={"request": request}
+        )
         return Response(serialized_user.data)
 
 
@@ -189,6 +204,7 @@ class EdxappEnrollment(UserQueryMixin, APIView):
     """
     Handles API requests to create users
     """
+
     authentication_classes = (BearerAuthentication, SessionAuthentication)
     permission_classes = (EoxCoreAPIPermission,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
@@ -199,7 +215,7 @@ class EdxappEnrollment(UserQueryMixin, APIView):
             200: EdxappCourseEnrollmentSerializer,
             202: "User doesn't belong to site.",
             400: "Bad request, invalid course_id or missing either email or username.",
-        }
+        },
     )
     def post(self, request, *args, **kwargs):
         """
@@ -280,7 +296,9 @@ class EdxappEnrollment(UserQueryMixin, APIView):
         - 400: Bad request, invalid course_id or missing either email or username.
         """
         data = request.data
-        return EdxappEnrollment.prepare_multiresponse(data, self.single_enrollment_create)
+        return EdxappEnrollment.prepare_multiresponse(
+            data, self.single_enrollment_create
+        )
 
     @apidocs.schema(
         body=EdxappCourseEnrollmentSerializer,
@@ -288,7 +306,7 @@ class EdxappEnrollment(UserQueryMixin, APIView):
             200: EdxappCourseEnrollmentSerializer,
             202: "User or enrollment doesn't belong to site.",
             400: "Bad request, invalid course_id or missing either email or username.",
-        }
+        },
     )
     def put(self, request, *args, **kwargs):
         """
@@ -343,32 +361,33 @@ class EdxappEnrollment(UserQueryMixin, APIView):
         - 400: Bad request, invalid course_id or missing either email or username.
         """
         data = request.data
-        return EdxappEnrollment.prepare_multiresponse(data, self.single_enrollment_update)
+        return EdxappEnrollment.prepare_multiresponse(
+            data, self.single_enrollment_update
+        )
 
     @apidocs.schema(
         parameters=[
             apidocs.query_parameter(
-                name='username',
+                name="username",
                 param_type=str,
-                description='**required**, The username used to identify a user enrolled on the course. Use either username or email.'
+                description="**required**, The username used to identify a user enrolled on the course. Use either username or email.",
             ),
             apidocs.query_parameter(
-                name='email',
+                name="email",
                 param_type=str,
-                description='**required**, The email used to identify a user enrolled on the course. Use either username or email.'
+                description="**required**, The email used to identify a user enrolled on the course. Use either username or email.",
             ),
             apidocs.query_parameter(
-                name='course_id',
+                name="course_id",
                 param_type=str,
-                description='**required**, The course id for the enrollment you want to check.'
+                description="**required**, The course id for the enrollment you want to check.",
             ),
         ],
         responses={
             200: EdxappCourseEnrollmentSerializer,
-            400: 'Bad request, missing course_id or either email or username',
-            404: 'User or course not found',
-        }
-
+            400: "Bad request, missing course_id or either email or username",
+            404: "User or course not found",
+        },
     )
     def get(self, request, *args, **kwargs):
         """
@@ -393,14 +412,14 @@ class EdxappEnrollment(UserQueryMixin, APIView):
         user_query = self.get_user_query(request)
         user = get_edxapp_user(**user_query)
 
-        course_id = self.query_params.get('course_id', None)
+        course_id = self.query_params.get("course_id", None)
 
         if not course_id:
-            raise ValidationError(detail='You have to provide a course_id')
+            raise ValidationError(detail="You have to provide a course_id")
 
         enrollment_query = {
-            'username': user.username,
-            'course_id': course_id,
+            "username": user.username,
+            "course_id": course_id,
         }
         enrollment, errors = get_enrollment(**enrollment_query)
 
@@ -412,27 +431,26 @@ class EdxappEnrollment(UserQueryMixin, APIView):
     @apidocs.schema(
         parameters=[
             apidocs.query_parameter(
-                name='username',
+                name="username",
                 param_type=str,
-                description='**required**, The username used to identify a user enrolled on the course. Use either username or email.'
+                description="**required**, The username used to identify a user enrolled on the course. Use either username or email.",
             ),
             apidocs.query_parameter(
-                name='email',
+                name="email",
                 param_type=str,
-                description='**required**, The email used to identify a user enrolled on the course. Use either username or email.'
+                description="**required**, The email used to identify a user enrolled on the course. Use either username or email.",
             ),
             apidocs.query_parameter(
-                name='course_id',
+                name="course_id",
                 param_type=str,
-                description='**required**, The course id for the enrollment you want to check.'
+                description="**required**, The course id for the enrollment you want to check.",
             ),
         ],
         responses={
-            204: 'Empty response',
-            400: 'Bad request, missing course_id or either email or username',
-            404: 'User or course not found',
-        }
-
+            204: "Empty response",
+            400: "Bad request, missing course_id or either email or username",
+            404: "User or course not found",
+        },
     )
     def delete(self, request, *args, **kwargs):
         """
@@ -450,10 +468,10 @@ class EdxappEnrollment(UserQueryMixin, APIView):
         user_query = self.get_user_query(request)
         user = get_edxapp_user(**user_query)
 
-        course_id = self.query_params.get('course_id', None)
+        course_id = self.query_params.get("course_id", None)
 
         if not course_id:
-            raise ValidationError(detail='You have to provide a course_id')
+            raise ValidationError(detail="You have to provide a course_id")
 
         delete_enrollment(user=user, course_id=course_id)
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -487,10 +505,10 @@ class EdxappEnrollment(UserQueryMixin, APIView):
         user_query = self.get_user_query(None, query_params=kwargs)
         user = get_edxapp_user(**user_query)
 
-        course_id = kwargs.pop('course_id', None)
+        course_id = kwargs.pop("course_id", None)
         if not course_id:
-            raise ValidationError(detail='You have to provide a course_id for updates')
-        mode = kwargs.pop('mode', None)
+            raise ValidationError(detail="You have to provide a course_id for updates")
+        mode = kwargs.pop("mode", None)
 
         return update_enrollment(user, course_id, mode, **kwargs)
 
@@ -529,7 +547,7 @@ class EdxappEnrollment(UserQueryMixin, APIView):
                 }
                 multiple_responses.append(enrollment_query)
 
-        if many or 'bundle_id' in request_data:
+        if many or "bundle_id" in request_data:
             response = multiple_responses
         else:
             response = multiple_responses[0]
@@ -544,7 +562,7 @@ class EdxappEnrollment(UserQueryMixin, APIView):
         Handle exception: log it
         """
         if isinstance(exc, APIException):
-            LOG.error('API Error: %s', repr(exc.detail))
+            LOG.error("API Error: %s", repr(exc.detail))
 
         return super(EdxappEnrollment, self).handle_exception(exc)
 
@@ -553,6 +571,7 @@ class EdxappPreEnrollment(APIView):
     """
     Handles API requests to manage whitelistings (pre-enrollments)
     """
+
     authentication_classes = (BearerAuthentication, SessionAuthentication)
     permission_classes = (EoxCoreAPIPermission,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
@@ -564,9 +583,11 @@ class EdxappPreEnrollment(APIView):
         serializer = EdxappCoursePreEnrollmentSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
-        course_id = data.pop('course_id', None)
+        course_id = data.pop("course_id", None)
         pre_enrollment, warning = create_pre_enrollment(course_id=course_id, **data)
-        response_data = EdxappCoursePreEnrollmentSerializer(pre_enrollment, context=warning).data
+        response_data = EdxappCoursePreEnrollmentSerializer(
+            pre_enrollment, context=warning
+        ).data
         return Response(response_data)
 
     def put(self, request, *args, **kwargs):
@@ -576,19 +597,19 @@ class EdxappPreEnrollment(APIView):
         serializer = EdxappCoursePreEnrollmentSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
-        email = data.get('email')
-        course_id = data.get('course_id')
-        auto_enroll = data.pop('auto_enroll', False)
+        email = data.get("email")
+        course_id = data.get("course_id")
+        auto_enroll = data.pop("auto_enroll", False)
 
         pre_enrollment_query = {
-            'email': email,
-            'course_id': course_id,
+            "email": email,
+            "course_id": course_id,
         }
 
         pre_enrollment = get_pre_enrollment(**pre_enrollment_query)
         update_query = {
-            'pre_enrollment': pre_enrollment,
-            'auto_enroll': auto_enroll,
+            "pre_enrollment": pre_enrollment,
+            "auto_enroll": auto_enroll,
         }
         updated_pre_enrollment = update_pre_enrollment(**update_query)
         response = EdxappCoursePreEnrollmentSerializer(updated_pre_enrollment).data
@@ -605,17 +626,17 @@ class EdxappPreEnrollment(APIView):
         serializer = EdxappCoursePreEnrollmentSerializer(data=query_params)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
-        email = data.get('email')
-        course_id = data.get('course_id')
+        email = data.get("email")
+        course_id = data.get("course_id")
 
         pre_enrollment_query = {
-            'email': email,
-            'course_id': course_id,
+            "email": email,
+            "course_id": course_id,
         }
 
         pre_enrollment = get_pre_enrollment(**pre_enrollment_query)
         delete_query = {
-            'pre_enrollment': pre_enrollment,
+            "pre_enrollment": pre_enrollment,
         }
         delete_pre_enrollment(**delete_query)
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -640,7 +661,7 @@ class EdxappPreEnrollment(APIView):
         Handle exception: log it
         """
         data = self.request.data or self.request.query_params
-        self.log('API Error', data, exc)
+        self.log("API Error", data, exc)
         return super(EdxappPreEnrollment, self).handle_exception(exc)
 
     def log(self, desc, data, exception=None):
@@ -649,20 +670,115 @@ class EdxappPreEnrollment(APIView):
         """
         log_data = []
         log_data.append(desc)
-        log_data.append('Exception:')
+        log_data.append("Exception:")
         if isinstance(exception, APIException):
             log_data.append(repr(exception.detail))
         else:
             log_data.append(repr(exception))
 
-        log_data.append('Request data:')
+        log_data.append("Request data:")
         if not data:
-            log_data.append('Empty request')
+            log_data.append("Empty request")
         else:
             for key, value in data.items():
                 log_data.append("{}: {}".format(key, value))
 
-        LOG.error(' '.join(log_data))
+        LOG.error(" ".join(log_data))
+
+
+class EdxappGrade(UserQueryMixin, APIView):
+    """
+    Handles API requests to manage course grades
+    """
+
+    authentication_classes = (BearerAuthentication, SessionAuthentication)
+    permission_classes = (EoxCoreAPIPermission,)
+    renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
+
+    def get(self, request):
+        """
+        Retrieves Grades information for given a user and course_id
+
+        **Example Requests**
+
+            GET /eox-core/api/v1/grade/?username=johndoe&
+            course_id=course-v1:edX+DemoX+Demo_Course
+
+            Request data: {
+              "username": "johndoe",
+              "course_id": "course-v1:edX+DemoX+Demo_Course",
+            }
+
+        **Returns**
+
+        - 200: Success.
+        - 400: Bad request, missing course_id or either email or username.
+        - 404: User, course or enrollment not found.
+        """
+        user_query = self.get_user_query(request)
+        user = get_edxapp_user(**user_query)
+
+        course_id = self.query_params.get("course_id", None)
+        detailed = self.query_params.get("detailed", False)
+        grading_policy = self.query_params.get("grading_policy", False)
+
+        if not course_id:
+            raise ValidationError(detail="You have to provide a course_id")
+
+        _, errors = get_enrollment(username=user.username, course_id=course_id)
+
+        if errors:
+            raise NotFound(errors)
+
+        grade_factory = get_course_grade_factory()
+        course_key = get_valid_course_key(course_id)
+        course = get_courseware_courses().get_course_by_id(course_key)
+        course_grade = grade_factory().read(user, course)
+        response = {"earned_grade": course_grade.percent}
+
+        if detailed:
+            breakdown = self._section_breakdown(course_grade.subsection_grades)
+            response["section_breakdown"] = breakdown
+        if grading_policy:
+            response["grading_policy"] = course.grading_policy
+
+        return Response(EdxappGradeSerializer(response).data)
+
+    def _section_breakdown(self, subsection_grades):
+        """
+        Given a list of subsections grades determine if the subsection is
+        graded and creates a list of grade data for each subsection.
+
+        This logic comes from `edunext-platform/lms/djangoapps/grades/rest_api/v1/gradebook_views`
+        with a few changes in the return value: `label` and `module_id` were
+        removed and `category` was renamed to `assignment_type` to keep
+        consistency with the names used in `grading_policy`.
+        """
+        breakdown = []
+        for subsection in subsection_grades.values():
+            if not subsection.graded:
+                continue
+
+            attempted = False
+            score_earned = 0
+            score_possible = 0
+
+            if subsection.attempted_graded or subsection.override:
+                attempted = True
+                score_earned = subsection.graded_total.earned
+                score_possible = subsection.graded_total.possible
+
+            breakdown.append(
+                {
+                    "attempted": attempted,
+                    "assignment_type": subsection.format,
+                    "percent": subsection.percent_graded,
+                    "score_earned": score_earned,
+                    "score_possible": score_possible,
+                    "subsection_name": subsection.display_name,
+                }
+            )
+        return breakdown
 
 
 class UserInfo(APIView):
@@ -670,6 +786,7 @@ class UserInfo(APIView):
     Auth-only view to check some basic info about the current user
     Can use Oauth2/Session
     """
+
     authentication_classes = (BearerAuthentication, SessionAuthentication)
     permission_classes = (EoxCoreAPIPermission,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
@@ -680,13 +797,13 @@ class UserInfo(APIView):
         """
         content = {
             # `django.contrib.auth.User` instance.
-            'user': six.text_type(request.user.username),
-            'email': six.text_type(request.user.email),
-            'auth': six.text_type(request.auth)
+            "user": six.text_type(request.user.username),
+            "email": six.text_type(request.user.email),
+            "auth": six.text_type(request.auth),
         }
 
         if request.user.is_staff:
-            content['is_superuser'] = request.user.is_superuser
-            content['is_staff'] = request.user.is_staff
+            content["is_superuser"] = request.user.is_superuser
+            content["is_staff"] = request.user.is_staff
 
         return Response(content)
