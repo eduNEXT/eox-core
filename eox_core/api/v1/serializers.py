@@ -257,7 +257,7 @@ class EdxappGradingPolicySerializer(serializers.Serializer):
     """
     Serializes the course grading policy
     """
-    grader = EdxappGradingRawPolicySerializer(many=True, required=False, source="GRADER")
+    grader = EdxappGradingRawPolicySerializer(many=True, source="GRADER")
     grade_cutoffs = serializers.DictField(child=serializers.FloatField(), source="GRADE_CUTOFFS")
 
 
@@ -268,3 +268,37 @@ class EdxappGradeSerializer(serializers.Serializer):
     earned_grade = serializers.FloatField()
     grading_policy = EdxappGradingPolicySerializer(required=False)
     section_breakdown = EdxappSectionBreakdownSerializer(many=True, required=False)
+
+    class Meta:
+        """
+        Add extra details for swagger
+        """
+        swagger_schema_fields = {
+            "example":
+            {
+                "earned_grade": 0.5,
+                "grading_policy": {
+                    "grader": [
+                        {
+                            "assignment_type": "Homework",
+                            "count": 1,
+                            "dropped": 0,
+                            "weight": 1.0
+                        }
+                    ],
+                    "grade_cutoffs": {
+                        "Pass": 0.5
+                    }
+                },
+                "section_breakdown": [
+                    {
+                        "attempted": True,
+                        "assignment_type": "Homework",
+                        "percent": 0.5,
+                        "score_earned": 5,
+                        "score_possible": 10,
+                        "subsection_name": "Homework - Questions"
+                    }
+                ]
+            }
+        }

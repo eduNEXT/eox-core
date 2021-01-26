@@ -695,19 +695,73 @@ class EdxappGrade(UserQueryMixin, APIView):
     permission_classes = (EoxCoreAPIPermission,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
+    @apidocs.schema(
+        parameters=[
+            apidocs.query_parameter(
+                name="username",
+                param_type=str,
+                description="**required**, The username used to identify a user enrolled on the course. Use either username or email.",
+            ),
+            apidocs.query_parameter(
+                name="email",
+                param_type=str,
+                description="**required**, The email used to identify a user enrolled on the course. Use either username or email.",
+            ),
+            apidocs.query_parameter(
+                name="course_id",
+                param_type=str,
+                description="**required**, The course id for the enrollment you want to check.",
+            ),
+            apidocs.query_parameter(
+                name="detailed",
+                param_type=bool,
+                description="**optional**, If true include detailed data for each graded subsection",
+            ),
+            apidocs.query_parameter(
+                name="grading_policy",
+                param_type=bool,
+                description="**optional**, If true include course grading policy.",
+            ),
+        ],
+        responses={
+            200: EdxappGradeSerializer,
+            400: "Bad request, missing course_id or either email or username",
+            404: "User, course or enrollment not found",
+        },
+    )
     def get(self, request):
         """
         Retrieves Grades information for given a user and course_id
 
         **Example Requests**
 
-            GET /eox-core/api/v1/grade/?username=johndoe&
-            course_id=course-v1:edX+DemoX+Demo_Course
+            GET /eox-core/api/v1/grade/?username=johndoe&course_id=course-v1:edX+DemoX+Demo_Course
 
             Request data: {
               "username": "johndoe",
               "course_id": "course-v1:edX+DemoX+Demo_Course",
             }
+
+        **Response details**
+
+        - `earned_grade`: Final user score for the course.
+        - `section_breakdown` (**optional**): Details of each grade subsection.
+            - `attempted`: Whether the learner attempted the assignment.
+            - `assignment_type`: General category of the assignment.
+            - `percent`: Grade obtained by the user on this subsection.
+            - `score_earned`: The score a user earned on this subsection.
+            - `score_possible`: Highest possible score a user can earn on this subsection.
+            - `subsection_name`: Name of the subsection.
+        - `grading_policy` (**optional**): Course grading policy.
+            - `grade_cutoff`: Score needed to reach each grade.
+            - `grader`: Details of each assignment type used by the Grader.
+                - `assignment_type`: General category of the assignment.
+                - `count`: Number of assignments of this type.
+                - `dropped`: The number of assignments of this type that the grader will drop. The grader will drop the lowest-scored assignments first.
+                - `weight`: Weight of this type of assignment towards the final grade.
+
+        More information about grading can be found in the
+        [edX documentation](https://edx.readthedocs.io/projects/open-edx-building-and-running-a-course/en/latest/student_progress/course_grades.html).
 
         **Returns**
 

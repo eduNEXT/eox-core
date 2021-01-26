@@ -11,6 +11,9 @@ Change Log
 .. There should always be an "Unreleased" section for changes pending release.
 Unreleased
 ----------
+Added
+~~~~~
+* New Grades API to retrieve grades from a single user on a course.
 
 [4.0.0] - 2021-1-20
 --------------------
