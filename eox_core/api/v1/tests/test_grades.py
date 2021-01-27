@@ -46,10 +46,6 @@ class TestGradesAPI(TestCase):
         get_edxapp_user.return_value.username = "test"
         get_enrollment.return_value = None, None
         grade_factory.return_value.return_value.read.return_value.percent = 0.5
-        grade_factory.return_value.return_value.read.return_value.subsection_grades = []
-        get_courseware_courses.return_value.get_course_by_id.return_value.grading_policy = (
-            {}
-        )
         params = {
             "course_id": "course-v1:org+course+run",
             "username": "test",
@@ -116,7 +112,8 @@ class TestGradesAPI(TestCase):
         grade_factory.return_value.return_value.read.return_value.percent = 0.5
         grade_factory.return_value.return_value.read.return_value.subsection_grades = {}
         get_courseware_courses.return_value.get_course_by_id.return_value.grading_policy = {
-            "GRADE_CUTOFFS": {}
+            "GRADE_CUTOFFS": {},
+            "GRADER": [],
         }
         params = {
             "username": "test",
@@ -126,7 +123,7 @@ class TestGradesAPI(TestCase):
         }
         expected_response = {
             "earned_grade": 0.5,
-            "grading_policy": {"grade_cutoffs": {}},
+            "grading_policy": {"grade_cutoffs": {}, "grader": []},
             "section_breakdown": [],
         }
 
