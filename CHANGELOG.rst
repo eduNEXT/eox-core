@@ -15,7 +15,14 @@ Added
 ~~~~~
 * New Grades API to retrieve grades from a single user on a course.
 
-[4.0.0] - 2021-1-20
+[4.2.0] - 2021-1-27
+--------------------
+Added
+~~~~~
+* New Grades API to retrieve grades from a single user on a course.
+* Pipeline function to assert information returned by the TPA provider.
+
+[4.1.0] - 2021-1-20
 --------------------
 Added
 ~~~~~
