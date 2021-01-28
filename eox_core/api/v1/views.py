@@ -790,10 +790,10 @@ class EdxappGrade(UserQueryMixin, APIView):
         course_grade = grade_factory().read(user, course)
         response = {"earned_grade": course_grade.percent}
 
-        if detailed:
+        if detailed in ("True", "true", "on", "1"):
             breakdown = self._section_breakdown(course_grade.subsection_grades)
             response["section_breakdown"] = breakdown
-        if grading_policy:
+        if grading_policy in ("True", "true", "on", "1"):
             response["grading_policy"] = course.grading_policy
 
         return Response(EdxappGradeSerializer(response).data)

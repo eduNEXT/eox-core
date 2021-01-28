@@ -12,7 +12,7 @@ import requests
 from django.test import TestCase
 
 
-@pytest.mark.skipif(bool(environ.get("CI")), reason="Do not run on CI")
+@pytest.mark.skipif(not environ.get("TEST_INTEGRATION"), reason="Run only explicitly")
 class TestEnrollmentIntegration(TestCase):  # pragma: no cover
     # pylint: disable=too-many-public-methods
     """Test suite"""
