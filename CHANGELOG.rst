@@ -11,6 +11,8 @@ Change Log
 .. There should always be an "Unreleased" section for changes pending release.
 Unreleased
 ----------
+[4.3.0] - 2021-1-28
+--------------------
 Added
 ~~~~~
 * Integration tests for the Grades API.
@@ -18,7 +20,8 @@ Added
 Changed
 ~~~~~~
 * Integration tests now are only run if an environment variable
-  ``TEST_INTEGRATION`` is set.
+  ``TEST_INTEGRATION`` is set.  
+* Fix the parsing of optional parameters for the Grades API.
 
 [4.2.0] - 2021-1-27
 --------------------
