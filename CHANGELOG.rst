@@ -13,7 +13,12 @@ Unreleased
 ----------
 Added
 ~~~~~
-* New Grades API to retrieve grades from a single user on a course.
+* Integration tests for the Grades API.
+
+Changed
+~~~~~~
+* Integration tests now are only run if an environment variable
+  ``TEST_INTEGRATION`` is set.
 
 [4.2.0] - 2021-1-27
 --------------------

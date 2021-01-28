@@ -354,3 +354,76 @@ The prerequisites mentioned on `Data requirements`_ still apply;
 4. You must have a course on site 1 that is **not** available on site 2
    with audit and honor as available modes.  Change:
    ``site1_data['course']['id']``
+
+Grades API
++++++++++++++++
+
+The info about Running, Data requirements and ``test_data`` layout is the same
+as in `Enrollments Api`_.
+
+Current Tests
+-------------
+
+The Grades API only supports the read operation in consequence those are the
+only tests present.
+
+READ
+~~~~
+
+  .. code::
+
+    SetUp   : Create default enrollment
+
+  1. Read a user's final grade in a course  ✔
+  2. Read a user's final grade and by subsection in a course  ✔
+  3. Read a user's final grade, by subsection and course grading policy  ✔
+  4. Read a user's grade, with user and course belonging to another site. ❌
+
+**Requests arguments**
+
+.. list-table::
+
+  * - Nº
+    - Method
+    - User
+    - Course
+    - Site
+    - ``detailed``
+    - ``grading_policy``
+
+  * - 1
+    - GET
+    - ``user_site1``
+    - ``site1_course``
+    - ``site1``
+    - ``false``
+    - ``false``
+
+  * - 2
+    - GET
+    - ``user_site1``
+    - ``site1_course``
+    - ``site1``
+    - ``true``
+    - ``false``
+
+  * - 3
+    - GET
+    - ``user_site1``
+    - ``site1_course``
+    - ``site1``
+    - ``true``
+    - ``true``
+
+  * - 3
+    - GET
+    - ``user_site1``
+    - ``site1_course``
+    - ``site2``
+    - ``true``
+    - ``true``
+
+Testing on stage
+----------------
+
+Follow steps 1-3 from the `Enrollments API`_  *Testing on stage* instructions.
