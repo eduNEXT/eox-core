@@ -15,6 +15,7 @@ from openedx.core.djangoapps.site_configuration import helpers as configuration_
 from openedx.core.djangoapps.user_api.accounts import USERNAME_MAX_LENGTH  # pylint: disable=import-error,unused-import
 from openedx.core.djangoapps.user_api.accounts.serializers import UserReadOnlySerializer  # pylint: disable=import-error
 from openedx.core.djangoapps.user_api.preferences import api as preferences_api  # pylint: disable=import-error
+from openedx.core.djangoapps.user_authn.utils import generate_password  # pylint: disable=import-error,unused-import
 from openedx.core.djangoapps.user_authn.views.registration_form import (  # pylint: disable=import-error
     AccountCreationForm,
 )
