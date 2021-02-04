@@ -82,3 +82,8 @@ def get_user_profile():
     except ImportError:
         UserProfile = object
     return UserProfile
+
+
+def generate_password(*args, **kwargs):
+    """ Generates a password """
+    return "ThisShouldBeARandomPassword"

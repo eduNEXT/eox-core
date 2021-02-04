@@ -6,7 +6,44 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from mock import MagicMock, PropertyMock, patch
 
-from eox_core.pipeline import assert_user_information, check_disconnect_pipeline_enabled, ensure_user_has_profile
+from eox_core.pipeline import (
+    assert_user_information,
+    check_disconnect_pipeline_enabled,
+    ensure_new_user_has_usable_password,
+    ensure_user_has_profile,
+)
+
+
+class EnsureUserPasswordUsableTest(TestCase):
+    """
+    Test the ensure_new_user_has_usable_password pipeline step.
+    """
+    def setUp(self):
+        self.backend_mock = MagicMock()
+        self.user_mock = MagicMock(spec=User)
+
+    def test_new_user_gets_usable_password(self):
+        """
+        A new user with an unusable password will get a new password.
+        """
+        self.user_mock.has_usable_password.return_value = False
+        ensure_new_user_has_usable_password(self.backend_mock, user=self.user_mock, is_new=True)
+        self.user_mock.save.assert_called()
+
+    def test_new_user_already_with_usable_password(self):
+        """
+        A new user that already has an usable password won't be modified.
+        """
+        self.user_mock.has_usable_password.return_value = True
+        ensure_new_user_has_usable_password(self.backend_mock, user=self.user_mock, is_new=True)
+        self.user_mock.save.assert_not_called()
+
+    def test_non_new_user(self):
+        """
+        A non new user won't be modified by this step.
+        """
+        ensure_new_user_has_usable_password(self.backend_mock, user=self.user_mock, is_new=False)
+        self.user_mock.save.assert_not_called()
 
 
 class EnsureUserProfileTest(TestCase):

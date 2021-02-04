@@ -5,7 +5,7 @@ import logging
 
 from django.db.models.signals import post_save
 
-from eox_core.edxapp_wrapper.users import get_user_profile
+from eox_core.edxapp_wrapper.users import generate_password, get_user_profile
 
 try:
     from social_core.exceptions import AuthFailed, NotAllowedToDisconnect
@@ -14,6 +14,23 @@ except ImportError:
     NotAllowedToDisconnect = object
 
 LOG = logging.getLogger(__name__)
+
+
+# pylint: disable=unused-argument,keyword-arg-before-vararg
+def ensure_new_user_has_usable_password(backend, is_new=None, user=None, **kwargs):
+    """
+    This pipeline function assigns an usable password to an user in case that the user has an unusable password on user cretion.
+    At the creation of new users through some TPA providers, some of them are created with an unusable password, a user with an unusable password cannot login
+    properly in the platform if the common.djangoapps.third_party.pipeline.set_logged_in_cookies step is enabled.
+
+    See: https://github.com/eduNEXT/edunext-platform/blob/c83b82a4aba2a5496e3b7da83972a8edf25fcdd2/common/djangoapps/third_party_auth/pipeline.py#L673
+
+    It's recommended to place this step after the social core step that creates the users: (social_core.pipeline.user.create_user).
+    """
+    if user and is_new and not user.has_usable_password():
+        user.set_password(generate_password(length=25))
+        user.save()
+        LOG.info('Assigned an usable password to the user %s on creation.', user)
 
 
 # pylint: disable=unused-argument,keyword-arg-before-vararg

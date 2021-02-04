@@ -86,3 +86,13 @@ def get_username_max_length():
     backend_function = settings.EOX_CORE_USERS_BACKEND
     backend = import_module(backend_function)
     return backend.USERNAME_MAX_LENGTH
+
+
+def generate_password(*args, **kwargs):
+    """
+    Runs the generate_password funcion of edx-platform used to generate
+     a random password.
+    """
+    backend_function = settings.EOX_CORE_USERS_BACKEND
+    backend = import_module(backend_function)
+    return backend.generate_password(*args, **kwargs)
