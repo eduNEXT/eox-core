@@ -11,6 +11,14 @@ Change Log
 .. There should always be an "Unreleased" section for changes pending release.
 Unreleased
 ----------
+*
+
+[4.4.0] - 2021-02-04
+--------------------
+Added
+~~~~~
+* Added a new pipeline step to ensure creation of users with usable password
+
 [4.3.0] - 2021-1-28
 --------------------
 Added
