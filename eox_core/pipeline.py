@@ -48,12 +48,13 @@ def ensure_user_has_profile(backend, details, user=None, *args, **kwargs):
             LOG.info('Created new profile for user during the third party pipeline: "%s"', user)
 
 
-def force_user_post_save_callback(auth_entry, is_new, user=None, *args, **kwargs):
+def force_user_post_save_callback(is_new=None, user=None, *args, **kwargs):
     """
     Send the signal post_save in order to force the execution of user_post_save_callback, see it in
     https://github.com/eduNEXT/edunext-platform/blob/4169327231de00991c46b6192327fe50b0406561/common/djangoapps/student/models.py#L652
     this allows the automatic enrollments if a user is registered by a third party auth.
-    This depends on "third_party_auth.pipeline.parse_query_params".
+
+    It's recommended to place this step after the social core step that creates the users: (social_core.pipeline.user.create_user).
 
     the discussion left three options:
 
@@ -80,7 +81,7 @@ def force_user_post_save_callback(auth_entry, is_new, user=None, *args, **kwargs
     The first one was selected because the second executed multiple unnecessary process and third one
     needs to implement a new backend.
     """
-    if auth_entry == 'register' and user and is_new:
+    if user and is_new:
         user._changed_fields = {'is_active': user.is_active}  # pylint: disable=protected-access
         post_save.send_robust(
             sender=user.__class__,
