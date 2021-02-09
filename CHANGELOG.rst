@@ -12,6 +12,11 @@ Change Log
 Unreleased
 ----------
 *
+[4.4.1] - 2021-02-04
+--------------------
+Changed
+~~~~~~~
+* Pipeline step force_user_post_save_callback now sends the post_save signal if the user is new.
 
 [4.4.0] - 2021-02-04
 --------------------
