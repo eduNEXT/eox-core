@@ -6,6 +6,7 @@ import logging
 from django.db.models.signals import post_save
 
 from eox_core.edxapp_wrapper.users import generate_password, get_user_profile
+from eox_core.logging import logging_pipeline_step
 
 try:
     from social_core.exceptions import AuthFailed, NotAllowedToDisconnect
@@ -17,7 +18,7 @@ LOG = logging.getLogger(__name__)
 
 
 # pylint: disable=unused-argument,keyword-arg-before-vararg
-def ensure_new_user_has_usable_password(backend, is_new=None, user=None, **kwargs):
+def ensure_new_user_has_usable_password(backend, user=None, **kwargs):
     """
     This pipeline function assigns an usable password to an user in case that the user has an unusable password on user cretion.
     At the creation of new users through some TPA providers, some of them are created with an unusable password, a user with an unusable password cannot login
@@ -27,10 +28,16 @@ def ensure_new_user_has_usable_password(backend, is_new=None, user=None, **kwarg
 
     It's recommended to place this step after the social core step that creates the users: (social_core.pipeline.user.create_user).
     """
+    is_new = kwargs.get('is_new')
+
     if user and is_new and not user.has_usable_password():
         user.set_password(generate_password(length=25))
         user.save()
-        LOG.info('Assigned an usable password to the user %s on creation.', user)
+        logging_pipeline_step(
+            "info",
+            "Assigned an usable password to the user on creation.",
+            **locals()
+        )
 
 
 # pylint: disable=unused-argument,keyword-arg-before-vararg
@@ -45,10 +52,14 @@ def ensure_user_has_profile(backend, details, user=None, *args, **kwargs):
             __ = user.profile
         except user_profile_model.DoesNotExist:
             user_profile_model.objects.create(user=user)
-            LOG.info('Created new profile for user during the third party pipeline: "%s"', user)
+            logging_pipeline_step(
+                "info",
+                "Created new profile for user during the third party pipeline.",
+                **locals()
+            )
 
 
-def force_user_post_save_callback(is_new=None, user=None, *args, **kwargs):
+def force_user_post_save_callback(user=None, *args, **kwargs):
     """
     Send the signal post_save in order to force the execution of user_post_save_callback, see it in
     https://github.com/eduNEXT/edunext-platform/blob/4169327231de00991c46b6192327fe50b0406561/common/djangoapps/student/models.py#L652
@@ -81,12 +92,19 @@ def force_user_post_save_callback(is_new=None, user=None, *args, **kwargs):
     The first one was selected because the second executed multiple unnecessary process and third one
     needs to implement a new backend.
     """
+    is_new = kwargs.get('is_new')
+
     if user and is_new:
         user._changed_fields = {'is_active': user.is_active}  # pylint: disable=protected-access
         post_save.send_robust(
             sender=user.__class__,
             instance=user,
             created=False
+        )
+        logging_pipeline_step(
+            "info",
+            "Post_save signal sent in order to force the execution of user_post_save_callback.",
+            **locals()
         )
 
 
@@ -106,7 +124,11 @@ def check_disconnect_pipeline_enabled(backend, *args, **kwargs):
     It's recommended to place this function at the beginning of the pipeline.
     """
     if backend and backend.setting("BACKEND_OPTIONS", {}).get("disableDisconnectPipeline"):
-        LOG.exception("Disconnection pipeline is disabled, users are not allowed to disconnect.")
+        logging_pipeline_step(
+            "error",
+            "Disconnection pipeline is disabled, users are not allowed to disconnect.",
+            **locals()
+        )
         raise NotAllowedToDisconnect()  # pylint: disable=raising-non-exception
 
 
@@ -132,9 +154,9 @@ def assert_user_information(details, user, backend, *args, **kwargs):
     for field in defined_fields:
 
         if str(details.get(field, "")) != str(getattr(user, field, "")):
-            LOG.exception(
-                "Credentials not allowed: field %s returned by provider does not match with the user %s information.",
-                field,
-                user.username,
+            logging_pipeline_step(
+                "error",
+                "Credentials not allowed: field {field} returned by provider does not match with the users information.".format(field=field),
+                **locals()
             )
             raise AuthFailed(backend, "Credentials not allowed.")  # pylint: disable=raising-non-exception
