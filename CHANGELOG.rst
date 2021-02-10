@@ -12,7 +12,14 @@ Change Log
 Unreleased
 ----------
 *
-[4.4.1] - 2021-02-04
+
+[4.5.0] - 2021-02-10
+--------------------
+Added
+~~~~~
+* Added function that logs the information from the pipeline steps.
+
+[4.4.1] - 2021-02-09
 --------------------
 Changed
 ~~~~~~~
