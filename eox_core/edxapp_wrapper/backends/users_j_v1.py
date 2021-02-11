@@ -245,3 +245,8 @@ def get_user_profile():
     """ Gets the UserProfile model """
 
     return UserProfile
+
+
+def get_user_attribute():
+    """ Gets the UserAttribute model """
+    return UserAttribute
