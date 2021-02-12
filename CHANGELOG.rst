@@ -13,6 +13,11 @@ Unreleased
 ----------
 *
 
+[4.5.1] - 2021-02-12
+--------------------
+* Create a record in the UserAttribute table for each user with a password generated in the
+  tpa pipeline.
+
 [4.5.0] - 2021-02-10
 --------------------
 Added
