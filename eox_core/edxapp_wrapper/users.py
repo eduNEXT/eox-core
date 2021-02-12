@@ -96,3 +96,11 @@ def generate_password(*args, **kwargs):
     backend_function = settings.EOX_CORE_USERS_BACKEND
     backend = import_module(backend_function)
     return backend.generate_password(*args, **kwargs)
+
+
+def get_user_attribute():
+    """ Gets the UserAttribute model """
+    backend_function = settings.EOX_CORE_USERS_BACKEND
+    backend = import_module(backend_function)
+
+    return backend.get_user_attribute()

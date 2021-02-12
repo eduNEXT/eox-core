@@ -22,13 +22,17 @@ class EnsureUserPasswordUsableTest(TestCase):
         self.backend_mock = MagicMock()
         self.user_mock = MagicMock(spec=User)
 
-    def test_new_user_gets_usable_password(self):
+    @patch('eox_core.pipeline.get_user_attribute')
+    def test_new_user_gets_usable_password(self, get_user_attribute_mock):
         """
         A new user with an unusable password will get a new password.
         """
+        user_attribute_mock = MagicMock()
+        get_user_attribute_mock.return_value = user_attribute_mock
         self.user_mock.has_usable_password.return_value = False
         ensure_new_user_has_usable_password(self.backend_mock, user=self.user_mock, is_new=True)
         self.user_mock.save.assert_called()
+        user_attribute_mock.set_user_attribute.assert_called()
 
     def test_new_user_already_with_usable_password(self):
         """

@@ -5,7 +5,7 @@ import logging
 
 from django.db.models.signals import post_save
 
-from eox_core.edxapp_wrapper.users import generate_password, get_user_profile
+from eox_core.edxapp_wrapper.users import generate_password, get_user_attribute, get_user_profile
 from eox_core.logging import logging_pipeline_step
 
 try:
@@ -33,6 +33,10 @@ def ensure_new_user_has_usable_password(backend, user=None, **kwargs):
     if user and is_new and not user.has_usable_password():
         user.set_password(generate_password(length=25))
         user.save()
+
+        user_attribute_model = get_user_attribute()
+        user_attribute_model.set_user_attribute(user, 'auto_password_via_tpa_pipeline', 'true')
+
         logging_pipeline_step(
             "info",
             "Assigned an usable password to the user on creation.",

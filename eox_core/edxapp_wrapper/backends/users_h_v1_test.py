@@ -87,3 +87,14 @@ def get_user_profile():
 def generate_password(*args, **kwargs):
     """ Generates a password """
     return "ThisShouldBeARandomPassword"
+
+
+def get_user_attribute():
+    """
+    Get test UserAttribute model
+    """
+    try:
+        from student.models import UserAttribute  # pylint: disable=import-outside-toplevel
+    except ImportError:
+        UserAttribute = object
+    return UserAttribute
