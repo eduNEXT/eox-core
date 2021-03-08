@@ -13,4 +13,5 @@ urlpatterns = [  # pylint: disable=invalid-name
     url(r'^data-api/', include('eox_core.api.data.v1.urls', namespace='eox-data-api')),
     url(r'^management/', include('eox_core.cms.urls', namespace='eox-course-management')),
     url(r'^api-docs/$', docs_ui_view, name='apidocs-ui'),
+    url(r'^tasks-api/', include('eox_core.api.task_dispatcher.v1.urls', namespace='eox-task-api')),
 ]
