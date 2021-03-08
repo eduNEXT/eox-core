@@ -13,6 +13,10 @@ Unreleased
 ----------
 *
 
+[4.6.0] - 2021-03-08
+--------------------
+* Add a new endoint to run celery taks
+
 [4.5.1] - 2021-02-12
 --------------------
 * Create a record in the UserAttribute table for each user with a password generated in the
