@@ -6,16 +6,20 @@ from __future__ import absolute_import, unicode_literals
 
 import logging
 
+from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
+from django.db import transaction
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.renderers import BrowsableAPIRenderer, JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from eox_core.api.support.v1.permissions import EoxCoreSupportAPIPermission
-from eox_core.api.support.v1.serializers import WrittableEdxappRemoveUserSerializer
+from eox_core.api.support.v1.serializers import WrittableEdxappRemoveUserSerializer, WrittableEdxappUsernameSerializer
+from eox_core.api.v1.serializers import EdxappUserReadOnlySerializer
 from eox_core.api.v1.views import UserQueryMixin
 from eox_core.edxapp_wrapper.bearer_authentication import BearerAuthentication
+from eox_core.edxapp_wrapper.comments_service_users import replace_username_cs_user
 from eox_core.edxapp_wrapper.users import delete_edxapp_user, get_edxapp_user
 
 LOG = logging.getLogger(__name__)
@@ -37,7 +41,7 @@ class EdxappUser(UserQueryMixin, APIView):
         For example:
 
         **Requests**:
-            DELETE <domain>/eox-core/api/v1/remove-user/
+            DELETE <domain>/eox-core/support-api/v1/user/
 
         **Request body**:
             {
@@ -61,3 +65,56 @@ class EdxappUser(UserQueryMixin, APIView):
         message, status = delete_edxapp_user(**data)
 
         return Response(message, status=status)
+
+
+class EdxappReplaceUsername(UserQueryMixin, APIView):
+    """
+    Handles the replacement of the username.
+    """
+
+    authentication_classes = (BearerAuthentication, SessionAuthentication)
+    permission_classes = (EoxCoreSupportAPIPermission,)
+    renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
+
+    def patch(self, request, *args, **kwargs):
+        """
+        Allows to safely update an Edxapp user's Username along with the
+        forum associated User.
+
+        For now users that have different signup sources cannot be updated.
+
+        For example:
+
+        **Requests**:
+            PATCH <domain>/eox-core/support-api/v1/replace-username/
+
+        **Request body**
+            {
+                "new_username": "new username"
+            }
+
+        **Response values**
+            User serialized.
+        """
+        query = self.get_user_query(request)
+        user = get_edxapp_user(**query)
+        data = request.data
+
+        with transaction.atomic():
+            serializer = WrittableEdxappUsernameSerializer(user, data=data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+
+            data = serializer.validated_data
+            data["user"] = user
+
+            # Update user in cs_comments_service forums
+            replace_username_cs_user(**data)
+
+        admin_fields = getattr(settings, "ACCOUNT_VISIBILITY_CONFIGURATION", {}).get(
+            "admin_fields", {}
+        )
+        serialized_user = EdxappUserReadOnlySerializer(
+            user, custom_fields=admin_fields, context={"request": request}
+        )
+        return Response(serialized_user.data)
