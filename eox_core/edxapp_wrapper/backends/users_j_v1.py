@@ -14,20 +14,29 @@ from openedx.core.djangoapps.lang_pref import LANGUAGE_KEY  # pylint: disable=im
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers  # pylint: disable=import-error
 from openedx.core.djangoapps.user_api.accounts import USERNAME_MAX_LENGTH  # pylint: disable=import-error,unused-import
 from openedx.core.djangoapps.user_api.accounts.serializers import UserReadOnlySerializer  # pylint: disable=import-error
+from openedx.core.djangoapps.user_api.accounts.views import \
+    _set_unusable_password  # pylint: disable=import-error,unused-import
+from openedx.core.djangoapps.user_api.models import UserRetirementStatus  # pylint: disable=import-error
 from openedx.core.djangoapps.user_api.preferences import api as preferences_api  # pylint: disable=import-error
 from openedx.core.djangoapps.user_authn.utils import generate_password  # pylint: disable=import-error,unused-import
 from openedx.core.djangoapps.user_authn.views.registration_form import (  # pylint: disable=import-error
     AccountCreationForm,
 )
+from openedx.core.djangolib.oauth2_retirement_utils import \
+    retire_dot_oauth2_models  # pylint: disable=import-error,unused-import
+from rest_framework import status
 from rest_framework.exceptions import NotFound
+from social_django.models import UserSocialAuth  # pylint: disable=import-error
 from student.helpers import create_or_set_user_attribute_created_on_site  # pylint: disable=import-error
-from student.models import (  # pylint: disable=import-error
+from student.models import (  # pylint: disable=import-error,unused-import
     LoginFailures,
+    Registration,
     UserAttribute,
     UserProfile,
     UserSignupSource,
     create_comments_service_user,
     email_exists_or_retired,
+    get_retired_email_by_email,
     username_exists_or_retired,
 )
 
@@ -143,7 +152,7 @@ def create_edxapp_user(*args, **kwargs):
 
 def get_edxapp_user(**kwargs):
     """
-    Retrieve an user by username and/or email
+    Retrieve a user by username and/or email
 
     The user will be returned only if it belongs to the calling site
 
@@ -178,6 +187,69 @@ def get_edxapp_user(**kwargs):
     except User.DoesNotExist:
         raise NotFound('No user found by {query} on site {site}.'.format(query=str(params), site=domain))
     return user
+
+
+def delete_edxapp_user(*args, **kwargs):
+    """
+    Deletes a user from the platform.
+    """
+    msg = None
+
+    user = kwargs.get("user")
+    case_id = kwargs.get("case_id")
+    site = kwargs.get("site")
+    is_support_user = kwargs.get("is_support_user")
+
+    user_response = "The user {username} <{email}> ".format(username=user.username, email=user.email)
+
+    signup_sources = user.usersignupsource_set.all()
+    sources = [signup_source.site for signup_source in signup_sources]
+
+    if site and site.name.upper() in (source.upper() for source in sources):
+        if len(sources) == 1:
+            with transaction.atomic():
+                support_label = "_support" if is_support_user else ""
+                user.email = "{email}{case}.ednx{support}_retired".format(
+                    email=user.email,
+                    case=case_id,
+                    support=support_label,
+                )
+                user.save()
+
+                # Add user to retirement queue.
+                UserRetirementStatus.create_retirement(user)
+
+                # Unlink LMS social auth accounts
+                UserSocialAuth.objects.filter(user_id=user.id).delete()
+
+                # Change LMS password & email
+                user.email = get_retired_email_by_email(user.email)
+                user.save()
+                _set_unusable_password(user)
+
+                # Remove the activation keys sent by email to the user for account activation.
+                Registration.objects.filter(user=user).delete()
+
+                # Delete OAuth tokens associated with the user.
+                retire_dot_oauth2_models(user)
+
+                # Delete user signup source object
+                signup_sources[0].delete()
+
+                msg = "{user} has been removed".format(user=user_response)
+        else:
+            for signup_source in signup_sources:
+                if signup_source.site.upper() == site.name.upper():
+                    signup_source.delete()
+
+                    msg = "{user} has more than one signup source. The signup source from the site {site} has been deleted".format(
+                        user=user_response,
+                        site=site,
+                    )
+
+        return msg, status.HTTP_200_OK
+
+    raise NotFound("{user} does not have a signup source on the site {site}".format(user=user_response, site=site))
 
 
 def get_course_team_user(*args, **kwargs):
