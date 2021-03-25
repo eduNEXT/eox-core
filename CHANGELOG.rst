@@ -13,6 +13,11 @@ Unreleased
 ----------
 *
 
+[4.7.0] - 2021-03-25
+--------------------
+* Add new endpoint to replace username.
+* Add new endpoint to remove user.
+
 [4.6.0] - 2021-03-08
 --------------------
 * Add a new endoint to run celery taks
