@@ -186,6 +186,7 @@ class EdxappCourseEnrollmentSerializer(serializers.Serializer):
                     ("username", "johndoe"),
                     ("is_active", True),
                     ("mode", "audit"),
+                    ("force", False),
                     ("enrollment_attributes", []),
                     ("course_id", "course-v1:edX+DemoX+Demo_Course")
                 ]
