@@ -13,6 +13,7 @@ from django.utils import six
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.exceptions import APIException, NotFound, ValidationError
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.renderers import BrowsableAPIRenderer, JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -29,6 +30,7 @@ from eox_core.api.v1.serializers import (
     WrittableEdxappUserSerializer,
 )
 from eox_core.edxapp_wrapper.bearer_authentication import BearerAuthentication
+from eox_core.edxapp_wrapper.cohorts import get_user_cohort
 from eox_core.edxapp_wrapper.coursekey import get_valid_course_key
 from eox_core.edxapp_wrapper.courseware import get_courseware_courses
 from eox_core.edxapp_wrapper.enrollments import create_enrollment, delete_enrollment, get_enrollment, update_enrollment
@@ -833,6 +835,73 @@ class EdxappGrade(UserQueryMixin, APIView):
                 }
             )
         return breakdown
+
+
+class EdxappUserCohort(UserQueryMixin, APIView):
+    """
+    Class used to GET a user's cohort.
+    """
+
+    authentication_classes = (BearerAuthentication, SessionAuthentication)
+    permission_classes = (IsAuthenticated,)
+    renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
+
+    @apidocs.schema(
+        parameters=[
+            apidocs.query_parameter(
+                name="course_id",
+                param_type=str,
+                description="**required**, Used to identify the course where the cohort must be defined.",
+            ),
+            apidocs.query_parameter(
+                name="username",
+                param_type=str,
+                description="""**optional**, The username used to identify the user that belongs to the cohort.
+                If this parameter is not passed, then the authenticated user will be used.""",
+            ),
+        ],
+        responses={
+            200: "Success. Returns the name of the cohort where the user belongs",
+            400: "Bad request, missing course_id",
+            404: "Course or cohort not found",
+        },
+    )
+    def get(self, request):
+        """
+        Method that given a courseID and a username, returns the cohort to which the user belongs to.
+
+        **Example Requests**
+
+            GET /eox-core/api/v1/cohort/?course_id=course-v1:edX+DemoX+Demo_Course&username=johndoe
+            GET /eox-core/api/v1/cohort/?course_id=course-v1:edX+DemoX+Demo_Course
+
+        **Response details**
+        - `name`: name of the cohort where the user belongs.
+
+        **Returns**
+
+        - 200: Success. Returns the name of the cohort where the user belongs.
+        - 400: Bad request, missing course_id or username.
+        - 404: Course or cohort not found.
+        """
+        try:
+            user_query = self.get_user_query(request)
+            user = get_edxapp_user(**user_query)
+        except ValidationError:
+            user = request.user
+
+        course_id = self.query_params.get("course_id")
+
+        if not course_id:
+            raise ValidationError(detail="You have to provide a course_id")
+
+        course_key = get_valid_course_key(course_id)
+        cohort = get_user_cohort(user, course_key, assign=False, use_cached=True)
+
+        if not cohort:
+            raise NotFound("Current user does not belong to any cohort of {} course.".format(course_id))
+
+        return Response({"cohort_name": cohort.name})
 
 
 class UserInfo(APIView):

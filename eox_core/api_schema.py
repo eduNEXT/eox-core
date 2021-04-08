@@ -41,6 +41,7 @@ class APISchemaGenerator(OpenAPISchemaGenerator):
 api_urls = [  # pylint: disable=invalid-name
     url(r'^enrollment/$', views.EdxappEnrollment.as_view(), name='edxapp-enrollment'),
     url(r'^grade/$', views.EdxappGrade.as_view(), name='edxapp-grade'),
+    url(r'^cohort/$', views.EdxappUserCohort.as_view(), name='edxapp-cohort'),
 ]
 
 api_info = make_api_info(  # pylint: disable=invalid-name
