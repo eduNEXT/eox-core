@@ -3,9 +3,15 @@ The pipeline module defines functions that are used in the third party authentic
 """
 import logging
 
+from crum import get_current_request
 from django.db.models.signals import post_save
 
-from eox_core.edxapp_wrapper.users import generate_password, get_user_attribute, get_user_profile
+from eox_core.edxapp_wrapper.users import (
+    generate_password,
+    get_user_attribute,
+    get_user_profile,
+    get_user_signup_source,
+)
 from eox_core.logging import logging_pipeline_step
 
 try:
@@ -14,6 +20,7 @@ except ImportError:
     AuthFailed = object
     NotAllowedToDisconnect = object
 
+UserSignupSource = get_user_signup_source()  # pylint: disable=invalid-name
 LOG = logging.getLogger(__name__)
 
 
@@ -164,3 +171,51 @@ def assert_user_information(details, user, backend, *args, **kwargs):
                 **locals()
             )
             raise AuthFailed(backend, "Credentials not allowed.")  # pylint: disable=raising-non-exception
+
+
+def create_signup_source_for_new_association(user=None, *args, **kwargs):
+    """
+    This pipeline step registers a new signup source for users with new social auth link. The signup source
+    will have associated the current site and user.
+
+    It's recommended to place this step after the creation of the social auth link, i.e, after the step
+    'social_core.pipeline.social_auth.associate_user',
+
+    To avoid errors or unnecessary searches, these steps are skipped using 'is_new' key insterted by
+    'social_core.pipeline.user.create_user' after creating a user.
+    """
+    if not user or kwargs.get("is_new", False):
+        return
+
+    if kwargs.get("new_association", False):
+        _, created = UserSignupSource.objects.get_or_create(user=user, site=get_current_request().site)
+        if created:
+            logging_pipeline_step(
+                "info",
+                "Created new singup source for user during the third party pipeline.",
+                **locals()
+            )
+
+
+def ensure_user_has_signup_source(user=None, *args, **kwargs):
+    """
+    This pipeline step registers a new signup source for users that have a social auth link but
+    no signup source associated with the current site. The signup source will be associated to
+    the current site and user.
+
+    It's recommended to place this step at the end of the TPA pipeline, e.g., after the step
+    'eox_core.pipeline.ensure_user_has_profile',
+
+    To avoid errors or unnecessary searches, these steps are skipped using 'is_new' key insterted by
+    'social_core.pipeline.user.create_user' after creating a user.
+    """
+    if not user or kwargs.get("is_new", False):
+        return
+
+    _, created = UserSignupSource.objects.get_or_create(user=user, site=get_current_request().site)
+    if created:
+        logging_pipeline_step(
+            "info",
+            "Created new singup source for user during the third party pipeline.",
+            **locals()
+        )

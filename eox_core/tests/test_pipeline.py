@@ -6,12 +6,17 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from mock import MagicMock, PropertyMock, patch
 
+from eox_core.edxapp_wrapper.users import get_user_signup_source
 from eox_core.pipeline import (
     assert_user_information,
     check_disconnect_pipeline_enabled,
+    create_signup_source_for_new_association,
     ensure_new_user_has_usable_password,
     ensure_user_has_profile,
+    ensure_user_has_signup_source,
 )
+
+UserSignupSource = get_user_signup_source()  # pylint: disable=invalid-name
 
 
 class EnsureUserPasswordUsableTest(TestCase):
@@ -164,3 +169,136 @@ class ConnectionPipelineTest(TestCase):
         self.backend_mock.setting.return_value.get.return_value = []
 
         self.assertIsNone(assert_user_information(details, self.user_mock, self.backend_mock))
+
+
+class SignupSourceRegistration(TestCase):
+    """Test custom pipeline steps for signup source registration."""
+
+    def setUp(self):
+        self.user_mock = MagicMock()
+        self.site_mock = MagicMock()
+
+    @patch("eox_core.pipeline.UserSignupSource")
+    @patch("eox_core.pipeline.get_current_request")
+    def test_signup_source_after_assoc(self, get_request_mock, signup_source_mock):
+        """
+        This method tests creating a signup source after associating
+        a social auth link to the user.
+
+        Expected behavior:
+            The signup source is created using the current site and user.
+        """
+        signup_source_mock.objects.get_or_create.return_value = (MagicMock(), True,)
+        get_request_mock.return_value.site = self.site_mock
+        kwargs = {
+            "new_association": True,
+        }
+
+        create_signup_source_for_new_association(self.user_mock, **kwargs)
+
+        signup_source_mock.objects.get_or_create.called_once_with(
+            user=self.user_mock,
+            site=self.site_mock,
+        )
+
+    @patch("eox_core.pipeline.UserSignupSource")
+    @patch("eox_core.pipeline.get_current_request")
+    def test_ensure_signup_source(self, get_request_mock, signup_source_mock):
+        """
+        This method tests creating a signup source when the user has a social
+        link but does not have the signup source for the current site.
+
+        Expected behavior:
+            The signup source is created using the current site and user.
+        """
+        signup_source_mock.objects.get_or_create.return_value = (MagicMock(), True,)
+        get_request_mock.return_value.site = self.site_mock
+        kwargs = {}
+
+        ensure_user_has_signup_source(self.user_mock, **kwargs)
+
+        signup_source_mock.objects.get_or_create.called_once_with(
+            user=self.user_mock,
+            site=self.site_mock,
+        )
+
+    @patch("eox_core.pipeline.UserSignupSource")
+    @patch("eox_core.pipeline.get_current_request")
+    def test_existent_signup_source_after_assoc(self, get_request_mock, signup_source_mock):
+        """
+        This method tests executing the signup source steps when the user
+        already has a signup source for the current site. This is done after a new
+        social auth link is created.
+
+        Expected behavior:
+            No signup sources are created.
+        """
+        signup_source_mock.objects.get_or_create.return_value = (MagicMock(), False,)
+        get_request_mock.return_value.site = self.site_mock
+        kwargs = {
+            "new_association": True,
+        }
+
+        create_signup_source_for_new_association(self.user_mock, **kwargs)
+
+        signup_source_mock.objects.get_or_create.called_once_with(
+            user=self.user_mock,
+            site=self.site_mock,
+        )
+
+    @patch("eox_core.pipeline.UserSignupSource")
+    @patch("eox_core.pipeline.get_current_request")
+    def test_ensure_existent_signup_source(self, get_request_mock, signup_source_mock):
+        """
+        This method tests executing the signup source steps when the user
+        already has a signup source for the current site.
+
+        Expected behavior:
+            No signup sources are created.
+        """
+        signup_source_mock.objects.get_or_create.return_value = (MagicMock(), False,)
+        get_request_mock.return_value.site = self.site_mock
+        kwargs = {}
+
+        ensure_user_has_signup_source(self.user_mock, **kwargs)
+
+        signup_source_mock.objects.get_or_create.called_once_with(
+            user=self.user_mock,
+            site=self.site_mock,
+        )
+
+    @patch("eox_core.pipeline.UserSignupSource")
+    @patch("eox_core.pipeline.get_current_request")
+    def test_signup_source_during_register_assoc(self, _, signup_source_mock):
+        """
+        This method tests executing signup source step create_signup_source_for_new_association
+        during the registration process.
+
+        Expected behavior:
+            No signup sources are created.
+        """
+        kwargs = {
+            "is_new": True,
+        }
+
+        create_signup_source_for_new_association(self.user_mock, **kwargs)
+
+        signup_source_mock.objects.get_or_create.get_or_create.assert_not_called()
+
+    @patch("eox_core.pipeline.UserSignupSource")
+    @patch("eox_core.pipeline.get_current_request")
+    def test_ensure_signup_source_during_register(self, _, signup_source_mock):
+        """
+        This method tests executing signup source step ensure_user_has_signup_source
+        during the registration process.
+
+        Expected behavior:
+            No signup sources are created.
+        """
+        kwargs = {
+            "is_new": True,
+        }
+
+        ensure_user_has_signup_source(self.user_mock, **kwargs)
+
+        signup_source_mock.objects.get_or_create.assert_not_called()
