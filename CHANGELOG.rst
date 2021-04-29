@@ -13,6 +13,10 @@ Unreleased
 ----------
 *
 
+[4.8.0] - 2021-04-29
+--------------------
+* Add TPA pipeline steps to register signup sources.
+
 [4.7.0] - 2021-03-25
 --------------------
 * Add new endpoint to replace username.
