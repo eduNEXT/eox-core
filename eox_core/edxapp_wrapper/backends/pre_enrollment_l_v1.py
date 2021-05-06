@@ -8,7 +8,7 @@ from __future__ import absolute_import, unicode_literals
 
 import logging
 
-from common.djangoapps.student.models import CourseEnrollmentAllowed
+from common.djangoapps.student.models import CourseEnrollmentAllowed  # pylint: disable=no-name-in-module
 from django.db import IntegrityError
 from rest_framework.exceptions import NotFound
 
