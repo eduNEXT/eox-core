@@ -1,11 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Backend for the pre-enrollment (white listings) functionality that works under the open-release/hawthorn.beta1 tag
+Backend for the pre-enrollment (white listings) functionality that works under the open-release/lilac.master tag
 """
 # pylint: disable=import-error, protected-access
-from __future__ import absolute_import, unicode_literals
-
 import logging
 
 from common.djangoapps.student.models import CourseEnrollmentAllowed  # pylint: disable=no-name-in-module

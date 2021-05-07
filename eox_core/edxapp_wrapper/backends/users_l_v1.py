@@ -1,10 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Backend for the create_edxapp_user that works under the open-release/juniper.master tag
+Backend for the create_edxapp_user that works under the open-release/lilac.master tag
 """
-from __future__ import absolute_import, unicode_literals
-
 import logging
 
 from common.djangoapps.student.helpers import (  # pylint: disable=import-error,no-name-in-module
