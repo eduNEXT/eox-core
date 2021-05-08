@@ -256,6 +256,10 @@ class EdxappEnrollment(UserQueryMixin, APIView):
         - `is_active` (boolean, _body_):
             Flag indicating whether the enrollment is active.
 
+        - `force` (boolean, _body_):
+            Flag indicating whether the platform business rules for enrollment must be skipped. When true, the enrollment is
+            created without looking at the enrollment dates or other course configurations.
+
         - `enrollment_attributes` (list, _body_):
             List of enrollment attributes. An enrollment attribute can be used to add extra parameters for a specific course mode.
             It must be a dictionary containing the following:
