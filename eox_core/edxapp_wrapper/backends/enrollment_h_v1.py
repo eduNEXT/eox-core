@@ -17,7 +17,7 @@ from openedx.core.djangoapps.content.course_overviews.models import CourseOvervi
 from openedx.core.lib.exceptions import CourseNotFoundError
 from pytz import utc
 from rest_framework.exceptions import APIException, NotFound
-from student.models import CourseEnrollment
+from common.djangoapps.student.models import CourseEnrollment
 
 from eox_core.edxapp_wrapper.backends.edxfuture_i_v1 import get_program
 from eox_core.edxapp_wrapper.coursekey import get_valid_course_key, validate_org

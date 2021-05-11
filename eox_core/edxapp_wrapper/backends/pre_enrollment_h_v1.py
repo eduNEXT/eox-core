@@ -10,7 +10,7 @@ import logging
 
 from django.db import IntegrityError
 from rest_framework.exceptions import NotFound
-from student.models import CourseEnrollmentAllowed
+from common.djangoapps.student.models import CourseEnrollmentAllowed
 
 from eox_core.edxapp_wrapper.coursekey import get_valid_course_key
 from eox_core.edxapp_wrapper.courseware import get_courseware_courses
