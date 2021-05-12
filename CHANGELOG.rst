@@ -13,6 +13,10 @@ Unreleased
 ----------
 *
 
+[4.9.0] - 2021-05-12
+--------------------
+* Add backends to fit lilac release.
+
 [4.8.0] - 2021-04-29
 --------------------
 * Add TPA pipeline steps to register signup sources.
