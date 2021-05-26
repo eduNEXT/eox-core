@@ -13,6 +13,7 @@ from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND
 from rest_framework.views import APIView
 
 from eox_core.edxapp_wrapper.bearer_authentication import BearerAuthentication
+from eox_core.integrations.audit_wrapper import audit_api_wrapper
 
 LOG = logging.getLogger(__name__)
 
@@ -52,6 +53,7 @@ class TaskAPI(APIView):
 
         return Response({"result": str(result), "status": str(async_result.status)})
 
+    @audit_api_wrapper(action='exo-core Task dispatcher.')
     def post(self, request):
         """
         Dispatches a task to a celery worker. The task must be registered in the worker

@@ -21,6 +21,7 @@ from eox_core.api.v1.views import UserQueryMixin
 from eox_core.edxapp_wrapper.bearer_authentication import BearerAuthentication
 from eox_core.edxapp_wrapper.comments_service_users import replace_username_cs_user
 from eox_core.edxapp_wrapper.users import delete_edxapp_user, get_edxapp_user
+from eox_core.integrations.audit_wrapper import audit_api_wrapper
 
 LOG = logging.getLogger(__name__)
 
@@ -34,6 +35,7 @@ class EdxappUser(UserQueryMixin, APIView):
     permission_classes = (EoxCoreSupportAPIPermission,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
+    @audit_api_wrapper(action='Remove edxapp User.')
     def delete(self, request, *args, **kwargs):  # pylint: disable=too-many-locals
         """
         Allows to safely remove an edxapp User.
@@ -76,6 +78,7 @@ class EdxappReplaceUsername(UserQueryMixin, APIView):
     permission_classes = (EoxCoreSupportAPIPermission,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
+    @audit_api_wrapper(action="Update an Edxapp user's Username.")
     def patch(self, request, *args, **kwargs):
         """
         Allows to safely update an Edxapp user's Username along with the
