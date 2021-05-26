@@ -11,7 +11,11 @@ Change Log
 .. There should always be an "Unreleased" section for changes pending release.
 Unreleased
 ----------
-*
+
+Added
+~~~~~
+
+* Include eox-audit-model wrapper.
 
 [4.9.0] - 2021-05-12
 --------------------
