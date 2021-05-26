@@ -72,7 +72,8 @@ setup(
     install_requires=load_requirements('requirements/base.in'),
     extras_require={
         "sentry": load_requirements('requirements/sentry.in'),
-        "tpa": load_requirements('requirements/tpa.in')
+        "tpa": load_requirements('requirements/tpa.in'),
+        "eox-audit": load_requirements('requirements/eox-audit-model.in')
     },
     scripts=[],
     license="AGPL",

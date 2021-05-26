@@ -3,6 +3,8 @@ Settings for eox-core
 """
 from __future__ import absolute_import, unicode_literals
 
+from importlib.util import find_spec
+
 SECRET_KEY = 'a-not-to-be-trusted-secret-key'
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -12,6 +14,7 @@ INSTALLED_APPS = (
     'django_filters',
     'oauth2_provider',
 )
+EOX_AUDIT_MODEL_APP = 'eox_audit_model.apps.EoxAuditModelConfig'
 
 
 def plugin_settings(settings):
@@ -71,3 +74,6 @@ def plugin_settings(settings):
     # has a match with the regex provided in the exc_text unique element. If exc_text contains more than one
     # regex, the exception is ignored if any of the regex matches the traceback text.
     settings.EOX_CORE_SENTRY_IGNORED_ERRORS = []
+
+    if find_spec('eox_audit_model') and EOX_AUDIT_MODEL_APP not in settings.INSTALLED_APPS:
+        settings.INSTALLED_APPS.append(EOX_AUDIT_MODEL_APP)
