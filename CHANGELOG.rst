@@ -12,6 +12,9 @@ Change Log
 Unreleased
 ----------
 
+[4.10.0] - 2021-05-28
+--------------------
+
 Added
 ~~~~~
 * Decorate views that change or register some information.
