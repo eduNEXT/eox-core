@@ -37,3 +37,17 @@ class ConfigurableOpenIdConnectAuth(OpenIdConnectAuth):
                 LOG.error("Tried and failed to set property %s of a config-based-openidconnect", key)
 
         super(ConfigurableOpenIdConnectAuth, self).__init__(*args, **kwargs)
+
+    def oidc_config(self):
+        """
+        Override method that gets OICD configuration per class instance.
+        """
+        LOG.debug(
+            "Be aware that ConfigurableOpenIdConnectAuth is using an override "
+            "method to get OICD configuration."
+        )
+        if not hasattr(self, 'configuration'):
+            self.configuration = self.get_json(  # pylint: disable=attribute-defined-outside-init
+                self.OIDC_ENDPOINT + '/.well-known/openid-configuration'
+            )
+        return self.configuration
