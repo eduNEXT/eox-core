@@ -11,6 +11,8 @@ Change Log
 .. There should always be an "Unreleased" section for changes pending release.
 Unreleased
 ----------
+* Add method override in ConfigurableOpenIdConnectAuth to avoid getting per class
+  config.
 
 [4.10.0] - 2021-05-28
 --------------------
