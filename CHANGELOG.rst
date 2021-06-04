@@ -12,6 +12,10 @@ Change Log
 Unreleased
 ----------
 
+Changed
+~~~~~~~
+* Update action names in EdxappPreEnrollment view.
+
 [4.10.1] - 2021-06-03
 --------------------
 * Add method override in ConfigurableOpenIdConnectAuth to avoid getting per class
