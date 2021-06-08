@@ -589,7 +589,7 @@ class EdxappPreEnrollment(APIView):
     permission_classes = (EoxCoreAPIPermission,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
-    @audit_api_wrapper(action='Create whitelistings on edxapp.')
+    @audit_api_wrapper(action='Create pre-enrollments on edxapp.')
     def post(self, request, *args, **kwargs):
         """
         Create whitelistings on edxapp
@@ -604,7 +604,7 @@ class EdxappPreEnrollment(APIView):
         ).data
         return Response(response_data)
 
-    @audit_api_wrapper(action='Update whitelistings on edxapp.')
+    @audit_api_wrapper(action='Update pre-enrollments on edxapp.')
     def put(self, request, *args, **kwargs):
         """
         Update whitelistings on edxapp
@@ -630,7 +630,7 @@ class EdxappPreEnrollment(APIView):
         response = EdxappCoursePreEnrollmentSerializer(updated_pre_enrollment).data
         return Response(response)
 
-    @audit_api_wrapper(action='Delete whitelistings on edxapp.')
+    @audit_api_wrapper(action='Delete pre-enrollments on edxapp.')
     def delete(self, request, *args, **kwargs):
         """
         Delete whitelistings on edxapp
