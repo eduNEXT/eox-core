@@ -12,6 +12,9 @@ Change Log
 Unreleased
 ----------
 
+[4.10.2] - 2021-06-07
+---------------------
+
 Changed
 ~~~~~~~
 * Update action names in EdxappPreEnrollment view.
