@@ -179,3 +179,12 @@ For more information, check the eox-audit-model documentation.
 .. _edx-platform: https://github.com/edx/edx-platform/
 .. _eox-tenant: https://github.com/eduNEXT/eox-tenant/
 .. _eox-audit-model: https://github.com/eduNEXT/eox-audit-model/
+
+How to Contribute
+#################
+
+Contributions are welcome! See our `CONTRIBUTING`_ file for more
+information – it also contains guidelines for how to maintain high code
+quality, which will make your contribution more likely to be accepted.
+
+.. _CONTRIBUTING: https://github.com/eduNEXT/eox-core/blob/master/CONTRIBUTING.rst
