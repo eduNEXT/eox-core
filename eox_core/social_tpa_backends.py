@@ -51,3 +51,13 @@ class ConfigurableOpenIdConnectAuth(OpenIdConnectAuth):
                 self.OIDC_ENDPOINT + '/.well-known/openid-configuration'
             )
         return self.configuration
+
+    def extra_data(self, user, uid, response, details=None, *args, **kwargs):  # pylint: disable=keyword-arg-before-vararg
+        """
+        Override method extra_data returned by the provider including user
+        information.
+        """
+        data = super().extra_data(user, uid, response, details, *args, **kwargs)
+        data["user_details"] = self.get_user_details(response)
+
+        return data
