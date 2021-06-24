@@ -1,4 +1,4 @@
 """
 Init for main eox-core app
 """
-__version__ = '4.10.2'
+__version__ = '4.11.0'
