@@ -12,6 +12,13 @@ Change Log
 Unreleased
 ----------
 
+[4.11.0] - 2021-06-24
+---------------------
+
+Changed
+~~~~~~~
+* Add extra_data to ConfigurableOpenIdConnectAuth.
+
 [4.10.2] - 2021-06-07
 ---------------------
 
