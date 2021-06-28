@@ -27,4 +27,4 @@ edx-opaque-keys==2.1.0
 edx-proctoring==2.4.0
 factory-boy==2.10.0
 jsonfield2==3.0.3
-
+python-jose==3.2.0
