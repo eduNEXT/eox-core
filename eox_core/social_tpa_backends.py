@@ -11,7 +11,10 @@ try:
     from social_core.backends.open_id_connect import OpenIdConnectAuth
 except ImportError:
     OpenIdConnectAuth = object
-
+try:
+    from social_core.exceptions import AuthMissingParameter
+except ImportError:
+    AuthMissingParameter = Exception
 
 configuration_helper = get_configuration_helper()  # pylint: disable=invalid-name
 
@@ -61,3 +64,81 @@ class ConfigurableOpenIdConnectAuth(OpenIdConnectAuth):
         data["user_details"] = self.get_user_details(response)
 
         return data
+
+    def get_user_id(self, *args, **kwargs):
+        """
+        Insert a slug at the beginning of the user id. Retroactively add the
+        slug for social users that don't have one. The slug must be defined
+        in the 'OTHER_SETTINGS' field from the provider configuration.
+        In case a slug was not defined raise an exception due to misconfigured
+        backend.
+        This three behaviours can be controlled via the settings:
+            - 'SOCIAL_AUTH_NAMESPACED_UIDS': if false behave as originally
+            intended. If true, add a slug to the uid.
+            - 'SOCIAL_AUTH_ALLOW_SLUGLESS_UID': if false raise and exception when no slug
+            is defined. If true, return de original uid when no slug is defined.
+            - 'SOCIAL_AUTH_ALLOW_WRITE_SLUG_UID': If true update the uid of existing social
+            users if any.
+
+        A first step to start migrating to name spaced uids would look like this:
+
+        on the site settings:
+        {
+          "SOCIAL_AUTH_NAMESPACED_UIDS": true,
+          "SOCIAL_AUTH_ALLOW_SLUGLESS_UID": true,
+          "SOCIAL_AUTH_ALLOW_WRITE_SLUG_UID": true
+        }
+
+        on the provider configuration:
+            OTHER_SETTINGS:
+            {
+              "slug": "myslug"
+            }
+
+        Setting 'SOCIAL_AUTH_NAMESPACED_UIDS' to true and adding the slug to
+        'OTHER_SETTINGS' will create new associations with the new format.
+        'SOCIAL_AUTH_ALLOW_WRITE_SLUG_UID'=true  will update older entries to the new
+        format at login time and 'SOCIAL_AUTH_ALLOW_SLUGLESS_UID'=true would allow
+        the previous format for older entries for the time being.
+
+        Once all the old uids have been updated to the new format we can forbid the
+        old format altogether and stop trying to updated uids without a slug.
+
+        on the site settings:
+        {
+          "SOCIAL_AUTH_NAMESPACED_UIDS": true,
+          "SOCIAL_AUTH_ALLOW_SLUGLESS_UID": false,
+          "SOCIAL_AUTH_ALLOW_WRITE_SLUG_UID": false
+        }
+
+        on the provider configuration:
+            OTHER_SETTINGS:
+            {
+              "slug": "myslug"
+            }
+        """
+        uid = super().get_user_id(*args, **kwargs)
+        namespaced_uids = self.setting('NAMESPACED_UIDS', False)
+        if not namespaced_uids:
+            return uid
+
+        strategy = self.strategy
+        slug = strategy.setting('slug', backend=self)
+        provider = self.name
+        allow_slugless_uid = self.setting('ALLOW_SLUGLESS_UID', False)
+        allow_write_slug_uid = self.setting('ALLOW_WRITE_SLUG_UID', True)
+
+        if not slug:
+            if allow_slugless_uid:
+                return uid
+            raise AuthMissingParameter(self, 'slug')
+
+        slug_uid = '{0}:{1}'.format(slug, uid)
+        if allow_write_slug_uid:
+            social = strategy.storage.user.get_social_auth(provider, uid)
+            if social:
+                social.uid = slug_uid
+                social.save()
+                LOG.info("Updating uid: %s to %s", uid, slug_uid)
+
+        return slug_uid
