@@ -24,8 +24,12 @@ from openedx.core.djangolib.oauth2_retirement_utils import \
 from rest_framework import status
 from rest_framework.exceptions import NotFound
 from social_django.models import UserSocialAuth  # pylint: disable=import-error
-from student.helpers import create_or_set_user_attribute_created_on_site  # pylint: disable=import-error
+from student.helpers import (  # pylint: disable=import-error
+    create_or_set_user_attribute_created_on_site,
+    do_create_account,
+)
 from student.models import (  # pylint: disable=import-error,unused-import
+    CourseEnrollment,
     LoginFailures,
     Registration,
     UserAttribute,
@@ -36,9 +40,6 @@ from student.models import (  # pylint: disable=import-error,unused-import
     get_retired_email_by_email,
     username_exists_or_retired,
 )
-
-from student.helpers import do_create_account  # pylint: disable=import-error; pylint: disable=import-error
-from student.models import CourseEnrollment  # pylint: disable=import-error; pylint: disable=import-error
 
 from eox_core.forms import EdnxExtendedAccountCreationForm
 

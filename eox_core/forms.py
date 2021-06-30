@@ -7,7 +7,6 @@ Contains all the forms required by the API
 from django import forms
 from django.conf import settings
 from django.core.validators import ValidationError
-
 from openedx.core.djangoapps.user_authn.views.registration_form import (  # pylint: disable=import-error
     AccountCreationForm,
 )

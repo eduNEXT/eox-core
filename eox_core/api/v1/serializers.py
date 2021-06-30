@@ -82,6 +82,7 @@ class EdxappUserSerializer(serializers.Serializer):
         conflicts = check_edxapp_account_conflicts(email, username)
         if conflicts:
             raise serializers.ValidationError("Account already exists with the provided: {}".format(", ".join(conflicts)))
+        return attrs
 
 
 class WrittableEdxappUserSerializer(EdxappUserSerializer):
