@@ -12,6 +12,11 @@ Change Log
 Unreleased
 ----------
 
+Changed
+~~~~~~~
+* Override the ``get_user_id`` method from ``ConfigurableOpenIdConnectAuth`` to
+  include a slug before the uid.
+
 [4.11.0] - 2021-06-24
 ---------------------
 
@@ -88,7 +93,7 @@ Added
 Changed
 ~~~~~~
 * Integration tests now are only run if an environment variable
-  ``TEST_INTEGRATION`` is set.  
+  ``TEST_INTEGRATION`` is set.
 * Fix the parsing of optional parameters for the Grades API.
 
 [4.2.0] - 2021-1-27
@@ -166,7 +171,7 @@ Added
 
 Changed
 ~~~~~~~
-* **BREAKING CHANGE**: Default backend for edxapp users now is not compatible with Ironwood. In order to use Ironwood, make sure that 
+* **BREAKING CHANGE**: Default backend for edxapp users now is not compatible with Ironwood. In order to use Ironwood, make sure that
   the Django setting EOX_CORE_USERS_BACKEND is equal to "eox_core.edxapp_wrapper.backends.users_h_v1".
 
 Removed
