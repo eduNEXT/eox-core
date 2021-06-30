@@ -82,11 +82,6 @@ class EdxappUserSerializer(serializers.Serializer):
         conflicts = check_edxapp_account_conflicts(email, username)
         if conflicts:
             raise serializers.ValidationError("Account already exists with the provided: {}".format(", ".join(conflicts)))
-        
-        form_errors = self.context.get('errors')
-        if form_errors:
-            raise serializer.ValidationError(form_errors)
-        return attrs
 
 
 class WrittableEdxappUserSerializer(EdxappUserSerializer):
@@ -137,7 +132,37 @@ class WrittableEdxappUserSerializer(EdxappUserSerializer):
         return instance
 
 
-class EdxappUserQuerySerializer(EdxappUserSerializer):
+class EdxappExtendedUserSerializer(EdxappUserSerializer):
+    """
+    This serializer allows admiting all the
+    UserProfile fields and also the extra fields for the
+    userProfile.meta values
+    """
+    year_of_birth = serializers.IntegerField(required=False)
+    gender = serializers.ChoiceField(required=False, choices=GENDER_CHOICES)
+    city = serializers.CharField(required=False,)
+    goals = serializers.CharField(required=False,)
+    bio = serializers.CharField(required=False, max_length=3000)
+    profile_image_uploaded_at = serializers.DateTimeField(required=False)
+    phone_number = serializers.CharField(required=False, max_length=50)
+
+    def __init__(self, *args, **kwargs):
+        """
+        Add the rest of the extra fields for the
+        userProfile.meta values
+        """
+        kwargs.pop('fields', None)
+
+        super(EdxappExtendedUserSerializer, self).__init__(*args, **kwargs)
+
+        request_fields = kwargs.get('data', {}).keys()
+        existing_fields = self.fields.keys()
+
+        for field_name in request_fields - existing_fields:
+            self.fields[field_name] = serializers.CharField(required=False)
+
+
+class EdxappUserQuerySerializer(EdxappExtendedUserSerializer):
     """
     Handles the serialization of the context data required to create an edxapp user
     on different backends
@@ -312,34 +337,3 @@ class EdxappGradeSerializer(serializers.Serializer):
                 ]
             }
         }
-
-
-class EdxappExtendedUserSerializer(EdxappUserSerializer):
-    """
-    This serializer allows admiting all the
-    UserProfile fields and also the extra fields for the
-    userProfile.meta values
-    """
-    year_of_birth = serializers.IntegerField(required=False)
-    gender = serializers.ChoiceField(required=False, choices=GENDER_CHOICES)
-    city = serializers.CharField(required=False,)
-    goals = serializers.CharField(required=False,)
-    bio = serializers.CharField(required=False, max_length=3000)
-    profile_image_uploaded_at = serializers.DateTimeField(required=False)
-    phone_number = serializers.CharField(required=False, max_length=50)
-
-    def __init__(self, *args, **kwargs):
-        """
-        Add the rest of the extra fields for the
-        userProfile.meta values
-        """
-        kwargs.pop('fields', None)
-
-        super(EdxappExtendedUserSerializer, self).__init__(*args, **kwargs)
-
-        request = kwargs.get('context', {}).get('request')
-        request_fields = kwargs.get('data', {}).keys()
-        existing_fields = self.fields.keys()
-
-        for field_name in request_fields - existing_fields:
-            self.fields[field_name] = serializers.CharField(required=False)

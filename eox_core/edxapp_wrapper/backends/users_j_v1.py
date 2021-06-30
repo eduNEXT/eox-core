@@ -46,9 +46,6 @@ LOG = logging.getLogger(__name__)
 User = get_user_model()  # pylint: disable=invalid-name
 
 
-from django import forms
-
-
 def get_user_read_only_serializer():
     """
     Great serializer that fits our needs
@@ -100,7 +97,6 @@ def create_edxapp_user(*args, **kwargs):
 
     extra_fields = getattr(settings, 'REGISTRATION_EXTRA_FIELDS', {})
     extended_profile_fields = getattr(settings, 'extended_profile_fields', [])
-    ednx_custom_regitration_fields = getattr(settings, 'EDNX_CUSTOM_REGISTRATION_FIELDS', {})
 
     # Go ahead and create the new user
     with transaction.atomic():
@@ -112,7 +108,6 @@ def create_edxapp_user(*args, **kwargs):
             data=kwargs,
             extra_fields=extra_fields,
             extended_profile_fields=extended_profile_fields,
-            ednx_custom_regitration_fields=ednx_custom_regitration_fields,
             tos_required=False,
             # enforce_password_policy=enforce_password_policy,
         )

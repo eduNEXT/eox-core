@@ -103,7 +103,7 @@ class UserQueryMixin:
 
         return user_query
 
-from eox_core.api.v1.serializers import EdxappExtendedUserSerializer
+
 class EdxappUser(UserQueryMixin, APIView):
     """
     Handles API requests to create users
@@ -121,7 +121,7 @@ class EdxappUser(UserQueryMixin, APIView):
         """
         Creates the users on edxapp
         """
-        serializer = EdxappExtendedUserSerializer(data=request.data, context={'request': request})
+        serializer = EdxappUserQuerySerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
         data["site"] = get_current_site(request)
