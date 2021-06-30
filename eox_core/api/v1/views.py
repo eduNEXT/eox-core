@@ -103,12 +103,11 @@ class UserQueryMixin:
 
         return user_query
 
-
+from eox_core.api.v1.serializers import EdxappExtendedUserSerializer
 class EdxappUser(UserQueryMixin, APIView):
     """
     Handles API requests to create users
     """
-
     authentication_classes = (BearerAuthentication, SessionAuthentication)
     permission_classes = (EoxCoreAPIPermission,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
@@ -122,16 +121,18 @@ class EdxappUser(UserQueryMixin, APIView):
         """
         Creates the users on edxapp
         """
-        serializer = EdxappUserQuerySerializer(data=request.data)
+        serializer = EdxappExtendedUserSerializer(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
         data["site"] = get_current_site(request)
         user, msg = create_edxapp_user(**data)
 
+        if msg:
+            return Response(msg, status=status.HTTP_400_BAD_REQUEST)
+
         serialized_user = EdxappUserSerializer(user)
         response_data = serialized_user.data
-        if msg:
-            response_data["messages"] = msg
+
         return Response(response_data)
 
     def get(self, request, *args, **kwargs):

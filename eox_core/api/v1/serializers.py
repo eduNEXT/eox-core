@@ -24,6 +24,13 @@ MAX_SIGNUP_SOURCES_ALLOWED = 1
 
 USERNAME_MAX_LENGTH = get_username_max_length()
 
+GENDER_CHOICES = (
+    (u'm', ugettext_noop(u'Male')),
+    (u'f', ugettext_noop(u'Female')),
+    # Translators: 'Other' refers to the student's gender
+    (u'o', ugettext_noop(u'Other/Prefer Not to Say'))
+)
+
 
 class EdxappWithWarningSerializer(serializers.Serializer):
     """
@@ -76,6 +83,10 @@ class EdxappUserSerializer(serializers.Serializer):
         conflicts = check_edxapp_account_conflicts(email, username)
         if conflicts:
             raise serializers.ValidationError("Account already exists with the provided: {}".format(", ".join(conflicts)))
+        
+        form_errors = self.context.get('errors')
+        if form_errors:
+            raise serializer.ValidationError(form_errors)
         return attrs
 
 
@@ -302,3 +313,34 @@ class EdxappGradeSerializer(serializers.Serializer):
                 ]
             }
         }
+
+
+class EdxappExtendedUserSerializer(EdxappUserSerializer):
+    """
+    This serializer allows admiting all the
+    UserProfile fields and also the extra fields for the
+    userProfile.meta values
+    """
+    year_of_birth = models.IntegerField(required=False)
+    gender = serializers.ChoiceField(required=False, choices=GENDER_CHOICES)
+    city = serializers.CharField(required=False,)
+    goals = serializers.CharField(required=False,)
+    bio = serializers.CharField(required=False, max_length=3000)
+    profile_image_uploaded_at = serializers.DateTimeField(required=False)
+    phone_number = serializers.CharField(required=False, max_length=50)
+
+    def __init__(self, *args, **kwargs):
+        """
+        Add the rest of the extra fields for the
+        userProfile.meta values
+        """
+        kwargs.pop('fields', None)
+
+        super(EdxappExtendedUserSerializer, self).__init__(*args, **kwargs)
+
+        request = kwargs.get('context', {}).get('request')
+        request_fields = kwargs.get('data', {}).keys()
+        existing_fields = self.fields.keys()
+
+        for field_name in request_fields - existing_fields:
+            self.fields[field_name] = serializers.CharField(required=False)

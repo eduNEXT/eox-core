@@ -19,9 +19,6 @@ from openedx.core.djangoapps.user_api.accounts.views import \
 from openedx.core.djangoapps.user_api.models import UserRetirementStatus  # pylint: disable=import-error
 from openedx.core.djangoapps.user_api.preferences import api as preferences_api  # pylint: disable=import-error
 from openedx.core.djangoapps.user_authn.utils import generate_password  # pylint: disable=import-error,unused-import
-from openedx.core.djangoapps.user_authn.views.registration_form import (  # pylint: disable=import-error
-    AccountCreationForm,
-)
 from openedx.core.djangolib.oauth2_retirement_utils import \
     retire_dot_oauth2_models  # pylint: disable=import-error,unused-import
 from rest_framework import status
@@ -43,8 +40,13 @@ from student.models import (  # pylint: disable=import-error,unused-import
 from student.helpers import do_create_account  # pylint: disable=import-error; pylint: disable=import-error
 from student.models import CourseEnrollment  # pylint: disable=import-error; pylint: disable=import-error
 
+from eox_core.forms import EdnxExtendedAccountCreationForm
+
 LOG = logging.getLogger(__name__)
 User = get_user_model()  # pylint: disable=invalid-name
+
+
+from django import forms
 
 
 def get_user_read_only_serializer():
@@ -90,60 +92,62 @@ def create_edxapp_user(*args, **kwargs):
     """
     errors = []
 
-    email = kwargs.pop("email")
-    username = kwargs.pop("username")
+    email = kwargs.get("email")
+    username = kwargs.get("username")
     conflicts = check_edxapp_account_conflicts(email=email, username=username)
     if conflicts:
         return None, ["Fatal: account collition with the provided: {}".format(", ".join(conflicts))]
 
-    data = {
-        'username': username,
-        'email': email,
-        'password': kwargs.pop("password"),
-        'name': kwargs.pop("fullname"),
-    }
+    extra_fields = getattr(settings, 'REGISTRATION_EXTRA_FIELDS', {})
+    extended_profile_fields = getattr(settings, 'extended_profile_fields', [])
+    ednx_custom_regitration_fields = getattr(settings, 'EDNX_CUSTOM_REGISTRATION_FIELDS', {})
+
     # Go ahead and create the new user
     with transaction.atomic():
         # In theory is possible to extend the registration form with a custom app
         # An example form app for this can be found at http://github.com/open-craft/custom-form-app
         # form = get_registration_extension_form(data=params)
         # if not form:
-        form = AccountCreationForm(
-            data=data,
+        form = EdnxExtendedAccountCreationForm(
+            data=kwargs,
+            extra_fields=extra_fields,
+            extended_profile_fields=extended_profile_fields,
+            ednx_custom_regitration_fields=ednx_custom_regitration_fields,
             tos_required=False,
-            # TODO: we need to support the extra profile fields as defined in the django.settings
-            # extra_fields=extra_fields,
-            # extended_profile_fields=extended_profile_fields,
             # enforce_password_policy=enforce_password_policy,
         )
+
+        if form.errors:
+            return None, [form.errors.as_data()]
+
         (user, profile, registration) = do_create_account(form)  # pylint: disable=unused-variable
 
-    site = kwargs.pop("site", False)
-    if site:
-        create_or_set_user_attribute_created_on_site(user, site)
-    else:
-        errors.append("The user was not assigned to any site")
+        site = kwargs.pop("site", False)
+        if site:
+            create_or_set_user_attribute_created_on_site(user, site)
+        else:
+            errors.append("The user was not assigned to any site")
 
-    try:
-        create_comments_service_user(user)
-    except Exception:  # pylint: disable=broad-except
-        errors.append("No comments_service_user was created")
-
-    # TODO: link account with third party auth
-
-    lang_pref = kwargs.pop("language_preference", False)
-    if lang_pref:
         try:
-            preferences_api.set_user_preference(user, LANGUAGE_KEY, lang_pref)
+            create_comments_service_user(user)
         except Exception:  # pylint: disable=broad-except
-            errors.append("Could not set lang preference '{} for user '{}'".format(
-                lang_pref,
-                user.username,
-            ))
+            errors.append("No comments_service_user was created")
 
-    if kwargs.pop("activate_user", False):
-        user.is_active = True
-        user.save()
+        # TODO: link account with third party auth
+
+        lang_pref = kwargs.pop("language_preference", False)
+        if lang_pref:
+            try:
+                preferences_api.set_user_preference(user, LANGUAGE_KEY, lang_pref)
+            except Exception:  # pylint: disable=broad-except
+                errors.append("Could not set lang preference '{} for user '{}'".format(
+                    lang_pref,
+                    user.username,
+                ))
+
+        if kwargs.pop("activate_user", False):
+            user.is_active = True
+            user.save()
 
     # TODO: run conditional email sequence
 
