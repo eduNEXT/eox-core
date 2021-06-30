@@ -12,6 +12,8 @@ Change Log
 Unreleased
 ----------
 
+[4.12.0] - 2021-06-29
+---------------------
 Changed
 ~~~~~~~
 * Override the ``get_user_id`` method from ``ConfigurableOpenIdConnectAuth`` to
