@@ -25,10 +25,9 @@ MAX_SIGNUP_SOURCES_ALLOWED = 1
 USERNAME_MAX_LENGTH = get_username_max_length()
 
 GENDER_CHOICES = (
-    (u'm', ugettext_noop(u'Male')),
-    (u'f', ugettext_noop(u'Female')),
-    # Translators: 'Other' refers to the student's gender
-    (u'o', ugettext_noop(u'Other/Prefer Not to Say'))
+    ('m', 'Male'),
+    ('f', 'Female'),
+    ('o', 'Other/Prefer Not to Say'),
 )
 
 
@@ -321,7 +320,7 @@ class EdxappExtendedUserSerializer(EdxappUserSerializer):
     UserProfile fields and also the extra fields for the
     userProfile.meta values
     """
-    year_of_birth = models.IntegerField(required=False)
+    year_of_birth = serializers.IntegerField(required=False)
     gender = serializers.ChoiceField(required=False, choices=GENDER_CHOICES)
     city = serializers.CharField(required=False,)
     goals = serializers.CharField(required=False,)

@@ -68,8 +68,6 @@ class EdnxExtendedAccountCreationForm(AccountCreationForm):
                         validators = [validate_option(value, field_name)],
                         error_messages={
                             "required": "{} is required".format(field_name),
-                            "min_length": "The min lenght is {}".format(min_length),
-                            "max_length": "The max lenght is {}".format(min_length),
                         }
                     )          
 
