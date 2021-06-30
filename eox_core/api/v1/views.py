@@ -108,6 +108,7 @@ class EdxappUser(UserQueryMixin, APIView):
     """
     Handles API requests to create users
     """
+
     authentication_classes = (BearerAuthentication, SessionAuthentication)
     permission_classes = (EoxCoreAPIPermission,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)

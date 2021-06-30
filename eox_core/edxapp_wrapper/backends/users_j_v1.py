@@ -117,32 +117,32 @@ def create_edxapp_user(*args, **kwargs):
 
         (user, profile, registration) = do_create_account(form)  # pylint: disable=unused-variable
 
-        site = kwargs.pop("site", False)
-        if site:
-            create_or_set_user_attribute_created_on_site(user, site)
-        else:
-            errors.append("The user was not assigned to any site")
+    site = kwargs.pop("site", False)
+    if site:
+        create_or_set_user_attribute_created_on_site(user, site)
+    else:
+        errors.append("The user was not assigned to any site")
 
+    try:
+        create_comments_service_user(user)
+    except Exception:  # pylint: disable=broad-except
+        errors.append("No comments_service_user was created")
+
+    # TODO: link account with third party auth
+
+    lang_pref = kwargs.pop("language_preference", False)
+    if lang_pref:
         try:
-            create_comments_service_user(user)
+            preferences_api.set_user_preference(user, LANGUAGE_KEY, lang_pref)
         except Exception:  # pylint: disable=broad-except
-            errors.append("No comments_service_user was created")
+            errors.append("Could not set lang preference '{} for user '{}'".format(
+                lang_pref,
+                user.username,
+            ))
 
-        # TODO: link account with third party auth
-
-        lang_pref = kwargs.pop("language_preference", False)
-        if lang_pref:
-            try:
-                preferences_api.set_user_preference(user, LANGUAGE_KEY, lang_pref)
-            except Exception:  # pylint: disable=broad-except
-                errors.append("Could not set lang preference '{} for user '{}'".format(
-                    lang_pref,
-                    user.username,
-                ))
-
-        if kwargs.pop("activate_user", False):
-            user.is_active = True
-            user.save()
+    if kwargs.pop("activate_user", False):
+        user.is_active = True
+        user.save()
 
     # TODO: run conditional email sequence
 
