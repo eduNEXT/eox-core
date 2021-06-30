@@ -57,11 +57,55 @@ class ConfigurableOpenIdConnectAuth(OpenIdConnectAuth):
 
     def extra_data(self, user, uid, response, details=None, *args, **kwargs):  # pylint: disable=keyword-arg-before-vararg
         """
-        Override method extra_data returned by the provider including user
-        information.
+        Get information returned by the provider including user information.
+
+        When debug mode is enabled, the entire response from the provided is
+        added. This behavior is controlled via site settings:
+
+        - 'SOCIAL_AUTH_DEBUG_ENABLED': if true, then debug mode is enabled.
+        default is set to false.
+
+        Examples:
+            - Default mode
+            {
+                'refresh_token': None,
+                ...
+                'user_details':
+                {
+                    'first_name': 'Test',
+                    'last_name': 'Subject',
+                    ...
+                },
+                ...
+            }
+            - Debug mode enabled -after enabled once- or exception raised
+            {
+                ...
+                'user_details': ...,
+                'userinfo_response':
+                {
+                    'locale': 'es',
+                    'hd': 'edunext.co',
+                    'given_name': 'Test',
+                    'email': 'test.subject@edunext.co',
+                    'family_name': 'Subject',
+                    ...
+                    'email_verified': True,
+                    'expires_in': 3598,
+                    'picture': ...,
+            }
         """
         data = super().extra_data(user, uid, response, details, *args, **kwargs)
-        data["user_details"] = self.get_user_details(response)
+
+        debug_mode_enabled = self.setting('DEBUG_ENABLED', False)
+
+        try:
+            data["user_details"] = self.get_user_details(response)
+            if debug_mode_enabled:
+                data["userinfo_response"] = response
+        except Exception:  # pylint: disable=broad-except
+            LOG.exception("An exception was raised while loading user_details.")
+            data["userinfo_response"] = response
 
         return data
 

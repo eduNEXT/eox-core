@@ -16,6 +16,7 @@ Changed
 ~~~~~~~
 * Override the ``get_user_id`` method from ``ConfigurableOpenIdConnectAuth`` to
   include a slug before the uid.
+* Add debug mode option to extra_data method from the ConfigurableOpenIdConnectAuth backend.
 
 [4.11.0] - 2021-06-24
 ---------------------
