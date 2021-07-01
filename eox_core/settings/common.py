@@ -13,6 +13,7 @@ INSTALLED_APPS = (
     'edx_proctoring',
     'django_filters',
     'oauth2_provider',
+    'django_countries',
 )
 EOX_AUDIT_MODEL_APP = 'eox_audit_model.apps.EoxAuditModelConfig'
 

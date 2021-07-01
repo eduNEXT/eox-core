@@ -11,6 +11,10 @@ Change Log
 .. There should always be an "Unreleased" section for changes pending release.
 Unreleased
 ----------
+Added
+~~~~~~~
+* Allow profile fields to be included when creating a user.
+* Add skip_password flag to omit password when creating a user if enabled.
 
 Changed
 ~~~~~~~
