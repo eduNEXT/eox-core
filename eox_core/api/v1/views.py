@@ -40,7 +40,13 @@ from eox_core.edxapp_wrapper.pre_enrollments import (
     update_pre_enrollment,
 )
 from eox_core.edxapp_wrapper.users import create_edxapp_user, get_edxapp_user
-from eox_core.integrations.audit_wrapper import audit_api_wrapper
+
+try:
+    from eox_audit_model.decorators import audit_drf_api
+except ImportError:
+    def audit_drf_api(*args, **kwargs):
+        """Identity decorator"""
+        return lambda x: x
 
 LOG = logging.getLogger(__name__)
 
@@ -113,11 +119,16 @@ class EdxappUser(UserQueryMixin, APIView):
     permission_classes = (EoxCoreAPIPermission,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
-    @audit_api_wrapper(action='Create edxapp user', data_filter=[
-        'email',
-        'username',
-        'fullname',
-    ])
+    @audit_drf_api(
+        action="Create edxapp user",
+        data_filter=[
+            "email",
+            "username",
+            "fullname",
+        ],
+        hidden_fields=["password"],
+        method_name='eox_core_api_method',
+    )
     def post(self, request, *args, **kwargs):
         """
         Creates the users on edxapp
@@ -166,10 +177,15 @@ class EdxappUserUpdater(UserQueryMixin, APIView):
     permission_classes = (EoxCoreAPIPermission,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
-    @audit_api_wrapper(action='Partially update a user from edxapp', data_filter=[
-        'email',
-        'is_active',
-    ])
+    @audit_drf_api(
+        action='Partially update a user from edxapp',
+        data_filter=[
+            'email',
+            'is_active',
+        ],
+        hidden_fields=['password'],
+        method_name='eox_core_api_method',
+    )
     def patch(self, request, *args, **kwargs):
         """
         Partially update a user from edxapp. Not all the fields can be updated, just the ones thought as `safe`.
@@ -227,7 +243,7 @@ class EdxappEnrollment(UserQueryMixin, APIView):
             400: "Bad request, invalid course_id or missing either email or username.",
         },
     )
-    @audit_api_wrapper(action='Create single or bulk enrollments')
+    @audit_drf_api(action='Create single or bulk enrollments', method_name='eox_core_api_method')
     def post(self, request, *args, **kwargs):
         """
         Handle creation of single or bulk enrollments
@@ -319,7 +335,7 @@ class EdxappEnrollment(UserQueryMixin, APIView):
             400: "Bad request, invalid course_id or missing either email or username.",
         },
     )
-    @audit_api_wrapper(action='Update enrollments on edxapp')
+    @audit_drf_api(action='Update enrollments on edxapp', method_name='eox_core_api_method')
     def put(self, request, *args, **kwargs):
         """
         Update enrollments on edxapp
@@ -464,7 +480,7 @@ class EdxappEnrollment(UserQueryMixin, APIView):
             404: "User or course not found",
         },
     )
-    @audit_api_wrapper(action='Delete enrollment on edxapp.')
+    @audit_drf_api(action='Delete enrollment on edxapp.', method_name='eox_core_api_method')
     def delete(self, request, *args, **kwargs):
         """
         Delete enrollment on edxapp
@@ -589,7 +605,7 @@ class EdxappPreEnrollment(APIView):
     permission_classes = (EoxCoreAPIPermission,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
-    @audit_api_wrapper(action='Create pre-enrollments on edxapp.')
+    @audit_drf_api(action='Create pre-enrollments on edxapp.', method_name='eox_core_api_method')
     def post(self, request, *args, **kwargs):
         """
         Create whitelistings on edxapp
@@ -604,7 +620,7 @@ class EdxappPreEnrollment(APIView):
         ).data
         return Response(response_data)
 
-    @audit_api_wrapper(action='Update pre-enrollments on edxapp.')
+    @audit_drf_api(action='Update pre-enrollments on edxapp.', method_name='eox_core_api_method')
     def put(self, request, *args, **kwargs):
         """
         Update whitelistings on edxapp
@@ -630,7 +646,7 @@ class EdxappPreEnrollment(APIView):
         response = EdxappCoursePreEnrollmentSerializer(updated_pre_enrollment).data
         return Response(response)
 
-    @audit_api_wrapper(action='Delete pre-enrollments on edxapp.')
+    @audit_drf_api(action='Delete pre-enrollments on edxapp.', method_name='eox_core_api_method')
     def delete(self, request, *args, **kwargs):
         """
         Delete whitelistings on edxapp

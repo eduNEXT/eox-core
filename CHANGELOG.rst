@@ -12,6 +12,11 @@ Change Log
 Unreleased
 ----------
 
+Changed
+~~~~~~~
+* Move audit_wrapper to audit-model and rename it.
+* Record sensitive data as hidden fields (eg. passwords)
+
 [4.12.0] - 2021-06-29
 ---------------------
 Changed
