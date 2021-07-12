@@ -2,6 +2,7 @@
 API v1 views.
 """
 
+# pylint: disable=too-many-lines
 from __future__ import absolute_import, unicode_literals
 
 import logging
@@ -39,7 +40,7 @@ from eox_core.edxapp_wrapper.pre_enrollments import (
     get_pre_enrollment,
     update_pre_enrollment,
 )
-from eox_core.edxapp_wrapper.users import create_edxapp_user, get_edxapp_user
+from eox_core.edxapp_wrapper.users import create_edxapp_user, get_edxapp_user, get_user_read_only_serializer
 
 try:
     from eox_audit_model.decorators import audit_drf_api
@@ -112,13 +113,67 @@ class UserQueryMixin:
 
 class EdxappUser(UserQueryMixin, APIView):
     """
-    Handles API requests to create users
+    Handles the creation of a User on edxapp
+
+    **Example Requests**
+
+        POST /eox-core/api/v1/user/
+
+        Request data: {
+            "username": "johndoe",
+            "email": "johndoe@example.com",
+            "fullname": "John Doe",
+            "password": "p@ssword",
+        }
+
+    The extra registration fields configured for the microsite, should be sent along with the rest of the parameters.
+    These extra fields would be required depending on the settings.
+    For example, if we have the microsite settings:
+
+        "EDNX_CUSTOM_REGISTRATION_FIELDS": [
+            {
+                "label": "Personal ID",
+                "name": "personal_id",
+                "type": "text"
+            },
+        ],
+
+        "REGISTRATION_EXTRA_FIELDS": {
+            "gender": "required",
+            "country": "hidden",
+            "personal_id": "required",
+        },
+
+        "extended_profile_fields": [
+            "personal_id",
+        ],
+
+    Then a request to create a user should look like this:
+
+        {
+            "username": "johndoe",
+            "email": "johndoe@example.com",
+            "fullname": "John Doe",
+            "password": "p@ssword",
+            "gender": "m",
+            "country": "GR",
+            "personal_id": "12345",
+        }
+
     """
 
     authentication_classes = (BearerAuthentication, SessionAuthentication)
     permission_classes = (EoxCoreAPIPermission,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
+    @apidocs.schema(
+        body=EdxappUserQuerySerializer,
+        responses={
+            200: EdxappUserSerializer,
+            400: "Bad request, a required field is missing or has been entered with the wrong format.",
+            401: "Unauthorized user to make the request.",
+        },
+    )
     @audit_drf_api(
         action="Create edxapp user",
         data_filter=[
@@ -131,7 +186,58 @@ class EdxappUser(UserQueryMixin, APIView):
     )
     def post(self, request, *args, **kwargs):
         """
-        Creates the users on edxapp
+        Handles the creation of a User on edxapp
+
+        **Example Requests**
+
+            POST /eox-core/api/v1/user/
+
+            Request data: {
+                "username": "johndoe",
+                "email": "johndoe@example.com",
+                "fullname": "John Doe",
+                "password": "p@ssword",
+            }
+
+        **Parameters**
+
+        - `username` (**required**, string, _body_):
+            The username to be assigned to the new user.
+
+        - `email` (**required**, string, _body_):
+            The email to be assigned to the new user.
+
+        - `password` (**required**, string, _body_):
+            The password of the new user. If `skip_password` is True, this field will be omitted.
+
+        - `fullname` (**required**, string, _body_):
+            The full name to be assigned.
+
+        - `activate_user` (**optional**, boolean, default=False, _body_):
+            Flag indicating whether the user is active.
+
+        - `skip_password` (**optional**, boolean, default=False, _body_):
+            Flag indicating whether the password should be omitted.
+
+        If you have extra registration fields configured in your settings or extended_profile fields, you can send them with the rest of the parameters.
+        These extra fields would be required depending on the site settings.
+        For example:
+
+            {
+                "username": "johndoe",
+                "email": "johndoe@example.com",
+                "fullname": "John Doe",
+                "password": "p@ssword",
+                "gender": "m",
+                "country": "GR",
+            }
+
+
+        **Returns**
+
+        - 200: Success, user created.
+        - 400: Bad request, a required field is missing or has been entered with the wrong format, or the chosen email/username already belongs to a user.
+        - 401: Unauthorized user to make the request.
         """
         serializer = EdxappUserQuerySerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -145,9 +251,78 @@ class EdxappUser(UserQueryMixin, APIView):
             response_data["messages"] = msg
         return Response(response_data)
 
+    @apidocs.schema(
+        parameters=[
+            apidocs.query_parameter(
+                name="username",
+                param_type=str,
+                description="**required**, The username used to identify the user. Use either username or email.",
+            ),
+            apidocs.query_parameter(
+                name="email",
+                param_type=str,
+                description="**required**, The email used to identify the user. Use either username or email.",
+            ),
+        ],
+        responses={
+            200: get_user_read_only_serializer(),
+            400: "Bad request, missing email or username",
+            401: "Unauthorized user to make the request.",
+            404: "User not found",
+        },
+    )
     def get(self, request, *args, **kwargs):
         """
-        Retrieve an user from edxapp
+        Retrieves information about an edxapp user,
+        given an email or a username.
+
+        The username prevails over the email when both are provided to get the user.
+
+        **Example Requests**
+
+            GET /eox-core/api/v1/user/?username=johndoe
+
+            Query parameters: {
+              "username": "johndoe",
+            }
+
+        **Response details**
+
+        - `username (str)`: Username of the edxapp user
+        - `is_active (str)`: Indicates if the user is active on the platform
+        - `email (str)`: Email of the user
+        - `gender (str)`: Gender of the user
+        - `date_joined (str)`: Date for when the user was registered in the platform
+        - `name (str)`: Fullname of the user
+        - `country (str)`: Country of the user
+        - `level_of_education (str)`: Level of education of the user
+        - `year_of_birth (int)`: Year of birth of the user
+        - `bio (str)`: Bio of the user
+        - `goals (str)`: Goals of the user
+        - `extended_profile (list)`: List of dictionaries that contains the user-profile meta fields
+            - `field_name (str)`: Name of the extended profile field
+            - `field_value (str)`: Value of the extended profile field
+        - `mailing_address (str)`
+        - `social_links (List)`: List that contains the social links of the user, if any.
+        - `account_privacy (str)`: Indicates the account privacy type
+        - `state (str)`: State (only for US)
+        - `secondary_email (str)`: Secondary email of the user
+        - `profile_image (dictionary)`:
+            - `has_image (Bool)`: Indicates if user has profile image
+            - `image_url_medium (str)`: Url of the profile image in medium size
+            - `image_url_small (str)`: Url of the profile image in small size
+            - `image_url_full (str)`: Url of the profile image in full size,
+            - `image_url_large (str)`: Url of the profile image in large size
+        - `secondary_email_enabled (Bool)`: Indicates if the secondary email is enable
+        - `phone_number (str)`: Phone number of the user
+        - `requires_parental_consent (Bool)`: Indicates whether parental consent is required for the user
+
+        **Returns**
+
+        - 200: Success, user found.
+        - 400: Bad request, missing either email or username
+        - 401: Unauthorized user to make the request.
+        - 404: User not found
         """
         query = self.get_user_query(request)
         user = get_edxapp_user(**query)
@@ -170,13 +345,68 @@ class EdxappUser(UserQueryMixin, APIView):
 
 class EdxappUserUpdater(UserQueryMixin, APIView):
     """
-    Handles API requests to partially update users.
+    Partially updates a user from edxapp.
+
+    Not all the fields can be updated, just the ones thought as `safe`. By default, this fields are the ones defined in the
+    EOX_CORE_USER_UPDATE_SAFE_FIELDS
+
+    **Example Requests**
+
+        PATCH /eox-core/api/v1/update-user/
+
+        Request data: {
+            "email": "johndoe@example.com",
+            "fullname": "John Doe R",
+            "password": "new-p@ssword",
+        }
+
+    The extra registration fields configured for the microsite, should be sent along with the rest of the parameters.
+    These extra fields would be required (their value cannot be changed to null) depending on the settings.
+
+    For example, if we have the microsite settings:
+
+        "EDNX_CUSTOM_REGISTRATION_FIELDS": [
+            {
+                "label": "Personal ID",
+                "name": "personal_id",
+                "type": "text"
+            },
+        ],
+
+        "REGISTRATION_EXTRA_FIELDS": {
+            "gender": "required",
+            "country": "hidden",
+            "personal_id": "required",
+        },
+
+        "extended_profile_fields": [
+            "personal_id",
+        ],
+
+    Then a request to create a user should look like this:
+
+        {
+            "email": "johndoe@example.com",
+            "fullname": "John Doe R",
+            "password": "new-p@ssword",
+            "country": "CO",
+            "personal_id": "00099",
+        }
     """
 
     authentication_classes = (BearerAuthentication, SessionAuthentication)
     permission_classes = (EoxCoreAPIPermission,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
+    @apidocs.schema(
+        body=WrittableEdxappUserSerializer,
+        responses={
+            200: get_user_read_only_serializer(),
+            400: "Bad request, a required field is now null or has been entered with the wrong format.",
+            401: "Unauthorized user to make the request.",
+            404: "User not found.",
+        },
+    )
     @audit_drf_api(
         action='Partially update a user from edxapp',
         data_filter=[
@@ -188,22 +418,89 @@ class EdxappUserUpdater(UserQueryMixin, APIView):
     )
     def patch(self, request, *args, **kwargs):
         """
-        Partially update a user from edxapp. Not all the fields can be updated, just the ones thought as `safe`.
+        Partially updates a user from edxapp.
 
-        For example:
+        **Example Requests**
 
-        **Requests**:
-            PATCH <domain>/eox-core/api/v1/user/
+            PATCH /eox-core/api/v1/update-user/
 
-        **Request body**
-            {
-                "email"=<USER_EMAIL>,
-                "is_active": true,
-                "password": "new password"
+            Request data: {
+                "email": "johndoe@example.com",
+                "fullname": "John Doe R",
+                "password": "new-p@ssword",
             }
 
-        **Response values**
-            User serialized.
+
+        **Parameters**
+
+        - `email` (**required**, string, _body_):
+            The email used to identify the user. Use either username or email.
+
+        - `username` (**required**, string, _body_):
+            The username used to identify the user. Use either username or email.
+
+        - `password` (**optional**, string, _body_):
+            The new password of the user.
+
+        - `fullname` (**optional**, string, _body_):
+            The full name to be assigned.
+
+        - `is_active` (**optional**, boolean, _body_):
+            Flag indicating if the user is active on the platform.
+
+        - Not all the fields can be updated, just the ones thought as 'safe', such as: "is_active", "password", "fullname"
+
+        - By default, these are the 'safe' extra registration fields: "mailing_address", "year_of_birth", "gender", "level_of_education",
+        "city", "country", "goals", "bio" and "phone_number".
+
+        If you have extra registration fields configured in your settings or extended_profile fields, and you want to update them, you can send them along with the rest of the parameters.
+        For example:
+
+            {
+                "email": "johndoe@example.com",
+                "fullname": "John Doe R",
+                "password": "new-p@ssword",
+                "gender": "f",
+                "country": "US",
+            }
+
+        **Response details**
+
+        - `username (str)`: Username of the edxapp user
+        - `is_active (str)`: Indicates if the user is active on the platform
+        - `email (str)`: Email of the user
+        - `gender (str)`: Gender of the user
+        - `date_joined (str)`: Date for when the user was registered in the platform
+        - `name (str)`: Fullname of the user
+        - `country (str)`: Country of the user
+        - `level_of_education (str)`: Level of education of the user
+        - `year_of_birth (int)`: Year of birth of the user
+        - `bio (str)`: Bio of the user
+        - `goals (str)`: Goals of the user
+        - `extended_profile (list)`: List of dictionaries that contains the user-profile meta fields
+            - `field_name (str)`: Name of the extended profile field
+            - `field_value (str)`: Value of the extended profile field
+        - `mailing_address (str)`
+        - `social_links (List)`: List that contains the social links of the user, if any.
+        - `account_privacy (str)`: Indicates the account privacy type
+        - `state (str)`: State (only for US)
+        - `secondary_email (str)`: Secondary email of the user
+        - `profile_image (dictionary)`:
+            - `has_image (Bool)`: Indicates if user has profile image
+            - `image_url_medium (str)`: Url of the profile image in medium size
+            - `image_url_small (str)`: Url of the profile image in small size
+            - `image_url_full (str)`: Url of the profile image in full size,
+            - `image_url_large (str)`: Url of the profile image in large size
+        - `secondary_email_enabled (Bool)`: Indicates if the secondary email is enable
+        - `phone_number (str)`: Phone number of the user
+        - `requires_parental_consent (Bool)`: Indicates whether parental consent is required for the user
+
+        **Returns**
+
+        - 200: Success, user updated.
+        - 400: Bad request, a required field is now null or has been entered with the wrong format.
+        - 401: Unauthorized user to make the request.
+        - 404: User not found
         """
         # Pop identification
         data = request.data.copy()

@@ -41,7 +41,13 @@ class APISchemaGenerator(OpenAPISchemaGenerator):
 api_urls = [  # pylint: disable=invalid-name
     url(r'^enrollment/$', views.EdxappEnrollment.as_view(), name='edxapp-enrollment'),
     url(r'^grade/$', views.EdxappGrade.as_view(), name='edxapp-grade'),
+    url(r'^user/$', views.EdxappUser.as_view(), name='edxapp-user'),
 ]
+
+if getattr(settings, "EOX_CORE_ENABLE_UPDATE_USERS", None):
+    api_urls += [
+        url(r'^update-user/$', views.EdxappUserUpdater.as_view(), name='edxapp-user-updater'),
+    ]
 
 api_info = make_api_info(  # pylint: disable=invalid-name
     title="eox core",

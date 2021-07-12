@@ -13,6 +13,7 @@ Unreleased
 ----------
 Added
 ~~~~~~~
+* Add User API documentation.
 * Allow profile fields to be included when creating a user.
 * Add skip_password flag to omit password when creating a user if enabled.
 * Allow user profile fields to be updated (update user endpoint).
