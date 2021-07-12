@@ -7,7 +7,9 @@ from __future__ import absolute_import, unicode_literals
 from collections import OrderedDict
 
 from django.conf import settings
+from django_countries.serializer_fields import CountryField
 from rest_framework import serializers
+from rest_framework.fields import HiddenField
 
 from eox_core.edxapp_wrapper.coursekey import get_valid_course_key, validate_org
 from eox_core.edxapp_wrapper.enrollments import check_edxapp_enrollment_is_valid
@@ -17,12 +19,24 @@ from eox_core.edxapp_wrapper.users import (
     get_user_signup_source,
     get_username_max_length,
 )
+from eox_core.utils import (
+    get_gender_choices,
+    get_level_of_education_choices,
+    get_registration_extra_fields,
+    get_valid_years,
+    set_custom_field_restrictions,
+    set_select_custom_field,
+)
 
 UserSignupSource = get_user_signup_source()  # pylint: disable=invalid-name
 
 MAX_SIGNUP_SOURCES_ALLOWED = 1
 
 USERNAME_MAX_LENGTH = get_username_max_length()
+
+ALLOWED_TYPES = ["text", "email", "select", "textarea", "checkbox", "plaintext", "password", "hidden"]
+
+YEAR_OF_BIRTH_CHOICES = [(str(year), str(year)) for year in get_valid_years()]
 
 
 class EdxappWithWarningSerializer(serializers.Serializer):
@@ -79,6 +93,84 @@ class EdxappUserSerializer(serializers.Serializer):
         return attrs
 
 
+class EdxappExtendedUserSerializer(EdxappUserSerializer):
+    """
+    This serializer allows admiting all the
+    UserProfile fields and also the extra fields for the
+    userProfile.meta values that are specified in the
+    microsite settings.
+
+    If "terms_of_service" or "honor_code" are not marked
+    as hidden fields in the REGISTRATION_EXTRA_FIELDS setting,
+    then they are added as hidden fields in the serializer
+    with the default value set to "true", so these terms
+    and conditions are "accepted" when using the create-user
+    endpoint.
+    """
+    year_of_birth = serializers.ChoiceField(choices=YEAR_OF_BIRTH_CHOICES)
+    gender = serializers.ChoiceField(choices=get_gender_choices())
+    city = serializers.CharField()
+    goals = serializers.CharField()
+    bio = serializers.CharField(max_length=3000)
+    profile_image_uploaded_at = serializers.DateTimeField()
+    phone_number = serializers.CharField(max_length=50)
+    mailing_address = serializers.CharField()
+    courseware = serializers.CharField(max_length=255)
+    level_of_education = serializers.ChoiceField(choices=get_level_of_education_choices())
+    country = CountryField(required=False)
+    terms_of_service = serializers.HiddenField(default='true')
+    honor_code = serializers.HiddenField(default='true')
+
+    def __init__(self, *args, **kwargs):  # pylint: disable=too-many-locals
+        """
+        Add the custom registration fields specified in the settings.
+        """
+        super().__init__(*args, **kwargs)
+
+        extended_profile_fields = getattr(settings, "extended_profile_fields", [])
+        extra_fields = get_registration_extra_fields()
+        ednx_custom_registration_fields = getattr(settings, "EDNX_CUSTOM_REGISTRATION_FIELDS", [])
+        all_fields = set(self.fields)
+        # Obtain only the fields defined in the EdxappExtendedUserSerializer
+        non_profile_fields = set(EdxappUserSerializer().fields)
+        non_profile_fields.update(["activate_user", "skip_password"])
+        profile_fields = all_fields - non_profile_fields
+
+        # Delete the profile fields that are not allowed or are redefined in the ednx_custom_registration setting
+        # In case the field IS allowed, check if is required or not
+        for field in profile_fields:
+            if field not in extra_fields or field in extended_profile_fields:
+                self.fields.pop(field)
+            else:
+                # Hidden fields take their value from the default, so we should not alter the "required" attribute.
+                if not isinstance(self.fields[field], HiddenField):
+                    self.fields[field].required = extra_fields.get(field) == "required"
+
+        # Adding fields that go inside the UserProfile.meta
+        for custom_field in ednx_custom_registration_fields:
+            field_name = custom_field.get("name")
+            field_type = custom_field.get("type")
+
+            if field_name in extended_profile_fields and field_type in ALLOWED_TYPES:
+                serializer_field = {}
+
+                serializer_field["required"] = extra_fields.get(field_name) == "required"
+
+                # Check this first since fields of type 'text' are the only ones that can have restrictions
+                if field_type == "text":
+                    serializer_field = set_custom_field_restrictions(custom_field, serializer_field)
+
+                # Now we add the field to the serializer according to the custom field type defined in the settings
+                if field_type == "select":
+                    self.fields[field_name] = serializers.ChoiceField(**set_select_custom_field(custom_field, serializer_field))
+
+                elif field_type == "checkbox":
+                    self.fields[field_name] = serializers.BooleanField(**serializer_field)
+
+                else:
+                    self.fields[field_name] = serializers.CharField(**serializer_field)
+
+
 class WrittableEdxappUserSerializer(EdxappUserSerializer):
     """
     Handles the serialization of the user data required to update an edxapp user.
@@ -127,13 +219,26 @@ class WrittableEdxappUserSerializer(EdxappUserSerializer):
         return instance
 
 
-class EdxappUserQuerySerializer(EdxappUserSerializer):
+class EdxappUserQuerySerializer(EdxappExtendedUserSerializer):
     """
     Handles the serialization of the context data required to create an edxapp user
     on different backends
     """
 
     activate_user = serializers.BooleanField(default=False)  # We need to allow the api to activate users later on
+    skip_password = serializers.BooleanField(default=False, write_only=True)
+
+    def __init__(self, *args, **kwargs):  # pylint: disable=too-many-locals
+        """
+        Check skip_password flag to see if password
+        should be omitted.
+        """
+        super().__init__(*args, **kwargs)
+
+        initial_data = getattr(self, "initial_data", {})
+
+        if initial_data.get("skip_password", False):  # pylint: disable=no-member
+            self.fields.pop("password", None)
 
 
 class EdxappEnrollmentAttributeSerializer(serializers.Serializer):

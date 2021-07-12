@@ -9,3 +9,4 @@ pylint
 pytest
 pytest-django
 testfixtures
+django-countries

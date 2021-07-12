@@ -7,6 +7,7 @@ from __future__ import absolute_import, unicode_literals
 
 import logging
 
+from django import forms
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import transaction
@@ -69,6 +70,35 @@ def check_edxapp_account_conflicts(email, username):
     return conflicts
 
 
+class EdnxAccountCreationForm(AccountCreationForm):
+    """
+    A form to extend the behaviour of the AccountCreationForm.
+    For now the purpose of this form is to allow to make the
+    password optional if the flag 'skip_password' is True.
+
+    This form it's currently only used for validation, not rendering.
+    """
+
+    def __init__(  # pylint:disable=too-many-arguments
+            self,
+            data=None,
+            extra_fields=None,
+            extended_profile_fields=None,
+            do_third_party_auth=True,
+            tos_required=True,
+    ):
+        super().__init__(
+            data=data,
+            extra_fields=extra_fields,
+            extended_profile_fields=extended_profile_fields,
+            do_third_party_auth=do_third_party_auth,
+            tos_required=tos_required,
+        )
+
+        if data.pop("skip_password", False):
+            self.fields['password'] = forms.CharField(required=False)
+
+
 def create_edxapp_user(*args, **kwargs):
     """
     Creates a user on the open edx django site using calls to
@@ -90,30 +120,26 @@ def create_edxapp_user(*args, **kwargs):
     """
     errors = []
 
-    email = kwargs.pop("email")
-    username = kwargs.pop("username")
+    extra_fields = getattr(settings, "REGISTRATION_EXTRA_FIELDS", {})
+    extended_profile_fields = getattr(settings, "extended_profile_fields", [])
+    kwargs["name"] = kwargs.pop("fullname", None)
+    email = kwargs.get("email")
+    username = kwargs.get("username")
     conflicts = check_edxapp_account_conflicts(email=email, username=username)
     if conflicts:
         return None, ["Fatal: account collition with the provided: {}".format(", ".join(conflicts))]
 
-    data = {
-        'username': username,
-        'email': email,
-        'password': kwargs.pop("password"),
-        'name': kwargs.pop("fullname"),
-    }
     # Go ahead and create the new user
     with transaction.atomic():
         # In theory is possible to extend the registration form with a custom app
         # An example form app for this can be found at http://github.com/open-craft/custom-form-app
         # form = get_registration_extension_form(data=params)
         # if not form:
-        form = AccountCreationForm(
-            data=data,
+        form = EdnxAccountCreationForm(
+            data=kwargs,
             tos_required=False,
-            # TODO: we need to support the extra profile fields as defined in the django.settings
-            # extra_fields=extra_fields,
-            # extended_profile_fields=extended_profile_fields,
+            extra_fields=extra_fields,
+            extended_profile_fields=extended_profile_fields,
             # enforce_password_policy=enforce_password_policy,
         )
         (user, profile, registration) = do_create_account(form)  # pylint: disable=unused-variable
