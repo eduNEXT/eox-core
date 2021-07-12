@@ -11,6 +11,10 @@ Change Log
 .. There should always be an "Unreleased" section for changes pending release.
 Unreleased
 ----------
+
+[4.13.0] - 2021-07-12
+---------------------
+
 Added
 ~~~~~~~
 * Add User API documentation.
