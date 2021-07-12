@@ -20,6 +20,7 @@ from eox_core.edxapp_wrapper.users import (
     get_username_max_length,
 )
 from eox_core.utils import (
+    create_user_profile,
     get_gender_choices,
     get_level_of_education_choices,
     get_registration_extra_fields,
@@ -171,7 +172,7 @@ class EdxappExtendedUserSerializer(EdxappUserSerializer):
                     self.fields[field_name] = serializers.CharField(**serializer_field)
 
 
-class WrittableEdxappUserSerializer(EdxappUserSerializer):
+class WrittableEdxappUserSerializer(EdxappExtendedUserSerializer):
     """
     Handles the serialization of the user data required to update an edxapp user.
     """
@@ -206,14 +207,50 @@ class WrittableEdxappUserSerializer(EdxappUserSerializer):
         """
         Update method for safe fields.
         """
+        extended_profile_fields = getattr(settings, 'extended_profile_fields', [])
+        # Obtain only the User profile fields defined in the EdxappExtendedUserSerializer
+        all_fields = set(EdxappExtendedUserSerializer().fields)
+        non_profile_fields = set(EdxappUserSerializer().fields)
+        extra_registration_fields = all_fields - non_profile_fields
+        # Check if the User has a Profile
+        has_profile = hasattr(instance, 'profile')
+
+        extra_registration_fields.update(extended_profile_fields)
+        if has_profile:
+            profile_meta = instance.profile.get_meta()
+
         for key, value in validated_data.items():
 
             if key == "password":
                 instance.set_password(value)
+
+            elif key in extra_registration_fields or key == "fullname":
+                if not has_profile:
+                    create_user_profile(instance)
+                    profile_meta = {}
+                    has_profile = True
+
+                # First check if the field belongs to the meta
+                if key in extended_profile_fields:
+                    profile_meta[key] = value
+
+                # Key is one of the user profile fields
+                else:
+                    if key == "year_of_birth":
+                        value = int(value)
+                    # 'name' field is sent as 'fullname' in the request
+                    if key == "fullname":
+                        key = "name"
+                    setattr(instance.profile, key, value)
+
             else:
                 setattr(instance, key, value)
 
         if validated_data:
+            if has_profile:
+                # Update user profile meta
+                instance.profile.set_meta(profile_meta)
+                instance.profile.save()
             instance.save()
 
         return instance

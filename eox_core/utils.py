@@ -115,3 +115,11 @@ def get_registration_extra_fields():
     registration_extra_fields = getattr(settings, 'REGISTRATION_EXTRA_FIELDS', {})
 
     return {key: value for key, value in registration_extra_fields.items() if value in ["required", "optional"]}
+
+
+def create_user_profile(user):
+    """
+    Creates a Profile to a User.
+    """
+    if not hasattr(user, "profile"):
+        UserProfile.objects.create(user=user)
