@@ -25,6 +25,7 @@ from openedx.core.djangoapps.user_authn.views.registration_form import (  # pyli
 )
 from openedx.core.djangolib.oauth2_retirement_utils import \
     retire_dot_oauth2_models  # pylint: disable=import-error,unused-import
+from openedx.core.lib.triggers.v1 import post_register  # pylint: disable=import-error
 from rest_framework import status
 from rest_framework.exceptions import NotFound
 from social_django.models import UserSocialAuth  # pylint: disable=import-error
@@ -43,6 +44,7 @@ from student.models import (  # pylint: disable=import-error,unused-import
 
 from student.helpers import do_create_account  # pylint: disable=import-error; pylint: disable=import-error
 from student.models import CourseEnrollment  # pylint: disable=import-error; pylint: disable=import-error
+
 
 LOG = logging.getLogger(__name__)
 User = get_user_model()  # pylint: disable=invalid-name
@@ -154,6 +156,9 @@ def create_edxapp_user(*args, **kwargs):
         create_comments_service_user(user)
     except Exception:  # pylint: disable=broad-except
         errors.append("No comments_service_user was created")
+
+    # Announce registration through API
+    post_register.send_robust(sender=None, user=user)
 
     # TODO: link account with third party auth
 
