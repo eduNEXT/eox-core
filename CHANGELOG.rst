@@ -12,6 +12,13 @@ Change Log
 Unreleased
 ----------
 
+[4.13.1] - 2021-07-15
+---------------------
+
+Changed
+~~~~~~~
+* New version of ``edx-api-doc-tools`` breaks Juniper, pin it to 1.4.0
+
 [4.13.0] - 2021-07-12
 ---------------------
 
