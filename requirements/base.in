@@ -7,6 +7,6 @@ django-filter
 django-oauth-toolkit
 django-oauth2-provider
 django-waffle
-edx-api-doc-tools>=1.4.0
+edx-api-doc-tools==1.4.0
 edx-proctoring
 edx-opaque-keys[django]
