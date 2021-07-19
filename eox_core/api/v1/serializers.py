@@ -152,7 +152,7 @@ class EdxappExtendedUserSerializer(EdxappUserSerializer):
             field_name = custom_field.get("name")
             field_type = custom_field.get("type")
 
-            if field_name in extended_profile_fields and field_type in ALLOWED_TYPES:
+            if field_type in ALLOWED_TYPES:
                 serializer_field = {}
 
                 serializer_field["required"] = extra_fields.get(field_name) == "required"

@@ -12,6 +12,13 @@ Change Log
 Unreleased
 ----------
 
+[4.13.2] - 2021-07-16
+---------------------
+
+Changed
+~~~~~~~
+* EdxappExtendedUserSerializer to include all the custom registration fields.
+
 [4.13.1] - 2021-07-15
 ---------------------
 
