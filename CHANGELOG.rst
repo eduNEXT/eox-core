@@ -11,6 +11,7 @@ Change Log
 .. There should always be an "Unreleased" section for changes pending release.
 Unreleased
 ----------
+Send post_register signal after user registration through API call.
 
 [4.13.2] - 2021-07-16
 ---------------------
