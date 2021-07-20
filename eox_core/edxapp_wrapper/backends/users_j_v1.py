@@ -39,6 +39,14 @@ from student.models import (
     username_exists_or_retired,
 )
 
+# pylint: disable=ungrouped-imports
+try:
+    from openedx.core.lib.triggers.v1 import post_register
+except ImportError:
+    # In case edx-platform -vanilla- Juniper release is used
+    from openedx.core.djangoapps.user_authn.views.register import REGISTER_USER as post_register
+
+
 LOG = logging.getLogger(__name__)
 User = get_user_model()  # pylint: disable=invalid-name
 
@@ -151,6 +159,9 @@ def create_edxapp_user(*args, **kwargs):
         errors.append("No comments_service_user was created")
 
     # TODO: link account with third party auth
+
+    # Announce registration through API call
+    post_register.send_robust(sender=None, user=user)  # pylint: disable=no-member
 
     lang_pref = kwargs.pop("language_preference", False)
     if lang_pref:
