@@ -3,6 +3,7 @@
 """
 Backend for the create_edxapp_user that works under the open-release/juniper.master tag
 """
+# pylint: disable=import-error
 from __future__ import absolute_import, unicode_literals
 
 import logging
@@ -11,25 +12,22 @@ from django import forms
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import transaction
-from openedx.core.djangoapps.lang_pref import LANGUAGE_KEY  # pylint: disable=import-error
-from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers  # pylint: disable=import-error
-from openedx.core.djangoapps.user_api.accounts import USERNAME_MAX_LENGTH  # pylint: disable=import-error,unused-import
-from openedx.core.djangoapps.user_api.accounts.serializers import UserReadOnlySerializer  # pylint: disable=import-error
-from openedx.core.djangoapps.user_api.accounts.views import \
-    _set_unusable_password  # pylint: disable=import-error,unused-import
-from openedx.core.djangoapps.user_api.models import UserRetirementStatus  # pylint: disable=import-error
-from openedx.core.djangoapps.user_api.preferences import api as preferences_api  # pylint: disable=import-error
-from openedx.core.djangoapps.user_authn.utils import generate_password  # pylint: disable=import-error,unused-import
-from openedx.core.djangoapps.user_authn.views.registration_form import (  # pylint: disable=import-error
-    AccountCreationForm,
-)
-from openedx.core.djangolib.oauth2_retirement_utils import \
-    retire_dot_oauth2_models  # pylint: disable=import-error,unused-import
+from openedx.core.djangoapps.lang_pref import LANGUAGE_KEY
+from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
+from openedx.core.djangoapps.user_api.accounts import USERNAME_MAX_LENGTH  # pylint: disable=unused-import
+from openedx.core.djangoapps.user_api.accounts.serializers import UserReadOnlySerializer
+from openedx.core.djangoapps.user_api.accounts.views import _set_unusable_password  # pylint: disable=unused-import
+from openedx.core.djangoapps.user_api.models import UserRetirementStatus
+from openedx.core.djangoapps.user_api.preferences import api as preferences_api
+from openedx.core.djangoapps.user_authn.utils import generate_password  # pylint: disable=unused-import
+from openedx.core.djangoapps.user_authn.views.registration_form import AccountCreationForm
+from openedx.core.djangolib.oauth2_retirement_utils import retire_dot_oauth2_models  # pylint: disable=unused-import
 from rest_framework import status
 from rest_framework.exceptions import NotFound
-from social_django.models import UserSocialAuth  # pylint: disable=import-error
-from student.helpers import create_or_set_user_attribute_created_on_site  # pylint: disable=import-error
-from student.models import (  # pylint: disable=import-error,unused-import
+from social_django.models import UserSocialAuth
+from student.helpers import create_or_set_user_attribute_created_on_site, do_create_account
+from student.models import (
+    CourseEnrollment,
     LoginFailures,
     Registration,
     UserAttribute,
@@ -40,9 +38,6 @@ from student.models import (  # pylint: disable=import-error,unused-import
     get_retired_email_by_email,
     username_exists_or_retired,
 )
-
-from student.helpers import do_create_account  # pylint: disable=import-error; pylint: disable=import-error
-from student.models import CourseEnrollment  # pylint: disable=import-error; pylint: disable=import-error
 
 LOG = logging.getLogger(__name__)
 User = get_user_model()  # pylint: disable=invalid-name
