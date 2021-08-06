@@ -41,3 +41,12 @@ def get_first_course_key():
     backend = import_module(backend_function)
 
     return backend.get_first_course_key()
+
+
+def get_course_overview():
+    """ Gets the course overview model from edxapp. """
+
+    backend_function = settings.EOX_CORE_COURSES_BACKEND
+    backend = import_module(backend_function)
+
+    return backend.get_course_overview()
