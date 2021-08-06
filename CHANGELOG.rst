@@ -11,9 +11,14 @@ Change Log
 .. There should always be an "Unreleased" section for changes pending release.
 Unreleased
 ----------
+
+[4.15.0] - 2021-08-06
+---------------------
+
 Changed
 ~~~~~~~
 * Wrap course edxapp imports with try-except block.
+
 Added
 ~~~~~~~
 * Course overview -edxapp model- function getter.
