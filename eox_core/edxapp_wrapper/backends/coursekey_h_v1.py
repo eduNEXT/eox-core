@@ -9,8 +9,12 @@ from __future__ import absolute_import, unicode_literals
 from django.conf import settings
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
-from openedx.core.djangoapps.site_configuration.helpers import get_all_orgs, get_current_site_orgs
 from rest_framework.serializers import ValidationError
+
+try:
+    from openedx.core.djangoapps.site_configuration.helpers import get_all_orgs, get_current_site_orgs
+except ImportError:
+    get_all_orgs, get_current_site_orgs = object, object  # pylint: disable=invalid-name
 
 
 def get_valid_course_key(course_id):

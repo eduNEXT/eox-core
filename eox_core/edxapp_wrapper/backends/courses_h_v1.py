@@ -1,13 +1,19 @@
 """
 Backend for contenstore courses.
 """
-
-from contentstore.views.course import (  # pylint: disable=import-error
-    _process_courses_list,
-    get_courses_accessible_to_user,
-)
-from openedx.core.djangoapps.content.course_overviews.models import CourseOverview  # pylint: disable=import-error
-from openedx.core.djangoapps.models.course_details import CourseDetails  # pylint: disable=import-error
+try:
+    from contentstore.views.course import (  # pylint: disable=import-error
+        _process_courses_list,
+        get_courses_accessible_to_user,
+    )
+    from openedx.core.djangoapps.content.course_overviews.models import CourseOverview  # pylint: disable=import-error
+    from openedx.core.djangoapps.models.course_details import CourseDetails  # pylint: disable=import-error
+except ImportError:
+    # pylint: disable=invalid-name
+    _process_courses_list = object
+    get_courses_accessible_to_user = object
+    CourseOverview = object
+    CourseDetails = object
 
 
 def courses_accessible_to_user(*args, **kwargs):

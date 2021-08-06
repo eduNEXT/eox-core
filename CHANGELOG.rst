@@ -11,6 +11,9 @@ Change Log
 .. There should always be an "Unreleased" section for changes pending release.
 Unreleased
 ----------
+Changed
+~~~~~~~
+* Wrap course edxapp imports with try-except block.
 
 [4.14.0] - 2021-07-20
 ---------------------
