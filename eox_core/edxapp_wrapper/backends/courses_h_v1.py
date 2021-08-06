@@ -47,3 +47,10 @@ def get_first_course_key():
     else:
         return ''
     return course_location.course_key
+
+
+def get_course_overview():
+    """
+    Gets course overview model from edxapp.
+    """
+    return CourseOverview
