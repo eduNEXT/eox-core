@@ -318,6 +318,15 @@ class EdxappCourseEnrollmentSerializer(serializers.Serializer):
     enrollment_attributes = EdxappEnrollmentAttributeSerializer(many=True, required=False)
     course_id = EdxappValidatedCourseIDField()
 
+    def validate(self, attrs):
+        """
+        Check that there are no issues with enrollment
+        """
+        errors = check_edxapp_enrollment_is_valid(**attrs)
+        if errors:
+            raise serializers.ValidationError(", ".join(errors))
+        return attrs
+
     class Meta:
         """
         Add extra details for swagger
@@ -329,19 +338,10 @@ class EdxappCourseEnrollmentSerializer(serializers.Serializer):
                     ("is_active", True),
                     ("mode", "audit"),
                     ("enrollment_attributes", []),
-                    ("course_id", "course-v1:edX+DemoX+Demo_Course")
-                ]
+                    ("course_id", "course-v1:edX+DemoX+Demo_Course"),
+                ],
             ),
         }
-
-    def validate(self, attrs):
-        """
-        Check that there are no issues with enrollment
-        """
-        errors = check_edxapp_enrollment_is_valid(**attrs)
-        if errors:
-            raise serializers.ValidationError(", ".join(errors))
-        return attrs
 
 
 class EdxappCourseEnrollmentQuerySerializer(EdxappCourseEnrollmentSerializer):
@@ -354,6 +354,19 @@ class EdxappCourseEnrollmentQuerySerializer(EdxappCourseEnrollmentSerializer):
     force = serializers.BooleanField(default=False)
     course_id = EdxappValidatedCourseIDField(default=None)
     bundle_id = serializers.CharField(max_length=255, default=None)
+
+    class Meta(EdxappCourseEnrollmentSerializer.Meta):
+        """
+        Add extra details for swagger
+        """
+        swagger_schema_fields = {
+            "example": OrderedDict(
+                {
+                    "force": False,
+                    **EdxappCourseEnrollmentSerializer.Meta.swagger_schema_fields.get("example")
+                },
+            ),
+        }
 
 
 class EdxappCoursePreEnrollmentSerializer(EdxappWithWarningSerializer):

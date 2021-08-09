@@ -12,6 +12,14 @@ Change Log
 Unreleased
 ----------
 
+[4.15.1] - 2021-08-13
+---------------------
+
+Changed
+~~~~~~~
+* Add force flag to post method of enrollments api
+* Update serializers used by enrollments api
+
 [4.15.0] - 2021-08-06
 ---------------------
 
