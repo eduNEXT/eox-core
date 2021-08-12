@@ -49,6 +49,7 @@ def plugin_settings(settings):
     settings.EOX_CORE_USER_UPDATE_SAFE_FIELDS = ["is_active", "password", "fullname", "mailing_address", "year_of_birth", "gender", "level_of_education", "city", "country", "goals", "bio", "phone_number"]
     settings.EOX_CORE_BEARER_AUTHENTICATION = 'eox_core.edxapp_wrapper.backends.bearer_authentication_j_v1'
     settings.EOX_CORE_ASYNC_TASKS = []
+    settings.EOX_CORE_THIRD_PARTY_AUTH_BACKEND = 'eox_core.edxapp_wrapper.backends.third_party_auth_j_v1'
 
     if settings.EOX_CORE_USER_ENABLE_MULTI_TENANCY:
         settings.EOX_CORE_USER_ORIGIN_SITE_SOURCES = [

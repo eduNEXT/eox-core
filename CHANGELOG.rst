@@ -11,6 +11,8 @@ Change Log
 .. There should always be an "Unreleased" section for changes pending release.
 Unreleased
 ----------
+* Add new middleware to catch unhandled exceptions during the third
+  party authentication.
 
 [4.15.1] - 2021-08-13
 ---------------------
