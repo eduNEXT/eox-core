@@ -534,9 +534,9 @@ class EdxappEnrollment(UserQueryMixin, APIView):
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
     @apidocs.schema(
-        body=EdxappCourseEnrollmentSerializer,
+        body=EdxappCourseEnrollmentQuerySerializer,
         responses={
-            200: EdxappCourseEnrollmentSerializer,
+            200: EdxappCourseEnrollmentQuerySerializer,
             202: "User doesn't belong to site.",
             400: "Bad request, invalid course_id or missing either email or username.",
         },
@@ -554,6 +554,7 @@ class EdxappEnrollment(UserQueryMixin, APIView):
               "username": "johndoe",
               "course_id": "course-v1:edX+DemoX+Demo_Course",
               "mode": "audit",
+              "force": "False",
               "is_active": "False",
               "enrollment_attributes": [
                 {
@@ -581,6 +582,11 @@ class EdxappEnrollment(UserQueryMixin, APIView):
         - `is_active` (boolean, _body_):
             Flag indicating whether the enrollment is active.
 
+        - `force` (boolean, _body_):
+            Flag indicating whether the platform business rules for enrollment must be skipped. When it is true, the enrollment
+            is created without looking at the enrollment dates, if the course is full, if the enrollment mode is part of the modes
+            allowed by that course and other course settings.
+
         - `enrollment_attributes` (list, _body_):
             List of enrollment attributes. An enrollment attribute can be used to add extra parameters for a specific course mode.
             It must be a dictionary containing the following:
@@ -597,6 +603,7 @@ class EdxappEnrollment(UserQueryMixin, APIView):
               "course_id": "course-v1:edX+DemoX+Demo_Course",
               "mode": "audit",
               "is_active": "False",
+              "force": "False",
               "enrollment_attributes": [
                 {
                   "namespace": "credit",
@@ -610,6 +617,7 @@ class EdxappEnrollment(UserQueryMixin, APIView):
               "course_id": "course-v1:edX+DemoX+Demo_Course",
               "mode": "audit",
               "is_active": "True",
+              "force": "False",
               "enrollment_attributes": []
              },
             ]
@@ -626,9 +634,9 @@ class EdxappEnrollment(UserQueryMixin, APIView):
         )
 
     @apidocs.schema(
-        body=EdxappCourseEnrollmentSerializer,
+        body=EdxappCourseEnrollmentQuerySerializer,
         responses={
-            200: EdxappCourseEnrollmentSerializer,
+            200: EdxappCourseEnrollmentQuerySerializer,
             202: "User or enrollment doesn't belong to site.",
             400: "Bad request, invalid course_id or missing either email or username.",
         },
