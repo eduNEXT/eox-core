@@ -182,6 +182,7 @@ class EdxappUser(UserQueryMixin, APIView):
             "fullname",
         ],
         hidden_fields=["password"],
+        save_all_parameters=True,
         method_name='eox_core_api_method',
     )
     def post(self, request, *args, **kwargs):
@@ -414,6 +415,7 @@ class EdxappUserUpdater(UserQueryMixin, APIView):
             'is_active',
         ],
         hidden_fields=['password'],
+        save_all_parameters=True,
         method_name='eox_core_api_method',
     )
     def patch(self, request, *args, **kwargs):
@@ -541,7 +543,18 @@ class EdxappEnrollment(UserQueryMixin, APIView):
             400: "Bad request, invalid course_id or missing either email or username.",
         },
     )
-    @audit_drf_api(action='Create single or bulk enrollments', method_name='eox_core_api_method')
+    @audit_drf_api(
+        action='Create single or bulk enrollments',
+        data_filter=[
+            'email',
+            'username',
+            'course_id',
+            'mode',
+            'is_active',
+            'enrollment_attributes',
+        ],
+        method_name='eox_core_api_method',
+    )
     def post(self, request, *args, **kwargs):
         """
         Handle creation of single or bulk enrollments
@@ -641,7 +654,18 @@ class EdxappEnrollment(UserQueryMixin, APIView):
             400: "Bad request, invalid course_id or missing either email or username.",
         },
     )
-    @audit_drf_api(action='Update enrollments on edxapp', method_name='eox_core_api_method')
+    @audit_drf_api(
+        action='Update enrollments on edxapp',
+        data_filter=[
+            'email',
+            'username',
+            'course_id',
+            'mode',
+            'is_active',
+            'enrollment_attributes',
+        ],
+        method_name='eox_core_api_method',
+    )
     def put(self, request, *args, **kwargs):
         """
         Update enrollments on edxapp
