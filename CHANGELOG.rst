@@ -11,8 +11,16 @@ Change Log
 .. There should always be an "Unreleased" section for changes pending release.
 Unreleased
 ----------
+
+[4.16.0] - 2021-08-18
+---------------------
+
+Added
+~~~~~~~
 * Add new middleware to catch unhandled exceptions during the third
   party authentication.
+* Add save_all_parameters argument to the eox-audit-model decorator for the Users API.
+* Add filter_data list to the eox-audit-model decorator for the Enrollments API.
 
 [4.15.1] - 2021-08-13
 ---------------------
