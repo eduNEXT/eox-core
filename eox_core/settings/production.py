@@ -95,7 +95,10 @@ def plugin_settings(settings):  # pylint: disable=function-redefined
         'EOX_CORE_COURSE_MANAGEMENT_REQUEST_TIMEOUT',
         settings.EOX_CORE_COURSE_MANAGEMENT_REQUEST_TIMEOUT
     )
-
+    settings.EOX_CORE_THIRD_PARTY_AUTH_BACKEND = getattr(settings, 'ENV_TOKENS', {}).get(
+        'EOX_CORE_THIRD_PARTY_AUTH_BACKEND',
+        settings.EOX_CORE_THIRD_PARTY_AUTH_BACKEND
+    )
     settings.EOX_CORE_USER_ENABLE_MULTI_TENANCY = getattr(settings, 'ENV_TOKENS', {}).get(
         'EOX_CORE_USER_ENABLE_MULTI_TENANCY',
         settings.EOX_CORE_USER_ENABLE_MULTI_TENANCY
@@ -119,7 +122,8 @@ def plugin_settings(settings):  # pylint: disable=function-redefined
         if settings.EOX_CORE_APPEND_LMS_MIDDLEWARE_CLASSES:
             settings.MIDDLEWARE += [
                 'eox_core.middleware.PathRedirectionMiddleware',
-                'eox_core.middleware.RedirectionsMiddleware'
+                'eox_core.middleware.RedirectionsMiddleware',
+                'eox_core.middleware.TPAExceptionMiddleware'
             ]
 
     # Sentry Integration

@@ -8,21 +8,42 @@ A microsite enables the following features:
 """
 import logging
 import re
+from urllib.parse import urlparse
 
 import six
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.auth.views import redirect_to_login
+from django.db import IntegrityError
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.http import Http404, HttpResponseRedirect
+from django.urls import reverse
 from django.utils.deprecation import MiddlewareMixin
+from requests.exceptions import HTTPError
 
 from eox_core.edxapp_wrapper.configuration_helpers import get_configuration_helper
+from eox_core.edxapp_wrapper.third_party_auth import get_tpa_exception_middleware
 from eox_core.models import Redirection
 from eox_core.utils import cache, fasthash
 
+try:
+    from social_core.exceptions import AuthUnreachableProvider, AuthAlreadyAssociated, AuthFailed
+except ImportError:
+    AuthUnreachableProvider = Exception
+    AuthAlreadyAssociated = Exception
+    AuthFailed = Exception
+
+try:
+    from eox_tenant.pipeline import EoxTenantAuthException
+except ImportError:
+
+    class EoxTenantAuthException:
+        """Dummy eox-tenant Exception."""
+
+
 configuration_helper = get_configuration_helper()  # pylint: disable=invalid-name
+ExceptionMiddleware = get_tpa_exception_middleware()
 
 LOG = logging.getLogger(__name__)
 
@@ -229,3 +250,45 @@ class RedirectionsMiddleware(MiddlewareMixin):
         """
         cache_key = "redirect_cache." + fasthash(instance.domain)
         cache.delete(cache_key)  # pylint: disable=maybe-no-member
+
+
+class TPAExceptionMiddleware(ExceptionMiddleware):
+    """Middleware to handle exceptions not catched by Social Django"""
+
+    def process_exception(self, request, exception):
+        """
+        Handle exceptions raised during the authentication process.
+        """
+        referer_url = request.META.get('HTTP_REFERER', '')
+        referer_url = urlparse(referer_url).path
+
+        if referer_url != reverse('signin_user') and request.view_name not in ['auth', 'complete']:
+            return super().process_exception(request, exception)
+
+        if isinstance(exception, EoxTenantAuthException):
+            new_exception = AuthFailed(
+                exception.backend,
+                str(exception),
+            )
+            LOG.error("%s", exception)
+            return super().process_exception(request, new_exception)
+
+        if isinstance(exception, IntegrityError):
+            backend = getattr(request, 'backend', None)
+            new_exception = AuthAlreadyAssociated(
+                backend,
+                "The given email address is associated with another account",
+            )
+            LOG.error("%s", exception)
+            return super().process_exception(request, new_exception)
+
+        if isinstance(exception, HTTPError):
+            backend = getattr(request, 'backend', None)
+            new_exception = AuthUnreachableProvider(
+                backend,
+                "Unable to connect with the external provider",
+            )
+            LOG.error("%s", exception)
+            return super().process_exception(request, new_exception)
+
+        return super().process_exception(request, exception)
