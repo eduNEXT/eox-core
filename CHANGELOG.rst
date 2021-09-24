@@ -11,6 +11,9 @@ Change Log
 .. There should always be an "Unreleased" section for changes pending release.
 Unreleased
 ----------
+Changed
+~~~~~~~
+* OIDC get_user_details method truncates user's first_name when exceeds max_length.
 
 [4.16.0] - 2021-08-18
 ---------------------
