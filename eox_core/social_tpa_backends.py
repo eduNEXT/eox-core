@@ -4,6 +4,7 @@ Extensions to the regular defined third party auth backends
 import logging
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
 
 from eox_core.edxapp_wrapper.configuration_helpers import get_configuration_helper
 
@@ -19,6 +20,7 @@ except ImportError:
 configuration_helper = get_configuration_helper()  # pylint: disable=invalid-name
 
 LOG = logging.getLogger(__name__)
+User = get_user_model()  # pylint: disable=invalid-name
 
 
 class ConfigurableOpenIdConnectAuth(OpenIdConnectAuth):
@@ -54,6 +56,16 @@ class ConfigurableOpenIdConnectAuth(OpenIdConnectAuth):
                 self.OIDC_ENDPOINT + '/.well-known/openid-configuration'
             )
         return self.configuration
+
+    def get_user_details(self, response):
+        """
+        Override used to truncate first name in case is longer than the field length.
+        """
+        user_details = super().get_user_details(response)
+        first_name_max_len = User._meta.get_field("first_name").max_length  # pylint: disable=no-member, protected-access
+        user_details["first_name"] = user_details["first_name"][:first_name_max_len]
+
+        return user_details
 
     def extra_data(self, user, uid, response, details=None, *args, **kwargs):  # pylint: disable=keyword-arg-before-vararg
         """
