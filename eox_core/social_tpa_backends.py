@@ -63,7 +63,8 @@ class ConfigurableOpenIdConnectAuth(OpenIdConnectAuth):
         """
         user_details = super().get_user_details(response)
         first_name_max_len = User._meta.get_field("first_name").max_length  # pylint: disable=no-member, protected-access
-        user_details["first_name"] = user_details["first_name"][:first_name_max_len]
+        first_name = user_details["first_name"]
+        user_details["first_name"] = first_name[:first_name_max_len] if first_name else first_name
 
         return user_details
 
