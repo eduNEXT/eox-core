@@ -12,6 +12,9 @@ Change Log
 Unreleased
 ----------
 
+[4.16.2] - 2021-09-30
+---------------------
+
 Changed
 ~~~~~~~
 * Avoid failure when getting first_name from OIDC user details.
