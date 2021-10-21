@@ -135,12 +135,17 @@ def plugin_settings(settings):  # pylint: disable=function-redefined
         'EOX_CORE_SENTRY_IGNORED_ERRORS',
         settings.EOX_CORE_SENTRY_IGNORED_ERRORS
     )
+    sentry_environment = getattr(settings, 'ENV_TOKENS', {}).get(
+        'EOX_CORE_SENTRY_ENVIRONMENT',
+        settings.EOX_CORE_SENTRY_ENVIRONMENT
+    )
 
     if sentry_sdk is not None and sentry_integration_dsn is not None:
         from eox_core.integrations.sentry import ExceptionFilterSentry  # pylint: disable=import-outside-toplevel
         sentry_sdk.init(
             before_send=ExceptionFilterSentry(),
             dsn=sentry_integration_dsn,
+            environment=sentry_environment,
             integrations=[
                 DjangoIntegration(),
             ],
