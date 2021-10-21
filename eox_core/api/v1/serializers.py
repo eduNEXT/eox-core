@@ -317,6 +317,7 @@ class EdxappCourseEnrollmentSerializer(serializers.Serializer):
     mode = serializers.CharField(max_length=100)
     enrollment_attributes = EdxappEnrollmentAttributeSerializer(many=True, required=False)
     course_id = EdxappValidatedCourseIDField()
+    created = serializers.DateTimeField(read_only=True)
 
     def validate(self, attrs):
         """
@@ -339,6 +340,7 @@ class EdxappCourseEnrollmentSerializer(serializers.Serializer):
                     ("mode", "audit"),
                     ("enrollment_attributes", []),
                     ("course_id", "course-v1:edX+DemoX+Demo_Course"),
+                    ("created", "2021-10-11T10:06:17.876505-05:00"),
                 ],
             ),
         }
