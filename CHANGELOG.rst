@@ -12,6 +12,13 @@ Change Log
 Unreleased
 ----------
 
+[4.17.0] - 2021-10-21
+---------------------
+
+Added
+~~~~~~~
+* Date and time of enrolment creation to the Get CourseEnrollment endpoint.
+
 [4.16.2] - 2021-09-30
 ---------------------
 
