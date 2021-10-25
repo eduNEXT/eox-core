@@ -47,18 +47,6 @@ Instead of step #1, follow:
 1) Create a Django Oauth Toolkit Application at http://localhost:18000/admin/oauth2_provider/application/add/,
 copy the client-id and client-secret. Then follow 2 and 3.
 
-Also, to be able to use eox-core in newer Open edX versions like lilac, backend settings must be updated as follows:
-
-.. code-block:: yaml
-
-	EOX_CORE_USERS_BACKEND: "eox_core.edxapp_wrapper.backends.users_l_v1"
-	EOX_CORE_PRE_ENROLLMENT_BACKEND: "eox_core.edxapp_wrapper.backends.pre_enrollment_l_v1"
-	EOX_CORE_ENROLLMENT_BACKEND: "eox_core.edxapp_wrapper.backends.enrollment_l_v1"
-
-They can be changed in `eox_core/settings/common.py` or, for example, in ansible configurations.
-
-**NOTE**: the current `common.py` works with Open edX juniper version.
-
 Installation on Open edX Devstack
 =================================
 - Install either the Ironwood or Juniper version of the `Open edX devstack`_
@@ -80,6 +68,60 @@ Installation on Open edX Devstack
 	make lms-shell  # Enter the devstack machine (or server where lms process lives)
 	cd /edx/src/edxapp/eox-core
 	pip install -e .
+
+Compatibility Notes
+--------------------
+
++-------------------+----------+
+| Open edX Release  |  Version |
++===================+==========+
+|       Ironwood    |   <  3.0 |
++-------------------+----------+
+|       Juniper     |   >= 3.0 |
++-------------------+----------+
+|        Koa        |   >= 4.9 |
++-------------------+----------+
+|       Lilac       |   >= 4.9 |
++-------------------+----------+
+
+The following changes to the plugin settings are necessary. If the release you are looking for is
+not listed, then the accumulation of changes from previous releases is enough.
+
+**Ironwood**
+
+.. code-block:: yaml
+
+   EOX_CORE_USERS_BACKEND: "eox_core.edxapp_wrapper.backends.users_h_v1"
+   EOX_CORE_PRE_ENROLLMENT_BACKEND: "eox_core.edxapp_wrapper.backends.pre_enrollment_h_v1"
+   EOX_CORE_ENROLLMENT_BACKEND: "eox_core.edxapp_wrapper.backends.enrollment_h_v1"
+
+**Juniper**
+
+.. code-block:: yaml
+
+   EOX_CORE_USERS_BACKEND: "eox_core.edxapp_wrapper.backends.users_j_v1"
+   EOX_CORE_PRE_ENROLLMENT_BACKEND: "eox_core.edxapp_wrapper.backends.pre_enrollment_h_v1"
+   EOX_CORE_ENROLLMENT_BACKEND: "eox_core.edxapp_wrapper.backends.enrollment_h_v1"
+
+**Koa**
+
+.. code-block:: yaml
+
+   EOX_CORE_USERS_BACKEND: "eox_core.edxapp_wrapper.backends.users_l_v1"
+   EOX_CORE_PRE_ENROLLMENT_BACKEND: "eox_core.edxapp_wrapper.backends.pre_enrollment_l_v1"
+   EOX_CORE_ENROLLMENT_BACKEND: "eox_core.edxapp_wrapper.backends.enrollment_l_v1"
+
+**Lilac**
+
+.. code-block:: yaml
+
+   EOX_CORE_USERS_BACKEND: "eox_core.edxapp_wrapper.backends.users_l_v1"
+   EOX_CORE_PRE_ENROLLMENT_BACKEND: "eox_core.edxapp_wrapper.backends.pre_enrollment_l_v1"
+   EOX_CORE_ENROLLMENT_BACKEND: "eox_core.edxapp_wrapper.backends.enrollment_l_v1"
+
+These settings can be changed in ``eox_core/settings/common.py`` or, for example, in ansible configurations.
+
+**NOTE**: the current ``common.py`` works with Open edX juniper version.
 
 Dependency Management
 =====================
