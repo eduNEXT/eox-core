@@ -21,6 +21,7 @@ from common.djangoapps.student.models import (  # pylint: disable=import-error,n
     get_retired_email_by_email,
     username_exists_or_retired,
 )
+from django import forms
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import transaction
@@ -32,6 +33,7 @@ from openedx.core.djangoapps.user_api.accounts.views import \
     _set_unusable_password  # pylint: disable=import-error,unused-import
 from openedx.core.djangoapps.user_api.models import UserRetirementStatus  # pylint: disable=import-error
 from openedx.core.djangoapps.user_api.preferences import api as preferences_api  # pylint: disable=import-error
+from openedx.core.djangoapps.user_authn.views.register import REGISTER_USER as post_register  # pylint: disable=import-error
 from openedx.core.djangoapps.user_authn.views.registration_form import (  # pylint: disable=import-error
     AccountCreationForm,
 )
@@ -67,6 +69,34 @@ def check_edxapp_account_conflicts(email, username):
     return conflicts
 
 
+class EdnxAccountCreationForm(AccountCreationForm):
+    """
+    A form to extend the behaviour of the AccountCreationForm.
+    For now the purpose of this form is to allow to make the
+    password optional if the flag 'skip_password' is True.
+    This form it's currently only used for validation, not rendering.
+    """
+
+    def __init__(  # pylint:disable=too-many-arguments
+            self,
+            data=None,
+            extra_fields=None,
+            extended_profile_fields=None,
+            do_third_party_auth=True,
+            tos_required=True,
+    ):
+        super().__init__(
+            data=data,
+            extra_fields=extra_fields,
+            extended_profile_fields=extended_profile_fields,
+            do_third_party_auth=do_third_party_auth,
+            tos_required=tos_required,
+        )
+
+        if data.pop("skip_password", False):
+            self.fields['password'] = forms.CharField(required=False)
+
+
 def create_edxapp_user(*args, **kwargs):
     """
     Creates a user on the open edx django site using calls to
@@ -88,30 +118,26 @@ def create_edxapp_user(*args, **kwargs):
     """
     errors = []
 
-    email = kwargs.pop("email")
-    username = kwargs.pop("username")
+    extra_fields = getattr(settings, "REGISTRATION_EXTRA_FIELDS", {})
+    extended_profile_fields = getattr(settings, "extended_profile_fields", [])
+    kwargs["name"] = kwargs.pop("fullname", None)
+    email = kwargs.get("email")
+    username = kwargs.get("username")
     conflicts = check_edxapp_account_conflicts(email=email, username=username)
     if conflicts:
         return None, ["Fatal: account collition with the provided: {}".format(", ".join(conflicts))]
 
-    data = {
-        'username': username,
-        'email': email,
-        'password': kwargs.pop("password"),
-        'name': kwargs.pop("fullname"),
-    }
     # Go ahead and create the new user
     with transaction.atomic():
         # In theory is possible to extend the registration form with a custom app
         # An example form app for this can be found at http://github.com/open-craft/custom-form-app
         # form = get_registration_extension_form(data=params)
         # if not form:
-        form = AccountCreationForm(
-            data=data,
+        form = EdnxAccountCreationForm(
+            data=kwargs,
             tos_required=False,
-            # TODO: we need to support the extra profile fields as defined in the django.settings
-            # extra_fields=extra_fields,
-            # extended_profile_fields=extended_profile_fields,
+            extra_fields=extra_fields,
+            extended_profile_fields=extended_profile_fields,
             # enforce_password_policy=enforce_password_policy,
         )
         (user, profile, registration) = do_create_account(form)  # pylint: disable=unused-variable
@@ -128,6 +154,9 @@ def create_edxapp_user(*args, **kwargs):
         errors.append("No comments_service_user was created")
 
     # TODO: link account with third party auth
+
+    # Announce registration through API call
+    post_register.send_robust(sender=None, user=user)  # pylint: disable=no-member
 
     lang_pref = kwargs.pop("language_preference", False)
     if lang_pref:
