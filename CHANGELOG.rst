@@ -12,6 +12,18 @@ Change Log
 Unreleased
 ----------
 
+[5.0.0] - 2021-11-01
+---------------------
+
+Changed
+~~~~~~~
+* **BREAKING CHANGE**: Default backends for edxapp users, pre-enrollments and enrollments are not compatible with Juniper or older versions.
+
+Added
+~~~~~~~
+* Update Users backend for Lilac with Juniper backend.
+* Openedx compatibility notes to readme.
+
 [4.17.0] - 2021-10-21
 ---------------------
 
