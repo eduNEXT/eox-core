@@ -12,62 +12,71 @@ and pre-enrollment operations.
 Usage
 =====
 
-**Open edX releases before juniper**
+Open edX releases before juniper
+--------------------------------
 
-1) Create the oauth client at http://localhost:18000/admin/oauth2/client/add/, copy the client-id and client-secret.
+#. Create the oauth client at http://localhost:18000/admin/oauth2/client/add/, copy the client-id and client-secret.
 
-2) Generate an auth-token using that client-id and client-secret:
+#. Generate an auth-token using that client-id and client-secret:
 
-.. code-block:: bash
+   .. code-block:: bash
 
-	$ curl -X POST -d "client_id=<YOUR_CLIENT_ID>&client_secret=<YOUR_CLIENT_SECRET>
-		&grant_type=client_credentials" http://localhost:18000/oauth2/access_token/
+      $ curl -X POST -d "client_id=<YOUR_CLIENT_ID>&client_secret=<YOUR_CLIENT_SECRET> &grant_type=client_credentials" http://localhost:18000/oauth2/access_token/
 
-3) Use the token to call the API as you need:
+#. Use the token to call the API as you need:
 
-.. code-block:: bash
+   * User creation API example
 
-	# User creation API example
-	curl -X POST --header "Authorization: Bearer <YOUR_AUTH_TOKEN>" -H "Accept: application/json" \
-		http://localhost:18000/eox-core/api/v1/user/ --header "Content\-Type: application/json" \
-		--data  '{"username": "jsmith", "email": "jhon@example.com", "password": "qwerty123",
-		"fullname": "Jhon Smith"}'
+     .. code-block:: bash
+     
+        curl -X POST http://localhost:18000/eox-core/api/v1/user/ \
+             -H "Authorization: Bearer <YOUR_AUTH_TOKEN>" \
+             -H "Accept: application/json" \
+             -H "Content\-Type: application/json" \
+        	   --data  '{"username": "jsmith", "email": "jhon@example.com", "password": "qwerty123", "fullname": "Jhon Smith"}'
 
-	# Enroll api example
-	curl -X POST --header "Authorization: Bearer <YOUR_AUTH_TOKEN>" -H "Accept: application/json" \
-		http://localhost:18000/eox-core/api/v1/enrollment/ --header "Content-Type: application/json" \
-		--data '{"course_id": "course-v1:edX+DemoX+Demo_Course", "email": "edx@example.com",
-		"mode": "audit", "force": 1}'
+   * Enroll api example
+
+     .. code-block:: bash
+
+        curl -X POST http://localhost:18000/eox-core/api/v1/enrollment/ \
+              -H "Authorization: Bearer <YOUR_AUTH_TOKEN>" \
+              -H "Accept: application/json" \
+              -H "Content\-Type: application/json" \
+         	   --data '{"course_id": "course-v1:edX+DemoX+Demo_Course", "email": "edx@example.com", "mode": "audit", "force": 1}'
 
 
-**Open edX releases after juniper**
+Open edX releases after juniper
+-------------------------------
 
-Instead of step #1, follow:
+Instead of step 1, follow:
 
-1) Create a Django Oauth Toolkit Application at http://localhost:18000/admin/oauth2_provider/application/add/,
-copy the client-id and client-secret. Then follow 2 and 3.
+#. Create a Django Oauth Toolkit Application at http://localhost:18000/admin/oauth2_provider/application/add/,
+   copy the client-id and client-secret. Then follow 2 and 3.
+
 
 Installation on Open edX Devstack
 =================================
-- Install either the Ironwood or Juniper version of the `Open edX devstack`_
 
-- Clone the git repo:
+* Install either the Ironwood or Juniper version of the `Open edX devstack`_
 
-.. code-block:: bash
+* Clone the git repo:
 
-	cd ~/Documents/eoxstack/src/  # Assuming that devstack is in  ~/Documents/eoxstack/devstack/
-	sudo mkdir edxapp
-	cd edxapp
-	git clone git@github.com:eduNEXT/eox-core.git
+  .. code-block:: bash
+  
+     cd ~/Documents/eoxstack/src/  # Assuming that devstack is in  ~/Documents/eoxstack/devstack/
+     sudo mkdir edxapp
+     cd edxapp
+     git clone git@github.com:eduNEXT/eox-core.git
 
 - Install plugin from your server (in this case the devstack docker lms shell):
 
-.. code-block:: bash
-
-	cd ~/Documents/eoxstack/devstack  # Change for your devstack path (if you are using devstack)
-	make lms-shell  # Enter the devstack machine (or server where lms process lives)
-	cd /edx/src/edxapp/eox-core
-	pip install -e .
+  .. code-block:: bash
+  
+     cd ~/Documents/eoxstack/devstack  # Change for your devstack path (if you are using devstack)
+     make lms-shell  # Enter the devstack machine (or server where lms process lives)
+     cd /edx/src/edxapp/eox-core
+     pip install -e .
 
 Compatibility Notes
 --------------------
@@ -135,31 +144,30 @@ Integrations with third party services
 The plugin offers some integrations listed below:
 
 #. **Sentry**: This service allows to track the errors generated on edx-platform. Check more details in https://sentry.io/welcome/.
-To enable the integration, follow the steps below:
+   To enable the integration, follow the steps below:
 
-  - Install the plugin with Sentry support (extras_require [sentry]).
+   * Install the plugin with Sentry support (extras_require [sentry]).
 
-  - Sign up/in to your sentry account and create a new Django application integration.
+   * Sign up/in to your sentry account and create a new Django application integration.
 
-  - Get the DSN for your integration. This is an unique identifier for your application.
+   * Get the DSN for your integration. This is an unique identifier for your application.
 
-  - Setup the following configuration values for edx-platform:
+   * Setup the following configuration values for edx-platform:
 
-    .. code-block:: yaml
+     .. code-block:: yaml
 
-      EOX_CORE_SENTRY_INTEGRATION_DSN: <your DSN value>
-      EOX_CORE_SENTRY_IGNORED_ERRORS: [] # optional
+        EOX_CORE_SENTRY_INTEGRATION_DSN: <your DSN value>
+        EOX_CORE_SENTRY_IGNORED_ERRORS: [] # optional
 
+     By default, **EOX_CORE_SENTRY_INTEGRATION_DSN** setting is None, which disables the sentry integration.
+     **EOX_CORE_SENTRY_IGNORED_ERRORS** is optional. It is a list of the exceptions you want to ignore. For instance, it can be defined as:
 
-    By default, **EOX_CORE_SENTRY_INTEGRATION_DSN** setting is None, which disables the sentry integration.
-    **EOX_CORE_SENTRY_IGNORED_ERRORS** is optional. It is a list of the exceptions you want to ignore. For instance, it can be defined as:
+     .. code-block:: yaml
 
-    .. code-block:: yaml
-
-      EOX_CORE_SENTRY_IGNORED_ERRORS: [
-        'xmodule.exceptions.NotFoundError',
-        'openedx.core.djangoapps.user_authn.exceptions.AuthFailedError',
-      ]
+        EOX_CORE_SENTRY_IGNORED_ERRORS: [
+          'xmodule.exceptions.NotFoundError',
+          'openedx.core.djangoapps.user_authn.exceptions.AuthFailedError',
+        ]
 
 Course Management automation
 ============================
@@ -171,16 +179,20 @@ This component allows Studio users to make changes in multiple courses, such as:
 * Re-run a course across multiple organizations.
 
 Compilation
-###########
+-----------
 
 We use webpack to bundle the React js application and its dependencies.
 To compile in a development environment, run this command on the root folder:
 
-npm run build-dev
+.. code-block:: bash
+
+   npm run build-dev
 
 Otherwise, if you want to compile for use in production environment, run this command instead:
 
-npm run build-prod
+.. code-block:: bash
+
+   npm run build-prod
 
 These commands are defined in the package.json file and each one exports two bundle files (build.js and
 course-management.bundle.css) inside of eox_core/static folder.
@@ -223,7 +235,7 @@ For more information, check the eox-audit-model documentation.
 .. _eox-audit-model: https://github.com/eduNEXT/eox-audit-model/
 
 How to Contribute
-#################
+-----------------
 
 Contributions are welcome! See our `CONTRIBUTING`_ file for more
 information – it also contains guidelines for how to maintain high code
