@@ -12,6 +12,15 @@ Change Log
 Unreleased
 ----------
 
+[5.0.1] - 2021-11-08
+---------------------
+
+Changed
+~~~~~~~
+
+* Use the Lilac backends for the test settings. Previous Open edX releases test
+  suites may not be compatible.
+
 [5.0.0] - 2021-11-01
 ---------------------
 
