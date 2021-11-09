@@ -12,6 +12,9 @@ Change Log
 Unreleased
 ----------
 
+[5.0.3] - 2021-11-10
+---------------------
+
 * Add missing backend for Third Party Auth.
 
 [5.0.2] - 2021-11-09
