@@ -12,6 +12,14 @@ Change Log
 Unreleased
 ----------
 
+[5.0.2] - 2021-11-09
+---------------------
+
+Changed
+~~~~~~~
+
+* Separate eslint tests, so it doesn't block the PyPi release on CircleCi
+
 [5.0.1] - 2021-11-08
 ---------------------
 
