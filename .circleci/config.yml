@@ -21,6 +21,10 @@ workflows:
                 debian_version: "stretch"
               - python_version: "3.5"
                 debian_version: "buster"
+      - quality-js:
+          filters:
+            tags:
+              only: /v?[0-9]+(\.[0-9]+)*/
       - pypi:
           requires:
             - test
@@ -66,7 +70,6 @@ jobs:
             test -d venv || virtualenv venv
             . venv/bin/activate
             pip install -r requirements/tox.txt
-            npm install
 
       # run tests!
       # this example uses Django's built-in test-runner
@@ -94,6 +97,17 @@ jobs:
     environment:
       - PY_ENV: py<< parameters.python_version >>
       - DJANGO_ENV: << parameters.django_version >>
+
+  quality-js:
+    docker:
+      - image: circleci/python:3.5-node
+    steps:
+      - checkout
+      - run:
+         name: Install node dependencies and run JS quality
+         command: |
+           npm install
+           make javascript-quality-test
 
   pypi:
     docker:

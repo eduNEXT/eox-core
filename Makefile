@@ -45,7 +45,7 @@ python-quality-test:
 javascript-quality-test:
 	./node_modules/.bin/eslint ./eox_core/**/*.js*
 
-run-tests: python-test python-quality-test javascript-quality-test
+run-tests: python-test python-quality-test
 
 upgrade: export CUSTOM_COMPILE_COMMAND=make upgrade
 upgrade: ## update the requirements/*.txt files with the latest packages satisfying requirements/*.in
