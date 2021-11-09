@@ -21,7 +21,7 @@ workflows:
                 debian_version: "stretch"
               - python_version: "3.5"
                 debian_version: "buster"
-      - quality:
+      - quality-js:
           filters:
             tags:
               only: /v?[0-9]+(\.[0-9]+)*/
@@ -98,7 +98,7 @@ jobs:
       - PY_ENV: py<< parameters.python_version >>
       - DJANGO_ENV: << parameters.django_version >>
 
-  quality:
+  quality-js:
     docker:
       - image: circleci/python:3.5-node
     steps:
