@@ -22,6 +22,33 @@ except ImportError:
 
 UserSignupSource = get_user_signup_source()  # pylint: disable=invalid-name
 LOG = logging.getLogger(__name__)
+from openedx_filters import PipelineStep
+from openedx_filters.learning.auth import PreRegisterFilter, PreLoginFilter
+
+
+class ModifyUsernameBeforeRegistration(PipelineStep):
+
+    def run(self, form_data):
+        username = f"{form_data.get('username')}12345"
+        form_data["username"] = username
+        return {"form_data": form_data}
+
+class NoopFilter(PipelineStep):
+
+    def run(self, **kwargs):
+        return {}
+
+class ErrorFilterRegister(PipelineStep):
+
+    def run(self, form_data):
+        raise PreRegisterFilter.PreventRegister(
+            "You can't register on this site.", redirect_to="/course", status_code=403
+        )
+
+class ErrorFilterLogin(PipelineStep):
+
+    def run(self, user):
+        raise PreLoginFilter.PreventLogin("You can't login on this site.")
 
 
 # pylint: disable=unused-argument,keyword-arg-before-vararg
