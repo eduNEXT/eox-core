@@ -169,34 +169,6 @@ The plugin offers some integrations listed below:
           'openedx.core.djangoapps.user_authn.exceptions.AuthFailedError',
         ]
 
-Course Management automation
-============================
-
-This component allows Studio users to make changes in multiple courses, such as:
-
-* Add or remove staff/instructor users across multiple courses in one organization.
-* Change course settings in multiple courses at once.
-* Re-run a course across multiple organizations.
-
-Compilation
------------
-
-We use webpack to bundle the React js application and its dependencies.
-To compile in a development environment, run this command on the root folder:
-
-.. code-block:: bash
-
-   npm run build-dev
-
-Otherwise, if you want to compile for use in production environment, run this command instead:
-
-.. code-block:: bash
-
-   npm run build-prod
-
-These commands are defined in the package.json file and each one exports two bundle files (build.js and
-course-management.bundle.css) inside of eox_core/static folder.
-
 EOX core migration notes
 ========================
 

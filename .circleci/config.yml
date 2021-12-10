@@ -21,10 +21,6 @@ workflows:
                 debian_version: "stretch"
               - python_version: "3.5"
                 debian_version: "buster"
-      - quality-js:
-          filters:
-            tags:
-              only: /v?[0-9]+(\.[0-9]+)*/
       - pypi:
           requires:
             - test
@@ -48,7 +44,7 @@ jobs:
     docker:
       # specify the version you desire here
       # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
-      - image: circleci/python:<< parameters.python_version >>-<< parameters.debian_version >>-node
+      - image: circleci/python:<< parameters.python_version >>-<< parameters.debian_version >>
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -63,7 +59,7 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - v2-<< parameters.python_version >>-<< parameters.django_version >>-dependencies-{{ checksum "requirements/test.txt" }}-npm-deps-{{ checksum "package.json" }}
+          - v2-<< parameters.python_version >>-<< parameters.django_version >>-dependencies-{{ checksum "requirements/test.txt" }}
       - run:
           name: install dependencies
           command: |
@@ -87,8 +83,7 @@ jobs:
       - save_cache:
           paths:
             - ./.tox
-            - ./node_modules
-          key: v2-<< parameters.python_version >>-<< parameters.django_version >>-dependencies-{{ checksum "requirements/test.txt" }}-npm-deps-{{ checksum "package.json" }}
+          key: v2-<< parameters.python_version >>-<< parameters.django_version >>-dependencies-{{ checksum "requirements/test.txt" }}
 
       - store_artifacts:
           path: test-reports
@@ -97,17 +92,6 @@ jobs:
     environment:
       - PY_ENV: py<< parameters.python_version >>
       - DJANGO_ENV: << parameters.django_version >>
-
-  quality-js:
-    docker:
-      - image: circleci/python:3.5-node
-    steps:
-      - checkout
-      - run:
-         name: Install node dependencies and run JS quality
-         command: |
-           npm install
-           make javascript-quality-test
 
   pypi:
     docker:
