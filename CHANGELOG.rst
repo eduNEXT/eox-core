@@ -12,6 +12,8 @@ Change Log
 Unreleased
 ----------
 
+* Upgrade sentry-sdk to latest release (backward compatible with previews python versions).
+
 [5.0.3] - 2021-11-10
 ---------------------
 

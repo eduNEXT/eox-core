@@ -1,3 +1,3 @@
 # Extra requirements
 
-sentry-sdk==0.14.3        # Pinning sentry-sdk version in order to avoid the usage of a non-compatible version of sentry
+sentry-sdk==1.5.1        # Pinning sentry-sdk version in order to avoid the usage of a non-compatible version of sentry
