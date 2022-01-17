@@ -33,6 +33,7 @@ from openedx.core.djangoapps.user_api.accounts.views import \
     _set_unusable_password  # pylint: disable=import-error,unused-import
 from openedx.core.djangoapps.user_api.models import UserRetirementStatus  # pylint: disable=import-error
 from openedx.core.djangoapps.user_api.preferences import api as preferences_api  # pylint: disable=import-error
+from openedx.core.djangoapps.user_authn.utils import generate_password  # pylint: disable=import-error,unused-import
 from openedx.core.djangoapps.user_authn.views.register import REGISTER_USER as post_register  # pylint: disable=import-error
 from openedx.core.djangoapps.user_authn.views.registration_form import (  # pylint: disable=import-error
     AccountCreationForm,
