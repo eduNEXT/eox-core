@@ -12,6 +12,8 @@ Change Log
 Unreleased
 ----------
 
+* Send post registration event during users registration through API.
+
 [5.0.4] - 2021-01-04
 ---------------------
 
