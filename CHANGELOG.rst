@@ -12,9 +12,12 @@ Change Log
 Unreleased
 ----------
 
+[5.1.0] - 2022-01-17
+---------------------
+
 * Send post registration event during users registration through API.
 
-[5.0.4] - 2021-01-04
+[5.0.4] - 2022-01-04
 ---------------------
 
 * Upgrade sentry-sdk to latest release (backward compatible with previews python versions).
