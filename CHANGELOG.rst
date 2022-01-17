@@ -12,6 +12,10 @@ Change Log
 Unreleased
 ----------
 
+[5.1.1] - 2022-01-17
+---------------------
+* Add missing generate_password to the lilac users backend.
+
 [5.1.0] - 2022-01-17
 ---------------------
 
