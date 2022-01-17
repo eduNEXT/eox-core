@@ -39,6 +39,8 @@ from openedx.core.djangoapps.user_authn.views.registration_form import (  # pyli
 )
 from openedx.core.djangolib.oauth2_retirement_utils import \
     retire_dot_oauth2_models  # pylint: disable=import-error,unused-import
+from openedx_events.learning.data import UserData, UserPersonalData  # pylint: disable=import-error
+from openedx_events.learning.signals import STUDENT_REGISTRATION_COMPLETED  # pylint: disable=import-error
 from rest_framework import status
 from rest_framework.exceptions import NotFound
 from social_django.models import UserSocialAuth  # pylint: disable=import-error
@@ -157,6 +159,18 @@ def create_edxapp_user(*args, **kwargs):
 
     # Announce registration through API call
     post_register.send_robust(sender=None, user=user)  # pylint: disable=no-member
+
+    STUDENT_REGISTRATION_COMPLETED.send_event(
+        user=UserData(
+            pii=UserPersonalData(
+                username=user.username,
+                email=user.email,
+                name=user.profile.name,  # pylint: disable=no-member
+            ),
+            id=user.id,
+            is_active=user.is_active,
+        ),
+    )
 
     lang_pref = kwargs.pop("language_preference", False)
     if lang_pref:
