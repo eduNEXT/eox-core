@@ -75,10 +75,6 @@ def plugin_settings(settings):  # pylint: disable=function-redefined
         'DATA_API_MAX_PAGE_SIZE',
         settings.DATA_API_MAX_PAGE_SIZE
     )
-    settings.EDXMAKO_MODULE = getattr(settings, 'ENV_TOKENS', {}).get(
-        'EDXMAKO_MODULE',
-        settings.EDXMAKO_MODULE
-    )
     settings.EOX_CORE_COURSES_BACKEND = getattr(settings, 'ENV_TOKENS', {}).get(
         'EOX_CORE_COURSES_BACKEND',
         settings.EOX_CORE_COURSES_BACKEND

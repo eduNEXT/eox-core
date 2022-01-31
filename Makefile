@@ -42,9 +42,6 @@ python-quality-test:
 	$(TOX) pycodestyle ./eox_core
 	$(TOX) isort --check-only --recursive --diff ./eox_core
 
-javascript-quality-test:
-	./node_modules/.bin/eslint ./eox_core/**/*.js*
-
 run-tests: python-test python-quality-test
 
 upgrade: export CUSTOM_COMPILE_COMMAND=make upgrade
