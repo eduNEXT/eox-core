@@ -28,6 +28,7 @@ jobs:
   update:
     needs: build
     runs-on: ubuntu-latest
+    if: needs.build.outputs.tag
     steps:
       - uses: actions/checkout@v2
       - name: Update Changelog
