@@ -17,10 +17,10 @@ class Migration(migrations.Migration):
             name='Redirection',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('domain', models.CharField(db_index=True, help_text=u'use only the domain name, e.g. cursos.edunext.co', max_length=253)),
+                ('domain', models.CharField(db_index=True, help_text='use only the domain name, e.g. cursos.edunext.co', max_length=253)),
                 ('target', models.CharField(max_length=253)),
-                ('scheme', models.CharField(choices=[(u'http', u'http'), (u'https', u'https')], default=u'http', max_length=5)),
-                ('status', models.IntegerField(choices=[(301, u'Temporary'), (302, u'Permanent')], default=301)),
+                ('scheme', models.CharField(choices=[('http', 'http'), ('https', 'https')], default='http', max_length=5)),
+                ('status', models.IntegerField(choices=[(301, 'Temporary'), (302, 'Permanent')], default=301)),
             ],
             options={
                 'db_table': 'edunext_redirection',

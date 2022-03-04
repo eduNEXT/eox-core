@@ -21,7 +21,7 @@ def get_program(program_uuid, ignore_cache=False):
          dict
     """
     program_uuid = str(program_uuid)
-    cache_key = 'programs.api.data.{uuid}'.format(uuid=program_uuid)
+    cache_key = f'programs.api.data.{program_uuid}'
 
     if not ignore_cache:
         program = cache.get(cache_key)

@@ -20,7 +20,7 @@ class TestEnrollmentIntegration(TestCase):  # pragma: no cover
 
     @classmethod
     def setUpClass(cls):
-        with open("eox_core/tests/integration/test_data") as file_obj:
+        with open("eox_core/tests/integration/test_data", encoding="utf-8") as file_obj:
             cls.data = json.load(file_obj)
         cls.data["endpoint"] = "eox-core/api/v1/enrollment/"
         site1_data = {
@@ -33,15 +33,11 @@ class TestEnrollmentIntegration(TestCase):  # pragma: no cover
             "client_secret": cls.data["site2_data"]["client_secret"],
             "grant_type": "client_credentials",
         }
-        request_url = "{}/{}".format(
-            cls.data["site1_data"]["base_url"], "oauth2/access_token/"
-        )
+        request_url = f"{cls.data['site1_data']['base_url']}/oauth2/access_token/"
         response_site1 = requests.post(request_url, data=site1_data)
         response_site1.raise_for_status()
         cls.data["site1_data"]["token"] = response_site1.json()["access_token"]
-        request_url = "{}/{}".format(
-            cls.data["site2_data"]["base_url"], "oauth2/access_token/"
-        )
+        request_url = f"{cls.data['site2_data']['base_url']}/oauth2/access_token/"
         response_site2 = requests.post(request_url, data=site2_data)
         response_site2.raise_for_status()
         cls.data["site2_data"]["token"] = response_site2.json()["access_token"]
@@ -62,14 +58,14 @@ class TestEnrollmentIntegration(TestCase):  # pragma: no cover
             "course_id": site1_data["course"]["id"],
         }
         headers = {
-            "Authorization": "Bearer {}".format(site1_data["token"]),
+            "Authorization": f"Bearer {site1_data['token']}",
             "Host": site1_data["host"],
         }
         expected_response = {
             "username": site1_data["user_id"],
             "course_id": data["course_id"],
         }
-        request_url = "{}/{}".format(site1_data["base_url"], self.data["endpoint"])
+        request_url = f"{site1_data['base_url']}/{self.data['endpoint']}"
 
         response = requests.get(request_url, data=data, headers=headers)
         response_content = response.json()
@@ -89,10 +85,10 @@ class TestEnrollmentIntegration(TestCase):  # pragma: no cover
             "course_id": site1_data["course"]["id"],
         }
         headers = {
-            "Authorization": "Bearer {}".format(site1_data["token"]),
+            "Authorization": f"Bearer {site1_data['token']}",
             "Host": site1_data["host"],
         }
-        request_url = "{}/{}".format(site1_data["base_url"], self.data["endpoint"])
+        request_url = f"{site1_data['base_url']}/{self.data['endpoint']}"
 
         response = requests.get(request_url, data=data, headers=headers)
 
@@ -111,10 +107,10 @@ class TestEnrollmentIntegration(TestCase):  # pragma: no cover
             "course_id": site1_data["course"]["id"],
         }
         headers = {
-            "Authorization": "Bearer {}".format(site2_data["token"]),
+            "Authorization": f"Bearer {site2_data['token']}",
             "Host": site2_data["host"],
         }
-        request_url = "{}/{}".format(site2_data["base_url"], self.data["endpoint"])
+        request_url = f"{site2_data['base_url']}/{self.data['endpoint']}"
 
         response = requests.get(request_url, data=data, headers=headers)
 
@@ -134,10 +130,10 @@ class TestEnrollmentIntegration(TestCase):  # pragma: no cover
             "mode": site1_data["course"]["mode"],
         }
         headers = {
-            "Authorization": "Bearer {}".format(site1_data["token"]),
+            "Authorization": f"Bearer {site1_data['token']}",
             "Host": site1_data["host"],
         }
-        request_url = "{}/{}".format(site1_data["base_url"], self.data["endpoint"])
+        request_url = f"{site1_data['base_url']}/{self.data['endpoint']}"
 
         response = requests.post(request_url, data=data, headers=headers)
 
@@ -158,10 +154,10 @@ class TestEnrollmentIntegration(TestCase):  # pragma: no cover
             "force": True,
         }
         headers = {
-            "Authorization": "Bearer {}".format(site1_data["token"]),
+            "Authorization": f"Bearer {site1_data['token']}",
             "Host": site1_data["host"],
         }
-        request_url = "{}/{}".format(site1_data["base_url"], self.data["endpoint"])
+        request_url = f"{site1_data['base_url']}/{self.data['endpoint']}"
 
         response = requests.post(request_url, data=data, headers=headers)
 
@@ -180,10 +176,10 @@ class TestEnrollmentIntegration(TestCase):  # pragma: no cover
             "mode": site1_data["course"]["mode"],
         }
         headers = {
-            "Authorization": "Bearer {}".format(site1_data["token"]),
+            "Authorization": f"Bearer {site1_data['token']}",
             "Host": site1_data["host"],
         }
-        request_url = "{}/{}".format(site1_data["base_url"], self.data["endpoint"])
+        request_url = f"{site1_data['base_url']}/{self.data['endpoint']}"
 
         response = requests.post(request_url, data=data, headers=headers)
 
@@ -203,10 +199,10 @@ class TestEnrollmentIntegration(TestCase):  # pragma: no cover
             "mode": site1_data["course"]["mode"],
         }
         headers = {
-            "Authorization": "Bearer {}".format(site1_data["token"]),
+            "Authorization": f"Bearer {site1_data['token']}",
             "Host": site1_data["host"],
         }
-        request_url = "{}/{}".format(site1_data["base_url"], self.data["endpoint"])
+        request_url = f"{site1_data['base_url']}/{self.data['endpoint']}"
 
         response = requests.post(request_url, data=data, headers=headers)
 
@@ -226,10 +222,10 @@ class TestEnrollmentIntegration(TestCase):  # pragma: no cover
             "force": True,
         }
         headers = {
-            "Authorization": "Bearer {}".format(site1_data["token"]),
+            "Authorization": f"Bearer {site1_data['token']}",
             "Host": site1_data["host"],
         }
-        request_url = "{}/{}".format(site1_data["base_url"], self.data["endpoint"])
+        request_url = f"{site1_data['base_url']}/{self.data['endpoint']}"
 
         response = requests.post(request_url, data=data, headers=headers)
 
@@ -250,10 +246,10 @@ class TestEnrollmentIntegration(TestCase):  # pragma: no cover
             "force": True,
         }
         headers = {
-            "Authorization": "Bearer {}".format(site2_data["token"]),
+            "Authorization": f"Bearer {site2_data['token']}",
             "Host": site2_data["host"],
         }
-        request_url = "{}/{}".format(site2_data["base_url"], self.data["endpoint"])
+        request_url = f"{site2_data['base_url']}/{self.data['endpoint']}"
 
         response = requests.post(request_url, data=data, headers=headers)
 
@@ -275,10 +271,10 @@ class TestEnrollmentIntegration(TestCase):  # pragma: no cover
             "force": 1,
         }
         headers = {
-            "Authorization": "Bearer {}".format(site1_data["token"]),
+            "Authorization": f"Bearer {site1_data['token']}",
             "Host": site1_data["host"],
         }
-        request_url = "{}/{}".format(site1_data["base_url"], self.data["endpoint"])
+        request_url = f"{site1_data['base_url']}/{self.data['endpoint']}"
 
         response = requests.post(request_url, data=data, headers=headers)
 
@@ -296,10 +292,10 @@ class TestEnrollmentIntegration(TestCase):  # pragma: no cover
             "course_id": site1_data["course"]["id"],
         }
         headers = {
-            "Authorization": "Bearer {}".format(site1_data["token"]),
+            "Authorization": f"Bearer {site1_data['token']}",
             "Host": site1_data["host"],
         }
-        request_url = "{}/{}".format(site1_data["base_url"], self.data["endpoint"])
+        request_url = f"{site1_data['base_url']}/{self.data['endpoint']}"
 
         response = requests.delete(request_url, data=data, headers=headers)
 
@@ -317,10 +313,10 @@ class TestEnrollmentIntegration(TestCase):  # pragma: no cover
             "course_id": site1_data["course"]["id"],
         }
         headers = {
-            "Authorization": "Bearer {}".format(site1_data["token"]),
+            "Authorization": f"Bearer {site1_data['token']}",
             "Host": site1_data["host"],
         }
-        request_url = "{}/{}".format(site1_data["base_url"], self.data["endpoint"])
+        request_url = f"{site1_data['base_url']}/{self.data['endpoint']}"
 
         response = requests.delete(request_url, data=data, headers=headers)
 
@@ -339,10 +335,10 @@ class TestEnrollmentIntegration(TestCase):  # pragma: no cover
             "course_id": site1_data["course"]["id"],
         }
         headers = {
-            "Authorization": "Bearer {}".format(site2_data["token"]),
+            "Authorization": f"Bearer {site2_data['token']}",
             "Host": site2_data["host"],
         }
-        request_url = "{}/{}".format(site2_data["base_url"], self.data["endpoint"])
+        request_url = f"{site2_data['base_url']}/{self.data['endpoint']}"
 
         response = requests.delete(request_url, data=data, headers=headers)
 
@@ -362,7 +358,7 @@ class TestEnrollmentIntegration(TestCase):  # pragma: no cover
             "mode": site1_data["course"]["mode"],
         }
         headers = {
-            "Authorization": "Bearer {}".format(site1_data["token"]),
+            "Authorization": f"Bearer {site1_data['token']}",
             "Host": site1_data["host"],
         }
         expected_response = {
@@ -370,7 +366,7 @@ class TestEnrollmentIntegration(TestCase):  # pragma: no cover
             "is_active": False,
             "course_id": data["course_id"],
         }
-        request_url = "{}/{}".format(site1_data["base_url"], self.data["endpoint"])
+        request_url = f"{site1_data['base_url']}/{self.data['endpoint']}"
 
         response = requests.put(request_url, data=data, headers=headers)
         response_content = response.json()
@@ -393,7 +389,7 @@ class TestEnrollmentIntegration(TestCase):  # pragma: no cover
             "mode": "honor",
         }
         headers = {
-            "Authorization": "Bearer {}".format(site1_data["token"]),
+            "Authorization": f"Bearer {site1_data['token']}",
             "Host": site1_data["host"],
         }
         expected_response = {
@@ -402,7 +398,7 @@ class TestEnrollmentIntegration(TestCase):  # pragma: no cover
             "course_id": data["course_id"],
             "mode": "honor",
         }
-        request_url = "{}/{}".format(site1_data["base_url"], self.data["endpoint"])
+        request_url = f"{site1_data['base_url']}/{self.data['endpoint']}"
 
         response = requests.put(request_url, data=data, headers=headers)
         response_content = response.json()
@@ -424,10 +420,10 @@ class TestEnrollmentIntegration(TestCase):  # pragma: no cover
             "mode": "masters",
         }
         headers = {
-            "Authorization": "Bearer {}".format(site1_data["token"]),
+            "Authorization": f"Bearer {site1_data['token']}",
             "Host": site1_data["host"],
         }
-        request_url = "{}/{}".format(site1_data["base_url"], self.data["endpoint"])
+        request_url = f"{site1_data['base_url']}/{self.data['endpoint']}"
 
         response = requests.put(request_url, data=data, headers=headers)
 
@@ -447,10 +443,10 @@ class TestEnrollmentIntegration(TestCase):  # pragma: no cover
             "mode": "honor",
         }
         headers = {
-            "Authorization": "Bearer {}".format(site1_data["token"]),
+            "Authorization": f"Bearer {site1_data['token']}",
             "Host": site1_data["host"],
         }
-        request_url = "{}/{}".format(site1_data["base_url"], self.data["endpoint"])
+        request_url = f"{site1_data['base_url']}/{self.data['endpoint']}"
 
         response = requests.put(request_url, data=data, headers=headers)
 
@@ -470,10 +466,10 @@ class TestEnrollmentIntegration(TestCase):  # pragma: no cover
             "mode": "audit",
         }
         headers = {
-            "Authorization": "Bearer {}".format(site1_data["token"]),
+            "Authorization": f"Bearer {site1_data['token']}",
             "Host": site1_data["host"],
         }
-        request_url = "{}/{}".format(site1_data["base_url"], self.data["endpoint"])
+        request_url = f"{site1_data['base_url']}/{self.data['endpoint']}"
 
         response = requests.put(request_url, data=data, headers=headers)
 
@@ -495,7 +491,7 @@ class TestEnrollmentIntegration(TestCase):  # pragma: no cover
             "force": True,
         }
         headers = {
-            "Authorization": "Bearer {}".format(site1_data["token"]),
+            "Authorization": f"Bearer {site1_data['token']}",
             "Host": site1_data["host"],
         }
         expected_response = {
@@ -503,7 +499,7 @@ class TestEnrollmentIntegration(TestCase):  # pragma: no cover
             "is_active": False,
             "course_id": data["course_id"],
         }
-        request_url = "{}/{}".format(site1_data["base_url"], self.data["endpoint"])
+        request_url = f"{site1_data['base_url']}/{self.data['endpoint']}"
 
         response = requests.post(request_url, data=data, headers=headers)
         response_content = response.json()
@@ -527,7 +523,7 @@ class TestEnrollmentIntegration(TestCase):  # pragma: no cover
             "force": True,
         }
         headers = {
-            "Authorization": "Bearer {}".format(site1_data["token"]),
+            "Authorization": f"Bearer {site1_data['token']}",
             "Host": site1_data["host"],
         }
         expected_response = {
@@ -536,7 +532,7 @@ class TestEnrollmentIntegration(TestCase):  # pragma: no cover
             "course_id": data["course_id"],
             "mode": "honor",
         }
-        request_url = "{}/{}".format(site1_data["base_url"], self.data["endpoint"])
+        request_url = f"{site1_data['base_url']}/{self.data['endpoint']}"
 
         response = requests.put(request_url, data=data, headers=headers)
         response_content = response.json()
@@ -557,10 +553,10 @@ def create_enrollment(data):
         "mode": data["site1_data"]["course"]["mode"],
     }
     headers = {
-        "Authorization": "Bearer {}".format(data["site1_data"]["token"]),
+        "Authorization": f"Bearer {data['site1_data']['token']}",
         "Host": data["site1_data"]["host"],
     }
-    request_url = "{}/{}".format(data["site1_data"]["base_url"], data["endpoint"])
+    request_url = f"{data['site1_data']['base_url']}/{data['endpoint']}"
     response = requests.post(request_url, data=req_data, headers=headers)
     response.raise_for_status()
 
@@ -576,10 +572,10 @@ def delete_enrollment(data):
         "course_id": data["site1_data"]["course"]["id"],
     }
     headers = {
-        "Authorization": "Bearer {}".format(data["site1_data"]["token"]),
+        "Authorization": f"Bearer {data['site1_data']['token']}",
         "Host": data["site1_data"]["host"],
     }
-    request_url = "{}/{}".format(data["site1_data"]["base_url"], data["endpoint"])
+    request_url = f"{data['site1_data']['base_url']}/{data['endpoint']}"
     response = requests.delete(request_url, data=req_data, headers=headers)
     if response.status_code == 404:
         return

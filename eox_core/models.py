@@ -36,9 +36,4 @@ class Redirection(models.Model):
         db_table = 'edunext_redirection'
 
     def __unicode__(self):
-        return u"Redirection from {} to {}. Protocol {}. Status {}".format(
-            self.domain,
-            self.target,
-            self.scheme,
-            self.status,
-        )
+        return f"Redirection from {self.domain} to {self.target}. Protocol {self.scheme}. Status {self.status}"

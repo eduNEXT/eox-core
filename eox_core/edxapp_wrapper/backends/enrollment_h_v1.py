@@ -32,7 +32,7 @@ except ImportError:
     from openedx.core.djangoapps.enrollments import api  # pylint: disable=ungrouped-imports
     from openedx.core.djangoapps.enrollments.errors import (  # pylint: disable=ungrouped-imports
         CourseEnrollmentExistsError,
-        CourseModeNotFoundError
+        CourseModeNotFoundError,
     )
 
 
@@ -94,7 +94,7 @@ def update_enrollment(user, course_id, mode, *args, **kwargs):
     LOG.info('Updating enrollment for student: %s of course: %s mode: %s', username, course_id, mode)
     enrollment = api._data_api().update_course_enrollment(username, course_id, mode, is_active)
     if not enrollment:
-        raise NotFound('No enrollment found for {}'.format(username))
+        raise NotFound(f'No enrollment found for {username}')
     if enrollment_attributes is not None:
         api.set_enrollment_attributes(username, course_id, enrollment_attributes)
 
@@ -127,10 +127,10 @@ def get_enrollment(*args, **kwargs):
         LOG.info('Getting enrollment information of student: %s  course: %s', username, course_id)
         enrollment = api.get_enrollment(username, course_id)
         if not enrollment:
-            errors.append('No enrollment found for user:`{}`'.format(username))
+            errors.append(f'No enrollment found for user:`{username}`')
             return None, errors
     except InvalidKeyError:
-        errors.append('No course found for course_id `{}`'.format(course_id))
+        errors.append(f'No course found for course_id `{course_id}`')
         return None, errors
     enrollment['enrollment_attributes'] = api.get_enrollment_attributes(username, course_id)
     enrollment['course_id'] = course_id
@@ -153,18 +153,18 @@ def delete_enrollment(*args, **kwargs):
     try:
         course_key = get_valid_course_key(course_id)
     except InvalidKeyError:
-        raise NotFound('No course found by course id `{}`'.format(course_id))
+        raise NotFound(f'No course found by course id `{course_id}`') from InvalidKeyError
 
     username = user.username
 
     LOG.info('Deleting enrollment. User: `%s`  course: `%s`', username, course_id)
     enrollment = CourseEnrollment.get_enrollment(user, course_key)
     if not enrollment:
-        raise NotFound('No enrollment found for user: `{}` on course_id `{}`'.format(username, course_id))
+        raise NotFound(f'No enrollment found for user: `{username}` on course_id `{course_id}`')
     try:
         enrollment.delete()
     except Exception:
-        raise NotFound('Error: Enrollment could not be deleted for user: `{}` on course_id `{}`'.format(username, course_id))
+        raise NotFound(f'Error: Enrollment could not be deleted for user: `{username}` on course_id `{course_id}`') from Exception
 
 
 def _enroll_on_course(user, course_id, *args, **kwargs):
@@ -212,15 +212,15 @@ def _enroll_on_course(user, course_id, *args, **kwargs):
         LOG.info('Creating regular enrollment %s, %s, %s', username, course_id, mode)
         enrollment = _create_or_update_enrollment(username, course_id, mode, is_active, force)
     except CourseNotFoundError as err:
-        raise NotFound(repr(err))
+        raise NotFound(repr(err)) from err
     except Exception as err:  # pylint: disable=broad-except
         if force:
             LOG.info('Force create enrollment %s, %s, %s', username, course_id, mode)
             enrollment = _force_create_enrollment(username, course_id, mode, is_active)
         else:
             if not str(err):
-                err = err.__class__.__name__
-            raise APIException(detail=err)
+                err_msg = err.__class__.__name__
+            raise APIException(detail=err_msg if err_msg else err) from err
 
     if enrollment_attributes is not None:
         api.set_enrollment_attributes(username, course_id, enrollment_attributes)
@@ -242,7 +242,7 @@ def _enroll_on_program(user, program_uuid, *arg, **kwargs):
     try:
         data = get_program(program_uuid)
     except Exception as err:  # pylint: disable=broad-except
-        raise NotFound(repr(err))
+        raise NotFound(repr(err)) from err
     if not data['courses']:
         raise NotFound("No courses found for this program")
     for course in data['courses']:
@@ -333,7 +333,7 @@ def _create_or_update_enrollment(username, course_id, mode, is_active, try_updat
         if try_update:
             enrollment = api._data_api().update_course_enrollment(username, course_id, mode, is_active)
         else:
-            raise Exception(repr(err) + ", use force to update the existing enrollment")
+            raise Exception(repr(err) + ", use force to update the existing enrollment") from err
     return enrollment
 
 
@@ -347,5 +347,5 @@ def _force_create_enrollment(username, course_id, mode, is_active):
         enrollment = CourseEnrollment.enroll(user, course_key, check_access=False)
         api._data_api()._update_enrollment(enrollment, is_active=is_active, mode=mode)
     except Exception as err:  # pylint: disable=broad-except
-        raise APIException(repr(err))
+        raise APIException(repr(err)) from err
     return enrollment

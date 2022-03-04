@@ -17,7 +17,7 @@ class CourseKeyTest(TestCase):
 
     def setUp(self):
         """ setup """
-        super(CourseKeyTest, self).setUp()
+        super().setUp()
         self.m_course_id = "course-v1:org+course+run"
 
     @mock.patch('eox_core.edxapp_wrapper.coursekey.import_module')

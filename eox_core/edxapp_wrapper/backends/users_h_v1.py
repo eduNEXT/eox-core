@@ -19,15 +19,14 @@ from openedx.core.djangoapps.user_api.preferences import api as preferences_api 
 from rest_framework.exceptions import NotFound
 from student.forms import AccountCreationForm  # pylint: disable=import-error
 from student.helpers import create_or_set_user_attribute_created_on_site  # pylint: disable=import-error
+from student.helpers import do_create_account  # pylint: disable=import-error; pylint: disable=import-error
+from student.models import CourseEnrollment  # pylint: disable=import-error; pylint: disable=import-error
 from student.models import (  # pylint: disable=import-error
     UserAttribute,
     UserProfile,
     UserSignupSource,
     create_comments_service_user,
 )
-
-from student.helpers import do_create_account  # pylint: disable=import-error; pylint: disable=import-error
-from student.models import CourseEnrollment  # pylint: disable=import-error; pylint: disable=import-error
 
 LOG = logging.getLogger(__name__)
 User = get_user_model()  # pylint: disable=invalid-name
@@ -72,7 +71,7 @@ def create_edxapp_user(*args, **kwargs):
     username = kwargs.pop("username")
     conflicts = check_edxapp_account_conflicts(email=email, username=username)
     if conflicts:
-        return None, ["Fatal: account collition with the provided: {}".format(", ".join(conflicts))]
+        return None, [f"Fatal: account collition with the provided: {', '.join(conflicts)}"]
 
     data = {
         'username': username,
@@ -114,10 +113,7 @@ def create_edxapp_user(*args, **kwargs):
         try:
             preferences_api.set_user_preference(user, LANGUAGE_KEY, lang_pref)
         except Exception:  # pylint: disable=broad-except
-            errors.append("Could not set lang preference '{} for user '{}'".format(
-                lang_pref,
-                user.username,
-            ))
+            errors.append(f"Could not set lang preference '{lang_pref}' for user '{user.username}'")
 
     if kwargs.pop("activate_user", False):
         user.is_active = True
@@ -163,7 +159,7 @@ def get_edxapp_user(**kwargs):
         else:
             raise User.DoesNotExist
     except User.DoesNotExist:
-        raise NotFound('No user found by {query} on site {site}.'.format(query=str(params), site=domain))
+        raise NotFound(f'No user found by {str(params)} on site {domain}.') from User.DoesNotExist
     return user
 
 

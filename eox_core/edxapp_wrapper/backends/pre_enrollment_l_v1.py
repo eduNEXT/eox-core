@@ -42,9 +42,9 @@ def create_pre_enrollment(*args, **kwargs):
         LOG.info('Creating regular pre-enrollment for email: %s course_id: %s auto_enroll: %s', email, course.id, auto_enroll)
     except IntegrityError:
         pre_enrollment = None
-        raise NotFound('Pre-enrollment already exists for email: {} course_id: {}'.format(email, course_id))
+        raise NotFound(f'Pre-enrollment already exists for email: {email} course_id: {course_id}') from IntegrityError
     except ValueError:
-        warnings = ['Course with course_id:{} does not exist'.format(course_id)]
+        warnings = [f'Course with course_id:{course_id} does not exist']
     return pre_enrollment, warnings
 
 
@@ -68,7 +68,7 @@ def update_pre_enrollment(*args, **kwargs):
         pre_enrollment.save()
         LOG.info('Updating regular pre-enrollment for email: %s course_id: %s auto_enroll: %s', pre_enrollment.email, pre_enrollment.course_id, auto_enroll)
     except Exception:  # pylint: disable=broad-except
-        raise NotFound('Pre-enrollment not found for email: {} course_id: {}'.format(pre_enrollment.email, pre_enrollment.course_id))
+        raise NotFound(f'Pre-enrollment not found for email: {pre_enrollment.email} course_id: {pre_enrollment.course_id}') from Exception
     return pre_enrollment
 
 
@@ -89,7 +89,7 @@ def delete_pre_enrollment(*args, **kwargs):
         LOG.info('Deleting regular pre-enrollment for email: %s course_id: %s', pre_enrollment.email, pre_enrollment.course_id)
         pre_enrollment.delete()
     except Exception:  # pylint: disable=broad-except
-        raise NotFound('Pre-enrollment not found for email: {} course_id: {}'.format(pre_enrollment.email, pre_enrollment.course_id))
+        raise NotFound(f'Pre-enrollment not found for email: {pre_enrollment.email} course_id: {pre_enrollment.course_id}') from Exception
 
 
 def get_pre_enrollment(*args, **kwargs):
@@ -111,5 +111,5 @@ def get_pre_enrollment(*args, **kwargs):
         pre_enrollment = CourseEnrollmentAllowed.objects.get(course_id=course_key, email=email)
         LOG.info('Getting regular pre-enrollment for email: %s course_id: %s', email, course_id)
     except CourseEnrollmentAllowed.DoesNotExist:
-        raise NotFound('Pre-enrollment not found for email: {} course_id: {}'.format(email, course_id))
+        raise NotFound(f'Pre-enrollment not found for email: {email} course_id: {course_id}') from CourseEnrollmentAllowed.DoesNotExist
     return pre_enrollment

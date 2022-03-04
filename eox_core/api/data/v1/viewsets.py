@@ -223,7 +223,7 @@ class CertificateViewSet(DataApiViewSet):  # pylint: disable=too-many-ancestors
 
     def get_queryset(self):
         self.queryset = get_generated_certificate().objects.all()
-        return super(CertificateViewSet, self).get_queryset()
+        return super().get_queryset()
 
 
 class ProctoredExamStudentViewSet(DataApiViewSet):  # pylint: disable=too-many-ancestors

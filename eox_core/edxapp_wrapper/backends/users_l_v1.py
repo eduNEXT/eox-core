@@ -34,7 +34,8 @@ from openedx.core.djangoapps.user_api.accounts.views import \
 from openedx.core.djangoapps.user_api.models import UserRetirementStatus  # pylint: disable=import-error
 from openedx.core.djangoapps.user_api.preferences import api as preferences_api  # pylint: disable=import-error
 from openedx.core.djangoapps.user_authn.utils import generate_password  # pylint: disable=import-error,unused-import
-from openedx.core.djangoapps.user_authn.views.register import REGISTER_USER as post_register  # pylint: disable=import-error
+from openedx.core.djangoapps.user_authn.views.register import \
+    REGISTER_USER as post_register  # pylint: disable=import-error
 from openedx.core.djangoapps.user_authn.views.registration_form import (  # pylint: disable=import-error
     AccountCreationForm,
 )
@@ -128,7 +129,7 @@ def create_edxapp_user(*args, **kwargs):
     username = kwargs.get("username")
     conflicts = check_edxapp_account_conflicts(email=email, username=username)
     if conflicts:
-        return None, ["Fatal: account collition with the provided: {}".format(", ".join(conflicts))]
+        return None, [f"Fatal: account collition with the provided: {', '.join(conflicts)}"]
 
     # Go ahead and create the new user
     with transaction.atomic():
@@ -178,10 +179,7 @@ def create_edxapp_user(*args, **kwargs):
         try:
             preferences_api.set_user_preference(user, LANGUAGE_KEY, lang_pref)
         except Exception:  # pylint: disable=broad-except
-            errors.append("Could not set lang preference '{} for user '{}'".format(
-                lang_pref,
-                user.username,
-            ))
+            errors.append(f"Could not set lang preference '{lang_pref}' for user '{user.username}'")
 
     if kwargs.pop("activate_user", False):
         user.is_active = True
@@ -227,7 +225,7 @@ def get_edxapp_user(**kwargs):
         else:
             raise User.DoesNotExist
     except User.DoesNotExist:
-        raise NotFound('No user found by {query} on site {site}.'.format(query=str(params), site=domain))
+        raise NotFound(f'No user found by {str(params)} on site {domain}.') from User.DoesNotExist
     return user
 
 
@@ -242,7 +240,7 @@ def delete_edxapp_user(*args, **kwargs):
     site = kwargs.get("site")
     is_support_user = kwargs.get("is_support_user")
 
-    user_response = "The user {username} <{email}> ".format(username=user.username, email=user.email)
+    user_response = f"The user {user.username} <{user.email}> "
 
     signup_sources = user.usersignupsource_set.all()
     sources = [signup_source.site for signup_source in signup_sources]
@@ -251,11 +249,7 @@ def delete_edxapp_user(*args, **kwargs):
         if len(sources) == 1:
             with transaction.atomic():
                 support_label = "_support" if is_support_user else ""
-                user.email = "{email}{case}.ednx{support}_retired".format(
-                    email=user.email,
-                    case=case_id,
-                    support=support_label,
-                )
+                user.email = f"{user.email}{case_id}.ednx{support_label}_retired"
                 user.save()
 
                 # Add user to retirement queue.
@@ -278,20 +272,17 @@ def delete_edxapp_user(*args, **kwargs):
                 # Delete user signup source object
                 signup_sources[0].delete()
 
-                msg = "{user} has been removed".format(user=user_response)
+                msg = f"{user_response} has been removed"
         else:
             for signup_source in signup_sources:
                 if signup_source.site.upper() == site.name.upper():
                     signup_source.delete()
 
-                    msg = "{user} has more than one signup source. The signup source from the site {site} has been deleted".format(
-                        user=user_response,
-                        site=site,
-                    )
+                    msg = f"{user_response} has more than one signup source. The signup source from the site {site} has been deleted"
 
         return msg, status.HTTP_200_OK
 
-    raise NotFound("{user} does not have a signup source on the site {site}".format(user=user_response, site=site))
+    raise NotFound(f"{user_response} does not have a signup source on the site {site}")
 
 
 def get_course_team_user(*args, **kwargs):

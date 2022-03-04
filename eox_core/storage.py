@@ -24,7 +24,7 @@ class AbsoluteUrlAssetsMixin:
         if name.startswith("https://") or name.startswith("http://"):
             return name
 
-        return super(AbsoluteUrlAssetsMixin, self).url(name)
+        return super().url(name)
 
 
 class ProductionStorage(AbsoluteUrlAssetsMixin, EdxappProductionStorage):

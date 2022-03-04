@@ -18,11 +18,11 @@ class SuperUserFactory(factory.django.DjangoModelFactory):
 
     _DEFAULT_PASSWORD = 'test'
 
-    username = factory.Sequence(u'robot{0}'.format)
-    email = factory.Sequence(u'robot+test+{0}@example.com'.format)
+    username = factory.Sequence(lambda n: f'robot{n}')
+    email = factory.Sequence(lambda n: f'robot+test+{n}@example.com')
     password = factory.PostGenerationMethodCall(
         'set_password', _DEFAULT_PASSWORD)
-    first_name = factory.Sequence(u'Robot{0}'.format)
+    first_name = factory.Sequence(lambda n: f'Robot{n}')
     last_name = 'Test'
     is_staff = True
     is_active = True

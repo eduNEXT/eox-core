@@ -66,7 +66,7 @@ COURSE_KEY_PATTERN = r'(?P<course_key_string>[^/+]+(/|\+)[^/+]+(/|\+)[^/?]+)'
 COURSE_ID_PATTERN = COURSE_KEY_PATTERN.replace('course_key_string', 'course_id')
 
 USERNAME_REGEX_PARTIAL = r'[\w .@_+-]+'
-USERNAME_PATTERN = r'(?P<username>{regex})'.format(regex=USERNAME_REGEX_PARTIAL)
+USERNAME_PATTERN = fr'(?P<username>{USERNAME_REGEX_PARTIAL})'
 
 PROCTORING_SETTINGS = {
     'LINK_URLS': {

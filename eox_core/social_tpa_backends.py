@@ -41,7 +41,7 @@ class ConfigurableOpenIdConnectAuth(OpenIdConnectAuth):
             except Exception:  # pylint: disable=broad-except
                 LOG.error("Tried and failed to set property %s of a config-based-openidconnect", key)
 
-        super(ConfigurableOpenIdConnectAuth, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def oidc_config(self):
         """
@@ -190,7 +190,7 @@ class ConfigurableOpenIdConnectAuth(OpenIdConnectAuth):
                 return uid
             raise AuthMissingParameter(self, 'slug')
 
-        slug_uid = '{0}:{1}'.format(slug, uid)
+        slug_uid = f'{slug}:{uid}'
         if allow_write_slug_uid:
             social = strategy.storage.user.get_social_auth(provider, uid)
             if social:

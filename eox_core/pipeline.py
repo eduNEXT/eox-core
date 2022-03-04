@@ -167,7 +167,7 @@ def assert_user_information(details, user, backend, *args, **kwargs):
         if str(details.get(field, "")) != str(getattr(user, field, "")):
             logging_pipeline_step(
                 "error",
-                "Credentials not allowed: field {field} returned by provider does not match with the users information.".format(field=field),
+                f"Credentials not allowed: field {field} returned by provider does not match with the users information.",
                 **locals()
             )
             raise AuthFailed(backend, "Credentials not allowed.")  # pylint: disable=raising-non-exception
