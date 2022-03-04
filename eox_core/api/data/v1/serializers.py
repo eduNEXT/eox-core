@@ -21,20 +21,20 @@ class MetaSerializer(serializers.Serializer):  # pylint: disable=abstract-method
     """Serializer for the blob information in the meta attibute, will return a
     a default dict with empty values if the user does not have the information available
     """
-    def to_representation(self, obj):
+    def to_representation(self, instance):
         # Add all the possible fields
         _fields = {
             'personal_id': None,
         }
         try:
-            _data = json.loads(obj)
+            _data = json.loads(instance)
             _output = {}
             for key, value in iter(_fields.items()):
                 _output[key] = _data.get(key, value)
             return _output
         except ValueError:
-            if obj:
-                LOG.warning("Could not parse metadata during data-api call. %s.", obj)
+            if instance:
+                LOG.warning("Could not parse metadata during data-api call. %s.", instance)
             return _fields
 
 

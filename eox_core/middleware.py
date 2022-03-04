@@ -28,7 +28,7 @@ from eox_core.models import Redirection
 from eox_core.utils import cache, fasthash
 
 try:
-    from social_core.exceptions import AuthUnreachableProvider, AuthAlreadyAssociated, AuthFailed
+    from social_core.exceptions import AuthAlreadyAssociated, AuthFailed, AuthUnreachableProvider
 except ImportError:
     AuthUnreachableProvider = Exception
     AuthAlreadyAssociated = Exception
@@ -124,7 +124,7 @@ class PathRedirectionMiddleware(MiddlewareMixin):
             # Strip off html extension to have backwards
             # compatibility to keys defined with template style.
             key = key.replace('.html', '')
-            key = '/{}'.format(key)
+            key = f'/{key}'
 
             # Just continue if the path does not match or the redirect value is empty
             # TODO: validate that the key corresponds to a Marketing path
@@ -230,11 +230,7 @@ class RedirectionsMiddleware(MiddlewareMixin):
             if domain == target.target and request.scheme == target.scheme:  # pylint: disable=no-member
                 return None
 
-            to_url = '{scheme}://{host}{path}'.format(
-                scheme=target.scheme,  # pylint: disable=no-member
-                host=target.target,  # pylint: disable=no-member
-                path=request.path,  # pylint: disable=no-member
-            )
+            to_url = f'{target.scheme}://{target.target}{request.path}'
 
             return HttpResponseRedirect(
                 to_url,

@@ -61,7 +61,7 @@ class UserQueryMixin:
         """
         Defines instance attributes
         """
-        super(UserQueryMixin, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.query_params = None
         self.site = None
 
@@ -69,7 +69,7 @@ class UserQueryMixin:
         """
         Loads the site into the object for every kind of request.
         """
-        super(UserQueryMixin, self).initial(request, *args, **kwargs)
+        super().initial(request, *args, **kwargs)
 
         if hasattr(request, "site"):
             self.site = request.site
@@ -336,7 +336,7 @@ class EdxappUser(UserQueryMixin, APIView):
         response_data = serialized_user.data
         # Show a warning if the request is providing email and username
         # to let the client know we're giving priority to the username
-        if "username" and "email" in self.query_params:
+        if set(("email", "username")).issubset(self.query_params):
             response_data[
                 "warning"
             ] = "The username prevails over the email when both are provided to get the user."
@@ -923,7 +923,7 @@ class EdxappEnrollment(UserQueryMixin, APIView):
         if isinstance(exc, APIException):
             LOG.error("API Error: %s", repr(exc.detail))
 
-        return super(EdxappEnrollment, self).handle_exception(exc)
+        return super().handle_exception(exc)
 
 
 class EdxappPreEnrollment(APIView):
@@ -1024,7 +1024,7 @@ class EdxappPreEnrollment(APIView):
         """
         data = self.request.data or self.request.query_params
         self.log("API Error", data, exc)
-        return super(EdxappPreEnrollment, self).handle_exception(exc)
+        return super().handle_exception(exc)
 
     def log(self, desc, data, exception=None):
         """
@@ -1043,7 +1043,7 @@ class EdxappPreEnrollment(APIView):
             log_data.append("Empty request")
         else:
             for key, value in data.items():
-                log_data.append("{}: {}".format(key, value))
+                log_data.append(f"{key}: {value}")
 
         LOG.error(" ".join(log_data))
 

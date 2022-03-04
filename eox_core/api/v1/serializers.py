@@ -48,7 +48,7 @@ class EdxappWithWarningSerializer(serializers.Serializer):
         """
         Conditionally adds a warning field if a context is passed
         """
-        super(EdxappWithWarningSerializer, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         # This field should only exist if a context is actually passed to the serializer
         if self.context:
@@ -90,7 +90,7 @@ class EdxappUserSerializer(serializers.Serializer):
         username = attrs.get("username")
         conflicts = check_edxapp_account_conflicts(email, username)
         if conflicts:
-            raise serializers.ValidationError("Account already exists with the provided: {}".format(", ".join(conflicts)))
+            raise serializers.ValidationError(f"Account already exists with the provided: {', '.join(conflicts)}")
         return attrs
 
 
@@ -193,7 +193,7 @@ class WrittableEdxappUserSerializer(EdxappExtendedUserSerializer):
 
         for attr in attrs:
             if attr not in safe_fields:
-                raise serializers.ValidationError({"detail": "You are not allowed to update {}.".format(attr)})
+                raise serializers.ValidationError({"detail": f"You are not allowed to update {attr}."})
 
         if self.instance.is_staff or self.instance.is_superuser:
             raise serializers.ValidationError({"detail": "You can't update users with roles like staff or superuser."})
@@ -301,7 +301,7 @@ class EdxappValidatedCourseIDField(serializers.Field):
         if validate_org(data):  # pylint: disable=no-else-return
             return str(get_valid_course_key(data))
         else:
-            raise serializers.ValidationError('Invalid course_id {}'.format(data))
+            raise serializers.ValidationError(f'Invalid course_id {data}')
 
 
 class EdxappCourseEnrollmentSerializer(serializers.Serializer):

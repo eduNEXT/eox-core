@@ -26,7 +26,8 @@ def get_user_read_only_serializer():
     Return a fake user read only serializer
     """
     try:
-        from openedx.core.djangoapps.user_api.accounts.serializers import UserReadOnlySerializer  # pylint: disable=import-outside-toplevel
+        from openedx.core.djangoapps.user_api.accounts.serializers import \
+            UserReadOnlySerializer  # pylint: disable=import-outside-toplevel
     except ImportError:
         UserReadOnlySerializer = object
     return UserReadOnlySerializer
@@ -37,7 +38,8 @@ def check_edxapp_account_conflicts(email, username):
     Get an executes the check_account_exists for tests
     """
     try:
-        from openedx.core.djangoapps.user_api.accounts.api import check_account_exists  # pylint: disable=import-outside-toplevel
+        from openedx.core.djangoapps.user_api.accounts.api import \
+            check_account_exists  # pylint: disable=import-outside-toplevel
     except ImportError:
         def check_account_exists(email=None, username=None):
             """

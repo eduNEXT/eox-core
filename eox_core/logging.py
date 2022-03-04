@@ -32,13 +32,12 @@ def logging_pipeline_step(level, log_message, **local_vars):
     user = local_vars.get("user")
     backend = local_vars.get("backend")
 
-    message = "PIPELINE-STEP:{step} - USER:{user} - BACKEND:{backend_name} - REDIRECT_URI:{uri} - MESSAGE:{msg}".format(
-        step=sys._getframe(1).f_code.co_name,  # pylint: disable=protected-access
-        user=user,
-        backend_name=getattr(backend, "name", ""),
-        uri=getattr(backend, "redirect_uri", ""),
-        msg=log_message,
-    )
+    step = sys._getframe(1).f_code.co_name  # pylint: disable=protected-access
+    backend_name = getattr(backend, "name", "")
+    uri = getattr(backend, "redirect_uri", "")
+    msg = log_message
+
+    message = f"PIPELINE-STEP:{step} - USER:{user} - BACKEND:{backend_name} - REDIRECT_URI:{uri} - MESSAGE:{msg}"
 
     if backend and backend.setting("BACKEND_OPTIONS", {}).get("logLevel", "").lower() == "debug":
         details = local_vars.get("details")

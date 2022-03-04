@@ -24,7 +24,7 @@ def get_valid_course_key(course_id):
     try:
         return CourseKey.from_string(course_id)
     except InvalidKeyError:
-        raise ValidationError("Invalid course_id {}".format(course_id))
+        raise ValidationError(f"Invalid course_id {course_id}") from InvalidKeyError
 
 
 def validate_org(course_id):

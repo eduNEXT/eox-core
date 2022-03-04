@@ -13,7 +13,7 @@ class TestEnrollmentsAPI(TestCase):
 
     def setUp(self):
         """ setup """
-        super(TestEnrollmentsAPI, self).setUp()
+        super().setUp()
         self.api_user = User(1, 'test@example.com', 'test')
         self.client = APIClient()
         self.client.force_authenticate(user=self.api_user)
@@ -103,7 +103,7 @@ class TestEnrollmentsAPI(TestCase):
         }
         response = self.client.post('/api/v1/enrollment/', data=params)
         self.assertEqual(response.status_code, 200)
-        self.assertDictContainsSubset(params, response.data)
+        self.assertEqual(response.data, {**response.data, **params})
 
     @patch_permissions
     @patch('eox_core.api.v1.serializers.validate_org')

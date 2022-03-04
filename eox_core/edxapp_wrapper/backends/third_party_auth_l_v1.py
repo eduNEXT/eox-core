@@ -4,7 +4,9 @@
 def get_tpa_exception_middleware():
     """Get the ExceptionMiddleware class."""
     try:
-        from common.djangoapps.third_party_auth.middleware import ExceptionMiddleware  # pylint: disable=import-outside-toplevel
+        from common.djangoapps.third_party_auth.middleware import \
+            ExceptionMiddleware  # pylint: disable=import-outside-toplevel
     except ImportError:
-        from django.utils.deprecation import MiddlewareMixin as ExceptionMiddleware  # pylint: disable=import-outside-toplevel
+        from django.utils.deprecation import \
+            MiddlewareMixin as ExceptionMiddleware  # pylint: disable=import-outside-toplevel
     return ExceptionMiddleware

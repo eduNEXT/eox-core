@@ -15,7 +15,7 @@ class CustomRelatedField(relations.RelatedField):  # pylint: disable=abstract-me
     def __init__(self, **kwargs):
         kwargs['read_only'] = True
         self.field = kwargs.pop('field')
-        super(CustomRelatedField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
-    def to_representation(self, instance):
-        return six.text_type(getattr(instance, self.field))
+    def to_representation(self, value):
+        return six.text_type(getattr(value, self.field))

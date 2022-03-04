@@ -33,10 +33,10 @@ class TestInfoView(TestCase):
         self.assertIn('user', response_json)
         self.assertDictEqual(
             response_json, {
-                u'is_superuser': True,
-                u'is_staff': True,
-                u'user': u'robot0',
-                u'auth': u'None',
-                u'email': u'robot+test+0@example.com'
+                'is_superuser': True,
+                'is_staff': True,
+                'user': 'robot0',
+                'auth': 'None',
+                'email': 'robot+test+0@example.com'
             }
         )

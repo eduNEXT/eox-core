@@ -17,7 +17,7 @@ class PreEnrollmentTest(TestCase):
 
     def setUp(self):
         """ setup """
-        super(PreEnrollmentTest, self).setUp()
+        super().setUp()
         self.m_params = {
             'email': 'test@example.com',
             'course_id': 'course-v1:org+course+run',

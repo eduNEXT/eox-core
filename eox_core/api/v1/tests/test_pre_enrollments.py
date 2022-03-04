@@ -16,7 +16,7 @@ class PreEnrollmentsAPITest(TestCase):
 
     def setUp(self):
         """ setup """
-        super(PreEnrollmentsAPITest, self).setUp()
+        super().setUp()
         self.api_user = User('test', 'test@example.com', 'test')
         self.client = APIClient()
         self.url = '/api/v1/pre-enrollment/'

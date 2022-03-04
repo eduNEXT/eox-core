@@ -72,12 +72,9 @@ def set_custom_field_restrictions(custom_field, serializer_field):
         try:
             ["min_length", "max_length"].index(key)
             serializer_field[key] = int(value)
-        except ValueError:
-            raise serializers.ValidationError({"restriction error": "{key}: {value}.\
-            The restriction may not be valid or the value is not an integer".format(
-                key=key,
-                value=value,
-            )})
+        except ValueError as err:
+            raise serializers.ValidationError({"restriction error": f"{key}: {value}.\
+            The restriction may not be valid or the value is not an integer"}) from err
 
     return serializer_field
 
@@ -99,8 +96,8 @@ def set_select_custom_field(custom_field, serializer_field):
             serializer_field["default"] = default
             # A field can not be both `required` and have a `default`
             serializer_field["required"] = False
-        except ValueError:
-            raise serializers.ValidationError({"{}".format(field_name): "The default value must be one of the options"})
+        except ValueError as err:
+            raise serializers.ValidationError({f"{field_name}": "The default value must be one of the options"}) from err
 
     return serializer_field
 
