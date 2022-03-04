@@ -14,13 +14,9 @@ workflows:
               only: /v?[0-9]+(\.[0-9]+)*/
           matrix:
             parameters:
-              python_version: ["3.5", "3.8"]
-              debian_version: ["stretch", "buster"]
-            exclude:
-              - python_version: "3.8"
-                debian_version: "stretch"
-              - python_version: "3.5"
-                debian_version: "buster"
+              python_version: ["3.8"]
+              debian_version: ["buster"]
+              django_version: ["django22", "django32"]
       - pypi:
           requires:
             - test
@@ -35,12 +31,10 @@ jobs:
     parameters:
       django_version:
         type: string
-        default: django22
       python_version:
         type: string
       debian_version:
         type: string
-        default: stretch
     docker:
       # specify the version you desire here
       # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
