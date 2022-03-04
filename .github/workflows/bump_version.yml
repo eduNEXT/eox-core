@@ -37,9 +37,20 @@ jobs:
           latest-version: ${{ needs.build.outputs.tag }}
           release-notes: ${{ needs.build.outputs.changelog }}
 
-      - name: Commit updated CHANGELOG
-        uses: stefanzweifel/git-auto-commit-action@v4
+      - name: Create Pull Request
+        id: cpr
+        uses: peter-evans/create-pull-request@v3
         with:
-          branch: ${{ github.ref }}
-          commit_message: "docs: update CHANGELOG"
-          file_pattern: CHANGELOG.md
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "docs: update CHANGELOG"
+          committer: GitHub <noreply@github.com>
+          author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+          signoff: false
+          branch: docs/changelog/${{ needs.build.outputs.tag }}
+          delete-branch: true
+          title: "docs: update CHANGELOG to ${{ needs.build.outputs.tag }}"
+          labels: |
+            report
+            automated pr
+          team-reviewers: |
+            eduNEXT/distro
