@@ -40,7 +40,7 @@ python-test: clean ## Run tests
 python-quality-test:
 	$(TOX) pylint ./eox_core
 	$(TOX) pycodestyle ./eox_core
-	$(TOX) isort --check-only --recursive --diff ./eox_core
+	$(TOX) isort --check-only --diff ./eox_core
 
 run-tests: python-test python-quality-test
 
