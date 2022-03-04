@@ -51,7 +51,7 @@ def is_requirement(line):
 
 setup(
     name="eox-core",
-    python_requires='>=3.5',
+    python_requires='>=3.8',
     version=version,
     author="eduNEXT",
     author_email="contact@edunext.co",
@@ -62,6 +62,7 @@ setup(
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Framework :: Django :: 2.2',
+        'Framework :: Django :: 3.2',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: GNU Affero General Public License v3',
         'Operating System :: OS Independent',
