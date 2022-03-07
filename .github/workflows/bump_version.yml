@@ -4,7 +4,41 @@ on:
     branches:
       - master
 jobs:
-  build:
+  bumpversion:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.tag_version.outputs.new_version }}
+      previous_tag: ${{ steps.tag_version.outputs.previous_tag }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.PAT }}
+      - name: Get next version
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          default_bump: false
+          default_prerelease_bump: false
+          dry_run: true
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.8"
+      - name: Create bumpversion
+        if: steps.tag_version.outputs.new_version
+        run: |
+          pip install bumpversion
+          bumpversion --new-version ${{ steps.tag_version.outputs.new_version }} setup.cfg
+      - name: Commit bumpversion
+        if: steps.tag_version.outputs.new_version
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          branch: ${{ github.ref }}
+          commit_message: "Bump version: ${{ steps.tag_version.outputs.previous_tag }} → ${{ steps.tag_version.outputs.new_version }}"
+          file_pattern: setup.cfg eox_core/*
+  release:
+    needs: bumpversion
     runs-on: ubuntu-latest
     outputs:
       tag: ${{ steps.tag_version.outputs.new_tag }}
@@ -25,21 +59,33 @@ jobs:
           tag: ${{ steps.tag_version.outputs.new_tag }}
           name: Release ${{ steps.tag_version.outputs.new_tag }}
           body: ${{ steps.tag_version.outputs.changelog }}
-  update:
-    needs: build
+          draft: true
+  changelog:
+    needs: release
     runs-on: ubuntu-latest
-    if: needs.build.outputs.tag
+    if: needs.release.outputs.tag
     steps:
       - uses: actions/checkout@v2
       - name: Update Changelog
         uses: stefanzweifel/changelog-updater-action@v1
         with:
-          latest-version: ${{ needs.build.outputs.tag }}
-          release-notes: ${{ needs.build.outputs.changelog }}
+          latest-version: ${{ needs.release.outputs.tag }}
+          release-notes: ${{ needs.release.outputs.changelog }}
 
-      - name: Commit updated CHANGELOG
-        uses: stefanzweifel/git-auto-commit-action@v4
+      - name: Create Pull Request
+        id: cpr
+        uses: peter-evans/create-pull-request@v3
         with:
-          branch: ${{ github.ref }}
-          commit_message: "docs: update CHANGELOG"
-          file_pattern: CHANGELOG.md
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "docs: update CHANGELOG"
+          committer: GitHub <noreply@github.com>
+          author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+          signoff: false
+          branch: docs/changelog/${{ needs.release.outputs.tag }}
+          delete-branch: true
+          title: "docs: update CHANGELOG to ${{ needs.release.outputs.tag }}"
+          labels: |
+            report
+            automated pr
+          team-reviewers: |
+            eduNEXT/distro
