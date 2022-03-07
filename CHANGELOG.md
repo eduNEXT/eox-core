@@ -5,11 +5,43 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/eduNEXT/eox-core/compare/v5.1.1...HEAD)
+## [Unreleased](https://github.com/eduNEXT/eox-core/compare/v6.0.0...HEAD)
 
 Please do not update the unreleased notes.
 
 <!-- Content should be placed here -->
+## [v6.0.0](https://github.com/eduNEXT/eox-core/compare/v5.1.1...v6.0.0) - 2022-03-04
+
+## [6.0.0](https://github.com/eduNEXT/eox-core/compare/v5.1.1...v6.0.0) (2022-03-04)
+
+
+### ⚠ BREAKING CHANGES
+
+* remove the Course Management feature
+* **django32:** Drop python 3.5 support in favor of python 3.8.
+
+### Performance Improvements
+
+* **django32:** add compatibility with openedx maple release ([#197](https://github.com/eduNEXT/eox-core/issues/197)) ([74a6160](https://github.com/eduNEXT/eox-core/commit/74a61607080dc33be6d3f57dcac254b640b37076))
+
+
+### Documentation
+
+* change extension of CHANGELOG file to markdown ([effcef8](https://github.com/eduNEXT/eox-core/commit/effcef8beb0fa48901044fbcdfeaf59b2b9c62e4))
+
+
+### Continuous Integration
+
+* add bumpversion action to github workflows ([#192](https://github.com/eduNEXT/eox-core/issues/192)) ([99a4516](https://github.com/eduNEXT/eox-core/commit/99a4516eef22e16441a5665758a5ceb2c93045fd))
+* add changelog update job to bump_version workflow ([6f758de](https://github.com/eduNEXT/eox-core/commit/6f758deada55c428763474f8997c1d23e85e5d46))
+* add commitlint action to github workflows ([#194](https://github.com/eduNEXT/eox-core/issues/194)) ([88da568](https://github.com/eduNEXT/eox-core/commit/88da56886002582a3a80570273c3ff18c6b10c73))
+* add conditional to run changelog update action ([#195](https://github.com/eduNEXT/eox-core/issues/195)) ([1595948](https://github.com/eduNEXT/eox-core/commit/1595948044e895bd26df18605289d06e53e940b0))
+
+
+### Code Refactoring
+
+* remove the Course Management feature ([c0c3b55](https://github.com/eduNEXT/eox-core/commit/c0c3b558382c39d4986b2a5e178ce3f1aef47f8a))
+
 ## [v5.1.1](https://github.com/eduNEXT/eox-core/compare/v5.1.0...v5.1.1) - 2022-01-17
 
 ### [5.1.1](https://github.com/eduNEXT/eox-core/compare/v5.1.0...v5.1.1) (2022-01-17)
