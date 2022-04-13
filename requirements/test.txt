@@ -52,10 +52,27 @@ coreschema==0.0.4
     #   drf-yasg
 coverage==6.3.2
     # via -r requirements/test.in
-cryptography==36.0.1
+cryptography==36.0.2
     # via
     #   -r requirements/base.txt
     #   pyjwt
+    # via
+    #   -c requirements/constraints.txt
+    #   -r requirements/base.txt
+    #   django-crum
+    #   django-filter
+    #   django-model-utils
+    #   django-oauth-toolkit
+    #   djangorestframework
+    #   drf-jwt
+    #   drf-yasg
+    #   edx-api-doc-tools
+    #   edx-django-utils
+    #   edx-drf-extensions
+    #   edx-proctoring
+    #   edx-when
+    #   event-tracking
+    #   jsonfield
 django-countries==7.2.1
     # via
     #   -c requirements/constraints.txt
@@ -96,7 +113,7 @@ django-waffle==2.2.1
     #   edx-django-utils
     #   edx-drf-extensions
     #   edx-proctoring
-django-webpack-loader==1.4.1
+django-webpack-loader==1.5.0
     # via
     #   -r requirements/base.txt
     #   edx-proctoring
@@ -117,7 +134,7 @@ drf-yasg==1.20.0
     # via
     #   -r requirements/base.txt
     #   edx-api-doc-tools
-edx-api-doc-tools==1.5.0
+edx-api-doc-tools==1.5.1
     # via -r requirements/base.txt
 edx-django-utils==4.4.0
     # via
@@ -161,7 +178,7 @@ factory-boy==3.2.0
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/test.in
-faker==13.2.0
+faker==13.3.4
     # via factory-boy
 fs==2.4.15
     # via
@@ -187,7 +204,7 @@ itypes==1.2.0
     # via
     #   -r requirements/base.txt
     #   coreapi
-jinja2==3.0.3
+jinja2==3.1.1
     # via
     #   -r requirements/base.txt
     #   coreschema
@@ -206,7 +223,7 @@ lxml==4.8.0
     # via
     #   -r requirements/base.txt
     #   xblock
-markupsafe==2.1.0
+markupsafe==2.1.1
     # via
     #   -r requirements/base.txt
     #   jinja2
@@ -276,11 +293,11 @@ pymongo==3.12.3
     #   -r requirements/base.txt
     #   edx-opaque-keys
     #   event-tracking
-pyparsing==3.0.7
+pyparsing==3.0.8
     # via
     #   -r requirements/base.txt
     #   packaging
-pytest==7.0.1
+pytest==7.1.1
     # via
     #   -r requirements/test.in
     #   pytest-django
@@ -293,7 +310,7 @@ python-dateutil==2.8.2
     #   edx-proctoring
     #   faker
     #   xblock
-pytz==2021.3
+pytz==2022.1
     # via
     #   -r requirements/base.txt
     #   celery
@@ -324,7 +341,7 @@ ruamel-yaml-clib==0.2.6
     # via
     #   -r requirements/base.txt
     #   ruamel-yaml
-rules==3.1
+rules==3.3
     # via
     #   -r requirements/base.txt
     #   edx-proctoring
@@ -357,7 +374,7 @@ stevedore==3.5.0
     #   -r requirements/base.txt
     #   edx-django-utils
     #   edx-opaque-keys
-testfixtures==6.18.4
+testfixtures==6.18.5
     # via -r requirements/test.in
 toml==0.10.2
     # via pylint
@@ -372,7 +389,7 @@ uritemplate==4.1.1
     #   -r requirements/base.txt
     #   coreapi
     #   drf-yasg
-urllib3==1.26.8
+urllib3==1.26.9
     # via
     #   -r requirements/base.txt
     #   requests

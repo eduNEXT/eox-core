@@ -57,3 +57,6 @@ upgrade: ## update the requirements/*.txt files with the latest packages satisfy
 	$(PIP_COMPILE) -o requirements/test.txt requirements/test.in
 	$(PIP_COMPILE) -o requirements/tox.txt requirements/tox.in
 
+	grep -e "^django==" requirements/test.txt > requirements/django.txt
+	sed '/^[dD]jango==/d;' requirements/test.txt > requirements/test.tmp
+	mv requirements/test.tmp requirements/test.txt
