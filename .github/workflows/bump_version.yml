@@ -9,8 +9,9 @@ jobs:
     outputs:
       version: ${{ steps.tag_version.outputs.new_version }}
       previous_tag: ${{ steps.tag_version.outputs.previous_tag }}
+      bump_commit_sha: ${{ steps.bumpversion.outputs.commit_hash }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           token: ${{ secrets.PAT }}
       - name: Get next version
@@ -31,6 +32,7 @@ jobs:
           pip install bumpversion
           bumpversion --new-version ${{ steps.tag_version.outputs.new_version }} setup.cfg
       - name: Commit bumpversion
+        id: bumpversion
         if: steps.tag_version.outputs.new_version
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
@@ -44,12 +46,15 @@ jobs:
       tag: ${{ steps.tag_version.outputs.new_tag }}
       changelog: ${{ steps.tag_version.outputs.changelog }}
     steps:
-      - uses: actions/checkout@v2
-      - name: Bump version and push tag
+      - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.PAT }}
+      - name: Create tag
         id: tag_version
         uses: mathieudutour/github-tag-action@v6.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          commit_sha: ${{ needs.bumpversion.outputs.bump_commit_sha }}
           default_bump: false
           default_prerelease_bump: false
       - name: Create a GitHub release
