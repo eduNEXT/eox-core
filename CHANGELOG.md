@@ -5,11 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/eduNEXT/eox-core/compare/v6.0.2...HEAD)
+## [Unreleased](https://github.com/eduNEXT/eox-core/compare/v6.1.0...HEAD)
 
 Please do not update the unreleased notes.
 
 <!-- Content should be placed here -->
+## [v6.1.0](https://github.com/eduNEXT/eox-core/compare/v6.0.2...v6.1.0) - 2022-05-25
+
+## [6.1.0](https://github.com/eduNEXT/eox-core/compare/v6.0.2...v6.1.0) (2022-05-25)
+
+### Features
+
+- add more useful functions to certificates backend ([#206](https://github.com/eduNEXT/eox-core/issues/206)) ([e3109d2](https://github.com/eduNEXT/eox-core/commit/e3109d29c7fb68b01931859dd84a70a83c4b4cf6))
+
+### Documentation
+
+- update CHANGELOG ([#203](https://github.com/eduNEXT/eox-core/issues/203)) ([c2d8d37](https://github.com/eduNEXT/eox-core/commit/c2d8d37707fb0b7b83b9efa493abf3e1cc068edc))
+- update issue templates ([bdb93ad](https://github.com/eduNEXT/eox-core/commit/bdb93adb10c11a2ac6bf8f6ae5ca685619bb4a42))
+
 ## [v6.0.2](https://github.com/eduNEXT/eox-core/compare/v6.0.1...v6.0.2) - 2022-04-13
 
 ### [6.0.2](https://github.com/eduNEXT/eox-core/compare/v6.0.1...v6.0.2) (2022-04-13)
