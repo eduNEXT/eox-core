@@ -38,7 +38,7 @@ def plugin_settings(settings):
     settings.DATA_API_DEF_PAGE_SIZE = 1000
     settings.DATA_API_MAX_PAGE_SIZE = 5000
     settings.EOX_CORE_COURSES_BACKEND = "eox_core.edxapp_wrapper.backends.courses_h_v1"
-    settings.EOX_CORE_COURSEKEY_BACKEND = "eox_core.edxapp_wrapper.backends.coursekey_h_v1"
+    settings.EOX_CORE_COURSEKEY_BACKEND = "eox_core.edxapp_wrapper.backends.coursekey_m_v1"
     settings.EOX_CORE_SITE_CONFIGURATION = "eox_core.edxapp_wrapper.backends.site_configuration_h_v1"
     settings.EOX_CORE_COURSE_MANAGEMENT_REQUEST_TIMEOUT = 1000
     settings.EOX_CORE_USER_ENABLE_MULTI_TENANCY = True

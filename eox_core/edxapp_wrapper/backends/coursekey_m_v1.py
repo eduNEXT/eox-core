@@ -1,0 +1,53 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+Backend for the CourseKey validations that works under the open-release/maple.master tag
+"""
+# pylint: disable=import-error, protected-access
+from __future__ import absolute_import, unicode_literals
+
+from django.conf import settings
+from opaque_keys import InvalidKeyError
+from opaque_keys.edx.keys import CourseKey
+from rest_framework.serializers import ValidationError
+
+try:
+    from openedx.core.djangoapps.site_configuration.helpers import get_all_orgs, get_current_site_orgs
+except ImportError:
+    get_all_orgs, get_current_site_orgs = object, object  # pylint: disable=invalid-name
+
+
+def get_valid_course_key(course_id):
+    """
+    Return the CourseKey if the course_id is valid
+    """
+    try:
+        return CourseKey.from_string(course_id)
+    except InvalidKeyError:
+        raise ValidationError(f"Invalid course_id {course_id}") from InvalidKeyError
+
+
+def validate_org(course_id):
+    """
+    Validate the course organization against all possible orgs for the site
+
+    To determine if the Org is valid we must look at 3 things
+    1 Orgs in the current site
+    2 Orgs in other sites
+    3 flag EOX_CORE_USER_ENABLE_MULTI_TENANCY
+    """
+
+    if not settings.EOX_CORE_USER_ENABLE_MULTI_TENANCY:
+        return True
+
+    course_key = get_valid_course_key(course_id)
+    course_org_filter = getattr(settings, "course_org_filter", [])
+    course_org_filter = course_org_filter if isinstance(course_org_filter, list) else [course_org_filter]
+    current_site_orgs = get_current_site_orgs() or course_org_filter or []
+
+    if not current_site_orgs:  # pylint: disable=no-else-return
+        if course_key.org in get_all_orgs():
+            return False
+        return True
+    else:
+        return course_key.org in current_site_orgs
