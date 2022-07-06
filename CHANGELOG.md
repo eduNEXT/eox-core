@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/eduNEXT/eox-core/compare/v6.1.1...HEAD)
 
+### Bug Fixes
+
+- fix import for `_process_courses_list` and `get_courses_accessible_to_user`([bb2b333](https://github.com/eduNEXT/eox-core/commit/bb2b333dee382d481bfc7df983cbc62b18a0731a))
+
 Please do not update the unreleased notes.
 
 <!-- Content should be placed here -->
