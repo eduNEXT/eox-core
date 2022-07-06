@@ -2,7 +2,7 @@
 Backend for contenstore courses.
 """
 try:
-    from contentstore.views.course import (  # pylint: disable=import-error
+    from cms.djangoapps.contentstore.views.course import (  # pylint: disable=import-error
         _process_courses_list,
         get_courses_accessible_to_user,
     )
