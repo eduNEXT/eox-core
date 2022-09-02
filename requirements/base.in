@@ -11,3 +11,7 @@ django-waffle
 edx-api-doc-tools<1.6
 edx-proctoring
 edx-opaque-keys[django]
+openedx-events==0.6.0
+django<3.3
+click<8.0.0
+
