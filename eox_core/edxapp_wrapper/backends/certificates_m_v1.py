@@ -2,15 +2,9 @@
 Backend for certificates app.
 """
 
-try:
-    from lms.djangoapps.certificates.api import \
-        get_certificate_url as _get_certificate_url  # pylint: disable=import-error
-    from lms.djangoapps.certificates.models import GeneratedCertificate  # pylint: disable=import-error
-    from lms.djangoapps.certificates.tasks import generate_certificate  # pylint: disable=import-error
-except ImportError:
-    _get_certificate_url = object  # pylint: disable=invalid-name
-    GeneratedCertificate = object
-    generate_certificate = object  # pylint: disable=invalid-name
+from lms.djangoapps.certificates.api import get_certificate_url as _get_certificate_url  # pylint: disable=import-error
+from lms.djangoapps.certificates.models import GeneratedCertificate  # pylint: disable=import-error
+from lms.djangoapps.certificates.tasks import generate_certificate  # pylint: disable=import-error
 
 
 def get_generated_certificate():
