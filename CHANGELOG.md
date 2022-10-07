@@ -5,11 +5,41 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/eduNEXT/eox-core/compare/v6.1.2...HEAD)
+## [Unreleased](https://github.com/eduNEXT/eox-core/compare/v7.0.0...HEAD)
 
 Please do not update the unreleased notes.
 
 <!-- Content should be placed here -->
+## [v7.0.0](https://github.com/eduNEXT/eox-core/compare/v6.1.2...v7.0.0) - 2022-10-07
+
+### [7.0.0](https://github.com/eduNEXT/eox-core/compare/v6.1.2...v7.0.0) (2022-10-07)
+
+#### ⚠ BREAKING CHANGES
+
+- drop django22 and added python 3.10
+- 
+- feat: make it compatible with nutmeg
+- 
+- perf: update requirements
+- 
+- docs: update readme
+- 
+- feat: drop django22 and added python 3.10
+- 
+- ci: add python publish workflow and drop circleci
+- 
+
+Co-authored-by: Maria Fernanda Magallanes Zubillaga [maria.magallanes@edunext.co](mailto:maria.magallanes@edunext.co)
+Co-authored-by: Juan David Buitrago [juan.buitrago@edunext.co](mailto:juan.buitrago@edunext.co)
+
+#### Performance Improvements
+
+- plugin compatible with nutmeg  ([#216](https://github.com/eduNEXT/eox-core/issues/216)) ([22f60b5](https://github.com/eduNEXT/eox-core/commit/22f60b5b2f4266918c976c9505692ba0a99e57db))
+
+#### Documentation
+
+- update CHANGELOG ([1e20266](https://github.com/eduNEXT/eox-core/commit/1e202662afcb9eca7893f9c36d3a9de3dba831ea))
+
 ## [v6.1.2](https://github.com/eduNEXT/eox-core/compare/v6.1.1...v6.1.2) - 2022-10-04
 
 ### [6.1.2](https://github.com/eduNEXT/eox-core/compare/v6.1.1...v6.1.2) (2022-10-04)
