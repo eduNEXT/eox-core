@@ -42,8 +42,8 @@ python-test: clean ## Run tests
 	$(TOX) coverage report --fail-under=70
 
 python-quality-test:
-	$(TOX) pylint ./eox_core
 	$(TOX) pycodestyle ./eox_core
+	$(TOX) pylint ./eox_core
 	$(TOX) isort --check-only --diff ./eox_core
 
 run-tests: python-test python-quality-test

@@ -11,8 +11,8 @@ jobs:
     strategy:
       max-parallel: 2
       matrix:
-        python-version: ["3.8"]
-        django: ["22","32"]
+        python-version: ["3.8", "3.10"]
+        django: ["32"]
     steps:
       - name: Checkout
         uses: actions/checkout@v2

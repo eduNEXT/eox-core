@@ -1,12 +1,12 @@
+"""
+Setup file for eox_core Django plugin.
+"""
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import os
 import re
 
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
+from setuptools import setup
 
 
 with open("README.rst", "r") as fh:
@@ -22,29 +22,31 @@ def get_version(*file_paths):
         return version_match.group(1)
     raise RuntimeError('Unable to find version string.')
 
-version = get_version("eox_core", "__init__.py")
+VERSION = get_version("eox_core", "__init__.py")
 
 
-def load_requirements(*requirements_path):
+def load_requirements(*requirements_paths):
     """
-    Load all requirements from the specified requirements files
-    Returns a list of requirement strings.
+    Load all requirements from the specified requirements files.
+    Returns:
+        list: Requirements file relative path strings
     """
     requirements = set()
-    for path in requirements_path:
-        with open(path) as reqs:
+    for path in requirements_paths:
+        with open(path, 'r', encoding='utf-8') as requirements_file:
             requirements.update(
-                    line.split('#')[0].strip() for line in reqs
-                    if is_requirement(line.strip())
+                line.split('#')[0].strip() for line in requirements_file.readlines()
+                if is_requirement(line.strip())
             )
-
     return list(requirements)
 
 
 def is_requirement(line):
     """
-    Return True if the requirement line is a package requirement;
-    that is, it is not blank, a comment, a URL, or an included file.
+    Return True if the requirement line is a package requirement.
+    Returns:
+        bool: True if the line is not blank, a comment, a URL, or
+              an included file
     """
     return line and not line.startswith(('-r', '#', '-e', 'git+', '-c'))
 
@@ -52,7 +54,7 @@ def is_requirement(line):
 setup(
     name="eox-core",
     python_requires='>=3.8',
-    version=version,
+    version=VERSION,
     author="eduNEXT",
     author_email="contact@edunext.co",
     url="https://github.com/eduNEXT/eox-core",
@@ -61,14 +63,12 @@ setup(
     long_description_content_type='text/x-rst',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
-        'Framework :: Django :: 2.2',
         'Framework :: Django :: 3.2',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: GNU Affero General Public License v3',
         'Operating System :: OS Independent',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.10',
     ],
     install_requires=load_requirements('requirements/base.in'),
     extras_require={
