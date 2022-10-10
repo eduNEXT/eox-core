@@ -1,0 +1,1470 @@
+{
+	"info": {
+		"_postman_id": "334915fe-b75a-4c5d-b553-2b20972ae8f6",
+		"name": "Eox-core",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Main API",
+			"item": [
+				{
+					"name": "User",
+					"item": [
+						{
+							"name": "Create user",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token}}"
+									}
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n   \"username\": \"{{username}}\",\n   \"email\": \"{{email}}\",\n   \"password\": \"p@ssword\",\n   \"fullname\": \"Edunext test\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{domain}}/eox-core/api/v1/user/"
+							},
+							"response": [
+								{
+									"name": "Create user",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n\t\"username\": \"lhurtado\",\n\t\"email\": \"hurtado@example.com\",\n\t\"password\": \"1234\",\n\t\"fullname\": \"Maga Hurtado\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": "http://lms.nutmeg.edunext.link/eox-core/api/v1/user/"
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Allow",
+											"value": "GET, POST, HEAD, OPTIONS"
+										},
+										{
+											"key": "Content-Language",
+											"value": "en"
+										},
+										{
+											"key": "Content-Length",
+											"value": "109"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Server",
+											"value": "Caddy"
+										},
+										{
+											"key": "Set-Cookie",
+											"value": "openedx-language-preference=\"\"; Domain=lms.nutmeg.edunext.link; expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0; Path=/"
+										},
+										{
+											"key": "Vary",
+											"value": "Accept, Accept-Language, Origin, Cookie"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "SAMEORIGIN"
+										},
+										{
+											"key": "Date",
+											"value": "Fri, 19 Aug 2022 00:04:49 GMT"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"email\": \"hurtado@example.com\",\n    \"username\": \"lhurtado\",\n    \"is_active\": false,\n    \"is_staff\": false,\n    \"is_superuser\": false\n}"
+								}
+							]
+						},
+						{
+							"name": "Get user",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}/eox-core/api/v1/user/?email={{email}}",
+									"host": [
+										"{{domain}}"
+									],
+									"path": [
+										"eox-core",
+										"api",
+										"v1",
+										"user",
+										""
+									],
+									"query": [
+										{
+											"key": "email",
+											"value": "{{email}}"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Get user",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://lms.nutmeg.edunext.link/eox-core/api/v1/user/?email=hurtado@example.com",
+											"protocol": "http",
+											"host": [
+												"lms",
+												"nutmeg",
+												"edunext",
+												"link"
+											],
+											"path": [
+												"eox-core",
+												"api",
+												"v1",
+												"user",
+												""
+											],
+											"query": [
+												{
+													"key": "email",
+													"value": "hurtado@example.com"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Allow",
+											"value": "GET, POST, HEAD, OPTIONS"
+										},
+										{
+											"key": "Content-Language",
+											"value": "en"
+										},
+										{
+											"key": "Content-Length",
+											"value": "1111"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Server",
+											"value": "Caddy"
+										},
+										{
+											"key": "Set-Cookie",
+											"value": "openedx-language-preference=\"\"; Domain=lms.nutmeg.edunext.link; expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0; Path=/"
+										},
+										{
+											"key": "Vary",
+											"value": "Accept, Accept-Language, Origin, Cookie"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "SAMEORIGIN"
+										},
+										{
+											"key": "Date",
+											"value": "Fri, 19 Aug 2022 00:06:51 GMT"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"account_privacy\": \"private\",\n    \"profile_image\": {\n        \"has_image\": false,\n        \"image_url_full\": \"http://lms.nutmeg.edunext.link/static/images/profiles/default_500.4215dbe8010f.png\",\n        \"image_url_large\": \"http://lms.nutmeg.edunext.link/static/images/profiles/default_120.4a5e0900098e.png\",\n        \"image_url_medium\": \"http://lms.nutmeg.edunext.link/static/images/profiles/default_50.3455a6581573.png\",\n        \"image_url_small\": \"http://lms.nutmeg.edunext.link/static/images/profiles/default_30.deee7287e843.png\"\n    },\n    \"username\": \"lhurtado\",\n    \"bio\": null,\n    \"course_certificates\": null,\n    \"country\": null,\n    \"date_joined\": \"2022-08-19T00:04:49Z\",\n    \"language_proficiencies\": [],\n    \"level_of_education\": null,\n    \"social_links\": [],\n    \"time_zone\": null,\n    \"accomplishments_shared\": false,\n    \"name\": \"Maga Hurtado\",\n    \"email\": \"hurtado@example.com\",\n    \"id\": 9,\n    \"verified_name\": null,\n    \"extended_profile\": [],\n    \"gender\": null,\n    \"state\": null,\n    \"goals\": \"\",\n    \"is_active\": false,\n    \"last_login\": null,\n    \"mailing_address\": \"\",\n    \"requires_parental_consent\": true,\n    \"secondary_email\": null,\n    \"secondary_email_enabled\": null,\n    \"year_of_birth\": null,\n    \"phone_number\": null,\n    \"activation_key\": \"cd47b1814529463e8f94e15f5c94ab7d\",\n    \"pending_name_change\": null\n}"
+								}
+							]
+						},
+						{
+							"name": "Update user",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token}}"
+									}
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n   \"email\": \"{{email}}\",\n   \"password\": \"new-pass\"\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{domain}}/eox-core/api/v1/update-user/"
+							},
+							"response": [
+								{
+									"name": "Update user",
+									"originalRequest": {
+										"method": "PATCH",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n\t\"email\": \"hurtado@example.com\",\n\t\"password\": \"new-pass\"\n}\n",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{domain}}/eox-core/api/v1/update-user/"
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Allow",
+											"value": "PATCH, OPTIONS"
+										},
+										{
+											"key": "Content-Language",
+											"value": "en"
+										},
+										{
+											"key": "Content-Length",
+											"value": "1111"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Server",
+											"value": "Caddy"
+										},
+										{
+											"key": "Set-Cookie",
+											"value": "openedx-language-preference=\"\"; Domain=lms.nutmeg.edunext.link; expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0; Path=/"
+										},
+										{
+											"key": "Vary",
+											"value": "Accept, Accept-Language, Origin, Cookie"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "SAMEORIGIN"
+										},
+										{
+											"key": "Date",
+											"value": "Fri, 19 Aug 2022 07:13:47 GMT"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"account_privacy\": \"private\",\n    \"profile_image\": {\n        \"has_image\": false,\n        \"image_url_full\": \"http://lms.nutmeg.edunext.link/static/images/profiles/default_500.4215dbe8010f.png\",\n        \"image_url_large\": \"http://lms.nutmeg.edunext.link/static/images/profiles/default_120.4a5e0900098e.png\",\n        \"image_url_medium\": \"http://lms.nutmeg.edunext.link/static/images/profiles/default_50.3455a6581573.png\",\n        \"image_url_small\": \"http://lms.nutmeg.edunext.link/static/images/profiles/default_30.deee7287e843.png\"\n    },\n    \"username\": \"lhurtado\",\n    \"bio\": null,\n    \"course_certificates\": null,\n    \"country\": null,\n    \"date_joined\": \"2022-08-19T00:04:49Z\",\n    \"language_proficiencies\": [],\n    \"level_of_education\": null,\n    \"social_links\": [],\n    \"time_zone\": null,\n    \"accomplishments_shared\": false,\n    \"name\": \"Maga Hurtado\",\n    \"email\": \"hurtado@example.com\",\n    \"id\": 9,\n    \"verified_name\": null,\n    \"extended_profile\": [],\n    \"gender\": null,\n    \"state\": null,\n    \"goals\": \"\",\n    \"is_active\": false,\n    \"last_login\": null,\n    \"mailing_address\": \"\",\n    \"requires_parental_consent\": true,\n    \"secondary_email\": null,\n    \"secondary_email_enabled\": null,\n    \"year_of_birth\": null,\n    \"phone_number\": null,\n    \"activation_key\": \"cd47b1814529463e8f94e15f5c94ab7d\",\n    \"pending_name_change\": null\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Enrollment",
+					"item": [
+						{
+							"name": "Create enrollment",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token}}"
+									}
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n \"username\": \"{{username}}\",\n \"is_active\": true,\n \"mode\": \"audit\",\n \"enrollment_attributes\": [],\n \"course_id\": \"{{course_id}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{domain}}/eox-core/api/v1/enrollment/"
+							},
+							"response": [
+								{
+									"name": "Create enrollment",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n \"username\": \"lhurtado\",\n \"is_active\": true,\n \"mode\": \"audit\",\n \"enrollment_attributes\": [],\n \"course_id\": \"course-v1:edX+DemoX+Demo_Course\"\n}\n",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{domain}}/eox-core/api/v1/enrollment/"
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Allow",
+											"value": "GET, POST, PUT, DELETE, HEAD, OPTIONS"
+										},
+										{
+											"key": "Content-Language",
+											"value": "en"
+										},
+										{
+											"key": "Content-Length",
+											"value": "168"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Server",
+											"value": "Caddy"
+										},
+										{
+											"key": "Set-Cookie",
+											"value": "openedx-language-preference=\"\"; Domain=lms.nutmeg.edunext.link; expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0; Path=/"
+										},
+										{
+											"key": "Vary",
+											"value": "Accept, Accept-Language, Origin, Cookie"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "SAMEORIGIN"
+										},
+										{
+											"key": "Date",
+											"value": "Fri, 19 Aug 2022 07:24:07 GMT"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"username\": \"lhurtado\",\n    \"is_active\": true,\n    \"mode\": \"audit\",\n    \"enrollment_attributes\": [],\n    \"course_id\": \"course-v1:edX+DemoX+Demo_Course\",\n    \"created\": \"2022-08-19T07:24:07.308523Z\"\n}"
+								}
+							]
+						},
+						{
+							"name": "Get enrollment",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\"email\":\"{{email}}\",\n\"course_id\":\"{{course_id}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{domain}}/eox-core/api/v1/enrollment/"
+							},
+							"response": [
+								{
+									"name": "Get enrollment",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{domain}}/eox-core/api/v1/enrollment/",
+											"host": [
+												"{{domain}}"
+											],
+											"path": [
+												"eox-core",
+												"api",
+												"v1",
+												"enrollment",
+												""
+											],
+											"query": [
+												{
+													"key": "email",
+													"value": "hurtado@example.com",
+													"disabled": true
+												},
+												{
+													"key": "course_id",
+													"value": "course-v1:edX+DemoX+Demo_Course",
+													"disabled": true
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Allow",
+											"value": "GET, POST, PUT, DELETE, HEAD, OPTIONS"
+										},
+										{
+											"key": "Content-Language",
+											"value": "en"
+										},
+										{
+											"key": "Content-Length",
+											"value": "168"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Server",
+											"value": "Caddy"
+										},
+										{
+											"key": "Set-Cookie",
+											"value": "openedx-language-preference=\"\"; Domain=lms.nutmeg.edunext.link; expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0; Path=/"
+										},
+										{
+											"key": "Vary",
+											"value": "Accept, Accept-Language, Origin, Cookie"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "SAMEORIGIN"
+										},
+										{
+											"key": "Date",
+											"value": "Fri, 19 Aug 2022 07:32:35 GMT"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"username\": \"lhurtado\",\n    \"is_active\": true,\n    \"mode\": \"audit\",\n    \"enrollment_attributes\": [],\n    \"course_id\": \"course-v1:edX+DemoX+Demo_Course\",\n    \"created\": \"2022-08-19T07:24:07.308523Z\"\n}"
+								}
+							]
+						},
+						{
+							"name": "Update enrollment",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token}}"
+									}
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n \"username\": \"{{username}}\",\n \"is_active\": false,\n \"mode\": \"audit\",\n \"course_id\": \"{{course_id}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{domain}}/eox-core/api/v1/enrollment/"
+							},
+							"response": [
+								{
+									"name": "Update enrollment",
+									"originalRequest": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n \"username\": \"lhurtado\",\n \"is_active\": false,\n \"mode\": \"audit\",\n \"course_id\": \"course-v1:edX+DemoX+Demo_Course\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{domain}}/eox-core/api/v1/enrollment/"
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Allow",
+											"value": "GET, POST, PUT, DELETE, HEAD, OPTIONS"
+										},
+										{
+											"key": "Content-Language",
+											"value": "en"
+										},
+										{
+											"key": "Content-Length",
+											"value": "127"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Server",
+											"value": "Caddy"
+										},
+										{
+											"key": "Set-Cookie",
+											"value": "openedx-language-preference=\"\"; Domain=lms.nutmeg.edunext.link; expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0; Path=/"
+										},
+										{
+											"key": "Vary",
+											"value": "Accept, Accept-Language, Origin, Cookie"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "SAMEORIGIN"
+										},
+										{
+											"key": "Date",
+											"value": "Fri, 19 Aug 2022 07:36:52 GMT"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"user\": \"lhurtado\",\n    \"course_id\": \"course-v1:edX+DemoX+Demo_Course\",\n    \"mode\": \"audit\",\n    \"is_active\": false,\n    \"enrollment_attributes\": null\n}"
+								}
+							]
+						},
+						{
+							"name": "Delete enrollment",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token}}"
+									}
+								},
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\"email\": \"{{email}}\",\n\"course_id\": \"{{course_id}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{domain}}/eox-core/api/v1/enrollment/"
+							},
+							"response": [
+								{
+									"name": "Delete enrollment",
+									"originalRequest": {
+										"method": "DELETE",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n \"email\": \"hurtado@example.com\",\n \"course_id\": \"course-v1:edX+DemoX+Demo_Course\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{domain}}/eox-core/api/v1/enrollment/"
+									},
+									"status": "No Content",
+									"code": 204,
+									"_postman_previewlanguage": "plain",
+									"header": [
+										{
+											"key": "Allow",
+											"value": "GET, POST, PUT, DELETE, HEAD, OPTIONS"
+										},
+										{
+											"key": "Content-Language",
+											"value": "en"
+										},
+										{
+											"key": "Server",
+											"value": "Caddy"
+										},
+										{
+											"key": "Set-Cookie",
+											"value": "openedx-language-preference=\"\"; Domain=lms.nutmeg.edunext.link; expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0; Path=/"
+										},
+										{
+											"key": "Vary",
+											"value": "Accept, Accept-Language, Origin, Cookie"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "SAMEORIGIN"
+										},
+										{
+											"key": "Date",
+											"value": "Fri, 19 Aug 2022 07:38:49 GMT"
+										}
+									],
+									"cookie": [],
+									"body": ""
+								}
+							]
+						},
+						{
+							"name": "Create enrollment to test grade",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token}}"
+									}
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n \"username\": \"{{username}}\",\n \"is_active\": true,\n \"mode\": \"audit\",\n \"enrollment_attributes\": [],\n \"course_id\": \"{{course_id}}\"\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{domain}}/eox-core/api/v1/enrollment/"
+							},
+							"response": [
+								{
+									"name": "Create enrollment",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n \"username\": \"lhurtado\",\n \"is_active\": true,\n \"mode\": \"audit\",\n \"enrollment_attributes\": [],\n \"course_id\": \"course-v1:edX+DemoX+Demo_Course\"\n}\n",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{domain}}/eox-core/api/v1/enrollment/"
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Allow",
+											"value": "GET, POST, PUT, DELETE, HEAD, OPTIONS"
+										},
+										{
+											"key": "Content-Language",
+											"value": "en"
+										},
+										{
+											"key": "Content-Length",
+											"value": "168"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Server",
+											"value": "Caddy"
+										},
+										{
+											"key": "Set-Cookie",
+											"value": "openedx-language-preference=\"\"; Domain=lms.nutmeg.edunext.link; expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0; Path=/"
+										},
+										{
+											"key": "Vary",
+											"value": "Accept, Accept-Language, Origin, Cookie"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "SAMEORIGIN"
+										},
+										{
+											"key": "Date",
+											"value": "Fri, 19 Aug 2022 07:24:07 GMT"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"username\": \"lhurtado\",\n    \"is_active\": true,\n    \"mode\": \"audit\",\n    \"enrollment_attributes\": [],\n    \"course_id\": \"course-v1:edX+DemoX+Demo_Course\",\n    \"created\": \"2022-08-19T07:24:07.308523Z\"\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Pre enrollment",
+					"item": [
+						{
+							"name": "Create whitelistings",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token}}"
+									}
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n \"email\": \"newtest@example.com\",\n \"auto_enroll\": false,\n \"course_id\": \"{{course_id}}\"\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{domain}}/eox-core/api/v1/pre-enrollment/"
+							},
+							"response": [
+								{
+									"name": "Create whitelistings",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n \"email\": \"vasili@example.com\",\n \"auto_enroll\": false,\n \"course_id\": \"course-v1:edX+DemoX+Demo_Course\"\n}\n",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{domain}}/eox-core/api/v1/pre-enrollment/"
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Date",
+											"value": "Wed, 31 Aug 2022 21:47:10 GMT"
+										},
+										{
+											"key": "Server",
+											"value": "WSGIServer/0.2 CPython/3.8.12"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Vary",
+											"value": "Accept, Accept-Language, Origin, Cookie"
+										},
+										{
+											"key": "Allow",
+											"value": "GET, POST, PUT, DELETE, HEAD, OPTIONS"
+										},
+										{
+											"key": "Server-Timing",
+											"value": "TimerPanel_utime;dur=490.7049999999913;desc=\"User CPU time\", TimerPanel_stime;dur=96.95400000001086;desc=\"System CPU time\", TimerPanel_total;dur=587.6590000000022;desc=\"Total CPU time\", TimerPanel_total_time;dur=517.4455642700195;desc=\"Elapsed time\", SQLPanel_sql_time;dur=3.9527416229248047;desc=\"SQL 5 queries\""
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "SAMEORIGIN"
+										},
+										{
+											"key": "Content-Language",
+											"value": "en"
+										},
+										{
+											"key": "Content-Length",
+											"value": "96"
+										},
+										{
+											"key": "Set-Cookie",
+											"value": "openedx-language-preference=en; Domain=lms.nutmeg.edunext.link; expires=Wed, 14 Sep 2022 21:47:10 GMT; Max-Age=1209600; Path=/; SameSite=Lax"
+										},
+										{
+											"key": "Set-Cookie",
+											"value": "lms_sessionid=1|k8yk7z9y90cvi8an6crjatjlmfhrfceo|8mDezdWB2v8b|ImFmZWUzZWQ1YTU5MmI1MTZlNjc1NmNmY2NjNjJiODY0YTg1ZTg0M2Y1ZWYzOGYyNTViMWEyNzFjMzI0ZjE0OTki:1oTVYE:Ax6ARggDZd9ufjMkA00xnAAj9es; Domain=lms.nutmeg.edunext.link; expires=Wed, 14 Sep 2022 21:47:10 GMT; HttpOnly; Max-Age=1209600; Path=/; SameSite=Lax"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"course_id\": \"course-v1:edX+DemoX+Demo_Course\",\n    \"auto_enroll\": false,\n    \"email\": \"vasili@example.com\"\n}"
+								}
+							]
+						},
+						{
+							"name": "Get regular pre-enrollment",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n   \"email\": \"newtest@example.com\",\n   \"course_id\": \"{{course_id}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{domain}}/eox-core/api/v1/pre-enrollment/"
+							},
+							"response": [
+								{
+									"name": "Get regular pre-enrollment",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": "{{domain}}/eox-core/api/v1/pre-enrollment/"
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Date",
+											"value": "Wed, 31 Aug 2022 21:47:23 GMT"
+										},
+										{
+											"key": "Server",
+											"value": "WSGIServer/0.2 CPython/3.8.12"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Vary",
+											"value": "Accept, Accept-Language, Origin, Cookie"
+										},
+										{
+											"key": "Allow",
+											"value": "GET, POST, PUT, DELETE, HEAD, OPTIONS"
+										},
+										{
+											"key": "Server-Timing",
+											"value": "TimerPanel_utime;dur=86.1590000000092;desc=\"User CPU time\", TimerPanel_stime;dur=10.894000000007509;desc=\"System CPU time\", TimerPanel_total;dur=97.05300000001671;desc=\"Total CPU time\", TimerPanel_total_time;dur=99.52259063720703;desc=\"Elapsed time\", SQLPanel_sql_time;dur=1.6481876373291016;desc=\"SQL 2 queries\""
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "SAMEORIGIN"
+										},
+										{
+											"key": "Content-Language",
+											"value": "en"
+										},
+										{
+											"key": "Content-Length",
+											"value": "96"
+										},
+										{
+											"key": "Set-Cookie",
+											"value": "openedx-language-preference=en; Domain=lms.nutmeg.edunext.link; expires=Wed, 14 Sep 2022 21:47:23 GMT; Max-Age=1209600; Path=/; SameSite=Lax"
+										},
+										{
+											"key": "Set-Cookie",
+											"value": "lms_sessionid=1|k8yk7z9y90cvi8an6crjatjlmfhrfceo|b1R4NACXdjZu|ImFmZWUzZWQ1YTU5MmI1MTZlNjc1NmNmY2NjNjJiODY0YTg1ZTg0M2Y1ZWYzOGYyNTViMWEyNzFjMzI0ZjE0OTki:1oTVYR:F91keYxuuOvfV9X8PCUipJ7qOPE; Domain=lms.nutmeg.edunext.link; expires=Wed, 14 Sep 2022 21:47:23 GMT; HttpOnly; Max-Age=1209600; Path=/; SameSite=Lax"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"course_id\": \"course-v1:edX+DemoX+Demo_Course\",\n    \"auto_enroll\": false,\n    \"email\": \"vasili@example.com\"\n}"
+								}
+							]
+						},
+						{
+							"name": "Update whitelistings",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token}}"
+									}
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": " {\n \"email\": \"newtest@example.com\",\n \"auto_enroll\": true,\n \"course_id\": \"{{course_id}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{domain}}/eox-core/api/v1/pre-enrollment/",
+								"description": "Update “auto_enroll” attribute"
+							},
+							"response": [
+								{
+									"name": "Auto_enrroll true",
+									"originalRequest": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": " {\n \"email\": \"vasili@example.com\",\n \"auto_enroll\": true,\n \"course_id\": \"course-v1:edX+DemoX+Demo_Course\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{domain}}/eox-core/api/v1/pre-enrollment/"
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Date",
+											"value": "Wed, 31 Aug 2022 21:47:33 GMT"
+										},
+										{
+											"key": "Server",
+											"value": "WSGIServer/0.2 CPython/3.8.12"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Vary",
+											"value": "Accept, Accept-Language, Origin, Cookie"
+										},
+										{
+											"key": "Allow",
+											"value": "GET, POST, PUT, DELETE, HEAD, OPTIONS"
+										},
+										{
+											"key": "Server-Timing",
+											"value": "TimerPanel_utime;dur=121.15800000003674;desc=\"User CPU time\", TimerPanel_stime;dur=9.584000000018023;desc=\"System CPU time\", TimerPanel_total;dur=130.74200000005476;desc=\"Total CPU time\", TimerPanel_total_time;dur=166.0747528076172;desc=\"Elapsed time\", SQLPanel_sql_time;dur=2.5169849395751953;desc=\"SQL 3 queries\""
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "SAMEORIGIN"
+										},
+										{
+											"key": "Content-Language",
+											"value": "en"
+										},
+										{
+											"key": "Content-Length",
+											"value": "95"
+										},
+										{
+											"key": "Set-Cookie",
+											"value": "openedx-language-preference=en; Domain=lms.nutmeg.edunext.link; expires=Wed, 14 Sep 2022 21:47:33 GMT; Max-Age=1209600; Path=/; SameSite=Lax"
+										},
+										{
+											"key": "Set-Cookie",
+											"value": "lms_sessionid=1|k8yk7z9y90cvi8an6crjatjlmfhrfceo|3yguvvzfiwy8|ImFmZWUzZWQ1YTU5MmI1MTZlNjc1NmNmY2NjNjJiODY0YTg1ZTg0M2Y1ZWYzOGYyNTViMWEyNzFjMzI0ZjE0OTki:1oTVYb:MXqN117gxQzek2eY9Yy6vPwV5BQ; Domain=lms.nutmeg.edunext.link; expires=Wed, 14 Sep 2022 21:47:33 GMT; HttpOnly; Max-Age=1209600; Path=/; SameSite=Lax"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"course_id\": \"course-v1:edX+DemoX+Demo_Course\",\n    \"auto_enroll\": true,\n    \"email\": \"vasili@example.com\"\n}"
+								}
+							]
+						},
+						{
+							"name": "Delete pre-enrollment",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token}}"
+									}
+								},
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n \"email\": \"newtest@example.com\",\n \"course_id\": \"{{course_id}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{domain}}/eox-core/api/v1/pre-enrollment/"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Grade",
+					"item": [
+						{
+							"name": "Grade information",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\"email\": \"{{email}}\",\n\"course_id\": \"{{course_id}}\",\n\"detailed\": \"true\",\n\"grading_policy\": \"true\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{domain}}/eox-core/api/v1/grade/"
+							},
+							"response": [
+								{
+									"name": "Grade information",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": "{{domain}}/eox-core/api/v1/grade/"
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Date",
+											"value": "Wed, 31 Aug 2022 21:40:58 GMT"
+										},
+										{
+											"key": "Server",
+											"value": "WSGIServer/0.2 CPython/3.8.12"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Vary",
+											"value": "Accept, Accept-Language, Origin, Cookie"
+										},
+										{
+											"key": "Allow",
+											"value": "GET, HEAD, OPTIONS"
+										},
+										{
+											"key": "Server-Timing",
+											"value": "TimerPanel_utime;dur=1126.4250000000402;desc=\"User CPU time\", TimerPanel_stime;dur=142.9080000000056;desc=\"System CPU time\", TimerPanel_total;dur=1269.3330000000458;desc=\"Total CPU time\", TimerPanel_total_time;dur=1241.0154342651367;desc=\"Elapsed time\", SQLPanel_sql_time;dur=25.945663452148438;desc=\"SQL 27 queries\""
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "SAMEORIGIN"
+										},
+										{
+											"key": "Content-Language",
+											"value": "en"
+										},
+										{
+											"key": "Content-Length",
+											"value": "659"
+										},
+										{
+											"key": "Set-Cookie",
+											"value": "openedx-language-preference=en; Domain=lms.nutmeg.edunext.link; expires=Wed, 14 Sep 2022 21:40:58 GMT; Max-Age=1209600; Path=/; SameSite=Lax"
+										},
+										{
+											"key": "Set-Cookie",
+											"value": "lms_sessionid=1|k8yk7z9y90cvi8an6crjatjlmfhrfceo|gaoQdAbmhcQD|ImFmZWUzZWQ1YTU5MmI1MTZlNjc1NmNmY2NjNjJiODY0YTg1ZTg0M2Y1ZWYzOGYyNTViMWEyNzFjMzI0ZjE0OTki:1oTVSE:MlxVT4WSQVTqMkLq4Q8QP4De-U0; Domain=lms.nutmeg.edunext.link; expires=Wed, 14 Sep 2022 21:40:58 GMT; HttpOnly; Max-Age=1209600; Path=/; SameSite=Lax"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"earned_grade\": 0,\n    \"grading_policy\": {\n        \"grader\": [\n            {\n                \"assignment_type\": \"Homework\",\n                \"count\": 3,\n                \"dropped\": 1,\n                \"weight\": 0.75\n            },\n            {\n                \"assignment_type\": \"Exam\",\n                \"count\": 1,\n                \"dropped\": 0,\n                \"weight\": 0.25\n            }\n        ],\n        \"grade_cutoffs\": {\n            \"Pass\": 0.6\n        }\n    },\n    \"section_breakdown\": [\n        {\n            \"attempted\": false,\n            \"assignment_type\": \"Homework\",\n            \"percent\": 0,\n            \"score_earned\": 0,\n            \"score_possible\": 0,\n            \"subsection_name\": \"Homework - Question Styles\"\n        },\n        {\n            \"attempted\": false,\n            \"assignment_type\": \"Homework\",\n            \"percent\": 0,\n            \"score_earned\": 0,\n            \"score_possible\": 0,\n            \"subsection_name\": \"Homework - Labs and Demos\"\n        },\n        {\n            \"attempted\": false,\n            \"assignment_type\": \"Exam\",\n            \"percent\": 0,\n            \"score_earned\": 0,\n            \"score_possible\": 0,\n            \"subsection_name\": \"edX Exams\"\n        }\n    ]\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "User info",
+					"item": [
+						{
+							"name": "Get user related to the authorization token",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"url": "{{domain}}/eox-core/api/v1/userinfo"
+							},
+							"response": [
+								{
+									"name": "Get user related to the authorization token",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": "{{domain}}/eox-core/api/v1/userinfo"
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Date",
+											"value": "Wed, 31 Aug 2022 21:48:39 GMT"
+										},
+										{
+											"key": "Server",
+											"value": "WSGIServer/0.2 CPython/3.8.12"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Vary",
+											"value": "Accept, Accept-Language, Origin, Cookie"
+										},
+										{
+											"key": "Allow",
+											"value": "GET, HEAD, OPTIONS"
+										},
+										{
+											"key": "Server-Timing",
+											"value": "TimerPanel_utime;dur=99.78300000000218;desc=\"User CPU time\", TimerPanel_stime;dur=20.617999999984704;desc=\"System CPU time\", TimerPanel_total;dur=120.40099999998688;desc=\"Total CPU time\", TimerPanel_total_time;dur=101.16338729858398;desc=\"Elapsed time\", SQLPanel_sql_time;dur=0.8344650268554688;desc=\"SQL 1 queries\""
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "SAMEORIGIN"
+										},
+										{
+											"key": "Content-Language",
+											"value": "en"
+										},
+										{
+											"key": "Content-Length",
+											"value": "111"
+										},
+										{
+											"key": "Set-Cookie",
+											"value": "openedx-language-preference=en; Domain=lms.nutmeg.edunext.link; expires=Wed, 14 Sep 2022 21:48:39 GMT; Max-Age=1209600; Path=/; SameSite=Lax"
+										},
+										{
+											"key": "Set-Cookie",
+											"value": "lms_sessionid=1|k8yk7z9y90cvi8an6crjatjlmfhrfceo|QBCd7vpnoqFB|ImFmZWUzZWQ1YTU5MmI1MTZlNjc1NmNmY2NjNjJiODY0YTg1ZTg0M2Y1ZWYzOGYyNTViMWEyNzFjMzI0ZjE0OTki:1oTVZf:jYehO88JCVQp2V3M4DxAzLrWsKo; Domain=lms.nutmeg.edunext.link; expires=Wed, 14 Sep 2022 21:48:39 GMT; HttpOnly; Max-Age=1209600; Path=/; SameSite=Lax"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"user\": \"eox_core_user\",\n    \"email\": \"\",\n    \"auth\": \"k94jkiM24QuwivUjsywxbJUqa1anKs\",\n    \"is_superuser\": true,\n    \"is_staff\": true\n}"
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Task dispatcher API",
+			"item": [
+				{
+					"name": "Dispatch a task",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"pm.environment.set(\"task_id\", jsonData.task_id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"task_path\": \"{{task_path}}\",\n   \"task_parameters\": {\n       \"message\": \"Don't lose your grip on the dreams of the past, you must fight just to keep them alive\"\n   }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{domain}}/eox-core/tasks-api/v1/tasks/"
+					},
+					"response": []
+				},
+				{
+					"name": "Get task",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{domain}}/eox-core/tasks-api/v1/tasks/?id={{task_id}}",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"eox-core",
+								"tasks-api",
+								"v1",
+								"tasks",
+								""
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "{{task_id}}"
+								}
+							]
+						},
+						"description": "Necesitas ser super usuario"
+					},
+					"response": []
+				},
+				{
+					"name": "Check the status",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{domain}}/eox-core/tasks-api/v1/tasks/?id=4ed69ed1-97f2-47eb-bf45-6f5bf01963b4",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"eox-core",
+								"tasks-api",
+								"v1",
+								"tasks",
+								""
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "4ed69ed1-97f2-47eb-bf45-6f5bf01963b4"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Support API",
+			"item": [
+				{
+					"name": "Update username",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"new_username\": \"supercool-username\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{domain}}/eox-core/support-api/v1/user/replace-username/?username={{username}}",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"eox-core",
+								"support-api",
+								"v1",
+								"user",
+								"replace-username",
+								""
+							],
+							"query": [
+								{
+									"key": "username",
+									"value": "{{username}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{domain}}/eox-core/support-api/v1/user/?username=supercool-username",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"eox-core",
+								"support-api",
+								"v1",
+								"user",
+								""
+							],
+							"query": [
+								{
+									"key": "username",
+									"value": "supercool-username"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Authorization",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"pm.environment.set(\"token\", jsonData.access_token);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "client_id",
+							"value": "{{client_id}}",
+							"type": "text"
+						},
+						{
+							"key": "client_secret",
+							"value": "{{client_secret}}",
+							"type": "text"
+						},
+						{
+							"key": "grant_type",
+							"value": "{{grant_type}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": "{{domain}}/oauth2/access_token"
+			},
+			"response": []
+		}
+	]
+}
