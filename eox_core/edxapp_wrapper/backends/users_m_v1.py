@@ -3,6 +3,7 @@
 """
 Backend for the create_edxapp_user that works under the open-release/lilac.master tag
 """
+from crum import get_current_user
 import logging
 
 from common.djangoapps.student.helpers import (  # pylint: disable=import-error,no-name-in-module
@@ -73,6 +74,37 @@ def check_edxapp_account_conflicts(email, username):
     return conflicts
 
 
+def is_allowed_to_skip_extra_registration_fields(account_creation_data):
+    """
+    Returns True if the conditions are met to skip sending the extra
+    registrations fields durint the account creation.
+
+    Three conditions are checked in order to be able to skip
+    these registration fields:
+    1. The skip_extra_registration_fields field is sent in the data
+        for the account creation as True.
+    2. The user making the request is staff.
+    3. The data received in the parameters does not contain any of the
+        REGISTRATION_EXTRA_FIELDS configured for the microsite.
+
+    In case any of these conditions is not met then the function returns
+    False.
+    """
+    skip_extra_registration_fields = account_creation_data.pop("skip_extra_registration_fields", False)
+    current_user = get_current_user()
+    extra_fields = getattr(settings, "REGISTRATION_EXTRA_FIELDS", {})
+    extended_profile_fields = getattr(settings, "extended_profile_fields", [])
+
+    if not (skip_extra_registration_fields and current_user.is_staff):
+        return False
+
+    for field in account_creation_data.keys():
+        if field in extra_fields.keys() or field in extended_profile_fields:
+            return False
+
+    return True
+
+
 class EdnxAccountCreationForm(AccountCreationForm):
     """
     A form to extend the behaviour of the AccountCreationForm.
@@ -122,8 +154,6 @@ def create_edxapp_user(*args, **kwargs):
     """
     errors = []
 
-    extra_fields = getattr(settings, "REGISTRATION_EXTRA_FIELDS", {})
-    extended_profile_fields = getattr(settings, "extended_profile_fields", [])
     kwargs["name"] = kwargs.pop("fullname", None)
     email = kwargs.get("email")
     username = kwargs.get("username")
@@ -131,19 +161,24 @@ def create_edxapp_user(*args, **kwargs):
     if conflicts:
         return None, [f"Fatal: account collition with the provided: {', '.join(conflicts)}"]
 
+    account_creation_form_data = {
+        "data":kwargs,
+        "tos_required": False,
+        # enforce_password_policy=enforce_password_policy, 
+    }
+
+    # Check if we should send the extra registration fields
+    if not is_allowed_to_skip_extra_registration_fields(kwargs):
+        account_creation_form_data["extra_fields"] = getattr(settings, "REGISTRATION_EXTRA_FIELDS", {})
+        account_creation_form_data["extended_profile_fields"] = getattr(settings, "extended_profile_fields", [])
+
     # Go ahead and create the new user
     with transaction.atomic():
         # In theory is possible to extend the registration form with a custom app
         # An example form app for this can be found at http://github.com/open-craft/custom-form-app
         # form = get_registration_extension_form(data=params)
         # if not form:
-        form = EdnxAccountCreationForm(
-            data=kwargs,
-            tos_required=False,
-            extra_fields=extra_fields,
-            extended_profile_fields=extended_profile_fields,
-            # enforce_password_policy=enforce_password_policy,
-        )
+        form = EdnxAccountCreationForm(**account_creation_form_data)
         (user, profile, registration) = do_create_account(form)  # pylint: disable=unused-variable
 
     site = kwargs.pop("site", False)
