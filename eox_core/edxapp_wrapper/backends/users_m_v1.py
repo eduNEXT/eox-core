@@ -162,9 +162,9 @@ def create_edxapp_user(*args, **kwargs):
         return None, [f"Fatal: account collition with the provided: {', '.join(conflicts)}"]
 
     account_creation_form_data = {
-        "data":kwargs,
+        "data": kwargs,
         "tos_required": False,
-        # enforce_password_policy=enforce_password_policy, 
+        # "enforce_password_policy": enforce_password_policy,
     }
 
     # Check if we should send the extra registration fields
