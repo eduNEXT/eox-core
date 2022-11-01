@@ -7,20 +7,32 @@ from __future__ import absolute_import, unicode_literals
 import logging
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Permission
 from django.contrib.sites.shortcuts import get_current_site
 from django.db import transaction
+from oauth2_provider.models import Application
+from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
+from rest_framework.exceptions import NotFound
 from rest_framework.renderers import BrowsableAPIRenderer, JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from eox_core.api.support.v1.permissions import EoxCoreSupportAPIPermission
-from eox_core.api.support.v1.serializers import WrittableEdxappRemoveUserSerializer, WrittableEdxappUsernameSerializer
+from eox_core.api.support.v1.serializers import (
+    OauthApplicationSerializer,
+    WrittableEdxappRemoveUserSerializer,
+    WrittableEdxappUsernameSerializer,
+)
 from eox_core.api.v1.serializers import EdxappUserReadOnlySerializer
 from eox_core.api.v1.views import UserQueryMixin
 from eox_core.edxapp_wrapper.bearer_authentication import BearerAuthentication
 from eox_core.edxapp_wrapper.comments_service_users import replace_username_cs_user
-from eox_core.edxapp_wrapper.users import delete_edxapp_user, get_edxapp_user
+from eox_core.edxapp_wrapper.users import create_edxapp_user, delete_edxapp_user, get_edxapp_user
+from eox_core.utils import get_or_create_site_from_oauth_app_uris
+
+User = get_user_model()
 
 try:
     from eox_audit_model.decorators import audit_drf_api
@@ -70,7 +82,7 @@ class EdxappUser(UserQueryMixin, APIView):
         data["site"] = get_current_site(request)
         data["user"] = get_edxapp_user(**query)
 
-        message, status = delete_edxapp_user(**data)
+        message, status = delete_edxapp_user(**data)  # pylint: disable=redefined-outer-name
 
         return Response(message, status=status)
 
@@ -127,3 +139,98 @@ class EdxappReplaceUsername(UserQueryMixin, APIView):
             user, custom_fields=admin_fields, context={"request": request}
         )
         return Response(serialized_user.data)
+
+
+class OauthApplicationAPIView(UserQueryMixin, APIView):
+    """
+    Handles requests related to the
+    django_oauth_toolkit Application object.
+    """
+
+    authentication_classes = (BearerAuthentication, SessionAuthentication)
+    permission_classes = (EoxCoreSupportAPIPermission,)
+    renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
+
+    @audit_drf_api(action='Generate Oauth Application.', method_name='eox_core_api_method')
+    def post(self, request, *args, **kwargs):  # pylint: disable=too-many-locals
+        """
+        Creates a new Oauth Application from django_oauth_toolkit.
+
+        This endpoint assumes that the URLs sent in the redirect_uris
+        parameter are correct.
+
+        In order to generate a valid application, this endpoint
+        does multiple things:
+        1 - Get or Create an edxapp user which will be the owner
+        of the Application.
+        2 - Grant permissions to the user that were sent in the
+        "permissions" list.
+        3 - Create Application.
+
+        Note: make sure to send the codenames of the permissions
+        you want to grant to the user in the permissions list.
+        Also, send the urls in the redirect_uris separated by
+        simple whitespaces to avoid any errors during the creation.
+
+        For example:
+
+        **Requests**:
+            POST <domain>/eox-core/support-api/v1/oauth-application/
+
+        **Request body**:
+        {
+            "user": {
+                "fullname": "John Doe",
+                "email": "johndoe@example.com",
+                "username": "johndoe",
+                "permissions": ["can_call_eox_core", "can_call_eox_tenant"]
+            },
+            "redirect_uris": "http://testing-site.io/ http://testing-site.io",
+            "client_type":"confidential",
+            "authorization_grant_type":"client-credentials",
+            "name": "test-application",
+            "skip_authorization": true
+        }
+
+        **Response values**:
+            - 200: Success, the Oauth Application has been created.
+            - 400: Bad request, invalid request body format.
+            - 500: The server has failed to get or create the.
+            owner user for the application.
+        """
+        message = "Could not get or create edxapp User"
+
+        serializer = OauthApplicationSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        data = serializer.validated_data
+        user_creation_data = data.pop('user', {})
+        user_permissions = user_creation_data.pop('permissions', [])
+
+        user_creation_data.update({
+            'skip_extra_registration_fields': True,
+            'activate_user': True,
+            'skip_password': True,
+            'site': get_or_create_site_from_oauth_app_uris(data.get('redirect_uris', '')),
+        })
+
+        # Get or create user
+        try:
+            user = get_edxapp_user(**user_creation_data)
+        except (NotFound, User.DoesNotExist):
+            user, message = create_edxapp_user(**user_creation_data)
+
+        if not user:
+            LOG.error(message)
+
+            return Response(message, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        # Grant permissions to user
+        permissions = Permission.objects.filter(codename__in=user_permissions)
+        user.user_permissions.add(*permissions)
+
+        # Create Oauth Application
+        data['user'] = user
+        application, _ = Application.objects.get_or_create(**data)
+
+        return Response(OauthApplicationSerializer(application).data, status=status.HTTP_200_OK)
