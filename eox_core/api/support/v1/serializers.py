@@ -5,9 +5,10 @@ Support API v1 serializers.
 from __future__ import absolute_import, unicode_literals
 
 from django.utils import timezone
+from oauth2_provider.models import Application
 from rest_framework import serializers
 
-from eox_core.api.v1.serializers import MAX_SIGNUP_SOURCES_ALLOWED
+from eox_core.api.v1.serializers import MAX_SIGNUP_SOURCES_ALLOWED, EdxappUserSerializer
 from eox_core.edxapp_wrapper.users import (
     check_edxapp_account_conflicts,
     get_user_signup_source,
@@ -63,3 +64,29 @@ class WrittableEdxappUsernameSerializer(serializers.Serializer):
             instance.save()
 
         return instance
+
+
+class OauthApplicationUserSerializer(serializers.Serializer):
+    """
+    Oauth Application owner serializer.
+    """
+    email = serializers.EmailField()
+    username = serializers.CharField(max_length=USERNAME_MAX_LENGTH)
+    fullname = serializers.CharField(max_length=255, write_only=True)
+    permissions = serializers.ListField(
+        child=serializers.CharField(),
+        allow_null=True,
+        write_only=True,
+    )
+
+
+class OauthApplicationSerializer(serializers.ModelSerializer):
+    """
+    Oauth Application model serializer.
+    """
+    user = OauthApplicationUserSerializer()
+
+    class Meta:
+        model = Application
+        read_only_fields = ('created', 'updated', )
+        fields = '__all__'
