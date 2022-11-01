@@ -4,8 +4,10 @@ Util function definitions.
 """
 import datetime
 import hashlib
+import re
 
 from django.conf import settings
+from django.contrib.sites.models import Site
 from django.core import cache
 from pytz import UTC
 from rest_framework import serializers
@@ -120,3 +122,46 @@ def create_user_profile(user):
     """
     if not hasattr(user, "profile"):
         UserProfile.objects.create(user=user)
+
+
+def get_domain_from_oauth_app_uris(redirect_uris):
+    """
+    Gets the URL without the protocol and the final backslash from the
+    first URL in the Oauth Application redirect_uris.
+
+    Args:
+        redirect_uris: String that contains multiple urls separated
+        by one or more whitespaces.
+
+    Example:
+        redirect_uris: "http://cloud-sandbox.co/ http://cloud-sandbox.co"
+
+        returns "cloud-sandbox.co"
+    """
+    protocol_regex = re.compile(r'https?://(www\.)?')
+    url = redirect_uris.split()[0]
+
+    return protocol_regex.sub('', url).rstrip('/').rsplit(':', 1)[0]
+
+
+def get_or_create_site_from_oauth_app_uris(redirect_uris):
+    """
+    Gets or creates a Django site from the first URL in the Oauth Application
+    redirect_uris sent as argument.
+
+    Args:
+        redirect_uris: String that contains multiple urls separated
+        by one or more whitespaces.
+
+    Example:
+        redirect_uris: "http://cloud-sandbox.co/ http://cloud-sandbox.co"
+
+        returns Django Site instance with its domain equal to "cloud-sandbox.co".
+    """
+    domain = get_domain_from_oauth_app_uris(redirect_uris)
+    sites_qs = Site.objects.filter(domain=domain)
+
+    if sites_qs.exists():
+        return sites_qs.first()
+
+    return Site.objects.create(domain=domain, name=domain)
