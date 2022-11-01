@@ -7,7 +7,7 @@ from __future__ import absolute_import, unicode_literals
 from django.utils import timezone
 from rest_framework import serializers
 
-from eox_core.api.v1.serializers import MAX_SIGNUP_SOURCES_ALLOWED
+from eox_core.api.v1.serializers import MAX_SIGNUP_SOURCES_ALLOWED, EdxappUserSerializer
 from eox_core.edxapp_wrapper.users import (
     check_edxapp_account_conflicts,
     get_user_signup_source,
@@ -63,3 +63,9 @@ class WrittableEdxappUsernameSerializer(serializers.Serializer):
             instance.save()
 
         return instance
+
+
+class OauthApplicationSerializer(EdxappUserSerializer):
+    """
+    """
+    # FALTA REMOVER EL CAMPO PASSWORD PORQUE NO SE VA A ENVIAR Y RECORDAR MANDAR SIEMPRE EL CAMPO ACTIVATE_USER

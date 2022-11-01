@@ -71,7 +71,7 @@ def create_edxapp_user(*args, **kwargs):
     username = kwargs.pop("username")
     conflicts = check_edxapp_account_conflicts(email=email, username=username)
     if conflicts:
-        return None, [f"Fatal: account collition with the provided: {', '.join(conflicts)}"]
+        return None, ["Fatal: account collition with the provided: {}".format(', '.join(conflicts))]
 
     data = {
         'username': username,
@@ -113,7 +113,7 @@ def create_edxapp_user(*args, **kwargs):
         try:
             preferences_api.set_user_preference(user, LANGUAGE_KEY, lang_pref)
         except Exception:  # pylint: disable=broad-except
-            errors.append(f"Could not set lang preference '{lang_pref}' for user '{user.username}'")
+            errors.append("Could not set lang preference '{lang_pref}' for user '{username}'".format(lang_pref=lang_pref, username=user.username))
 
     if kwargs.pop("activate_user", False):
         user.is_active = True
@@ -159,7 +159,7 @@ def get_edxapp_user(**kwargs):
         else:
             raise User.DoesNotExist
     except User.DoesNotExist:
-        raise NotFound(f'No user found by {str(params)} on site {domain}.') from User.DoesNotExist
+        raise NotFound('No user found by {params} on site {domain}.'.format(params=str(params), domain=domain))
     return user
 
 

@@ -30,7 +30,7 @@ class APISchemaGenerator(OpenAPISchemaGenerator):
         security_definitions = {
             'OAuth2': {
                 'flow': 'application',
-                'tokenUrl': f'{settings.LMS_ROOT_URL}/oauth2/access_token/',
+                'tokenUrl': '{}/oauth2/access_token/'.format(settings.LMS_ROOT_URL),
                 'type': 'oauth2',
             },
         }

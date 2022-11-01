@@ -95,7 +95,7 @@ class EdxappReplaceUsername(UserQueryMixin, APIView):
         For example:
 
         **Requests**:
-            PATCH <domain>/eox-core/support-api/v1/replace-username/
+            PATCH <domain>/eox-core/support-api/v1/user/replace-username/
 
         **Request body**
             {
@@ -127,3 +127,91 @@ class EdxappReplaceUsername(UserQueryMixin, APIView):
             user, custom_fields=admin_fields, context={"request": request}
         )
         return Response(serialized_user.data)
+
+
+class OauthApplicationAPIView(UserQueryMixin, APIView):
+    """
+    Handles requests related to the
+    django_oauth_toolkit Application object.
+    """
+    #authentication_classes = (BearerAuthentication, SessionAuthentication)
+    #permission_classes = (EoxCoreSupportAPIPermission,)
+    renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
+
+    @audit_drf_api(action='Generate Oauth Application.', method_name='eox_core_api_method')
+    def post(self, request, *args, **kwargs):  # pylint: disable=too-many-locals
+        """
+        Allows to .
+
+        Handles requests to generate an Oauth Application
+        django_oauth_toolkit Application
+        Creates an application, creates de related user with the
+        permissions specified in the field ...
+
+        For example:
+
+        **Requests**:
+            POST <domain>/eox-core/support-api/v1/user/
+
+        **Request body**:
+            {
+                "case_id": Optional. ID of the support case for naming the retired user Email
+            }
+
+        **Response values**:
+            - 200: Success, user has multiple signup sources and the one that matches the current site
+                    has been deleted.
+            - 202: Success, user has a unique signup source and has been safely removed from the platform.
+            - 400: Bad request, invalid case_id or user has no signup source on the request site.
+        """
+        from eox_core.edxapp_wrapper.users import create_edxapp_user, get_edxapp_user, get_user_read_only_serializer
+        from rest_framework import status
+        #query = self.get_user_query(request)
+
+        # Crear USER
+        #serializer = EdxappUserQuerySerializer(data=request.data)
+        #serializer.is_valid(raise_exception=True)
+        #data = serializer.validated_data
+        
+        #data["site"] = get_current_site(request)
+        data = {
+            'skip_extra_registration_fields': True,
+            'fullname': 'Maga Jaimes',
+            'email': 'testing7@example.com',
+            'username': 'testingboy7',
+            # MANDAR SIEMPRE ESTOS CAMPO, NO METERLOS EN EL SERIALIZADOR, PERO CREO QUE ME VA A TOCAR ELIMINAR PASSWORD DEL SERIALIZADOR DE USER O ME LO VA A PEDIR
+            'activate_user': True,
+            'skip_password': True,
+        }
+        #import pudb; pu.db
+        data["site"] = get_current_site(request)
+        user, msg = create_edxapp_user(**data)
+
+        # TODO CHEQUEAR QUE SE CREE EL USER Y SI YA EXISTE ENTONCES QUE DEVUELVA EL USER EXISTENTE PARA AGREGARLO EN EL APPLICATION
+        # TODO CHEQUEAR SI CUANDO NO LE HAGO SKIP PASSWORD ME PIDE LA CONTRASEÑA
+        # CHEQUEAR SI SE CREA EL DJANGO USER CORRECTAMENTE
+        # CHEQUEAR SI SE CREA EL USER SIGNUP SOURCE CORRECTAMENTE
+
+        if msg:
+            print(msg)
+        if user:
+            print("USER CREADO --------")
+            print(user.username)
+
+        # Generar Application
+        #from oauth2_provider.models import Application
+
+        # GRANT TYPES = Application.GRANT_TYPES
+        # CLIENT TYPES = Application.CLIENT_TYPES
+        #Application.objects.create(
+        #    user = user,
+        #    redirect_uris = ['', ''],
+        #    client_type=,
+        #    authorization_grant_type =,
+        #    name =,
+        #    skip_authorization=,
+        #)
+
+
+        return Response(status.HTTP_200_OK)
+

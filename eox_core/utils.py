@@ -9,6 +9,7 @@ from django.conf import settings
 from django.core import cache
 from pytz import UTC
 from rest_framework import serializers
+from crum import get_current_user
 
 from eox_core.edxapp_wrapper.users import get_user_profile
 
@@ -73,8 +74,8 @@ def set_custom_field_restrictions(custom_field, serializer_field):
             ["min_length", "max_length"].index(key)
             serializer_field[key] = int(value)
         except ValueError as err:
-            raise serializers.ValidationError({"restriction error": f"{key}: {value}.\
-            The restriction may not be valid or the value is not an integer"}) from err
+            raise serializers.ValidationError({"restriction error": "{key}: {value}.\
+            The restriction may not be valid or the value is not an integer".format(key=key, value=value)}) from err
 
     return serializer_field
 
@@ -97,7 +98,7 @@ def set_select_custom_field(custom_field, serializer_field):
             # A field can not be both `required` and have a `default`
             serializer_field["required"] = False
         except ValueError as err:
-            raise serializers.ValidationError({f"{field_name}": "The default value must be one of the options"}) from err
+            raise serializers.ValidationError({"{field_name}".format(field_name=field_name): "The default value must be one of the options"}) from err
 
     return serializer_field
 
@@ -120,3 +121,25 @@ def create_user_profile(user):
     """
     if not hasattr(user, "profile"):
         UserProfile.objects.create(user=user)
+
+
+def is_allowed_to_skip_extra_registration_fields(account_creation_data):
+    """
+    If any extra registration field is being sent then returns
+    False to allow to use the extra registration fields in the 
+    """
+    skip_extra_registration_fields = account_creation_data.pop('skip_extra_registration_fields', False)
+    current_user = get_current_user()
+    extra_fields = getattr(settings, "REGISTRATION_EXTRA_FIELDS", {})
+    extended_profile_fields = getattr(settings, "extended_profile_fields", [])
+
+    #PROBAR CASO EN QUE LLAMO ESTA FUNCION POR EL SHELL A VER QUE PASA CON EL USER, EN ESE CASO EL USER ES NONE
+    # CUANDO EL USUARIO ES NONE DEBERIA PERMITIRLO?
+    if not (skip_extra_registration_fields and current_user.is_staff):
+        return False
+    
+    for field in account_creation_data.keys():
+        if field in extra_fields.keys() or field in extended_profile_fields:
+            return False
+
+    return True

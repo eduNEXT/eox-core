@@ -1043,7 +1043,7 @@ class EdxappPreEnrollment(APIView):
             log_data.append("Empty request")
         else:
             for key, value in data.items():
-                log_data.append(f"{key}: {value}")
+                log_data.append("{key}: {value}".format(key=key, value=value))
 
         LOG.error(" ".join(log_data))
 
