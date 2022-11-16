@@ -69,6 +69,7 @@ django==3.2.16
     #   event-tracking
     #   jsonfield
     #   openedx-events
+    #   openedx-filters
 django-crum==0.7.9
     # via
     #   edx-django-utils

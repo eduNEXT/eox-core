@@ -4,8 +4,12 @@ The pipeline module defines functions that are used in the third party authentic
 import logging
 
 from crum import get_current_request
+from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
 from django.db.models.signals import post_save
 
+from openedx_filters import PipelineStep
+from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers # pylint: disable=import-error
 from eox_core.edxapp_wrapper.users import (
     generate_password,
     get_user_attribute,
@@ -219,3 +223,73 @@ def ensure_user_has_signup_source(user=None, *args, **kwargs):
             "Created new singup source for user during the third party pipeline.",
             **locals()
         )
+
+class AddCustomOptionsOnAccountSettings(PipelineStep):
+    """ Pipeline used to add custom option fields in account settings.
+
+        Example usage:
+
+        Add the following configurations to your configuration file:
+                "OPEN_EDX_FILTERS_CONFIG": {
+                    "org.openedx.learning.student.settings.render.started.v1": {
+                        "fail_silently": false,
+                        "pipeline": [
+                            "eox_core.pipeline.AddCustomOptionsOnAccountSettings"
+                        ]
+                    }
+                }
+    """
+
+    def run_filter(self, context):  # pylint: disable=arguments-differ
+        """ Run the pipeline filter. """
+        extended_profile_fields = context.get("extended_profile_fields", [])
+
+        custom_options, field_labels_map = self._get_custom_context(extended_profile_fields)  # pylint: disable=line-too-long
+
+        extended_profile_field_options = configuration_helpers.get_value('EXTRA_FIELD_OPTIONS', custom_options)  # pylint: disable=line-too-long
+        extended_profile_field_option_tuples = {}
+        for field in extended_profile_field_options.keys():
+            field_options = extended_profile_field_options[field]
+            extended_profile_field_option_tuples[field] = [(option.lower(), option) for option in field_options]  # pylint: disable=line-too-long
+
+        for field in custom_options:
+            field_dict = {
+                "field_name": field,
+                "field_label": field_labels_map.get(field, field),
+            }
+
+            field_options = extended_profile_field_option_tuples.get(field)
+            if field_options:
+                field_dict["field_type"] = "ListField"
+                field_dict["field_options"] = field_options
+            else:
+                field_dict["field_type"] = "TextField"
+
+            field_index = next((index for (index, d) in enumerate(extended_profile_fields) if d["field_name"] == field_dict["field_name"]), None)  # pylint: disable=line-too-long
+            if field_index is not None:
+                context["extended_profile_fields"][field_index] = field_dict
+        return context
+
+    def _get_custom_context(self, extended_profile_fields):
+        """ Get custom context for the field. """
+        field_labels = {}
+        field_options = {}
+        custom_fields = getattr(settings, "EDNX_CUSTOM_REGISTRATION_FIELDS", [])
+
+        for field in custom_fields:
+            field_name = field.get("name")
+
+            if not field_name:  # Required to identify the field.
+                msg = "Custom fields must have a `name` defined in their configuration."
+                raise ImproperlyConfigured(msg)
+
+            field_label = field.get("label")
+            if not any(extended_field['field_name'] == field_name for extended_field in extended_profile_fields) and field_label:  # pylint: disable=line-too-long
+                field_labels[field_name] = _(field_label)  # pylint: disable=translation-of-non-string
+
+            options = field.get("options")
+
+            if options:
+                field_options[field_name] = options
+
+            return field_options, field_labels
