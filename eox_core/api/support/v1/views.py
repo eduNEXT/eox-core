@@ -30,6 +30,7 @@ from eox_core.api.v1.views import UserQueryMixin
 from eox_core.edxapp_wrapper.bearer_authentication import BearerAuthentication
 from eox_core.edxapp_wrapper.comments_service_users import replace_username_cs_user
 from eox_core.edxapp_wrapper.users import create_edxapp_user, delete_edxapp_user, get_edxapp_user
+from eox_core.utils import get_or_create_site_from_oauth_app_uris
 
 User = get_user_model()
 
@@ -81,7 +82,7 @@ class EdxappUser(UserQueryMixin, APIView):
         data["site"] = get_current_site(request)
         data["user"] = get_edxapp_user(**query)
 
-        message, status = delete_edxapp_user(**data)
+        message, status = delete_edxapp_user(**data)  # pylint: disable=redefined-outer-name
 
         return Response(message, status=status)
 
@@ -145,6 +146,7 @@ class OauthApplicationAPIView(UserQueryMixin, APIView):
     Handles requests related to the
     django_oauth_toolkit Application object.
     """
+
     authentication_classes = (BearerAuthentication, SessionAuthentication)
     permission_classes = (EoxCoreSupportAPIPermission,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
@@ -152,7 +154,10 @@ class OauthApplicationAPIView(UserQueryMixin, APIView):
     @audit_drf_api(action='Generate Oauth Application.', method_name='eox_core_api_method')
     def post(self, request, *args, **kwargs):  # pylint: disable=too-many-locals
         """
-        Created a new Oauth Application from django_oauth_toolkit.
+        Creates a new Oauth Application from django_oauth_toolkit.
+
+        This endpoint assumes that the URLs sent in the redirect_uris
+        parameter are correct.
 
         In order to generate a valid application, this endpoint
         does multiple things:
@@ -162,8 +167,10 @@ class OauthApplicationAPIView(UserQueryMixin, APIView):
         "permissions" list.
         3 - Create Application.
 
-        Note: make sure to send the codename value of the permission
-        in the list.
+        Note: make sure to send the codenames of the permissions
+        you want to grant to the user in the permissions list.
+        Also, send the urls in the redirect_uris separated by
+        simple whitespaces to avoid any errors during the creation.
 
         For example:
 
@@ -186,9 +193,9 @@ class OauthApplicationAPIView(UserQueryMixin, APIView):
         }
 
         **Response values**:
-            - 200: Success, the Oauth Applicaton has been created.
+            - 200: Success, the Oauth Application has been created.
             - 400: Bad request, invalid request body format.
-            - 500: The server has failed to get or create the
+            - 500: The server has failed to get or create the.
             owner user for the application.
         """
         message = "Could not get or create edxapp User"
@@ -204,7 +211,7 @@ class OauthApplicationAPIView(UserQueryMixin, APIView):
             'skip_extra_registration_fields': True,
             'activate_user': True,
             'skip_password': True,
-            'site': get_current_site(request),
+            'site': get_or_create_site_from_oauth_app_uris(data.get('redirect_uris', '')),
         })
 
         # Get or create user
@@ -214,7 +221,9 @@ class OauthApplicationAPIView(UserQueryMixin, APIView):
             user, message = create_edxapp_user(**user_creation_data)
 
         if not user:
-            return Response(message, status=status.HTTP_500_SERVER_ERROR)
+            LOG.error(message)
+
+            return Response(message, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         # Grant permissions to user
         permissions = Permission.objects.filter(codename__in=user_permissions)
@@ -222,6 +231,6 @@ class OauthApplicationAPIView(UserQueryMixin, APIView):
 
         # Create Oauth Application
         data['user'] = user
-        application = Application.objects.create(**data)
+        application, _ = Application.objects.get_or_create(**data)
 
         return Response(OauthApplicationSerializer(application).data, status=status.HTTP_200_OK)

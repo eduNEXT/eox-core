@@ -8,7 +8,7 @@ from django.utils import timezone
 from oauth2_provider.models import Application
 from rest_framework import serializers
 
-from eox_core.api.v1.serializers import MAX_SIGNUP_SOURCES_ALLOWED, EdxappUserSerializer
+from eox_core.api.v1.serializers import MAX_SIGNUP_SOURCES_ALLOWED
 from eox_core.edxapp_wrapper.users import (
     check_edxapp_account_conflicts,
     get_user_signup_source,
@@ -77,6 +77,7 @@ class OauthApplicationUserSerializer(serializers.Serializer):
         child=serializers.CharField(),
         allow_null=True,
         write_only=True,
+        required=False,
     )
 
 
@@ -87,6 +88,7 @@ class OauthApplicationSerializer(serializers.ModelSerializer):
     user = OauthApplicationUserSerializer()
 
     class Meta:
+        """Meta class."""
         model = Application
         read_only_fields = ('created', 'updated', )
         fields = '__all__'
