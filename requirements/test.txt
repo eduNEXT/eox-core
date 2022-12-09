@@ -274,7 +274,7 @@ oauthlib==3.2.1
     # via
     #   -r requirements/base.txt
     #   django-oauth-toolkit
-openedx-events==0.8.1
+openedx-events==0.13.0
     # via -r requirements/base.txt
 packaging==21.3
     # via
