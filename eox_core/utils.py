@@ -23,6 +23,7 @@ except Exception:  # pylint: disable=broad-except
 def fasthash(string):
     """
     Hashes `string` into a string representation of a 128-bit digest.
+    TODO remove this!
     """
     md4 = hashlib.new("md4")
     md4.update(string.encode('utf-8'))
