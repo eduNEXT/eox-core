@@ -5,11 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/eduNEXT/eox-core/compare/v7.0.0...HEAD)
+## [Unreleased](https://github.com/eduNEXT/eox-core/compare/v7.0.1...HEAD)
 
 Please do not update the unreleased notes.
 
 <!-- Content should be placed here -->
+## [v7.0.1](https://github.com/eduNEXT/eox-core/compare/v7.0.0...v7.0.1) - 2022-12-13
+
+### [7.0.1](https://github.com/eduNEXT/eox-core/compare/v7.0.0...v7.0.1) (2022-12-13)
+
+### Bug Fixes
+
+- update md4 to md5 ([#230](https://github.com/eduNEXT/eox-core/issues/230)) ([0af7564](https://github.com/eduNEXT/eox-core/commit/0af75645bd6e78ea3f31f154cc3a40109ec1d2c3))
+
+### Continuous Integration
+
+- add files to ignore in workflow ([f0fb02d](https://github.com/eduNEXT/eox-core/commit/f0fb02d48a3fb6f2cb70e3b26d33b89e91b60a77))
+
+### Documentation
+
+- update CHANGELOG ([9eda217](https://github.com/eduNEXT/eox-core/commit/9eda217520abecd98203e1521b21b1b055dd681e))
+- upload json files and instruction to test cases ([94c3dc1](https://github.com/eduNEXT/eox-core/commit/94c3dc1984604308f99748563b4730c78df813c2))
+
 ## [v7.0.0](https://github.com/eduNEXT/eox-core/compare/v6.1.2...v7.0.0) - 2022-10-07
 
 ### [7.0.0](https://github.com/eduNEXT/eox-core/compare/v6.1.2...v7.0.0) (2022-10-07)
