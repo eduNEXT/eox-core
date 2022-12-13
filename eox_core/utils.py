@@ -24,9 +24,9 @@ def fasthash(string):
     """
     Hashes `string` into a string representation of a 128-bit digest.
     """
-    md4 = hashlib.new("md4")
-    md4.update(string.encode('utf-8'))
-    return md4.hexdigest()
+    md5 = hashlib.new("md5")
+    md5.update(string.encode('utf-8'))
+    return md5.hexdigest()
 
 
 def get_valid_years():
