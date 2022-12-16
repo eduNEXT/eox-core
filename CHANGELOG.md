@@ -5,11 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/eduNEXT/eox-core/compare/v7.0.0...HEAD)
+## [Unreleased](https://github.com/eduNEXT/eox-core/compare/v7.1.0...HEAD)
 
 Please do not update the unreleased notes.
 
 <!-- Content should be placed here -->
+## [v7.1.0](https://github.com/eduNEXT/eox-core/compare/v7.0.0...v7.1.0) - 2022-12-16
+
+### [7.1.0](https://github.com/eduNEXT/eox-core/compare/v7.0.1...v7.1.0) (2022-12-16)
+
+#### Features
+
+- make extra registration fields optional in create_edxapp_user function ([7a23767](https://github.com/eduNEXT/eox-core/commit/7a237678de1b4a4a3e72b40f3d488c3e69acc97e))
+
 ## [v7.0.0](https://github.com/eduNEXT/eox-core/compare/v6.1.2...v7.0.0) - 2022-10-07
 
 ### [7.0.0](https://github.com/eduNEXT/eox-core/compare/v6.1.2...v7.0.0) (2022-10-07)
