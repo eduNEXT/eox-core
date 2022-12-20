@@ -31,16 +31,23 @@ jobs:
         run: |
           pip install bumpversion
           bumpversion --new-version ${{ steps.tag_version.outputs.new_version }} setup.cfg
+      - name: Update Changelog
+        if: steps.tag_version.outputs.new_version
+        uses: stefanzweifel/changelog-updater-action@v1.6.2
+        with:
+          latest-version: ${{ steps.tag_version.outputs.new_tag }}
+          release-notes: ${{ steps.tag_version.outputs.changelog }}
       - name: Commit bumpversion
         id: bumpversion
         if: steps.tag_version.outputs.new_version
-        uses: stefanzweifel/git-auto-commit-action@v4
+        uses: stefanzweifel/git-auto-commit-action@v4.14.1
         with:
           branch: ${{ github.ref }}
-          commit_message: "Bump version: ${{ steps.tag_version.outputs.previous_tag }} → ${{ steps.tag_version.outputs.new_version }}"
-          file_pattern: setup.cfg eox_core/*
+          commit_message: "docs(bumpversion): ${{ steps.tag_version.outputs.previous_tag }} → ${{ steps.tag_version.outputs.new_version }}"
+          file_pattern: setup.cfg CHANGELOG.md eox_core/*
   release:
     needs: bumpversion
+    if: needs.bumpversion.outputs.version
     runs-on: ubuntu-latest
     outputs:
       tag: ${{ steps.tag_version.outputs.new_tag }}
@@ -65,32 +72,3 @@ jobs:
           name: Release ${{ steps.tag_version.outputs.new_tag }}
           body: ${{ steps.tag_version.outputs.changelog }}
           draft: true
-  changelog:
-    needs: release
-    runs-on: ubuntu-latest
-    if: needs.release.outputs.tag
-    steps:
-      - uses: actions/checkout@v2
-      - name: Update Changelog
-        uses: stefanzweifel/changelog-updater-action@v1
-        with:
-          latest-version: ${{ needs.release.outputs.tag }}
-          release-notes: ${{ needs.release.outputs.changelog }}
-
-      - name: Create Pull Request
-        id: cpr
-        uses: peter-evans/create-pull-request@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "docs: update CHANGELOG"
-          committer: GitHub <noreply@github.com>
-          author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
-          signoff: false
-          branch: docs/changelog/${{ needs.release.outputs.tag }}
-          delete-branch: true
-          title: "docs: update CHANGELOG to ${{ needs.release.outputs.tag }}"
-          labels: |
-            report
-            automated pr
-          team-reviewers: |
-            eduNEXT/distro

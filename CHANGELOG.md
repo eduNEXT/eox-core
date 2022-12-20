@@ -5,11 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/eduNEXT/eox-core/compare/v7.0.0...HEAD)
+## [Unreleased](https://github.com/eduNEXT/eox-core/compare/v7.2.0...HEAD)
 
 Please do not update the unreleased notes.
 
 <!-- Content should be placed here -->
+## [v7.2.0](https://github.com/eduNEXT/eox-core/compare/v7.1.0...v7.2.0) - 2022-12-16
+
+### [7.2.0](https://github.com/eduNEXT/eox-core/compare/v7.1.0...v7.2.0) (2022-12-16)
+
+### Features
+
+- feat: add endpoint to create edxapp Oauth Application
+
+## [v7.1.0](https://github.com/eduNEXT/eox-core/compare/v7.0.1...v7.1.0) - 2022-12-16
+
+### [7.1.0](https://github.com/eduNEXT/eox-core/compare/v7.0.1...v7.1.0) (2022-12-16)
+
+### Features
+
+- feat: Make extra registration fields optional in during edxapp account creation
+
+## [v7.0.1](https://github.com/eduNEXT/eox-core/compare/v7.0.0...v7.0.1) - 2022-12-13
+
+### [7.0.1](https://github.com/eduNEXT/eox-core/compare/v7.0.0...v7.0.1) (2022-12-13)
+
+### Fixes
+
+- fix: update md4 to md5
+
 ## [v7.0.0](https://github.com/eduNEXT/eox-core/compare/v6.1.2...v7.0.0) - 2022-10-07
 
 ### [7.0.0](https://github.com/eduNEXT/eox-core/compare/v6.1.2...v7.0.0) (2022-10-07)
@@ -17,17 +41,11 @@ Please do not update the unreleased notes.
 #### ⚠ BREAKING CHANGES
 
 - drop django22 and added python 3.10
-- 
 - feat: make it compatible with nutmeg
-- 
 - perf: update requirements
-- 
 - docs: update readme
-- 
 - feat: drop django22 and added python 3.10
-- 
 - ci: add python publish workflow and drop circleci
-- 
 
 Co-authored-by: Maria Fernanda Magallanes Zubillaga [maria.magallanes@edunext.co](mailto:maria.magallanes@edunext.co)
 Co-authored-by: Juan David Buitrago [juan.buitrago@edunext.co](mailto:juan.buitrago@edunext.co)
