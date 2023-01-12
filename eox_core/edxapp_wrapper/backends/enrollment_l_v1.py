@@ -208,6 +208,7 @@ def _enroll_on_course(user, course_id, *args, **kwargs):
             LOG.info('Force create enrollment %s, %s, %s', username, course_id, mode)
             enrollment = _force_create_enrollment(username, course_id, mode, is_active)
         else:
+            err_msg = None
             if not str(err):
                 err_msg = err.__class__.__name__
             raise APIException(detail=err_msg if err_msg else err) from err
