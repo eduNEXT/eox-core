@@ -2,11 +2,6 @@
 Eox-core test cases
 ###################
 
-Status
-------
-
-Accepted
-
 Context
 -------
 
@@ -14,8 +9,8 @@ In order to have a way to test the eox-core API endpoints manually, but quickly,
 created with the GET, POST, PATCH and DELETE requests. The `Eox-core-test.postman_collection.json`_ and
 `Eox-core-test.postman_environment.json`_ files were created with the `Posman`_ application.
 
-.. _Eox-core-test.postman_collection.json: ../resources/Eox-core-test.postman_collection.json
-.. _Eox-core-test.postman_environment.json: ../resources/Eox-core-test.postman_environment.json
+.. _eox-core-test.postman_collection.json: ../resources/Eox-core-test.postman_collection.json
+.. _eox-core-test.postman_environment.json: ../resources/Eox-core-test.postman_environment.json
 .. _Posman: https://www.postman.com/
 
 Instructions
@@ -23,10 +18,11 @@ Instructions
 
 To test the endpoints it is necessary to have the Open Edx platform running with the eox-core plugin installed.
 
-#. Once your environment is set up, create a new admin user: ``tutor dev createuser -staf - superuser admin <custom-mail> -p <password>``.
+#. Once your environment is set up, create a new admin user: ``tutor dev do createuser --staf --superuser admin <custom-mail> --password <password>``.
 #. Log into Django's admin site using the user created in the previous step.
+#. Create a testing user without staff permissions, you could do this in the Django admin page. Some of the test will require you to be staff user, specifically those for the support API. In case you want to run the test collection once, then user your admin user and skip the permission assignment steps.
 #. On the Site Administration panel go to *Authentication and Authorization* > *Users*.
-#. Click on the admin user created on the first step.
+#. Click on the testing user created on the third step.
 #. Go to User permissions and look for auth **user** *can access eox-core API* and add it with a double click or one click and right arrow.
 #. Click Save at the bottom of the page.
 #. On the Site Administration panel go to *Django Oauth Toolkit* > *Applications*.
@@ -34,7 +30,7 @@ To test the endpoints it is necessary to have the Open Edx platform running with
 #. Once again, you should be redirected to a new page with a bunch of blank spaces, nevertheless, *client id* and *client secret* are given. Save them, as you will need these later.
 #. Fill the left spaces with the following rules:
 
-    - For *User id* click on the magnifier icon next to the blank space, a window should show up with the app's users, pick the one you created in the first step.
+    - For *User id* click on the magnifier icon next to the blank space, a window should show up with the app's users, pick the one you created for tests.
     - On the *Redirect to URL* section add your app's url.
     - Pick *Confidential* on the *Client type* dropdown menu.
     - Pick *Client credentials* for *Authorization grant type*.
