@@ -1,8 +1,8 @@
 {
 	"info": {
-		"_postman_id": "334915fe-b75a-4c5d-b553-2b20972ae8f6",
+		"_postman_id": "57d32569-2bc1-4c2b-acd8-60305d1b9eda",
 		"name": "Eox-core",
-		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
@@ -27,9 +27,13 @@
 							"request": {
 								"auth": {
 									"type": "bearer",
-									"bearer": {
-										"token": "{{token}}"
-									}
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
 								},
 								"method": "POST",
 								"header": [],
@@ -42,7 +46,19 @@
 										}
 									}
 								},
-								"url": "{{domain}}/eox-core/api/v1/user/"
+								"url": {
+									"raw": "{{domain}}/eox-core/api/v1/user/",
+									"host": [
+										"{{domain}}"
+									],
+									"path": [
+										"eox-core",
+										"api",
+										"v1",
+										"user",
+										""
+									]
+								}
 							},
 							"response": [
 								{
@@ -59,7 +75,23 @@
 												}
 											}
 										},
-										"url": "http://lms.nutmeg.edunext.link/eox-core/api/v1/user/"
+										"url": {
+											"raw": "http://lms.nutmeg.edunext.link/eox-core/api/v1/user/",
+											"protocol": "http",
+											"host": [
+												"lms",
+												"nutmeg",
+												"edunext",
+												"link"
+											],
+											"path": [
+												"eox-core",
+												"api",
+												"v1",
+												"user",
+												""
+											]
+										}
 									},
 									"status": "OK",
 									"code": 200,
@@ -112,9 +144,13 @@
 							"request": {
 								"auth": {
 									"type": "bearer",
-									"bearer": {
-										"token": "{{token}}"
-									}
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
 								},
 								"method": "GET",
 								"header": [],
@@ -219,9 +255,13 @@
 							"request": {
 								"auth": {
 									"type": "bearer",
-									"bearer": {
-										"token": "{{token}}"
-									}
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
 								},
 								"method": "PATCH",
 								"header": [],
@@ -234,7 +274,19 @@
 										}
 									}
 								},
-								"url": "{{domain}}/eox-core/api/v1/update-user/"
+								"url": {
+									"raw": "{{domain}}/eox-core/api/v1/update-user/",
+									"host": [
+										"{{domain}}"
+									],
+									"path": [
+										"eox-core",
+										"api",
+										"v1",
+										"update-user",
+										""
+									]
+								}
 							},
 							"response": [
 								{
@@ -251,7 +303,19 @@
 												}
 											}
 										},
-										"url": "{{domain}}/eox-core/api/v1/update-user/"
+										"url": {
+											"raw": "{{domain}}/eox-core/api/v1/update-user/",
+											"host": [
+												"{{domain}}"
+											],
+											"path": [
+												"eox-core",
+												"api",
+												"v1",
+												"update-user",
+												""
+											]
+										}
 									},
 									"status": "OK",
 									"code": 200,
@@ -309,9 +373,13 @@
 							"request": {
 								"auth": {
 									"type": "bearer",
-									"bearer": {
-										"token": "{{token}}"
-									}
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
 								},
 								"method": "POST",
 								"header": [],
@@ -324,7 +392,19 @@
 										}
 									}
 								},
-								"url": "{{domain}}/eox-core/api/v1/enrollment/"
+								"url": {
+									"raw": "{{domain}}/eox-core/api/v1/enrollment/",
+									"host": [
+										"{{domain}}"
+									],
+									"path": [
+										"eox-core",
+										"api",
+										"v1",
+										"enrollment",
+										""
+									]
+								}
 							},
 							"response": [
 								{
@@ -341,7 +421,19 @@
 												}
 											}
 										},
-										"url": "{{domain}}/eox-core/api/v1/enrollment/"
+										"url": {
+											"raw": "{{domain}}/eox-core/api/v1/enrollment/",
+											"host": [
+												"{{domain}}"
+											],
+											"path": [
+												"eox-core",
+												"api",
+												"v1",
+												"enrollment",
+												""
+											]
+										}
 									},
 									"status": "OK",
 									"code": 200,
@@ -397,9 +489,13 @@
 							"request": {
 								"auth": {
 									"type": "bearer",
-									"bearer": {
-										"token": "{{token}}"
-									}
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
 								},
 								"method": "GET",
 								"header": [],
@@ -412,7 +508,19 @@
 										}
 									}
 								},
-								"url": "{{domain}}/eox-core/api/v1/enrollment/"
+								"url": {
+									"raw": "{{domain}}/eox-core/api/v1/enrollment/",
+									"host": [
+										"{{domain}}"
+									],
+									"path": [
+										"eox-core",
+										"api",
+										"v1",
+										"enrollment",
+										""
+									]
+								}
 							},
 							"response": [
 								{
@@ -497,9 +605,13 @@
 							"request": {
 								"auth": {
 									"type": "bearer",
-									"bearer": {
-										"token": "{{token}}"
-									}
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
 								},
 								"method": "PUT",
 								"header": [],
@@ -512,7 +624,19 @@
 										}
 									}
 								},
-								"url": "{{domain}}/eox-core/api/v1/enrollment/"
+								"url": {
+									"raw": "{{domain}}/eox-core/api/v1/enrollment/",
+									"host": [
+										"{{domain}}"
+									],
+									"path": [
+										"eox-core",
+										"api",
+										"v1",
+										"enrollment",
+										""
+									]
+								}
 							},
 							"response": [
 								{
@@ -529,7 +653,19 @@
 												}
 											}
 										},
-										"url": "{{domain}}/eox-core/api/v1/enrollment/"
+										"url": {
+											"raw": "{{domain}}/eox-core/api/v1/enrollment/",
+											"host": [
+												"{{domain}}"
+											],
+											"path": [
+												"eox-core",
+												"api",
+												"v1",
+												"enrollment",
+												""
+											]
+										}
 									},
 									"status": "OK",
 									"code": 200,
@@ -582,9 +718,13 @@
 							"request": {
 								"auth": {
 									"type": "bearer",
-									"bearer": {
-										"token": "{{token}}"
-									}
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
 								},
 								"method": "DELETE",
 								"header": [],
@@ -597,7 +737,19 @@
 										}
 									}
 								},
-								"url": "{{domain}}/eox-core/api/v1/enrollment/"
+								"url": {
+									"raw": "{{domain}}/eox-core/api/v1/enrollment/",
+									"host": [
+										"{{domain}}"
+									],
+									"path": [
+										"eox-core",
+										"api",
+										"v1",
+										"enrollment",
+										""
+									]
+								}
 							},
 							"response": [
 								{
@@ -614,7 +766,19 @@
 												}
 											}
 										},
-										"url": "{{domain}}/eox-core/api/v1/enrollment/"
+										"url": {
+											"raw": "{{domain}}/eox-core/api/v1/enrollment/",
+											"host": [
+												"{{domain}}"
+											],
+											"path": [
+												"eox-core",
+												"api",
+												"v1",
+												"enrollment",
+												""
+											]
+										}
 									},
 									"status": "No Content",
 									"code": 204,
@@ -659,9 +823,13 @@
 							"request": {
 								"auth": {
 									"type": "bearer",
-									"bearer": {
-										"token": "{{token}}"
-									}
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
 								},
 								"method": "POST",
 								"header": [],
@@ -674,7 +842,19 @@
 										}
 									}
 								},
-								"url": "{{domain}}/eox-core/api/v1/enrollment/"
+								"url": {
+									"raw": "{{domain}}/eox-core/api/v1/enrollment/",
+									"host": [
+										"{{domain}}"
+									],
+									"path": [
+										"eox-core",
+										"api",
+										"v1",
+										"enrollment",
+										""
+									]
+								}
 							},
 							"response": [
 								{
@@ -691,7 +871,19 @@
 												}
 											}
 										},
-										"url": "{{domain}}/eox-core/api/v1/enrollment/"
+										"url": {
+											"raw": "{{domain}}/eox-core/api/v1/enrollment/",
+											"host": [
+												"{{domain}}"
+											],
+											"path": [
+												"eox-core",
+												"api",
+												"v1",
+												"enrollment",
+												""
+											]
+										}
 									},
 									"status": "OK",
 									"code": 200,
@@ -749,9 +941,13 @@
 							"request": {
 								"auth": {
 									"type": "bearer",
-									"bearer": {
-										"token": "{{token}}"
-									}
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
 								},
 								"method": "POST",
 								"header": [],
@@ -764,7 +960,19 @@
 										}
 									}
 								},
-								"url": "{{domain}}/eox-core/api/v1/pre-enrollment/"
+								"url": {
+									"raw": "{{domain}}/eox-core/api/v1/pre-enrollment/",
+									"host": [
+										"{{domain}}"
+									],
+									"path": [
+										"eox-core",
+										"api",
+										"v1",
+										"pre-enrollment",
+										""
+									]
+								}
 							},
 							"response": [
 								{
@@ -781,7 +989,19 @@
 												}
 											}
 										},
-										"url": "{{domain}}/eox-core/api/v1/pre-enrollment/"
+										"url": {
+											"raw": "{{domain}}/eox-core/api/v1/pre-enrollment/",
+											"host": [
+												"{{domain}}"
+											],
+											"path": [
+												"eox-core",
+												"api",
+												"v1",
+												"pre-enrollment",
+												""
+											]
+										}
 									},
 									"status": "OK",
 									"code": 200,
@@ -845,9 +1065,13 @@
 							"request": {
 								"auth": {
 									"type": "bearer",
-									"bearer": {
-										"token": "{{token}}"
-									}
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
 								},
 								"method": "GET",
 								"header": [],
@@ -860,7 +1084,19 @@
 										}
 									}
 								},
-								"url": "{{domain}}/eox-core/api/v1/pre-enrollment/"
+								"url": {
+									"raw": "{{domain}}/eox-core/api/v1/pre-enrollment/",
+									"host": [
+										"{{domain}}"
+									],
+									"path": [
+										"eox-core",
+										"api",
+										"v1",
+										"pre-enrollment",
+										""
+									]
+								}
 							},
 							"response": [
 								{
@@ -868,7 +1104,19 @@
 									"originalRequest": {
 										"method": "GET",
 										"header": [],
-										"url": "{{domain}}/eox-core/api/v1/pre-enrollment/"
+										"url": {
+											"raw": "{{domain}}/eox-core/api/v1/pre-enrollment/",
+											"host": [
+												"{{domain}}"
+											],
+											"path": [
+												"eox-core",
+												"api",
+												"v1",
+												"pre-enrollment",
+												""
+											]
+										}
 									},
 									"status": "OK",
 									"code": 200,
@@ -929,9 +1177,13 @@
 							"request": {
 								"auth": {
 									"type": "bearer",
-									"bearer": {
-										"token": "{{token}}"
-									}
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
 								},
 								"method": "PUT",
 								"header": [],
@@ -944,7 +1196,19 @@
 										}
 									}
 								},
-								"url": "{{domain}}/eox-core/api/v1/pre-enrollment/",
+								"url": {
+									"raw": "{{domain}}/eox-core/api/v1/pre-enrollment/",
+									"host": [
+										"{{domain}}"
+									],
+									"path": [
+										"eox-core",
+										"api",
+										"v1",
+										"pre-enrollment",
+										""
+									]
+								},
 								"description": "Update “auto_enroll” attribute"
 							},
 							"response": [
@@ -962,7 +1226,19 @@
 												}
 											}
 										},
-										"url": "{{domain}}/eox-core/api/v1/pre-enrollment/"
+										"url": {
+											"raw": "{{domain}}/eox-core/api/v1/pre-enrollment/",
+											"host": [
+												"{{domain}}"
+											],
+											"path": [
+												"eox-core",
+												"api",
+												"v1",
+												"pre-enrollment",
+												""
+											]
+										}
 									},
 									"status": "OK",
 									"code": 200,
@@ -1023,9 +1299,13 @@
 							"request": {
 								"auth": {
 									"type": "bearer",
-									"bearer": {
-										"token": "{{token}}"
-									}
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
 								},
 								"method": "DELETE",
 								"header": [],
@@ -1038,7 +1318,19 @@
 										}
 									}
 								},
-								"url": "{{domain}}/eox-core/api/v1/pre-enrollment/"
+								"url": {
+									"raw": "{{domain}}/eox-core/api/v1/pre-enrollment/",
+									"host": [
+										"{{domain}}"
+									],
+									"path": [
+										"eox-core",
+										"api",
+										"v1",
+										"pre-enrollment",
+										""
+									]
+								}
 							},
 							"response": []
 						}
@@ -1055,9 +1347,13 @@
 							"request": {
 								"auth": {
 									"type": "bearer",
-									"bearer": {
-										"token": "{{token}}"
-									}
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
 								},
 								"method": "GET",
 								"header": [],
@@ -1070,7 +1366,19 @@
 										}
 									}
 								},
-								"url": "{{domain}}/eox-core/api/v1/grade/"
+								"url": {
+									"raw": "{{domain}}/eox-core/api/v1/grade/",
+									"host": [
+										"{{domain}}"
+									],
+									"path": [
+										"eox-core",
+										"api",
+										"v1",
+										"grade",
+										""
+									]
+								}
 							},
 							"response": [
 								{
@@ -1078,7 +1386,19 @@
 									"originalRequest": {
 										"method": "GET",
 										"header": [],
-										"url": "{{domain}}/eox-core/api/v1/grade/"
+										"url": {
+											"raw": "{{domain}}/eox-core/api/v1/grade/",
+											"host": [
+												"{{domain}}"
+											],
+											"path": [
+												"eox-core",
+												"api",
+												"v1",
+												"grade",
+												""
+											]
+										}
 									},
 									"status": "OK",
 									"code": 200,
@@ -1144,13 +1464,28 @@
 							"request": {
 								"auth": {
 									"type": "bearer",
-									"bearer": {
-										"token": "{{token}}"
-									}
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
 								},
 								"method": "GET",
 								"header": [],
-								"url": "{{domain}}/eox-core/api/v1/userinfo"
+								"url": {
+									"raw": "{{domain}}/eox-core/api/v1/userinfo",
+									"host": [
+										"{{domain}}"
+									],
+									"path": [
+										"eox-core",
+										"api",
+										"v1",
+										"userinfo"
+									]
+								}
 							},
 							"response": [
 								{
@@ -1158,7 +1493,18 @@
 									"originalRequest": {
 										"method": "GET",
 										"header": [],
-										"url": "{{domain}}/eox-core/api/v1/userinfo"
+										"url": {
+											"raw": "{{domain}}/eox-core/api/v1/userinfo",
+											"host": [
+												"{{domain}}"
+											],
+											"path": [
+												"eox-core",
+												"api",
+												"v1",
+												"userinfo"
+											]
+										}
 									},
 									"status": "OK",
 									"code": 200,
@@ -1238,9 +1584,13 @@
 					"request": {
 						"auth": {
 							"type": "bearer",
-							"bearer": {
-								"token": "{{token}}"
-							}
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
 						},
 						"method": "POST",
 						"header": [],
@@ -1253,7 +1603,19 @@
 								}
 							}
 						},
-						"url": "{{domain}}/eox-core/tasks-api/v1/tasks/"
+						"url": {
+							"raw": "{{domain}}/eox-core/tasks-api/v1/tasks/",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"eox-core",
+								"tasks-api",
+								"v1",
+								"tasks",
+								""
+							]
+						}
 					},
 					"response": []
 				},
@@ -1276,9 +1638,13 @@
 					"request": {
 						"auth": {
 							"type": "bearer",
-							"bearer": {
-								"token": "{{token}}"
-							}
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
 						},
 						"method": "GET",
 						"header": [],
@@ -1314,9 +1680,13 @@
 					"request": {
 						"auth": {
 							"type": "bearer",
-							"bearer": {
-								"token": "{{token}}"
-							}
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
 						},
 						"method": "GET",
 						"header": [],
@@ -1352,15 +1722,19 @@
 					"request": {
 						"auth": {
 							"type": "bearer",
-							"bearer": {
-								"token": "{{token}}"
-							}
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
 						},
 						"method": "PATCH",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"new_username\": \"supercool-username\"\n}",
+							"raw": "{\n    \"new_username\": \"supercool-{{username}}\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1395,14 +1769,18 @@
 					"request": {
 						"auth": {
 							"type": "bearer",
-							"bearer": {
-								"token": "{{token}}"
-							}
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
 						},
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{domain}}/eox-core/support-api/v1/user/?username=supercool-username",
+							"raw": "{{domain}}/eox-core/support-api/v1/user/?username=supercool-{{username}}",
 							"host": [
 								"{{domain}}"
 							],
@@ -1416,7 +1794,7 @@
 							"query": [
 								{
 									"key": "username",
-									"value": "supercool-username"
+									"value": "supercool-{{username}}"
 								}
 							]
 						}
@@ -1462,7 +1840,16 @@
 						}
 					]
 				},
-				"url": "{{domain}}/oauth2/access_token"
+				"url": {
+					"raw": "{{domain}}/oauth2/access_token",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"oauth2",
+						"access_token"
+					]
+				}
 			},
 			"response": []
 		}
