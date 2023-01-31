@@ -16,14 +16,14 @@ jobs:
           token: ${{ secrets.PAT }}
       - name: Get next version
         id: tag_version
-        uses: mathieudutour/github-tag-action@v6.0
+        uses: mathieudutour/github-tag-action@v6.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           default_bump: false
           default_prerelease_bump: false
           dry_run: true
       - name: Set up Python 3.8
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: "3.8"
       - name: Create bumpversion
@@ -33,14 +33,14 @@ jobs:
           bumpversion --new-version ${{ steps.tag_version.outputs.new_version }} setup.cfg
       - name: Update Changelog
         if: steps.tag_version.outputs.new_version
-        uses: stefanzweifel/changelog-updater-action@v1.6.2
+        uses: stefanzweifel/changelog-updater-action@v1
         with:
           latest-version: ${{ steps.tag_version.outputs.new_tag }}
           release-notes: ${{ steps.tag_version.outputs.changelog }}
       - name: Commit bumpversion
         id: bumpversion
         if: steps.tag_version.outputs.new_version
-        uses: stefanzweifel/git-auto-commit-action@v4.14.1
+        uses: stefanzweifel/git-auto-commit-action@v4
         with:
           branch: ${{ github.ref }}
           commit_message: "docs(bumpversion): ${{ steps.tag_version.outputs.previous_tag }} → ${{ steps.tag_version.outputs.new_version }}"
@@ -58,7 +58,7 @@ jobs:
           token: ${{ secrets.PAT }}
       - name: Create tag
         id: tag_version
-        uses: mathieudutour/github-tag-action@v6.0
+        uses: mathieudutour/github-tag-action@v6.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           commit_sha: ${{ needs.bumpversion.outputs.bump_commit_sha }}

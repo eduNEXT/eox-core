@@ -81,21 +81,23 @@ Installation on Open edX Devstack
 Compatibility Notes
 --------------------
 
-+-------------------+-----------------+
-| Open edX Release  |  Version        |
-+===================+=================+
-|       Ironwood    |   <  3.0        |
-+-------------------+-----------------+
-|       Juniper     |   >= 3.0 < 5.0  |
-+-------------------+-----------------+
-|        Koa        |   >= 4.9 < 6.0  |
-+-------------------+-----------------+
-|       Lilac       |   >= 4.9 < 6.0  |
-+-------------------+-----------------+
-|       Maple       |   >= 6.0        |
-+-------------------+-----------------+
-|       Nutmeg      |   >= 7.0        |
-+-------------------+-----------------+
++------------------+--------------+
+| Open edX Release | Version      |
++==================+==============+
+| Ironwood         | < 3.0        |
++------------------+--------------+
+| Juniper          | >= 3.0 < 5.0 |
++------------------+--------------+
+| Koa              | >= 4.9 < 6.0 |
++------------------+--------------+
+| Lilac            | >= 4.9 < 6.0 |
++------------------+--------------+
+| Maple            | >= 6.0       |
++------------------+--------------+
+| Nutmeg           | >= 7.0       |
++------------------+--------------+
+| Olive            | >= 8.0       |
++------------------+--------------+
 
 **NOTE**: The Maple version does not support Django 2.2 but it does support Django 3.2 as of eox-core 7.0.
 
@@ -141,7 +143,7 @@ not listed, then the accumulation of changes from previous releases is enough.
    EOX_CORE_USERS_BACKEND: "eox_core.edxapp_wrapper.backends.users_m_v1"
    EOX_CORE_PRE_ENROLLMENT_BACKEND: "eox_core.edxapp_wrapper.backends.pre_enrollment_l_v1"
    EOX_CORE_ENROLLMENT_BACKEND: "eox_core.edxapp_wrapper.backends.enrollment_l_v1"
-   
+
 **Nutmeg**
 
 .. code-block:: yaml
@@ -149,6 +151,12 @@ not listed, then the accumulation of changes from previous releases is enough.
    EOX_CORE_USERS_BACKEND: "eox_core.edxapp_wrapper.backends.users_m_v1"
    EOX_CORE_PRE_ENROLLMENT_BACKEND: "eox_core.edxapp_wrapper.backends.pre_enrollment_l_v1"
    EOX_CORE_ENROLLMENT_BACKEND: "eox_core.edxapp_wrapper.backends.enrollment_l_v1"
+
+**Olive**
+
+.. code-block:: yaml
+
+   EOX_CORE_ENROLLMENT_BACKEND: "eox_core.edxapp_wrapper.backends.enrollment_o_v1"
 
 These settings can be changed in ``eox_core/settings/common.py`` or, for example, in ansible configurations.
 

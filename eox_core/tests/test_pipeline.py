@@ -196,7 +196,7 @@ class SignupSourceRegistration(TestCase):
 
         create_signup_source_for_new_association(self.user_mock, **kwargs)
 
-        signup_source_mock.objects.get_or_create.called_once_with(
+        signup_source_mock.objects.get_or_create.assert_called_once_with(
             user=self.user_mock,
             site=self.site_mock,
         )
@@ -217,7 +217,7 @@ class SignupSourceRegistration(TestCase):
 
         ensure_user_has_signup_source(self.user_mock, **kwargs)
 
-        signup_source_mock.objects.get_or_create.called_once_with(
+        signup_source_mock.objects.get_or_create.assert_called_once_with(
             user=self.user_mock,
             site=self.site_mock,
         )
@@ -241,7 +241,7 @@ class SignupSourceRegistration(TestCase):
 
         create_signup_source_for_new_association(self.user_mock, **kwargs)
 
-        signup_source_mock.objects.get_or_create.called_once_with(
+        signup_source_mock.objects.get_or_create.assert_called_once_with(
             user=self.user_mock,
             site=self.site_mock,
         )
@@ -262,7 +262,7 @@ class SignupSourceRegistration(TestCase):
 
         ensure_user_has_signup_source(self.user_mock, **kwargs)
 
-        signup_source_mock.objects.get_or_create.called_once_with(
+        signup_source_mock.objects.get_or_create.assert_called_once_with(
             user=self.user_mock,
             site=self.site_mock,
         )

@@ -1,40 +1,30 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Backend for the create_edxapp_user that works under the open-release/hawthorn.beta1 tag
+Backend for the create_edxapp_user that works under the open-release/lilac.master tag
 """
 # pylint: disable=import-error, protected-access
-from __future__ import absolute_import, unicode_literals
-
 import datetime
 import logging
 
-from course_modes.models import CourseMode
+from common.djangoapps.course_modes.models import CourseMode
+from common.djangoapps.student.models import CourseEnrollment
 from django.contrib.auth.models import User
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
+from openedx.core.djangoapps.enrollments import api  # pylint: disable=ungrouped-imports
+from openedx.core.djangoapps.enrollments.errors import (  # pylint: disable=ungrouped-imports
+    CourseEnrollmentExistsError,
+    CourseModeNotFoundError,
+)
 from openedx.core.lib.exceptions import CourseNotFoundError
 from pytz import utc
 from rest_framework.exceptions import APIException, NotFound
-from student.models import CourseEnrollment
 
-from eox_core.edxapp_wrapper.backends.edxfuture_i_v1 import get_program
+from eox_core.edxapp_wrapper.backends.edxfuture_o_v1 import get_program
 from eox_core.edxapp_wrapper.coursekey import get_valid_course_key, validate_org
 from eox_core.edxapp_wrapper.users import check_edxapp_account_conflicts
-
-try:
-    # For Hawthorn and Ironwood versions.
-    from enrollment import api
-    from enrollment.errors import CourseEnrollmentExistsError, CourseModeNotFoundError
-except ImportError:
-    # For Juniper versions.
-    from openedx.core.djangoapps.enrollments import api  # pylint: disable=ungrouped-imports
-    from openedx.core.djangoapps.enrollments.errors import (  # pylint: disable=ungrouped-imports
-        CourseEnrollmentExistsError,
-        CourseModeNotFoundError,
-    )
-
 
 LOG = logging.getLogger(__name__)
 
@@ -218,6 +208,7 @@ def _enroll_on_course(user, course_id, *args, **kwargs):
             LOG.info('Force create enrollment %s, %s, %s', username, course_id, mode)
             enrollment = _force_create_enrollment(username, course_id, mode, is_active)
         else:
+            err_msg = None
             if not str(err):
                 err_msg = err.__class__.__name__
             raise APIException(detail=err_msg if err_msg else err) from err
