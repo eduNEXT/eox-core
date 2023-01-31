@@ -5,11 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/eduNEXT/eox-core/compare/v7.2.3...HEAD)
+## [Unreleased](https://github.com/eduNEXT/eox-core/compare/v8.0.0...HEAD)
 
 Please do not update the unreleased notes.
 
 <!-- Content should be placed here -->
+## [v8.0.0](https://github.com/eduNEXT/eox-core/compare/v7.2.3...v8.0.0) - 2023-01-31
+
+### [8.0.0](https://github.com/eduNEXT/eox-core/compare/v7.2.3...v8.0.0) (2023-01-31)
+
+#### ⚠ BREAKING CHANGES
+
+- add compatibility with olive
+
+#### Performance Improvements
+
+- add compatibility with Open edX olive release ([#244](https://github.com/eduNEXT/eox-core/issues/244)) ([517b603](https://github.com/eduNEXT/eox-core/commit/517b603e593648d9cfbb1152349f9909b93547f9))
+
 ## [v7.2.3](https://github.com/eduNEXT/eox-core/compare/v7.2.2...v7.2.3) - 2023-01-12
 
 ### [7.2.3](https://github.com/eduNEXT/eox-core/compare/v7.2.2...v7.2.3) (2023-01-12)
