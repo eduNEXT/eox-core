@@ -131,6 +131,10 @@ def plugin_settings(settings):  # pylint: disable=function-redefined
         'EOX_CORE_SENTRY_ENVIRONMENT',
         settings.EOX_CORE_SENTRY_ENVIRONMENT
     )
+    sentry_extra_options = getattr(settings, 'ENV_TOKENS', {}).get(
+        'EOX_CORE_SENTRY_EXTRA_OPTIONS',
+        settings.EOX_CORE_SENTRY_EXTRA_OPTIONS
+    )
 
     if sentry_sdk is not None and sentry_integration_dsn is not None:
         from eox_core.integrations.sentry import ExceptionFilterSentry  # pylint: disable=import-outside-toplevel
@@ -141,7 +145,7 @@ def plugin_settings(settings):  # pylint: disable=function-redefined
             integrations=[
                 DjangoIntegration(),
             ],
-
+            **sentry_extra_options,
             # If you wish to associate users to errors (assuming you are using
             # django.contrib.auth) you may enable sending PII data.
             send_default_pii=True
