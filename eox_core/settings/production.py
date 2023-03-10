@@ -145,8 +145,8 @@ def plugin_settings(settings):  # pylint: disable=function-redefined
             integrations=[
                 DjangoIntegration(),
             ],
-            **sentry_extra_options,
             # If you wish to associate users to errors (assuming you are using
             # django.contrib.auth) you may enable sending PII data.
-            send_default_pii=True
+            send_default_pii=True,
+            **sentry_extra_options
         )
