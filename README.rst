@@ -181,9 +181,11 @@ The plugin offers some integrations listed below:
 
         EOX_CORE_SENTRY_INTEGRATION_DSN: <your DSN value>
         EOX_CORE_SENTRY_IGNORED_ERRORS: [] # optional
+        EOX_CORE_SENTRY_EXTRA_OPTIONS: {} # optional
 
      By default, **EOX_CORE_SENTRY_INTEGRATION_DSN** setting is None, which disables the sentry integration.
      **EOX_CORE_SENTRY_IGNORED_ERRORS** is optional. It is a list of the exceptions you want to ignore. For instance, it can be defined as:
+     **EOX_CORE_SENTRY_EXTRA_OPTIONS** is optional. It is a dictionary with extra options to be passed to the sentry client. For instance, it can be defined as:
 
      .. code-block:: yaml
 
@@ -191,6 +193,12 @@ The plugin offers some integrations listed below:
           'xmodule.exceptions.NotFoundError',
           'openedx.core.djangoapps.user_authn.exceptions.AuthFailedError',
         ]
+        EOX_CORE_SENTRY_EXTRA_OPTIONS:
+            experiments: 
+               profiles_sample_rate: 0.5
+            another_client_parameter: 'value'
+
+        
 
 EOX core migration notes
 ========================
