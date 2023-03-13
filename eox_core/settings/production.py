@@ -138,12 +138,20 @@ def plugin_settings(settings):  # pylint: disable=function-redefined
 
     if sentry_sdk is not None and sentry_integration_dsn is not None:
         from eox_core.integrations.sentry import ExceptionFilterSentry  # pylint: disable=import-outside-toplevel
+        from sentry_sdk.integrations.logging import LoggingIntegration
+        import logging
+
+        SENTRY_LOG_LEVEL = logging.INFO
+        sentry_logging = LoggingIntegration(
+            level=SENTRY_LOG_LEVEL,  # Capture info and above as breadcrumbs
+            event_level=logging.ERROR,  # Send errors as events
+        )
         sentry_sdk.init(
             before_send=ExceptionFilterSentry(),
             dsn=sentry_integration_dsn,
             environment=sentry_environment,
             integrations=[
-                DjangoIntegration(),
+                DjangoIntegration(), sentry_logging
             ],
             # If you wish to associate users to errors (assuming you are using
             # django.contrib.auth) you may enable sending PII data.
