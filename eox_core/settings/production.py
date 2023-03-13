@@ -158,3 +158,4 @@ def plugin_settings(settings):  # pylint: disable=function-redefined
             send_default_pii=True,
             **sentry_extra_options
         )
+        logging.info("Sentry integration enabled")
