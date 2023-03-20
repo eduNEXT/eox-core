@@ -5,11 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/eduNEXT/eox-core/compare/v8.0.0...HEAD)
+## [Unreleased](https://github.com/eduNEXT/eox-core/compare/v8.1.0...HEAD)
 
 Please do not update the unreleased notes.
 
 <!-- Content should be placed here -->
+## [v8.1.0](https://github.com/eduNEXT/eox-core/compare/v8.0.0...v8.1.0) - 2023-03-20
+
+### [8.1.0](https://github.com/eduNEXT/eox-core/compare/v8.0.0...v8.1.0) (2023-03-20)
+
+#### Features
+
+- allow sentry to receive extra params ([#248](https://github.com/eduNEXT/eox-core/issues/248)) ([3773f3d](https://github.com/eduNEXT/eox-core/commit/3773f3d74136f47a10ba49751744235e782324d0))
+
 ## [v8.0.0](https://github.com/eduNEXT/eox-core/compare/v7.2.3...v8.0.0) - 2023-01-31
 
 ### [8.0.0](https://github.com/eduNEXT/eox-core/compare/v7.2.3...v8.0.0) (2023-01-31)
