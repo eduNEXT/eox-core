@@ -76,6 +76,7 @@ def plugin_settings(settings):
     # regex, the exception is ignored if any of the regex matches the traceback text.
     settings.EOX_CORE_SENTRY_IGNORED_ERRORS = []
     settings.EOX_CORE_SENTRY_ENVIRONMENT = None
+    settings.EOX_CORE_SENTRY_EXTRA_OPTIONS = {}
 
     if find_spec('eox_audit_model') and EOX_AUDIT_MODEL_APP not in settings.INSTALLED_APPS:
         settings.INSTALLED_APPS.append(EOX_AUDIT_MODEL_APP)
