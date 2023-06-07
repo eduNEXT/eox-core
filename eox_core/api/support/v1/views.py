@@ -230,7 +230,7 @@ class OauthApplicationAPIView(UserQueryMixin, APIView):
             user, message = create_edxapp_user(**user_creation_data)
 
         if not user:
-            LOG.error(message)
+            LOG.exception(message)
 
             return Response(message, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 

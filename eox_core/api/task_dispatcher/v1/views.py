@@ -122,8 +122,8 @@ class TaskAPI(APIView):
             module = import_module(module_path)
             return getattr(module, task_name)
         except ImportError:
-            LOG.error("ImportError while importing %s", module_path)
+            LOG.exception("ImportError while importing %s", module_path)
             return None
         except AttributeError:
-            LOG.error("AttributeError while importing %s", task_name)
+            LOG.exception("AttributeError while importing %s", task_name)
             return None
