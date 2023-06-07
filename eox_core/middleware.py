@@ -104,10 +104,10 @@ class PathRedirectionMiddleware(MiddlewareMixin):
                 except Http404:  # we expect 404 to be raised
                     raise
                 except Exception as error:  # pylint: disable=broad-except
-                    LOG.error("The PathRedirectionMiddleware generated an error at: %s%s",
+                    LOG.exception("The PathRedirectionMiddleware generated an error at: %s%s",
                               request.get_host(),
                               request.get_full_path())
-                    LOG.error(error)
+                    LOG.exception(error)
                     return None
         return None
 
@@ -135,10 +135,10 @@ class PathRedirectionMiddleware(MiddlewareMixin):
                 values = {key: value}
                 return self.redirect_always(key=key, values=values)
             except Exception as error:  # pylint: disable=broad-except
-                LOG.error("The PathRedirectionMiddleware generated an error at: %s%s",
+                LOG.exception("The PathRedirectionMiddleware generated an error at: %s%s",
                           request.get_host(),
                           request.get_full_path())
-                LOG.error(error)
+                LOG.exception(error)
                 return None
         return None
 
@@ -266,7 +266,7 @@ class TPAExceptionMiddleware(ExceptionMiddleware):
                 exception.backend,
                 str(exception),
             )
-            LOG.error("%s", exception)
+            LOG.exception("%s", exception)
             return super().process_exception(request, new_exception)
 
         if isinstance(exception, IntegrityError):
@@ -275,7 +275,7 @@ class TPAExceptionMiddleware(ExceptionMiddleware):
                 backend,
                 "The given email address is associated with another account",
             )
-            LOG.error("%s", exception)
+            LOG.exception("%s", exception)
             return super().process_exception(request, new_exception)
 
         if isinstance(exception, HTTPError):
@@ -284,7 +284,7 @@ class TPAExceptionMiddleware(ExceptionMiddleware):
                 backend,
                 "Unable to connect with the external provider",
             )
-            LOG.error("%s", exception)
+            LOG.exception("%s", exception)
             return super().process_exception(request, new_exception)
 
         return super().process_exception(request, exception)

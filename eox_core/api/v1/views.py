@@ -921,7 +921,7 @@ class EdxappEnrollment(UserQueryMixin, APIView):
         Handle exception: log it
         """
         if isinstance(exc, APIException):
-            LOG.error("API Error: %s", repr(exc.detail))
+            LOG.exception("API Error: %s", repr(exc.detail))
 
         return super().handle_exception(exc)
 
@@ -1045,7 +1045,7 @@ class EdxappPreEnrollment(APIView):
             for key, value in data.items():
                 log_data.append(f"{key}: {value}")
 
-        LOG.error(" ".join(log_data))
+        LOG.exception(" ".join(log_data))
 
 
 class EdxappGrade(UserQueryMixin, APIView):
