@@ -7,9 +7,9 @@ from crum import get_current_request
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models.signals import post_save
-
 from openedx_filters import PipelineStep
-from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers # pylint: disable=import-error
+
+from eox_core.edxapp_wrapper.configuration_helpers import get_configuration_helper
 from eox_core.edxapp_wrapper.users import (
     generate_password,
     get_user_attribute,
@@ -224,6 +224,7 @@ def ensure_user_has_signup_source(user=None, *args, **kwargs):
             **locals()
         )
 
+
 class AddCustomOptionsOnAccountSettings(PipelineStep):
     """ Pipeline used to add custom option fields in account settings.
 
@@ -244,13 +245,15 @@ class AddCustomOptionsOnAccountSettings(PipelineStep):
         """ Run the pipeline filter. """
         extended_profile_fields = context.get("extended_profile_fields", [])
 
-        custom_options, field_labels_map = self._get_custom_context(extended_profile_fields)  # pylint: disable=line-too-long
+        custom_options, field_labels_map = self._get_custom_context(extended_profile_fields)
 
-        extended_profile_field_options = configuration_helpers.get_value('EXTRA_FIELD_OPTIONS', custom_options)  # pylint: disable=line-too-long
+        conf_helper = get_configuration_helper()
+
+        extended_profile_field_options = conf_helper.get_value('EXTRA_FIELD_OPTIONS', custom_options)
         extended_profile_field_option_tuples = {}
         for field in extended_profile_field_options.keys():
             field_options = extended_profile_field_options[field]
-            extended_profile_field_option_tuples[field] = [(option.lower(), option) for option in field_options]  # pylint: disable=line-too-long
+            extended_profile_field_option_tuples[field] = [(option.lower(), option) for option in field_options]
 
         for field in custom_options:
             field_dict = {
@@ -265,7 +268,7 @@ class AddCustomOptionsOnAccountSettings(PipelineStep):
             else:
                 field_dict["field_type"] = "TextField"
 
-            field_index = next((index for (index, d) in enumerate(extended_profile_fields) if d["field_name"] == field_dict["field_name"]), None)  # pylint: disable=line-too-long
+            field_index = next((index for (index, d) in enumerate(extended_profile_fields) if d["field_name"] == field_dict["field_name"]), None)
             if field_index is not None:
                 context["extended_profile_fields"][field_index] = field_dict
         return context
@@ -284,8 +287,8 @@ class AddCustomOptionsOnAccountSettings(PipelineStep):
                 raise ImproperlyConfigured(msg)
 
             field_label = field.get("label")
-            if not any(extended_field['field_name'] == field_name for extended_field in extended_profile_fields) and field_label:  # pylint: disable=line-too-long
-                field_labels[field_name] = _(field_label)  # pylint: disable=translation-of-non-string
+            if not any(extended_field['field_name'] == field_name for extended_field in extended_profile_fields) and field_label:
+                field_labels[field_name] = (field_label)
 
             options = field.get("options")
 

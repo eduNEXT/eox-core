@@ -183,6 +183,8 @@ oauthlib==3.2.2
     # via django-oauth-toolkit
 openedx-events==0.13.0
     # via -r requirements/base.in
+openedx-filters==1.2.0
+    # via -r requirements/base.in
 packaging==23.0
     # via drf-yasg
 pbr==5.11.1
