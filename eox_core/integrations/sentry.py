@@ -76,6 +76,8 @@ class ExceptionFilterSentry:
         if 'exc_info' in hint:
             _exc_type, exc_value, _tb = hint['exc_info']
             self.exc_value = exc_value
+            if not self.exc_text:
+                self.exc_text = str(exc_value)
 
     def clear_exception_values(self):
         """
