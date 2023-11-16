@@ -38,6 +38,7 @@ from openedx.core.djangoapps.user_authn.views.register import \
     REGISTER_USER as post_register  # pylint: disable=import-error
 from openedx.core.djangoapps.user_authn.views.registration_form import (  # pylint: disable=import-error
     AccountCreationForm,
+    get_registration_extension_form,
 )
 from openedx.core.djangolib.oauth2_retirement_utils import \
     retire_dot_oauth2_models  # pylint: disable=import-error,unused-import
@@ -133,9 +134,9 @@ def create_edxapp_user(*args, **kwargs):
 
     # Go ahead and create the new user
     with transaction.atomic():
-        # In theory is possible to extend the registration form with a custom app
+        # Is possible to extend the registration form with a custom app
         # An example form app for this can be found at http://github.com/open-craft/custom-form-app
-        # form = get_registration_extension_form(data=params)
+        custom_form = get_registration_extension_form(data=kwargs)
         # if not form:
         form = EdnxAccountCreationForm(
             data=kwargs,
@@ -144,7 +145,7 @@ def create_edxapp_user(*args, **kwargs):
             extended_profile_fields=extended_profile_fields,
             # enforce_password_policy=enforce_password_policy,
         )
-        (user, profile, registration) = do_create_account(form)  # pylint: disable=unused-variable
+        (user, profile, registration) = do_create_account(form, custom_form)  # pylint: disable=unused-variable
 
     site = kwargs.pop("site", False)
     if site:
