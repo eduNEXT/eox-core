@@ -5,11 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/eduNEXT/eox-core/compare/v8.1.0...HEAD)
+## [Unreleased](https://github.com/eduNEXT/eox-core/compare/v8.2.0...HEAD)
 
 Please do not update the unreleased notes.
 
 <!-- Content should be placed here -->
+## [v8.2.0](https://github.com/eduNEXT/eox-core/compare/v8.1.0...v8.2.0) - 2023-11-18
+
+### [8.2.0](https://github.com/eduNEXT/eox-core/compare/v8.1.0...v8.2.0) (2023-11-18)
+
+#### Features
+
+- add string represantion to exc_value ([#251](https://github.com/eduNEXT/eox-core/issues/251)) ([1eacfb5](https://github.com/eduNEXT/eox-core/commit/1eacfb5fd5ad43cc69ede869e8227d59c3fc818d)), closes [/github.com/eduNEXT/eox-core/blob/v6.1.0/eox_core/integrations/sentry.py#L154](https://github.com/eduNEXT//github.com/eduNEXT/eox-core/blob/v6.1.0/eox_core/integrations/sentry.py/issues/L154)
+
 ## [v8.1.0](https://github.com/eduNEXT/eox-core/compare/v8.0.0...v8.1.0) - 2023-03-20
 
 ### [8.1.0](https://github.com/eduNEXT/eox-core/compare/v8.0.0...v8.1.0) (2023-03-20)
