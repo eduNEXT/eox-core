@@ -201,9 +201,11 @@ class ConfigurableOpenIdConnectAuth(OpenIdConnectAuth):
                 LOG.info("Updating uid: %s to %s", uid, slug_uid)
 
         return slug_uid
-# TODO: Use the `from social_core.backends.oauth import BaseOAuth2PKCE` base class once the pull request is merged: https://github.com/python-social-auth/social-core/pull/856/files#diff-d44db201b48f2ec7cab2a0c981213a2991630567778cc6608d03fa0e3804e466R467
+
+
 class BaseOAuth2PKCEMixin:
     """
+    TO-DO: Use the `from social_core.backends.oauth import BaseOAuth2PKCE` base class once the pull request is merged: https://github.com/python-social-auth/social-core/pull/856/files#diff-d44db201b48f2ec7cab2a0c981213a2991630567778cc6608d03fa0e3804e466R467
     Base class for providers using OAuth2 with Proof Key for Code Exchange (PKCE).
     OAuth2 details at:
         https://datatracker.ietf.org/doc/html/rfc6749
@@ -266,13 +268,14 @@ class BaseOAuth2PKCEMixin:
 
         return params
 
+
 class ConfigurableOpenIdConnectAuthPKCE(BaseOAuth2PKCEMixin, ConfigurableOpenIdConnectAuth):
     """
-    Generic backend based in ConfigurableOpenIdConnectAuth but 
+    Generic backend based in ConfigurableOpenIdConnectAuth but
     with PKCE.
     This backend is inspired  in the social-core way to implement PKCE.
-    There is a current PR in working, but for the moment, that class is not merged and accesible. 
-    So after that is finished this has it code for `code_challenge` and `code_challenge_method`implementation.
+    There is a current PR in working, but for the moment, that class is not merged and accesible.
+    So after that is finished we use `BaseOAuth2PKCEMixin` for `code_challenge` and `code_challenge_method`implementation.
     PR: https://github.com/python-social-auth/social-core/pull/856
     Block code:  https://github.com/python-social-auth/social-core/pull/856/files#diff-d44db201b48f2ec7cab2a0c981213a2991630567778cc6608d03fa0e3804e466R467-R530
 
@@ -281,55 +284,3 @@ class ConfigurableOpenIdConnectAuthPKCE(BaseOAuth2PKCEMixin, ConfigurableOpenIdC
     PKCE_DEFAULT_CODE_CHALLENGE_METHOD = "s256"
     PKCE_DEFAULT_CODE_VERIFIER_LENGTH = 32
     USE_PKCE = True
-
-    def create_code_verifier(self):
-        name = self.name + "_code_verifier"
-        code_verifier_len = self.setting(
-            "PKCE_CODE_VERIFIER_LENGTH", default=self.PKCE_DEFAULT_CODE_VERIFIER_LENGTH
-        )
-        code_verifier = self.strategy.random_string(code_verifier_len)
-        self.strategy.session_set(name, code_verifier)
-        return code_verifier
-
-    def get_code_verifier(self):
-        name = self.name + "_code_verifier"
-        code_verifier = self.strategy.session_get(name)
-        return code_verifier
-
-    def generate_code_challenge(self, code_verifier, challenge_method):
-        method = challenge_method.lower()
-        if method == "s256":
-            hashed = hashlib.sha256(code_verifier.encode()).digest()
-            encoded = base64.urlsafe_b64encode(hashed)
-            code_challenge = encoded.decode().replace("=", "")  # remove padding
-            return code_challenge
-        elif method == "plain":
-            return code_verifier
-        else:
-            raise AuthException("Unsupported code challenge method.")
-
-    def auth_params(self, state=None):
-        params = super().auth_params(state=state)
-
-        if self.USE_PKCE:
-            code_challenge_method = self.setting(
-                "PKCE_CODE_CHALLENGE_METHOD",
-                default=self.PKCE_DEFAULT_CODE_CHALLENGE_METHOD,
-            )
-            code_verifier = self.create_code_verifier()
-            code_challenge = self.generate_code_challenge(
-                code_verifier, code_challenge_method
-            )
-            params["code_challenge_method"] = code_challenge_method
-            params["code_challenge"] = code_challenge
-        return params
-
-    def auth_complete_params(self, state=None):
-        params = super().auth_complete_params(state=state)
-
-        if self.USE_PKCE:
-            code_verifier = self.get_code_verifier()
-            params["code_verifier"] = code_verifier
-
-        return params
-
