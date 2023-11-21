@@ -11,7 +11,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: 'Auto-assign PR-Issue'
-              uses: pozil/auto-assign-issue@v1.5.0
+              uses: pozil/auto-assign-issue@v1.13.0
               with:
                 repo-token: ${{ secrets.DEDALO_PAT }}
                 teams: django-plugins-teco
