@@ -281,6 +281,3 @@ class ConfigurableOpenIdConnectAuthPKCE(BaseOAuth2PKCEMixin, ConfigurableOpenIdC
 
     """
     name = 'config-based-openidconnect-PKCE'
-    PKCE_DEFAULT_CODE_CHALLENGE_METHOD = "s256"
-    PKCE_DEFAULT_CODE_VERIFIER_LENGTH = 32
-    USE_PKCE = True
