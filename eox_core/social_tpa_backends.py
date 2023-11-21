@@ -218,7 +218,7 @@ class BaseOAuth2PKCEMixin:
     DEFAULT_USE_PKCE = True
 
     def create_code_verifier(self):
-        name = self.name + "_code_verifier"
+        name = f"{self.name}_code_verifier"
         code_verifier_len = self.setting(
             "PKCE_CODE_VERIFIER_LENGTH", default=self.PKCE_DEFAULT_CODE_VERIFIER_LENGTH
         )
@@ -227,7 +227,7 @@ class BaseOAuth2PKCEMixin:
         return code_verifier
 
     def get_code_verifier(self):
-        name = self.name + "_code_verifier"
+        name = f"{self.name}_code_verifier"
         code_verifier = self.strategy.session_get(name)
         return code_verifier
 
@@ -238,10 +238,9 @@ class BaseOAuth2PKCEMixin:
             encoded = base64.urlsafe_b64encode(hashed)
             code_challenge = encoded.decode().replace("=", "")  # remove padding
             return code_challenge
-        elif method == "plain":
+        if method == "plain":
             return code_verifier
-        else:
-            raise AuthException("Unsupported code challenge method.")
+        raise AuthException("Unsupported code challenge method.")
 
     def auth_params(self, state=None):
         params = super().auth_params(state=state)
