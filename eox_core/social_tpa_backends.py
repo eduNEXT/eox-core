@@ -5,13 +5,10 @@ import logging
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
-
-from eox_core.edxapp_wrapper.configuration_helpers import get_configuration_helper
-
 from social_core.backends.open_id_connect import OpenIdConnectAuth
-
 from social_core.exceptions import AuthMissingParameter
 
+from eox_core.edxapp_wrapper.configuration_helpers import get_configuration_helper
 
 configuration_helper = get_configuration_helper()  # pylint: disable=invalid-name
 

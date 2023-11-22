@@ -21,14 +21,12 @@ from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse
 from django.utils.deprecation import MiddlewareMixin
 from requests.exceptions import HTTPError
+from social_core.exceptions import AuthAlreadyAssociated, AuthFailed, AuthUnreachableProvider
 
 from eox_core.edxapp_wrapper.configuration_helpers import get_configuration_helper
 from eox_core.edxapp_wrapper.third_party_auth import get_tpa_exception_middleware
 from eox_core.models import Redirection
 from eox_core.utils import cache, fasthash
-
-from social_core.exceptions import AuthAlreadyAssociated, AuthFailed, AuthUnreachableProvider
-
 
 try:
     from eox_tenant.pipeline import EoxTenantAuthException
