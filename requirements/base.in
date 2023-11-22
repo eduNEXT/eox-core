@@ -15,3 +15,4 @@ openedx-events
 django
 click
 edx-drf-extensions
+social-auth-core

@@ -14,11 +14,8 @@ from eox_core.edxapp_wrapper.users import (
 )
 from eox_core.logging import logging_pipeline_step
 
-try:
-    from social_core.exceptions import AuthFailed, NotAllowedToDisconnect
-except ImportError:
-    AuthFailed = object
-    NotAllowedToDisconnect = object
+from social_core.exceptions import AuthFailed, NotAllowedToDisconnect
+
 
 UserSignupSource = get_user_signup_source()  # pylint: disable=invalid-name
 LOG = logging.getLogger(__name__)

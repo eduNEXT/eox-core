@@ -27,12 +27,8 @@ from eox_core.edxapp_wrapper.third_party_auth import get_tpa_exception_middlewar
 from eox_core.models import Redirection
 from eox_core.utils import cache, fasthash
 
-try:
-    from social_core.exceptions import AuthAlreadyAssociated, AuthFailed, AuthUnreachableProvider
-except ImportError:
-    AuthUnreachableProvider = Exception
-    AuthAlreadyAssociated = Exception
-    AuthFailed = Exception
+from social_core.exceptions import AuthAlreadyAssociated, AuthFailed, AuthUnreachableProvider
+
 
 try:
     from eox_tenant.pipeline import EoxTenantAuthException
