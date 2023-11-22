@@ -16,7 +16,7 @@ LOG = logging.getLogger(__name__)
 User = get_user_model()  # pylint: disable=invalid-name
 
 
-class ConfigurableOpenIdConnectAuth(OpenIdConnectAuth):
+class ConfigurableOpenIdConnectAuth(OpenIdConnectAuth):     # pylint: disable=abstract-method
     """
     Generic backend that can be configured via the site settings
     """
