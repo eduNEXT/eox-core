@@ -8,18 +8,23 @@ from django.contrib.auth import get_user_model
 
 from eox_core.edxapp_wrapper.configuration_helpers import get_configuration_helper
 
+LOG = logging.getLogger(__name__)
+
 try:
     from social_core.backends.open_id_connect import OpenIdConnectAuth
 except ImportError:
     OpenIdConnectAuth = object
+    LOG.error("ImportError while importing %s", OpenIdConnectAuth)
+
 try:
     from social_core.exceptions import AuthMissingParameter
 except ImportError:
     AuthMissingParameter = Exception
+    LOG.error("ImportError while importing %s", AuthMissingParameter)
+
 
 configuration_helper = get_configuration_helper()  # pylint: disable=invalid-name
 
-LOG = logging.getLogger(__name__)
 User = get_user_model()  # pylint: disable=invalid-name
 
 

@@ -6,15 +6,20 @@ Backend for the CourseKey validations that works under the open-release/hawthorn
 # pylint: disable=import-error, protected-access
 from __future__ import absolute_import, unicode_literals
 
+import logging
+
 from django.conf import settings
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
 from rest_framework.serializers import ValidationError
 
+LOG = logging.getLogger(__name__)
+
 try:
     from openedx.core.djangoapps.site_configuration.helpers import get_all_orgs, get_current_site_orgs
 except ImportError:
     get_all_orgs, get_current_site_orgs = object, object  # pylint: disable=invalid-name
+    LOG.error("ImportError while importing %s", get_all_orgs, get_current_site_orgs)
 
 
 def get_valid_course_key(course_id):
