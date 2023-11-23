@@ -1,13 +1,18 @@
 """
 Settings for eox_core project meant to be called on the edx-platform/*/envs/aws.py module
 """
+import logging
+
 from .common import *  # pylint: disable=wildcard-import, unused-wildcard-import
+
+LOG = logging.getLogger(__name__)
 
 try:
     import sentry_sdk
     from sentry_sdk.integrations.django import DjangoIntegration
 except ImportError:
     sentry_sdk = DjangoIntegration = None
+    LOG.error("ImportError while importing %s", ImportError)
 
 
 def plugin_settings(settings):  # pylint: disable=function-redefined

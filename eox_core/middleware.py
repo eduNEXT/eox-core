@@ -28,6 +28,8 @@ from eox_core.edxapp_wrapper.third_party_auth import get_tpa_exception_middlewar
 from eox_core.models import Redirection
 from eox_core.utils import cache, fasthash
 
+LOG = logging.getLogger(__name__)
+
 try:
     from eox_tenant.pipeline import EoxTenantAuthException
 except ImportError:
@@ -35,11 +37,12 @@ except ImportError:
     class EoxTenantAuthException:
         """Dummy eox-tenant Exception."""
 
+    LOG.warning("ImportError while importing %s", EoxTenantAuthException)
+
 
 configuration_helper = get_configuration_helper()  # pylint: disable=invalid-name
 ExceptionMiddleware = get_tpa_exception_middleware()
 
-LOG = logging.getLogger(__name__)
 
 
 class PathRedirectionMiddleware(MiddlewareMixin):
