@@ -18,7 +18,7 @@ backports-zoneinfo[tzdata]==0.2.1
     #   kombu
 billiard==4.2.0
     # via celery
-celery==5.3.5
+celery==5.3.6
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/base.in
@@ -81,7 +81,7 @@ django-filter==23.4
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/base.in
-django-ipware==5.0.2
+django-ipware==6.0.0
     # via edx-proctoring
 django-model-utils==4.3.1
     # via
@@ -132,9 +132,10 @@ edx-django-utils==5.8.0
 edx-drf-extensions==8.13.1
     # via
     #   -c requirements/constraints.txt
+    #   -r requirements/base.in
     #   edx-proctoring
     #   edx-when
-edx-opaque-keys[django]==2.3.0
+edx-opaque-keys[django]==2.5.1
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/base.in
@@ -217,6 +218,8 @@ python-dateutil==2.8.2
     #   celery
     #   edx-proctoring
     #   xblock
+python-ipware==2.0.0
+    # via django-ipware
 python3-openid==3.2.0
     # via social-auth-core
 pytz==2023.3.post1
@@ -267,6 +270,7 @@ stevedore==5.1.0
 typing-extensions==4.8.0
     # via
     #   asgiref
+    #   edx-opaque-keys
     #   kombu
 tzdata==2023.3
     # via
