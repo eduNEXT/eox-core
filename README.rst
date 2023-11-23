@@ -104,6 +104,14 @@ Compatibility Notes
 The following changes to the plugin settings are necessary. If the release you are looking for is
 not listed, then the accumulation of changes from previous releases is enough.
 
+**Lilac**
+
+.. code-block:: yaml
+
+   EOX_CORE_USERS_BACKEND: "eox_core.edxapp_wrapper.backends.users_l_v1"
+   EOX_CORE_PRE_ENROLLMENT_BACKEND: "eox_core.edxapp_wrapper.backends.pre_enrollment_l_v1"
+   EOX_CORE_ENROLLMENT_BACKEND: "eox_core.edxapp_wrapper.backends.enrollment_l_v1"
+
 **Maple**
 
 .. code-block:: yaml
