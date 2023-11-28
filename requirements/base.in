@@ -14,3 +14,4 @@ edx-opaque-keys[django]==2.3.0
 openedx-events
 django
 click
+edx-drf-extensions

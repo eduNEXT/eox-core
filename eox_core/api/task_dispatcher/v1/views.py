@@ -7,6 +7,7 @@ from importlib import import_module
 import celery
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
+from edx_rest_framework_extensions.auth.jwt.authentication import JwtAuthentication
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND
@@ -29,7 +30,7 @@ class TaskAPI(APIView):
     Celery task dispatcher API
     """
 
-    authentication_classes = [BearerAuthentication]
+    authentication_classes = (BearerAuthentication, JwtAuthentication)
     permission_classes = [IsAdminUser]
 
     def get(self, request):

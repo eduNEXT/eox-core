@@ -26,17 +26,16 @@
 							],
 							"request": {
 								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{token}}",
-											"type": "string"
-										}
-									]
+									"type": "noauth"
 								},
 								"method": "POST",
-								"header": [],
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}",
+										"type": "text"
+									}
+								],
 								"body": {
 									"mode": "raw",
 									"raw": "{\n   \"username\": \"{{username}}\",\n   \"email\": \"{{email}}\",\n   \"password\": \"p@ssword\",\n   \"fullname\": \"Edunext test\"\n}",
@@ -65,7 +64,13 @@
 									"name": "Create user",
 									"originalRequest": {
 										"method": "POST",
-										"header": [],
+										"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}",
+										"type": "text"
+									}
+								],
 										"body": {
 											"mode": "raw",
 											"raw": "{\n\t\"username\": \"lhurtado\",\n\t\"email\": \"hurtado@example.com\",\n\t\"password\": \"1234\",\n\t\"fullname\": \"Maga Hurtado\"\n}",
@@ -143,17 +148,16 @@
 							"name": "Get user",
 							"request": {
 								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{token}}",
-											"type": "string"
-										}
-									]
+									"type": "noauth"
 								},
 								"method": "GET",
-								"header": [],
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}",
+										"type": "text"
+									}
+								],
 								"url": {
 									"raw": "{{domain}}/eox-core/api/v1/user/?email={{email}}",
 									"host": [
@@ -179,7 +183,13 @@
 									"name": "Get user",
 									"originalRequest": {
 										"method": "GET",
-										"header": [],
+										"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}",
+										"type": "text"
+									}
+								],
 										"url": {
 											"raw": "http://lms.nutmeg.edunext.link/eox-core/api/v1/user/?email=hurtado@example.com",
 											"protocol": "http",
@@ -254,17 +264,16 @@
 							"name": "Update user",
 							"request": {
 								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{token}}",
-											"type": "string"
-										}
-									]
+									"type": "noauth"
 								},
 								"method": "PATCH",
-								"header": [],
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}",
+										"type": "text"
+									}
+								],
 								"body": {
 									"mode": "raw",
 									"raw": "{\n   \"email\": \"{{email}}\",\n   \"password\": \"new-pass\"\n}\n",
@@ -293,7 +302,13 @@
 									"name": "Update user",
 									"originalRequest": {
 										"method": "PATCH",
-										"header": [],
+										"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}",
+										"type": "text"
+									}
+								],
 										"body": {
 											"mode": "raw",
 											"raw": "{\n\t\"email\": \"hurtado@example.com\",\n\t\"password\": \"new-pass\"\n}\n",
@@ -372,17 +387,16 @@
 							"name": "Create enrollment",
 							"request": {
 								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{token}}",
-											"type": "string"
-										}
-									]
+									"type": "noauth"
 								},
 								"method": "POST",
-								"header": [],
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}",
+										"type": "text"
+									}
+								],
 								"body": {
 									"mode": "raw",
 									"raw": "{\n \"username\": \"{{username}}\",\n \"is_active\": true,\n \"mode\": \"audit\",\n \"enrollment_attributes\": [],\n \"course_id\": \"{{course_id}}\"\n}",
@@ -411,7 +425,13 @@
 									"name": "Create enrollment",
 									"originalRequest": {
 										"method": "POST",
-										"header": [],
+										"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}",
+										"type": "text"
+									}
+								],
 										"body": {
 											"mode": "raw",
 											"raw": "{\n \"username\": \"lhurtado\",\n \"is_active\": true,\n \"mode\": \"audit\",\n \"enrollment_attributes\": [],\n \"course_id\": \"course-v1:edX+DemoX+Demo_Course\"\n}\n",
@@ -488,17 +508,16 @@
 							},
 							"request": {
 								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{token}}",
-											"type": "string"
-										}
-									]
+									"type": "noauth"
 								},
 								"method": "GET",
-								"header": [],
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}",
+										"type": "text"
+									}
+								],
 								"body": {
 									"mode": "raw",
 									"raw": "{\n\"email\":\"{{email}}\",\n\"course_id\":\"{{course_id}}\"\n}",
@@ -527,7 +546,13 @@
 									"name": "Get enrollment",
 									"originalRequest": {
 										"method": "GET",
-										"header": [],
+										"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}",
+										"type": "text"
+									}
+								],
 										"url": {
 											"raw": "{{domain}}/eox-core/api/v1/enrollment/",
 											"host": [
@@ -604,17 +629,16 @@
 							"name": "Update enrollment",
 							"request": {
 								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{token}}",
-											"type": "string"
-										}
-									]
+									"type": "noauth"
 								},
 								"method": "PUT",
-								"header": [],
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}",
+										"type": "text"
+									}
+								],
 								"body": {
 									"mode": "raw",
 									"raw": "{\n \"username\": \"{{username}}\",\n \"is_active\": false,\n \"mode\": \"audit\",\n \"course_id\": \"{{course_id}}\"\n}",
@@ -643,7 +667,13 @@
 									"name": "Update enrollment",
 									"originalRequest": {
 										"method": "PUT",
-										"header": [],
+										"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}",
+										"type": "text"
+									}
+								],
 										"body": {
 											"mode": "raw",
 											"raw": "{\n \"username\": \"lhurtado\",\n \"is_active\": false,\n \"mode\": \"audit\",\n \"course_id\": \"course-v1:edX+DemoX+Demo_Course\"\n}",
@@ -717,17 +747,16 @@
 							"name": "Delete enrollment",
 							"request": {
 								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{token}}",
-											"type": "string"
-										}
-									]
+									"type": "noauth"
 								},
 								"method": "DELETE",
-								"header": [],
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}",
+										"type": "text"
+									}
+								],
 								"body": {
 									"mode": "raw",
 									"raw": "{\n\"email\": \"{{email}}\",\n\"course_id\": \"{{course_id}}\"\n}",
@@ -756,7 +785,13 @@
 									"name": "Delete enrollment",
 									"originalRequest": {
 										"method": "DELETE",
-										"header": [],
+										"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}",
+										"type": "text"
+									}
+								],
 										"body": {
 											"mode": "raw",
 											"raw": "{\n \"email\": \"hurtado@example.com\",\n \"course_id\": \"course-v1:edX+DemoX+Demo_Course\"\n}",
@@ -822,17 +857,16 @@
 							"name": "Create enrollment to test grade",
 							"request": {
 								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{token}}",
-											"type": "string"
-										}
-									]
+									"type": "noauth"
 								},
 								"method": "POST",
-								"header": [],
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}",
+										"type": "text"
+									}
+								],
 								"body": {
 									"mode": "raw",
 									"raw": "{\n \"username\": \"{{username}}\",\n \"is_active\": true,\n \"mode\": \"audit\",\n \"enrollment_attributes\": [],\n \"course_id\": \"{{course_id}}\"\n}\n",
@@ -861,7 +895,13 @@
 									"name": "Create enrollment",
 									"originalRequest": {
 										"method": "POST",
-										"header": [],
+										"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}",
+										"type": "text"
+									}
+								],
 										"body": {
 											"mode": "raw",
 											"raw": "{\n \"username\": \"lhurtado\",\n \"is_active\": true,\n \"mode\": \"audit\",\n \"enrollment_attributes\": [],\n \"course_id\": \"course-v1:edX+DemoX+Demo_Course\"\n}\n",
@@ -940,17 +980,16 @@
 							"name": "Create whitelistings",
 							"request": {
 								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{token}}",
-											"type": "string"
-										}
-									]
+									"type": "noauth"
 								},
 								"method": "POST",
-								"header": [],
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}",
+										"type": "text"
+									}
+								],
 								"body": {
 									"mode": "raw",
 									"raw": "{\n \"email\": \"newtest@example.com\",\n \"auto_enroll\": false,\n \"course_id\": \"{{course_id}}\"\n}\n",
@@ -1064,17 +1103,16 @@
 							},
 							"request": {
 								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{token}}",
-											"type": "string"
-										}
-									]
+									"type": "noauth"
 								},
 								"method": "GET",
-								"header": [],
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}",
+										"type": "text"
+									}
+								],
 								"body": {
 									"mode": "raw",
 									"raw": "{\n   \"email\": \"newtest@example.com\",\n   \"course_id\": \"{{course_id}}\"\n}",
@@ -1176,17 +1214,16 @@
 							"name": "Update whitelistings",
 							"request": {
 								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{token}}",
-											"type": "string"
-										}
-									]
+									"type": "noauth"
 								},
 								"method": "PUT",
-								"header": [],
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}",
+										"type": "text"
+									}
+								],
 								"body": {
 									"mode": "raw",
 									"raw": " {\n \"email\": \"newtest@example.com\",\n \"auto_enroll\": true,\n \"course_id\": \"{{course_id}}\"\n}",
@@ -1298,17 +1335,16 @@
 							"name": "Delete pre-enrollment",
 							"request": {
 								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{token}}",
-											"type": "string"
-										}
-									]
+									"type": "noauth"
 								},
 								"method": "DELETE",
-								"header": [],
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}",
+										"type": "text"
+									}
+								],
 								"body": {
 									"mode": "raw",
 									"raw": "{\n \"email\": \"newtest@example.com\",\n \"course_id\": \"{{course_id}}\"\n}",
@@ -1346,17 +1382,16 @@
 							},
 							"request": {
 								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{token}}",
-											"type": "string"
-										}
-									]
+									"type": "noauth"
 								},
 								"method": "GET",
-								"header": [],
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}",
+										"type": "text"
+									}
+								],
 								"body": {
 									"mode": "raw",
 									"raw": "{\n\"email\": \"{{email}}\",\n\"course_id\": \"{{course_id}}\",\n\"detailed\": \"true\",\n\"grading_policy\": \"true\"\n}",
@@ -1463,17 +1498,16 @@
 							"name": "Get user related to the authorization token",
 							"request": {
 								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{token}}",
-											"type": "string"
-										}
-									]
+									"type": "noauth"
 								},
 								"method": "GET",
-								"header": [],
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}",
+										"type": "text"
+									}
+								],
 								"url": {
 									"raw": "{{domain}}/eox-core/api/v1/userinfo",
 									"host": [
@@ -1583,17 +1617,16 @@
 					],
 					"request": {
 						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
+							"type": "noauth"
 						},
 						"method": "POST",
-						"header": [],
+						"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}",
+										"type": "text"
+									}
+								],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n   \"task_path\": \"{{task_path}}\",\n   \"task_parameters\": {\n       \"message\": \"Don't lose your grip on the dreams of the past, you must fight just to keep them alive\"\n   }\n}",
@@ -1637,17 +1670,16 @@
 					},
 					"request": {
 						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
+									"type": "noauth"
+								},
 						"method": "GET",
-						"header": [],
+						"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}",
+										"type": "text"
+									}
+								],
 						"body": {
 							"mode": "formdata",
 							"formdata": []
@@ -1679,17 +1711,16 @@
 					"name": "Check the status",
 					"request": {
 						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
+									"type": "noauth"
+								},
 						"method": "GET",
-						"header": [],
+						"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}",
+										"type": "text"
+									}
+								],
 						"url": {
 							"raw": "{{domain}}/eox-core/tasks-api/v1/tasks/?id=4ed69ed1-97f2-47eb-bf45-6f5bf01963b4",
 							"host": [
@@ -1721,17 +1752,16 @@
 					"name": "Update username",
 					"request": {
 						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
+									"type": "noauth"
+								},
 						"method": "PATCH",
-						"header": [],
+						"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}",
+										"type": "text"
+									}
+								],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"new_username\": \"supercool-{{username}}\"\n}",
@@ -1768,17 +1798,16 @@
 					"name": "Delete User",
 					"request": {
 						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
+									"type": "noauth"
+								},
 						"method": "DELETE",
-						"header": [],
+						"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}",
+										"type": "text"
+									}
+								],
 						"url": {
 							"raw": "{{domain}}/eox-core/support-api/v1/user/?username=supercool-{{username}}",
 							"host": [
@@ -1836,6 +1865,11 @@
 						{
 							"key": "grant_type",
 							"value": "{{grant_type}}",
+							"type": "text"
+						},
+						{
+							"key": "token_type",
+							"value": "jwt",
 							"type": "text"
 						}
 					]
