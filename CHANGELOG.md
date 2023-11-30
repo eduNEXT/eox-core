@@ -5,11 +5,59 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/eduNEXT/eox-core/compare/v8.2.0...HEAD)
+## [Unreleased](https://github.com/eduNEXT/eox-core/compare/v9.0.0...HEAD)
 
 Please do not update the unreleased notes.
 
 <!-- Content should be placed here -->
+## [v9.0.0](https://github.com/eduNEXT/eox-core/compare/v8.2.0...v9.0.0) - 2023-11-30
+
+### [9.0.0](https://github.com/eduNEXT/eox-core/compare/v8.2.0...v9.0.0) (2023-11-30)
+
+#### ⚠ BREAKING CHANGES
+
+* remove openedx-events constraint to use what's installed (#252)
+  
+* add compatibility with palm
+  
+* ci: update workflow versions
+  
+* chore: update constraints
+  
+* chore: update requirements
+  
+* fix: remove python 3.10 because it causes an error in the build created by backports-zoneinfo
+  
+* fix: add and avoid to use general exceptions
+  
+* fix: add timeout to the requests
+  
+* fix: wrong import order
+  
+* fix: improve pylint disables in code
+  
+* docs: update the README.rst
+  
+* fix: improve the exception to avoiding too general exception
+  
+* chore: avoid being too restrictive in the constraint edx-opaque-keys
+  
+* chore: update requirements
+  
+
+#### Features
+
+* add support for JWT authentication ([#258](https://github.com/eduNEXT/eox-core/issues/258)) ([292679d](https://github.com/eduNEXT/eox-core/commit/292679d9a65567a9ef221dbb641918a32695d836))
+
+#### Performance Improvements
+
+* add palm support DS-703 ([#254](https://github.com/eduNEXT/eox-core/issues/254)) ([732c1bf](https://github.com/eduNEXT/eox-core/commit/732c1bf6ff23a4f5c9098129217d11711e18ac88))
+
+#### Code Refactoring
+
+* remove all unused backends DS-703 ([#257](https://github.com/eduNEXT/eox-core/issues/257)) ([2b0c080](https://github.com/eduNEXT/eox-core/commit/2b0c0804f0ae7eae10f6898a28fb1fc05b287c2a))
+* remove openedx-events constraint to use what's installed ([#252](https://github.com/eduNEXT/eox-core/issues/252)) ([8f3c550](https://github.com/eduNEXT/eox-core/commit/8f3c550726599b7c82b90ab453b1e5309152a460))
+
 ## [v8.2.0](https://github.com/eduNEXT/eox-core/compare/v8.1.0...v8.2.0) - 2023-11-18
 
 ### [8.2.0](https://github.com/eduNEXT/eox-core/compare/v8.1.0...v8.2.0) (2023-11-18)
