@@ -9,74 +9,26 @@ endpoints in order to extend the functionality of the `edx-platform`_ and avoid 
 API endpoints includes bulk creation of pre-activated users (for example, skip sending an activation email), enrollments
 and pre-enrollment operations.
 
-Usage
-=====
+Installation
+============
 
-Open edX releases before juniper
---------------------------------
+#. Add this plugin in your Tutor ``config.yml`` in the ``OPENEDX_EXTRA_PIP_REQUIREMENTS`` variable.
+#. Save your configuration with ``tutor config save``.
+#. Build your open edx image with ``tutor images build openedx``.
+#. Launch your platform with ``tutor local launch``.
 
-#. Create the oauth client at http://localhost:18000/admin/oauth2/client/add/, copy the client-id and client-secret.
+**Note:** To use all the features, you need to have `the tutor-forum plugin <https://github.com/overhangio/tutor-forum>`_ and `the eox-tenant plugin <https://github.com/eduNEXT/eox-tenant>`_.
 
-#. Generate an auth-token using that client-id and client-secret:
+Features
+=========
+- Support redirections with middlewares.
+- Add pipelines to be used with ``openedx-filters``.
+- Add a group of APIs.
 
-   .. code-block:: bash
+   .. image:: docs/_images/eox-core-apis.png
+        :alt: Eox-core APIs
 
-      $ curl -X POST -d "client_id=<YOUR_CLIENT_ID>&client_secret=<YOUR_CLIENT_SECRET> &grant_type=client_credentials" http://localhost:18000/oauth2/access_token/
-
-#. Use the token to call the API as you need:
-
-   * User creation API example
-
-     .. code-block:: bash
-     
-        curl -X POST http://localhost:18000/eox-core/api/v1/user/ \
-             -H "Authorization: Bearer <YOUR_AUTH_TOKEN>" \
-             -H "Accept: application/json" \
-             -H "Content\-Type: application/json" \
-        	   --data  '{"username": "jsmith", "email": "jhon@example.com", "password": "qwerty123", "fullname": "Jhon Smith"}'
-
-   * Enroll api example
-
-     .. code-block:: bash
-
-        curl -X POST http://localhost:18000/eox-core/api/v1/enrollment/ \
-              -H "Authorization: Bearer <YOUR_AUTH_TOKEN>" \
-              -H "Accept: application/json" \
-              -H "Content\-Type: application/json" \
-         	   --data '{"course_id": "course-v1:edX+DemoX+Demo_Course", "email": "edx@example.com", "mode": "audit", "force": 1}'
-
-
-Open edX releases after juniper
--------------------------------
-
-Instead of step 1, follow:
-
-#. Create a Django Oauth Toolkit Application at http://localhost:18000/admin/oauth2_provider/application/add/,
-   copy the client-id and client-secret. Then follow 2 and 3.
-
-
-Installation on Open edX Devstack
-=================================
-
-* Install either the Ironwood or Juniper version of the `Open edX devstack`_
-
-* Clone the git repo:
-
-  .. code-block:: bash
-  
-     cd ~/Documents/eoxstack/src/  # Assuming that devstack is in  ~/Documents/eoxstack/devstack/
-     sudo mkdir edxapp
-     cd edxapp
-     git clone git@github.com:eduNEXT/eox-core.git
-
-- Install plugin from your server (in this case the devstack docker lms shell):
-
-  .. code-block:: bash
-  
-     cd ~/Documents/eoxstack/devstack  # Change for your devstack path (if you are using devstack)
-     make lms-shell  # Enter the devstack machine (or server where lms process lives)
-     cd /edx/src/edxapp/eox-core
-     pip install -e .
+You can find more information in `Help for devs doc <https://github.com/eduNEXT/eox-core/blob/master/docs/help_for_devs/0001-include-test-cases-files.rst>`_.
 
 Compatibility Notes
 --------------------
@@ -97,6 +49,8 @@ Compatibility Notes
 | Nutmeg           | >= 7.0       |
 +------------------+--------------+
 | Olive            | >= 8.0       |
++------------------+--------------+
+| Palm             | >= 9.0       |
 +------------------+--------------+
 
 **NOTE**: The Maple version does not support Django 2.2 but it does support Django 3.2 as of eox-core 7.0.
@@ -181,28 +135,6 @@ The plugin offers some integrations listed below:
             experiments: 
                profiles_sample_rate: 0.5
             another_client_parameter: 'value'
-
-        
-
-EOX core migration notes
-========================
-
-**Migrating to version 2.0.0**
-
-From version **2.0.0**, middlewares **RedirectionsMiddleware** and **PathRedirectionMiddleware** are now included in
-this plugin. These middlewares were moved from the **`eox-tenant`_** plugin.
-
-if you installed **eox-core** alongside **eox-tenant** plugin, follow the steps below:
-
-- Upgrade eox-tenant to version **1.0.0** (previous releases are not compatible with eox-core 2.0.0)
-- Run the plugin migrations as indicated below:
-
-.. code-block:: bash
-
-   $ python manage.py lms migrate eox_tenant --settings=<your app settings>
-   $ python manage.py lms migrate eox_core --fake-initial --settings=<your app settings>
-
-In case eox-tenant is not installed on the platform, just run the eox-core migrations.
 
 
 Auditing Django views

@@ -5,6 +5,7 @@ import logging
 
 from crum import get_current_request
 from django.db.models.signals import post_save
+from social_core.exceptions import AuthFailed, NotAllowedToDisconnect
 
 from eox_core.edxapp_wrapper.users import (
     generate_password,
@@ -13,12 +14,6 @@ from eox_core.edxapp_wrapper.users import (
     get_user_signup_source,
 )
 from eox_core.logging import logging_pipeline_step
-
-try:
-    from social_core.exceptions import AuthFailed, NotAllowedToDisconnect
-except ImportError:
-    AuthFailed = object
-    NotAllowedToDisconnect = object
 
 UserSignupSource = get_user_signup_source()  # pylint: disable=invalid-name
 LOG = logging.getLogger(__name__)

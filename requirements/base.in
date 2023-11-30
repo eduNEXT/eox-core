@@ -10,8 +10,9 @@ django-oauth2-provider
 django-waffle
 edx-api-doc-tools
 edx-proctoring>=2.0.1
-edx-opaque-keys[django]==2.3.0
+edx-opaque-keys[django]<3.0.0
 openedx-events
 django
 click
 edx-drf-extensions
+social-auth-core
