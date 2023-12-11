@@ -11,6 +11,7 @@ import edx_api_doc_tools as apidocs
 import six
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
+from edx_rest_framework_extensions.auth.jwt.authentication import JwtAuthentication
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.exceptions import APIException, NotFound, ValidationError
@@ -162,7 +163,7 @@ class EdxappUser(UserQueryMixin, APIView):
 
     """
 
-    authentication_classes = (BearerAuthentication, SessionAuthentication)
+    authentication_classes = (BearerAuthentication, SessionAuthentication, JwtAuthentication)
     permission_classes = (EoxCoreAPIPermission,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
@@ -395,7 +396,7 @@ class EdxappUserUpdater(UserQueryMixin, APIView):
         }
     """
 
-    authentication_classes = (BearerAuthentication, SessionAuthentication)
+    authentication_classes = (BearerAuthentication, SessionAuthentication, JwtAuthentication)
     permission_classes = (EoxCoreAPIPermission,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
@@ -531,7 +532,7 @@ class EdxappEnrollment(UserQueryMixin, APIView):
     Handles API requests to create users
     """
 
-    authentication_classes = (BearerAuthentication, SessionAuthentication)
+    authentication_classes = (BearerAuthentication, SessionAuthentication, JwtAuthentication)
     permission_classes = (EoxCoreAPIPermission,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
@@ -931,7 +932,7 @@ class EdxappPreEnrollment(APIView):
     Handles API requests to manage whitelistings (pre-enrollments)
     """
 
-    authentication_classes = (BearerAuthentication, SessionAuthentication)
+    authentication_classes = (BearerAuthentication, SessionAuthentication, JwtAuthentication)
     permission_classes = (EoxCoreAPIPermission,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
@@ -1053,7 +1054,7 @@ class EdxappGrade(UserQueryMixin, APIView):
     Handles API requests to manage course grades
     """
 
-    authentication_classes = (BearerAuthentication, SessionAuthentication)
+    authentication_classes = (BearerAuthentication, SessionAuthentication, JwtAuthentication)
     permission_classes = (EoxCoreAPIPermission,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
@@ -1203,7 +1204,7 @@ class UserInfo(APIView):
     Can use Oauth2/Session
     """
 
-    authentication_classes = (BearerAuthentication, SessionAuthentication)
+    authentication_classes = (BearerAuthentication, SessionAuthentication, JwtAuthentication)
     permission_classes = (EoxCoreAPIPermission,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 

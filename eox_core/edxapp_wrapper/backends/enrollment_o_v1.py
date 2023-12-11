@@ -324,7 +324,7 @@ def _create_or_update_enrollment(username, course_id, mode, is_active, try_updat
         if try_update:
             enrollment = api._data_api().update_course_enrollment(username, course_id, mode, is_active)
         else:
-            raise Exception(repr(err) + ", use force to update the existing enrollment") from err
+            raise Exception(repr(err) + ", use force to update the existing enrollment") from err   # pylint: disable=broad-exception-raised
     return enrollment
 
 

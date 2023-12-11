@@ -11,6 +11,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from django.contrib.sites.shortcuts import get_current_site
 from django.db import transaction
+from edx_rest_framework_extensions.auth.jwt.authentication import JwtAuthentication
 from oauth2_provider.models import Application
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
@@ -55,7 +56,7 @@ class EdxappUser(UserQueryMixin, APIView):
     Handles API requests to remove users
     """
 
-    authentication_classes = (BearerAuthentication, SessionAuthentication)
+    authentication_classes = (BearerAuthentication, SessionAuthentication, JwtAuthentication)
     permission_classes = (EoxCoreSupportAPIPermission,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
@@ -98,7 +99,7 @@ class EdxappReplaceUsername(UserQueryMixin, APIView):
     Handles the replacement of the username.
     """
 
-    authentication_classes = (BearerAuthentication, SessionAuthentication)
+    authentication_classes = (BearerAuthentication, SessionAuthentication, JwtAuthentication)
     permission_classes = (EoxCoreSupportAPIPermission,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
@@ -153,7 +154,7 @@ class OauthApplicationAPIView(UserQueryMixin, APIView):
     django_oauth_toolkit Application object.
     """
 
-    authentication_classes = (BearerAuthentication, SessionAuthentication)
+    authentication_classes = (BearerAuthentication, SessionAuthentication, JwtAuthentication)
     permission_classes = (EoxCoreSupportAPIPermission,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 

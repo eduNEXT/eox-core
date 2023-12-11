@@ -35,11 +35,11 @@ class TesteGradeIntegration(TestCase):  # pragma: no cover
             "grant_type": "client_credentials",
         }
         request_url = f"{cls.data['site1_data']['base_url']}/oauth2/access_token/"
-        response_site1 = requests.post(request_url, data=site1_data)
+        response_site1 = requests.post(request_url, data=site1_data, timeout=10)
         response_site1.raise_for_status()
         cls.data["site1_data"]["token"] = response_site1.json()["access_token"]
         request_url = f"{cls.data['site2_data']['base_url']}/oauth2/access_token/"
-        response_site2 = requests.post(request_url, data=site2_data)
+        response_site2 = requests.post(request_url, data=site2_data, timeout=10)
         response_site2.raise_for_status()
         cls.data["site1_data"]["token"] = response_site1.json()["access_token"]
         cls.data["site2_data"]["token"] = response_site2.json()["access_token"]
@@ -67,7 +67,7 @@ class TesteGradeIntegration(TestCase):  # pragma: no cover
         }
         request_url = f"{site1_data['base_url']}/{self.data['endpoint']}"
 
-        response = requests.get(request_url, data=data, headers=headers)
+        response = requests.get(request_url, data=data, headers=headers, timeout=10)
         response_content = response.json()
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -93,7 +93,7 @@ class TesteGradeIntegration(TestCase):  # pragma: no cover
         }
         request_url = f"{site1_data['base_url']}/{self.data['endpoint']}"
 
-        response = requests.get(request_url, data=data, headers=headers)
+        response = requests.get(request_url, data=data, headers=headers, timeout=10)
         response_content = response.json()
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -120,7 +120,7 @@ class TesteGradeIntegration(TestCase):  # pragma: no cover
         }
         request_url = f"{site1_data['base_url']}/{self.data['endpoint']}"
 
-        response = requests.get(request_url, data=data, headers=headers)
+        response = requests.get(request_url, data=data, headers=headers, timeout=10)
         response_content = response.json()
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -149,7 +149,7 @@ class TesteGradeIntegration(TestCase):  # pragma: no cover
         }
         request_url = f"{site2_data['base_url']}/{self.data['endpoint']}"
 
-        response = requests.get(request_url, data=data, headers=headers)
+        response = requests.get(request_url, data=data, headers=headers, timeout=10)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
@@ -169,5 +169,5 @@ def create_enrollment(data):
         "Host": data["site1_data"]["host"],
     }
     request_url = f"{data['site1_data']['base_url']}/eox-core/api/v1/enrollment/"
-    response = requests.post(request_url, data=req_data, headers=headers)
+    response = requests.post(request_url, data=req_data, headers=headers, timeout=10)
     response.raise_for_status()

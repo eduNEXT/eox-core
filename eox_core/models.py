@@ -28,7 +28,7 @@ class Redirection(models.Model):
     scheme = models.CharField(max_length=5, choices=SCHEME, default=HTTP)
     status = models.IntegerField(choices=STATUS, default=301)
 
-    class Meta:  # pylint: disable=no-init
+    class Meta:
         """
         Model meta class.
         """
