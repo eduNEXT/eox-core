@@ -12,7 +12,7 @@ try:
     from sentry_sdk.integrations.django import DjangoIntegration
 except ImportError:
     sentry_sdk = DjangoIntegration = None
-    LOG.error("ImportError while importing %s", ImportError)
+    LOG.error("ImportError while importing sentry_sdk or DjangoIntegration", )
 
 
 def plugin_settings(settings):  # pylint: disable=function-redefined
