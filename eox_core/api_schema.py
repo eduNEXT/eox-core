@@ -2,7 +2,7 @@
 Swagger view generator
 """
 from django.conf import settings
-from django.conf.urls import url
+from django.urls import re_path
 from drf_yasg.generators import OpenAPISchemaGenerator
 from drf_yasg.openapi import SwaggerDict
 from drf_yasg.views import get_schema_view
@@ -39,14 +39,14 @@ class APISchemaGenerator(OpenAPISchemaGenerator):
 
 
 api_urls = [  # pylint: disable=invalid-name
-    url(r'^enrollment/$', views.EdxappEnrollment.as_view(), name='edxapp-enrollment'),
-    url(r'^grade/$', views.EdxappGrade.as_view(), name='edxapp-grade'),
-    url(r'^user/$', views.EdxappUser.as_view(), name='edxapp-user'),
+    re_path(r'^enrollment/$', views.EdxappEnrollment.as_view(), name='edxapp-enrollment'),
+    re_path(r'^grade/$', views.EdxappGrade.as_view(), name='edxapp-grade'),
+    re_path(r'^user/$', views.EdxappUser.as_view(), name='edxapp-user'),
 ]
 
 if getattr(settings, "EOX_CORE_ENABLE_UPDATE_USERS", None):
     api_urls += [
-        url(r'^update-user/$', views.EdxappUserUpdater.as_view(), name='edxapp-user-updater'),
+        re_path(r'^update-user/$', views.EdxappUserUpdater.as_view(), name='edxapp-user-updater'),
     ]
 
 api_info = make_api_info(  # pylint: disable=invalid-name
