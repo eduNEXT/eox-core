@@ -5,11 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/eduNEXT/eox-core/compare/v9.1.0...HEAD)
+## [Unreleased](https://github.com/eduNEXT/eox-core/compare/v9.1.1...HEAD)
 
 Please do not update the unreleased notes.
 
 <!-- Content should be placed here -->
+## [v9.1.1](https://github.com/eduNEXT/eox-core/compare/v9.1.0...v9.1.1) - 2024-01-25
+
+### [9.1.1](https://github.com/eduNEXT/eox-core/compare/v9.1.0...v9.1.1) (2024-01-25)
+
+### Bug Fixes
+
+* update urls in favor of re_path for deprecation ([#260](https://github.com/eduNEXT/eox-core/issues/260)) ([bb15fcc](https://github.com/eduNEXT/eox-core/commit/bb15fccfa437b7e537d9eae7a725794d1945b659))
+
 ## [v9.1.0](https://github.com/eduNEXT/eox-core/compare/v9.0.0...v9.1.0) - 2024-01-12
 
 ### [9.1.0](https://github.com/eduNEXT/eox-core/compare/v9.0.0...v9.1.0) (2024-01-12)
