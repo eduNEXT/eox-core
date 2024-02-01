@@ -52,7 +52,7 @@ Compatibility Notes
 +------------------+--------------+
 | Palm             | >= 9.0       |
 +------------------+--------------+
-| Quince           | >= 10.0       |
+| Quince           | >= 10.0      |
 +------------------+--------------+
 
 **NOTE**: The Maple version does not support Django 2.2 but it does support Django 3.2 as of eox-core 7.0.
