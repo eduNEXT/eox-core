@@ -18,7 +18,7 @@ class PathRedirectionMiddlewareTest(TestCase):
     def setUp(self):
         """ setup """
         self.request_factory = RequestFactory()
-        self.middleware_instance = PathRedirectionMiddleware()
+        self.middleware_instance = PathRedirectionMiddleware(get_response=lambda req: None)
 
     @mock.patch('eox_core.middleware.PathRedirectionMiddleware.process_mktg_redirect')
     @mock.patch('eox_core.middleware.PathRedirectionMiddleware.process_custom_path_redirect')
@@ -132,7 +132,7 @@ class RedirectionMiddlewareTest(TestCase):
     def setUp(self):
         """ setup """
         self.request_factory = RequestFactory()
-        self.middleware_instance = RedirectionsMiddleware()
+        self.middleware_instance = RedirectionsMiddleware(get_response=lambda req: None)
 
     def test_disabled_feature(self):
         """

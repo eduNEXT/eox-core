@@ -11,7 +11,7 @@ jobs:
       previous_tag: ${{ steps.tag_version.outputs.previous_tag }}
       bump_commit_sha: ${{ steps.bumpversion.outputs.commit_hash }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           token: ${{ secrets.PAT }}
       - name: Get next version
@@ -23,7 +23,7 @@ jobs:
           default_prerelease_bump: false
           dry_run: true
       - name: Set up Python 3.8
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: "3.8"
       - name: Create bumpversion
@@ -53,7 +53,7 @@ jobs:
       tag: ${{ steps.tag_version.outputs.new_tag }}
       changelog: ${{ steps.tag_version.outputs.changelog }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           token: ${{ secrets.PAT }}
       - name: Create tag

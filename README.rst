@@ -52,6 +52,8 @@ Compatibility Notes
 +------------------+--------------+
 | Palm             | >= 9.0       |
 +------------------+--------------+
+| Quince           | >= 10.0      |
++------------------+--------------+
 
 **NOTE**: The Maple version does not support Django 2.2 but it does support Django 3.2 as of eox-core 7.0.
 
@@ -82,7 +84,7 @@ not listed, then the accumulation of changes from previous releases is enough.
    EOX_CORE_PRE_ENROLLMENT_BACKEND: "eox_core.edxapp_wrapper.backends.pre_enrollment_l_v1"
    EOX_CORE_ENROLLMENT_BACKEND: "eox_core.edxapp_wrapper.backends.enrollment_l_v1"
 
-**Olive**
+**Olive, Palm and Quince**
 
 .. code-block:: yaml
 

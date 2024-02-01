@@ -11,8 +11,8 @@ jobs:
     strategy:
       max-parallel: 2
       matrix:
-        python-version: ["3.8"]
-        django: ["32"]
+        python-version: ["3.8", "3.10", "3.11"]
+        django: ["32", "42"]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -25,7 +25,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
