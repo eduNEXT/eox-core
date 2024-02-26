@@ -18,7 +18,6 @@ from eox_core.logging import logging_pipeline_step
 UserSignupSource = get_user_signup_source()  # pylint: disable=invalid-name
 LOG = logging.getLogger(__name__)
 
-
 # pylint: disable=unused-argument,keyword-arg-before-vararg
 def ensure_new_user_has_usable_password(backend, user=None, **kwargs):
     """
