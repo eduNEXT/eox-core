@@ -5,11 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/eduNEXT/eox-core/compare/v10.0.0...HEAD)
+## [Unreleased](https://github.com/eduNEXT/eox-core/compare/v10.1.0...HEAD)
 
 Please do not update the unreleased notes.
 
 <!-- Content should be placed here -->
+## [v10.1.0](https://github.com/eduNEXT/eox-core/compare/v10.0.0...v10.1.0) - 2024-03-19
+
+### [10.1.0](https://github.com/eduNEXT/eox-core/compare/v10.0.0...v10.1.0) (2024-03-19)
+
+#### Features
+
+* add workflow to add items to the Dedalo project DS-831 ([#264](https://github.com/eduNEXT/eox-core/issues/264)) ([c2d6116](https://github.com/eduNEXT/eox-core/commit/c2d6116f75faa00a7a98fea071c9aeaa664803f9))
+
 ## [v10.0.0](https://github.com/eduNEXT/eox-core/compare/v9.1.1...v10.0.0) - 2024-02-01
 
 ### [10.0.0](https://github.com/eduNEXT/eox-core/compare/v9.1.1...v10.0.0) (2024-02-01)
