@@ -19,7 +19,7 @@ try:
     from openedx.core.djangoapps.site_configuration.helpers import get_all_orgs, get_current_site_orgs
 except ImportError:
     get_all_orgs, get_current_site_orgs = object, object  # pylint: disable=invalid-name
-    LOG.error("ImportError while importing %s", get_all_orgs, get_current_site_orgs)
+    LOG.error("ImportError while importing on get_all_orgs, get_current_site_orgs")
 
 
 def get_valid_course_key(course_id):
