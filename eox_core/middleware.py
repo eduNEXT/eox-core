@@ -9,6 +9,7 @@ A microsite enables the following features:
 import logging
 import re
 from urllib.parse import urlparse
+from django.http import parse_cookie
 
 import six
 from django.conf import settings
@@ -25,6 +26,7 @@ from social_core.exceptions import AuthAlreadyAssociated, AuthFailed, AuthUnreac
 
 from eox_core.edxapp_wrapper.configuration_helpers import get_configuration_helper
 from eox_core.edxapp_wrapper.third_party_auth import get_tpa_exception_middleware
+from eox_core.edxapp_wrapper.language_preference import get_language_preference_middleware
 from eox_core.models import Redirection
 from eox_core.utils import cache, fasthash
 
@@ -38,6 +40,7 @@ except ImportError:
 
 configuration_helper = get_configuration_helper()  # pylint: disable=invalid-name
 ExceptionMiddleware = get_tpa_exception_middleware()
+LanguagePreferenceMiddleware = get_language_preference_middleware()
 
 LOG = logging.getLogger(__name__)
 
@@ -282,3 +285,23 @@ class TPAExceptionMiddleware(ExceptionMiddleware):
             return super().process_exception(request, new_exception)
 
         return super().process_exception(request, exception)
+
+class UserLanguagePreferenceMiddleware(LanguagePreferenceMiddleware):
+    """This Middleware allows the user set the language preference for the site, avoiding the default LANGUAGE_CODE. 
+    
+        The previous behavior was modified here 
+        https://github.com/openedx/edx-platform/blob/open-release/palm.master/openedx/core/djangoapps/lang_pref/middleware.py#L61-L62
+    """
+    def process_request(self, request):
+        """
+        If a user's UserPreference contains a language preference, use the user's preference.
+        Save the current language preference cookie as the user's preferred language.
+        """
+        original_user_language_cookie = parse_cookie(request.META.get("HTTP_COOKIE", "")).get(
+            settings.LANGUAGE_COOKIE_NAME
+        )
+
+        if original_user_language_cookie:
+            request.COOKIES[settings.LANGUAGE_COOKIE_NAME] = original_user_language_cookie
+
+        return self.get_response(request)
