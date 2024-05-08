@@ -17,4 +17,8 @@ ROUTER.register(r'course-enrollments', CourseEnrollmentViewset)
 ROUTER.register(r'certificates', CertificateViewSet, basename='generated_certificate')
 ROUTER.register(r'proctored-exams-attempts', ProctoredExamStudentViewSet)
 # Async operations
-ROUTER.register(r'async/course-enrollments-grades', CourseEnrollmentWithGradesViewset)
+ROUTER.register(
+    r'async/course-enrollments-grades',
+    CourseEnrollmentWithGradesViewset,
+    basename="async_course_enrollments_grades",
+)
