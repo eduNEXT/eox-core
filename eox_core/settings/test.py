@@ -4,6 +4,11 @@ Settings for eox-core
 
 from __future__ import absolute_import, unicode_literals
 
+import codecs
+import os
+
+import yaml
+
 from .common import *  # pylint: disable=wildcard-import, unused-wildcard-import
 
 
@@ -33,6 +38,11 @@ def plugin_settings(settings):  # pylint: disable=function-redefined
     settings.EOX_CORE_USER_UPDATE_SAFE_FIELDS = ["is_active", "password", "fullname"]
     settings.EOX_CORE_BEARER_AUTHENTICATION = 'eox_core.edxapp_wrapper.backends.bearer_authentication_j_v1_test'
     settings.EOX_CORE_THIRD_PARTY_AUTH_BACKEND = 'eox_core.edxapp_wrapper.backends.third_party_auth_l_v1'
+    
+    # setup the databases used in the tutor local environment
+    with codecs.open(os.environ['LMS_CFG'], encoding='utf-8') as f:
+        env_tokens = yaml.safe_load(f)
+    settings.DATABASES = env_tokens['DATABASES']
 
 
 SETTINGS = SettingsClass()

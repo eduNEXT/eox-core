@@ -10,3 +10,4 @@ pytest
 pytest-django
 testfixtures
 django-countries
+pyyaml
