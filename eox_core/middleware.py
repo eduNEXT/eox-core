@@ -44,7 +44,6 @@ configuration_helper = get_configuration_helper()  # pylint: disable=invalid-nam
 ExceptionMiddleware = get_tpa_exception_middleware()
 
 
-
 class PathRedirectionMiddleware(MiddlewareMixin):
     """
     Middleware to create custom responses based on the request path
