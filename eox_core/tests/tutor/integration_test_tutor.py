@@ -19,13 +19,8 @@ class TutorIntegrationTestCase(TestCase):
         import eox_core.edxapp_wrapper.backends.comments_service_users_j_v1  # isort:skip
         import eox_core.edxapp_wrapper.backends.configuration_helpers_h_v1  # isort:skip
         import eox_core.edxapp_wrapper.backends.coursekey_m_v1  # isort:skip
-        import eox_core.edxapp_wrapper.backends.courses_h_v1  # isort:skip
-        import eox_core.edxapp_wrapper.backends.courseware_h_v1  # isort:skip
         import eox_core.edxapp_wrapper.backends.edxfuture_o_v1  # isort:skip
-        import eox_core.edxapp_wrapper.backends.enrollment_l_v1  # isort:skip
         import eox_core.edxapp_wrapper.backends.grades_h_v1  # isort:skip
         import eox_core.edxapp_wrapper.backends.pre_enrollment_l_v1  # isort:skip
         import eox_core.edxapp_wrapper.backends.storages_i_v1  # isort:skip
         import eox_core.edxapp_wrapper.backends.third_party_auth_l_v1  # isort:skip
-        import eox_core.edxapp_wrapper.backends.users_l_v1  # isort:skip
-
