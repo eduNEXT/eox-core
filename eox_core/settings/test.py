@@ -15,36 +15,6 @@ from .common import *  # pylint: disable=wildcard-import, unused-wildcard-import
 class SettingsClass:
     """ dummy settings class """
 
-
-def plugin_settings(settings):  # pylint: disable=function-redefined
-    """
-    Defines eox-core settings when app is used as a plugin to edx-platform.
-    See: https://github.com/edx/edx-platform/blob/master/openedx/core/djangoapps/plugins/README.rst
-    """
-    settings.EOX_CORE_USERS_BACKEND = "eox_core.edxapp_wrapper.backends.users_m_v1_test"
-    settings.EOX_CORE_ENROLLMENT_BACKEND = "eox_core.edxapp_wrapper.backends.enrollment_l_v1"
-    settings.EOX_CORE_PRE_ENROLLMENT_BACKEND = "eox_core.edxapp_wrapper.backends.pre_enrollment_l_v1"
-    settings.EOX_CORE_COURSEKEY_BACKEND = "eox_core.edxapp_wrapper.backends.coursekey_m_v1"
-    settings.EOX_CORE_CERTIFICATES_BACKEND = "eox_core.edxapp_wrapper.backends.certificates_h_v1_test"
-    settings.EOX_CORE_CONFIGURATION_HELPER_BACKEND = "eox_core.edxapp_wrapper.backends.configuration_helpers_h_v1_test"
-    settings.EOX_CORE_COURSEWARE_BACKEND = "eox_core.edxapp_wrapper.backends.courseware_h_v1"
-    settings.EOX_CORE_GRADES_BACKEND = "eox_core.edxapp_wrapper.backends.grades_h_v1"
-    settings.EOX_CORE_MICROSITES_BACKEND = "eox_core.edxapp_wrapper.backends.microsite_configuration_h_v1"
-    settings.EOX_CORE_STORAGES_BACKEND = "eox_core.edxapp_wrapper.backends.storages_i_v1_test"
-    settings.EOX_CORE_LOAD_PERMISSIONS = False
-    settings.DATA_API_DEF_PAGE_SIZE = 1000
-    settings.DATA_API_MAX_PAGE_SIZE = 5000
-    settings.EOX_CORE_ENABLE_UPDATE_USERS = True
-    settings.EOX_CORE_USER_UPDATE_SAFE_FIELDS = ["is_active", "password", "fullname"]
-    settings.EOX_CORE_BEARER_AUTHENTICATION = 'eox_core.edxapp_wrapper.backends.bearer_authentication_j_v1_test'
-    settings.EOX_CORE_THIRD_PARTY_AUTH_BACKEND = 'eox_core.edxapp_wrapper.backends.third_party_auth_l_v1'
-    
-    # setup the databases used in the tutor local environment
-    with codecs.open(os.environ['LMS_CFG'], encoding='utf-8') as f:
-        env_tokens = yaml.safe_load(f)
-    settings.DATABASES = env_tokens['DATABASES']
-
-
 SETTINGS = SettingsClass()
 plugin_settings(SETTINGS)
 vars().update(SETTINGS.__dict__)
@@ -101,3 +71,31 @@ PROCTORING_BACKENDS = {
     },
     'DEFAULT': 'software_secure',
 }
+
+def plugin_settings(settings):  # pylint: disable=function-redefined
+    """
+    Defines eox-core settings when app is used as a plugin to edx-platform.
+    See: https://github.com/edx/edx-platform/blob/master/openedx/core/djangoapps/plugins/README.rst
+    """
+    settings.EOX_CORE_USERS_BACKEND = "eox_core.edxapp_wrapper.backends.users_m_v1_test"
+    settings.EOX_CORE_ENROLLMENT_BACKEND = "eox_core.edxapp_wrapper.backends.enrollment_l_v1"
+    settings.EOX_CORE_PRE_ENROLLMENT_BACKEND = "eox_core.edxapp_wrapper.backends.pre_enrollment_l_v1"
+    settings.EOX_CORE_COURSEKEY_BACKEND = "eox_core.edxapp_wrapper.backends.coursekey_m_v1"
+    settings.EOX_CORE_CERTIFICATES_BACKEND = "eox_core.edxapp_wrapper.backends.certificates_h_v1_test"
+    settings.EOX_CORE_CONFIGURATION_HELPER_BACKEND = "eox_core.edxapp_wrapper.backends.configuration_helpers_h_v1_test"
+    settings.EOX_CORE_COURSEWARE_BACKEND = "eox_core.edxapp_wrapper.backends.courseware_h_v1"
+    settings.EOX_CORE_GRADES_BACKEND = "eox_core.edxapp_wrapper.backends.grades_h_v1"
+    settings.EOX_CORE_MICROSITES_BACKEND = "eox_core.edxapp_wrapper.backends.microsite_configuration_h_v1"
+    settings.EOX_CORE_STORAGES_BACKEND = "eox_core.edxapp_wrapper.backends.storages_i_v1_test"
+    settings.EOX_CORE_LOAD_PERMISSIONS = False
+    settings.DATA_API_DEF_PAGE_SIZE = 1000
+    settings.DATA_API_MAX_PAGE_SIZE = 5000
+    settings.EOX_CORE_ENABLE_UPDATE_USERS = True
+    settings.EOX_CORE_USER_UPDATE_SAFE_FIELDS = ["is_active", "password", "fullname"]
+    settings.EOX_CORE_BEARER_AUTHENTICATION = 'eox_core.edxapp_wrapper.backends.bearer_authentication_j_v1_test'
+    settings.EOX_CORE_THIRD_PARTY_AUTH_BACKEND = 'eox_core.edxapp_wrapper.backends.third_party_auth_l_v1'
+    
+    # setup the databases used in the tutor local environment
+    with codecs.open(os.environ['LMS_CFG'], encoding='utf-8') as f:
+        env_tokens = yaml.safe_load(f)
+    settings.DATABASES = env_tokens['DATABASES']
