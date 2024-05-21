@@ -42,8 +42,8 @@ def plugin_settings(settings):  # pylint: disable=function-redefined
     # setup the databases used in the tutor local environment
     lms_cfg = os.environ.get('LMS_CFG')
     if lms_cfg:
-        with codecs.open(lms_cfg, encoding='utf-8') as f:
-            env_tokens = yaml.safe_load(f)
+        with codecs.open(lms_cfg, encoding='utf-8') as file:
+            env_tokens = yaml.safe_load(file)
         settings.DATABASES = env_tokens['DATABASES']
 
 
