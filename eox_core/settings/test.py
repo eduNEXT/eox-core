@@ -40,8 +40,9 @@ def plugin_settings(settings):  # pylint: disable=function-redefined
     settings.EOX_CORE_THIRD_PARTY_AUTH_BACKEND = 'eox_core.edxapp_wrapper.backends.third_party_auth_l_v1'
 
     # setup the databases used in the tutor local environment
-    if os.environ['LMS_CFG']:
-        with codecs.open(os.environ['LMS_CFG'], encoding='utf-8') as f:
+    lms_cfg = os.environ.get('LMS_CFG')
+    if lms_cfg:
+        with codecs.open(lms_cfg, encoding='utf-8') as f:
             env_tokens = yaml.safe_load(f)
         settings.DATABASES = env_tokens['DATABASES']
 
