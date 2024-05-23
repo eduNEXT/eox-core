@@ -17,13 +17,14 @@ from django.contrib.auth.views import redirect_to_login
 from django.db import IntegrityError
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.http import Http404, HttpResponseRedirect
+from django.http import Http404, HttpResponseRedirect, parse_cookie
 from django.urls import reverse
 from django.utils.deprecation import MiddlewareMixin
 from requests.exceptions import HTTPError
 from social_core.exceptions import AuthAlreadyAssociated, AuthFailed, AuthUnreachableProvider
 
 from eox_core.edxapp_wrapper.configuration_helpers import get_configuration_helper
+from eox_core.edxapp_wrapper.language_preference import get_language_preference_middleware
 from eox_core.edxapp_wrapper.third_party_auth import get_tpa_exception_middleware
 from eox_core.models import Redirection
 from eox_core.utils import cache, fasthash
@@ -42,6 +43,7 @@ except ImportError:
 
 configuration_helper = get_configuration_helper()  # pylint: disable=invalid-name
 ExceptionMiddleware = get_tpa_exception_middleware()
+LanguagePreferenceMiddleware = get_language_preference_middleware()
 
 
 class PathRedirectionMiddleware(MiddlewareMixin):
@@ -284,3 +286,24 @@ class TPAExceptionMiddleware(ExceptionMiddleware):
             return super().process_exception(request, new_exception)
 
         return super().process_exception(request, exception)
+
+
+class UserLanguagePreferenceMiddleware(LanguagePreferenceMiddleware):
+    """This Middleware allows the user set the language preference for the site, avoiding the default LANGUAGE_CODE.
+
+        The previous behavior was modified here
+        https://github.com/openedx/edx-platform/blob/open-release/palm.master/openedx/core/djangoapps/lang_pref/middleware.py#L61-L62
+    """
+    def process_request(self, request):
+        """
+        If a user's UserPreference contains a language preference, use the user's preference.
+        Save the current language preference cookie as the user's preferred language.
+        """
+        original_user_language_cookie = parse_cookie(request.META.get("HTTP_COOKIE", "")).get(
+            settings.LANGUAGE_COOKIE_NAME
+        )
+
+        if original_user_language_cookie:
+            request.COOKIES[settings.LANGUAGE_COOKIE_NAME] = original_user_language_cookie
+
+        return self.get_response(request)

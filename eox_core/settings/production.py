@@ -123,6 +123,11 @@ def plugin_settings(settings):  # pylint: disable=function-redefined
                 'eox_core.middleware.TPAExceptionMiddleware'
             ]
 
+    settings.MIDDLEWARE.insert(
+        settings.MIDDLEWARE.index("openedx.core.djangoapps.lang_pref.middleware.LanguagePreferenceMiddleware") + 1,
+        "eox_core.middleware.UserLanguagePreferenceMiddleware",
+    )
+
     # Sentry Integration
     sentry_integration_dsn = getattr(settings, 'ENV_TOKENS', {}).get(
         'EOX_CORE_SENTRY_INTEGRATION_DSN',

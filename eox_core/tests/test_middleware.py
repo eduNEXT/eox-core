@@ -3,11 +3,12 @@
 Test module for the custom Middlewares
 """
 import mock
+from django.conf import settings
 from django.contrib.auth.models import AnonymousUser
 from django.http import Http404
 from django.test import RequestFactory, TestCase
 
-from eox_core.middleware import PathRedirectionMiddleware, RedirectionsMiddleware
+from eox_core.middleware import PathRedirectionMiddleware, RedirectionsMiddleware, UserLanguagePreferenceMiddleware
 from eox_core.models import Redirection
 
 
@@ -165,3 +166,36 @@ class RedirectionMiddlewareTest(TestCase):
         result = self.middleware_instance.process_request(request)
 
         self.assertIsNotNone(result)
+
+
+class UserLanguagePreferenceMiddlewareTestCase(TestCase):
+    """
+    Test the UserLanguagePreferenceMiddleware.
+    """
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.middleware = UserLanguagePreferenceMiddleware(get_response=lambda req: None)
+
+    def test_process_request_with_language_cookie(self):
+        """
+        Test if the language cookie is set correctly in the request.
+        """
+        language_code = 'fr'
+        request = self.factory.get('/')
+        request.META['HTTP_COOKIE'] = f'{settings.LANGUAGE_COOKIE_NAME}={language_code}'
+        self.middleware(request)
+
+        # Check if the language cookie was set correctly in the request
+        self.assertIn(settings.LANGUAGE_COOKIE_NAME, request.COOKIES)
+        self.assertEqual(request.COOKIES[settings.LANGUAGE_COOKIE_NAME], language_code)
+
+    def test_process_request_without_language_cookie(self):
+        """
+        Test if the language cookie is not set in the request.
+        """
+
+        request = self.factory.get('/')
+        self.middleware(request)
+
+        # Check that the language cookie is not set in the request
+        self.assertNotIn(settings.LANGUAGE_COOKIE_NAME, request.COOKIES)
