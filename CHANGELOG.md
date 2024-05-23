@@ -5,11 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/eduNEXT/eox-core/compare/v10.2.0...HEAD)
+## [Unreleased](https://github.com/eduNEXT/eox-core/compare/v10.3.0...HEAD)
 
 Please do not update the unreleased notes.
 
 <!-- Content should be placed here -->
+## [v10.3.0](https://github.com/eduNEXT/eox-core/compare/v10.2.0...v10.3.0) - 2024-05-23
+
+### [10.3.0](https://github.com/eduNEXT/eox-core/compare/v10.2.0...v10.3.0) (2024-05-23)
+
+#### Features
+
+* add user lang cookie preference ([#265](https://github.com/eduNEXT/eox-core/issues/265)) ([5dec49b](https://github.com/eduNEXT/eox-core/commit/5dec49b14a819de298f74a0134302dd46ff2137d))
+
 ## [v10.2.0](https://github.com/eduNEXT/eox-core/compare/v10.1.0...v10.2.0) - 2024-05-17
 
 ### [10.2.0](https://github.com/eduNEXT/eox-core/compare/v10.1.0...v10.2.0) (2024-05-17)
