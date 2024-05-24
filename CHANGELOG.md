@@ -5,11 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/eduNEXT/eox-core/compare/v10.3.0...HEAD)
+## [Unreleased](https://github.com/eduNEXT/eox-core/compare/v10.4.0...HEAD)
 
 Please do not update the unreleased notes.
 
 <!-- Content should be placed here -->
+## [v10.4.0](https://github.com/eduNEXT/eox-core/compare/v10.3.0...v10.4.0) - 2024-05-24
+
+### [10.4.0](https://github.com/eduNEXT/eox-core/compare/v10.3.0...v10.4.0) (2024-05-24)
+
+#### Features
+
+* add integration test file ([#267](https://github.com/eduNEXT/eox-core/issues/267)) ([beddb10](https://github.com/eduNEXT/eox-core/commit/beddb10b7d137732769c0a3557e104ca3ddf7905))
+
 ## [v10.3.0](https://github.com/eduNEXT/eox-core/compare/v10.2.0...v10.3.0) - 2024-05-23
 
 ### [10.3.0](https://github.com/eduNEXT/eox-core/compare/v10.2.0...v10.3.0) (2024-05-23)
