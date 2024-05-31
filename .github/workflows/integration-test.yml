@@ -11,7 +11,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           path: eox-core
-      - uses: eduNEXT/integration-test-in-tutor
+      - uses: eduNEXT/integration-test-in-tutor@main
         with:
           tutor_version: ${{ matrix.tutor_version }}
           app_name: "eox-core"
