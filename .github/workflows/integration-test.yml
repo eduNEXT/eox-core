@@ -1,4 +1,4 @@
-name: Integration
+name: Tutor Integration Tests
 on: [pull_request]
 
 jobs:
