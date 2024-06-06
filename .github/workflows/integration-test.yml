@@ -3,6 +3,7 @@ on: [pull_request]
 
 jobs:
   integration-test:
+    name: Tutor Integration Tests
     runs-on: ubuntu-latest
     strategy:
       matrix:
