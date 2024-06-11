@@ -22,8 +22,8 @@ Installation
    .. code-block:: yaml
       
       OPENEDX_EXTRA_PIP_REQUIREMENTS:
-         - eox-core=={{_version_}} # basic installetion
-         - eox-core{{_requirements_}}=={{_version_}} # requeriments e.g. [sentry,tpa]. Use this for integration with third-party applications.
+         - eox-core=={{version}} # basic installation
+         - eox-core{{requirements}}=={{version}} # requeriments e.g. [sentry,tpa]. Useful for integration with third-party applications.
          
 #. Save the configuration with ``tutor config save``.
 #. Build an open edx image with ``tutor images build openedx``.
@@ -33,6 +33,7 @@ Installation
 
 Features
 =========
+
 - Support redirections with middleware.
 - Add pipelines to be used with ``openedx-filters``.
 - Add a group of APIs.
@@ -40,7 +41,11 @@ Features
    .. image:: docs/_images/eox-core-apis.png
         :alt: Eox-core APIs
 
-You can find more information in the `Help for devs doc <https://github.com/eduNEXT/eox-core/blob/master/docs/help_for_devs/0001-include-test-cases-files.rst>`_.
+Usage
+=====
+
+See the `How to section <https://github.com/eduNEXT/eox-core/tree/master/docs/how_to>`_ for guidance on middleware, pipeline and API usage.
+
 
 Compatibility Notes
 --------------------
@@ -48,7 +53,7 @@ Compatibility Notes
 +------------------+--------------+
 | Open edX Release | Version      |
 +==================+==============+
-| Ironwood         | < 3.0        |
+| Ironwood         | < 4.0        |
 +------------------+--------------+
 | Juniper          | >= 3.0 < 5.0 |
 +------------------+--------------+
@@ -71,22 +76,14 @@ Compatibility Notes
 
 **NOTE**: The Maple version does not support Django 2.2 but it does support Django 3.2 as of eox-core 7.0.
 
-The following changes to the plugin settings are necessary. If the release you are looking for is
-not listed, then the accumulation of changes from previous releases is enough.
+The plugin is configured for the latest release (Quince). The following changes in the plugin settings should be applied in order to be used for previous releases.
 
-**Lilac**
-
-.. code-block:: yaml
-
-   EOX_CORE_USERS_BACKEND: "eox_core.edxapp_wrapper.backends.users_l_v1"
-   EOX_CORE_PRE_ENROLLMENT_BACKEND: "eox_core.edxapp_wrapper.backends.pre_enrollment_l_v1"
-   EOX_CORE_ENROLLMENT_BACKEND: "eox_core.edxapp_wrapper.backends.enrollment_l_v1"
+If the release you are looking for is not listed, the actual configuration is sufficient or it is incompatible with the current eox-core version.
 
 **Maple**
 
 .. code-block:: yaml
 
-   EOX_CORE_USERS_BACKEND: "eox_core.edxapp_wrapper.backends.users_m_v1"
    EOX_CORE_PRE_ENROLLMENT_BACKEND: "eox_core.edxapp_wrapper.backends.pre_enrollment_l_v1"
    EOX_CORE_ENROLLMENT_BACKEND: "eox_core.edxapp_wrapper.backends.enrollment_l_v1"
 
@@ -94,30 +91,13 @@ not listed, then the accumulation of changes from previous releases is enough.
 
 .. code-block:: yaml
 
-   EOX_CORE_USERS_BACKEND: "eox_core.edxapp_wrapper.backends.users_m_v1"
    EOX_CORE_PRE_ENROLLMENT_BACKEND: "eox_core.edxapp_wrapper.backends.pre_enrollment_l_v1"
    EOX_CORE_ENROLLMENT_BACKEND: "eox_core.edxapp_wrapper.backends.enrollment_l_v1"
 
-**Olive, Palm and Quince**
-
-.. code-block:: yaml
-
-   EOX_CORE_ENROLLMENT_BACKEND: "eox_core.edxapp_wrapper.backends.enrollment_o_v1"
-
-These settings can be changed in ``eox_core/settings/common.py`` or, for example, in ansible configurations.
-
-**NOTE**: the current ``common.py`` works with Open edX Redwood version.
-
-
-Dependency Management
-=====================
-
-EOX core now follows `OEP-18`_ so the correct way to update dependencies is to run ``make upgrade`` inside your virtual environment.
-
-.. _OEP-18: https://github.com/openedx/open-edx-proposals/blob/master/oeps/best-practices/oep-0018-bp-python-dependencies.rst
+These settings can be changed in ``eox_core/settings/common.py`` or, in the instance settings.
 
 Integrations with third-party services
-======================================
+--------------------------------------
 
 The plugin offers some integrations listed below:
 
@@ -140,7 +120,7 @@ The plugin offers some integrations listed below:
         EOX_CORE_SENTRY_EXTRA_OPTIONS: {} # optional
 
      - **EOX_CORE_SENTRY_INTEGRATION_DSN:** By default the setting is None, which disables the sentry integration.
-     - **EOX_CORE_SENTRY_IGNORED_ERRORS:** List of the exceptions you want to ignore. (see below for a reference)
+     - **EOX_CORE_SENTRY_IGNORED_ERRORS:** List of the exceptions you want to ignore (see below for a reference).
      - **EOX_CORE_SENTRY_EXTRA_OPTIONS** Dictionary with extra options to be passed to the sentry client. For instance, it can be defined as:
 
      .. code-block:: yaml
@@ -153,6 +133,22 @@ The plugin offers some integrations listed below:
             experiments: 
                profiles_sample_rate: 0.5
             another_client_parameter: 'value'
+
+
+Development
+===========
+
+
+Dependency Management
+---------------------
+
+EOX core now follows `OEP-18`_ so the correct way to update dependencies is to run ``make upgrade`` inside your virtual environment.
+
+.. _OEP-18: https://github.com/openedx/open-edx-proposals/blob/master/oeps/best-practices/oep-0018-bp-python-dependencies.rst
+
+Testing
+-------
+You can find more information in the `Help for devs doc <https://github.com/eduNEXT/eox-core/blob/master/docs/help_for_devs/0001-include-test-cases-files.rst>`_.
 
 
 Auditing Django views
