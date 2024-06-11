@@ -134,10 +134,17 @@ The plugin offers some integrations listed below:
                profiles_sample_rate: 0.5
             another_client_parameter: 'value'
 
+Auditing Django views
+=====================
+
+Most views in eox-core use an auditing decorator, defined in our custom library, *eox-audit-model*,
+that helps save relevant information about non-idempotent operations. By default, this functionality is turned on. To
+check your auditing records go to Django sysadmin and find DJANGO EDUNEXT AUDIT MODEL.
+
+You can check the `eox-audit-model`_ documentation for more information.
 
 Development
 ===========
-
 
 Dependency Management
 ---------------------
@@ -150,17 +157,6 @@ Testing
 -------
 You can find more information in the `Help for devs doc <https://github.com/eduNEXT/eox-core/blob/master/docs/help_for_devs/0001-include-test-cases-files.rst>`_.
 
-
-Auditing Django views
-=====================
-
-Most views in eox-core use an auditing decorator, defined in our custom library, *eox-audit-model*,
-that helps save relevant information about non-idempotent operations. By default, this functionality is turned on. To
-check your auditing records go to Django sysadmin and find DJANGO EDUNEXT AUDIT MODEL.
-
-You can check the `eox-audit-model`_ documentation for more information.
-
-
 .. _Open edX Devstack: https://github.com/edx/devstack/
 .. _openedx plugin: https://github.com/edx/edx-platform/tree/master/openedx/core/djangoapps/plugins
 .. _edx-platform: https://github.com/edx/edx-platform/
@@ -168,7 +164,7 @@ You can check the `eox-audit-model`_ documentation for more information.
 .. _eox-audit-model: https://github.com/eduNEXT/eox-audit-model/
 
 How to Contribute
------------------
+=================
 
 Contributions are welcome! See our `CONTRIBUTING`_ file for more
 information – it also contains guidelines for how to maintain high code
@@ -178,6 +174,6 @@ quality, which will make your contribution more likely to be accepted.
 
 
 License
--------
+=======
 
 This software is licensed under the terms of the AGPLv3. See the LICENSE file for details.
