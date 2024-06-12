@@ -10,7 +10,7 @@ EOX Core
 .. |PyPI Badge| image:: https://img.shields.io/pypi/v/eox-core?label=PyPI
    :alt: PyPI - Version
 
-Edunext Open Extensions (aka eox-core) is an `openedx plugin`_, for the `edx-platform`_ that adds multiple API
+Eox-core is an `openedx plugin`_ for the `edx-platform`_, and part of the Edunext Open Extensions (aka EOX), that adds multiple API
 endpoints to extend its functionality and avoid changing the base code directly. These
 API endpoints include bulk creation of pre-activated users (for example, skip sending an activation email), enrollments, and pre-enrollment operations.
 
