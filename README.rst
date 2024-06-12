@@ -157,9 +157,8 @@ Testing
 -------
 You can find more information in the `Help for devs doc <https://github.com/eduNEXT/eox-core/blob/master/docs/help_for_devs/0001-include-test-cases-files.rst>`_.
 
-.. _Open edX Devstack: https://github.com/edx/devstack/
-.. _openedx plugin: https://github.com/edx/edx-platform/tree/master/openedx/core/djangoapps/plugins
-.. _edx-platform: https://github.com/edx/edx-platform/
+.. _openedx plugin: https://github.com/openedx/edx-platform/tree/master/openedx/core/djangoapps/plugins
+.. _edx-platform: https://github.com/openedx/edx-platform/
 .. _eox-tenant: https://github.com/eduNEXT/eox-tenant/
 .. _eox-audit-model: https://github.com/eduNEXT/eox-audit-model/
 
