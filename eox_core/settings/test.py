@@ -19,7 +19,7 @@ class SettingsClass:
 def plugin_settings(settings):  # pylint: disable=function-redefined
     """
     Defines eox-core settings when app is used as a plugin to edx-platform.
-    See: https://github.com/edx/edx-platform/blob/master/openedx/core/djangoapps/plugins/README.rst
+    See: https://github.com/openedx/edx-platform/blob/master/openedx/core/djangoapps/plugins/README.rst
     """
     settings.EOX_CORE_USERS_BACKEND = "eox_core.edxapp_wrapper.backends.users_m_v1_test"
     settings.EOX_CORE_ENROLLMENT_BACKEND = "eox_core.edxapp_wrapper.backends.enrollment_l_v1"
