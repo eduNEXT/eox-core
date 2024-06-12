@@ -1,0 +1,19 @@
+name: Tutor Integration Tests
+on: [pull_request]
+
+jobs:
+  integration-test:
+    name: Tutor Integration Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        tutor_version: ["<17.0.0", "<18.0.0"]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: eox-core
+      - uses: eduNEXT/integration-test-in-tutor@main
+        with:
+          tutor_version: ${{ matrix.tutor_version }}
+          app_name: "eox-core"
+          shell_file_to_run: "eox_core/tests/tutor/integration.sh"
