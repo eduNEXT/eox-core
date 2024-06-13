@@ -7,18 +7,18 @@ Context
 
 To have a way to test the eox-core API endpoints manually, but quickly, two JSON files have been
 created with GET, POST, PATCH, and DELETE requests. The `Eox-core Test Collection`_ and
-`Eox-core Test Environment`_ files were created for the `Posman`_ application.
+`Eox-core Test Environment`_ files were created for the `Postman`_ application.
 
-.. _Eox-core Test Collection: ../resources/Eox-core-test.postman_collection.json
-.. _Eox-core Test Environment: ../resources/Eox-core-test.postman_environment.json
-.. _Posman: https://www.postman.com/
+.. _Eox-core Test Collection: ../resources/eox-core-test.postman_collection.json
+.. _Eox-core Test Environment: ../resources/eox-core-test.postman_environment.json
+.. _Postman: https://www.postman.com/
 
 Instructions
 ------------
 
 To properly test the endpoints, the Open Edx platform must be running with the eox-core plugin installed.
 
-#. Once your environment is set up, create a new admin user: ``tutor dev do createuser --staf --superuser admin <custom-mail> --password <password>``.
+#. Once your environment is set up, create a new admin user: ``tutor dev do createuser --staff --superuser admin <custom-mail> --password <password>``.
 #. Log into Django's admin site with the user created in the previous step.
 #. Create a testing user without staff permissions, you could do this on the Django admin page. 
    **Note:** Some of the tests will require a staff user, specifically those for the support API; if you want to run the test collection at once, use the 
@@ -32,18 +32,18 @@ To properly test the endpoints, the Open Edx platform must be running with the e
 #. You should be redirected to a new page with a bunch of blank spaces, nevertheless, *client id* and *client secret* are given. Save them, as you will need them later.
 #. Fill the blank spaces with the following rules:
 
-    - For *User id* click on the magnifying glass icon, and a window should appear with the app's users. Select the one you created for testing.
-    - On the *Redirect to URL* section add your app URL.
-    - Pick *Confidential* on the *Client type* dropdown menu.
-    - Pick *Client credentials* for *Authorization grant type*.
-    - Add a custom *name*.
+   - For *User id* click on the magnifying glass icon, and a window should appear with the app's users. Select the one you created for testing.
+   - On the *Redirect to URL* section add your app URL.
+   - Pick *Confidential* on the *Client type* dropdown menu.
+   - Pick *Client credentials* for *Authorization grant type*.
+   - Add a custom *name*.
 
 #. Once everything is filled, click Save.
 #. Open the desktop Postman application. and load the test collection and environment provided. On *import* > *upload files*, add the JSON files. 
    Once it's uploaded, it should be shown in the *Collections* and *Environments* menu.
 #. For *Collections*, there should be an arrow on the left side of the name, click on it to extend the content. The file structure:
 
-    .. code-block::
+   .. code-block::
         
         Eox-core
         |
@@ -80,7 +80,7 @@ To properly test the endpoints, the Open Edx platform must be running with the e
 #. For *Environment* a table on the right panel should appear with the following headers: *variable*, *initial value* and *current value*. Modify the *client_id* and
    *client_secret* with those values retrieved from the *Django Oauth Toolkit*.
 
-    .. image:: ../resources/variables_env.png
+   .. image:: ../resources/variables_env.png
         :height: 300
         :width: 900
         :alt: Environment variable
