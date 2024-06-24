@@ -74,7 +74,7 @@ Compatibility Notes
 | Redwood          | >= 10.5.0    |
 +------------------+--------------+
 
-**NOTE**: The Maple version does not support Django 2.2 but it does support Django 3.2 as of eox-core 7.0.
+⚠️ The Maple version does not support Django 2.2 but it does support Django 3.2 as of eox-core 7.0.
 
 The plugin is configured for the latest release (Quince). The following changes in the plugin settings should be applied in order to be used for previous releases.
 
@@ -95,6 +95,8 @@ If the release you are looking for is not listed, the actual configuration is su
    EOX_CORE_ENROLLMENT_BACKEND: "eox_core.edxapp_wrapper.backends.enrollment_l_v1"
 
 These settings can be changed in ``eox_core/settings/common.py`` or, in the instance settings.
+
+If you are installing a previous version, please refer to the tag to verify the configuration that should be applied.
 
 Integrations with third-party services
 --------------------------------------
@@ -155,6 +157,7 @@ EOX core now follows `OEP-18`_ so the correct way to update dependencies is to r
 
 Testing
 -------
+
 You can find more information in the `Help for devs doc <https://github.com/eduNEXT/eox-core/blob/master/docs/help_for_devs/0001-include-test-cases-files.rst>`_.
 
 .. _openedx plugin: https://github.com/openedx/edx-platform/tree/master/openedx/core/djangoapps/plugins
