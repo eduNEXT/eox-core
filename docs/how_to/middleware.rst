@@ -41,9 +41,9 @@ Create custom responses based on the request path. Use the settings in the LMS:
 
 An example of how to implement it:
 
-.. code-block::
+.. code-block:: python
     
-      EDNX_CUSTOM_PATH_REDIRECTS = {
+    EDNX_CUSTOM_PATH_REDIRECTS = {
         "/$": {
             "not_found": ""
         },
@@ -52,23 +52,25 @@ An example of how to implement it:
         },
         "/register.*": {
             "redirect_loggedin": "https://redirection.example.com"
-        }
+        },
     }
 
 
-- ``MKTG_REDIRECTS``: Redirect for specific pages. 
+- ``MKTG_REDIRECTS``: If an empty string ("") is set as a value, it will use the default LMS template, otherwise, it will redirect to the given target.
+    The following example has all the recommended pages for this middleware, you can define only the necessary in your use case.
 
-.. code-block::
+.. code-block:: python
 
-       "MKTG_REDIRECTS": {
-          "about.html": "",                                     # Use the normal LMS page
-          "contact.html": "https://redirection.example.com",    # Redict to the given target
-          "faq.html": "",
-          "honor.html": "",
-          "privacy.html": "",
-          "tos.html": ""
-        }
-   
+    MKTG_REDIRECTS = {
+        "about.html": "",
+        "contact.html": "https://redirection.example.com",
+        "faq.html": "",
+        "honor.html": "",
+        "privacy.html": "",
+        "tos.html": "",
+    }
+
+
 TPA Exception Middleware
 ------------------------
 

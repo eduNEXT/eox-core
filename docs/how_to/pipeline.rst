@@ -28,7 +28,7 @@ Define functions that are used in the third-party authentication flow.
 |                                          | The signup source will be associated with the current site and user.                                                                     |
 +------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------+
 
-You can visit the `file implementation <https://github.com/eduNEXT/eox-core/blob/dcoa/improve-docs/eox_core/pipeline.py>`_ for a better understanding.
+You can visit the `file implementation <https://github.com/eduNEXT/eox-core/blob/master/eox_core/pipeline.py>`_ for a better understanding.
 
 Use the pipelines adding them in the LMS setting:
 
