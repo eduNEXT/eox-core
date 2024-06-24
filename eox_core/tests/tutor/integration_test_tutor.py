@@ -4,7 +4,7 @@ Test integration file.
 from django.test import TestCase, override_settings
 
 
-@override_settings(ALLOWED_HOSTS=['local.edly.io', 'testserver'], SITE_ID=2)
+@override_settings(ALLOWED_HOSTS=['testserver'], SITE_ID=2)
 class TutorIntegrationTestCase(TestCase):
     """
     Tests integration with openedx
@@ -38,13 +38,10 @@ class TutorIntegrationTestCase(TestCase):
         """
         info_view_url = f'{self.base_url}/eox-core/eox-info'
 
-        # Simulate a GET request to the info endpoint using the full URL
         response = self.client.get(info_view_url)
 
-        # Verify the response status code
         self.assertEqual(response.status_code, 200)
 
-        # Verify the response format
         response_data = response.json()
         self.assertIn('version', response_data)
         self.assertIn('name', response_data)
