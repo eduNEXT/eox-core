@@ -20,9 +20,11 @@ To properly test the endpoints, the Open Edx platform must be running with the e
 
 #. Once your environment is set up, create a new admin user: ``tutor dev do createuser --staff --superuser admin <custom-mail> --password <password>``.
 #. Log into Django's admin site with the user created in the previous step.
-#. Create a testing user without staff permissions, you could do this on the Django admin page. 
-   **Note:** Some of the tests will require a staff user, specifically those for the support API; if you want to run the test collection at once, use the 
+#. Create a testing user without staff permissions, you could do this on the Django admin page.
+
+   🚨 Some of the tests will require a staff user, specifically those for the support API; if you want to run the test collection at once, use the 
    admin user and skip the permission assignment steps.
+
 #. On the Site Administration Panel, go to *Authentication and Authorization* > *Users*.
 #. Click on the testing user created by the third step.
 #. Go to User Permissions, search for ``auth | user | Can access eox-core API`` and add it with a double click or one click and the right arrow.
@@ -86,5 +88,5 @@ To properly test the endpoints, the Open Edx platform must be running with the e
         :alt: Environment variable
 
 #. Edit all variables except token and task_id, these are auto-generated
-#. Comeback to Collection panel.
+#. Go back to the to Collection panel.
 #. On the right-top side of the app, make sure eox-core environment is chosen and updated, if so click on the three dots shown when hovering over the file's name and click on *Run collection*. This should carry out all the tests at once and the result will be displayed.
