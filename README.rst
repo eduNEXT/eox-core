@@ -35,7 +35,7 @@ Features
 =========
 
 - Support redirections with middleware.
-- Add pipelines to be used with ``openedx-filters``.
+- Add pipelines for authentication.
 - Add a group of APIs.
 
    .. image:: docs/_images/eox-core-apis.png
@@ -148,17 +148,7 @@ You can check the `eox-audit-model`_ documentation for more information.
 Development
 ===========
 
-Dependency Management
----------------------
-
-EOX core now follows `OEP-18`_ so the correct way to update dependencies is to run ``make upgrade`` inside your virtual environment.
-
-.. _OEP-18: https://github.com/openedx/open-edx-proposals/blob/master/oeps/best-practices/oep-0018-bp-python-dependencies.rst
-
-Testing
--------
-
-You can find more information in the `Help for devs doc <https://github.com/eduNEXT/eox-core/blob/master/docs/help_for_devs/0001-include-test-cases-files.rst>`_.
+You can find more information about testing in the `Help for devs doc <https://github.com/eduNEXT/eox-core/blob/master/docs/help_for_devs/0001-include-test-cases-files.rst>`_.
 
 .. _openedx plugin: https://github.com/openedx/edx-platform/tree/master/openedx/core/djangoapps/plugins
 .. _edx-platform: https://github.com/openedx/edx-platform/
