@@ -1,7 +1,7 @@
-Pipeline
-========
+Social Auth Pipeline
+====================
 
-Define functions that are used in the third-party authentication flow.
+Define functions that are used in the third-party authentication flow. Find more information about authentication pipelines `here <https://python-social-auth.readthedocs.io/en/latest/pipeline.html>`_.
 
 +------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------+
 | Pipeline                                 | Description                                                                                                                              |

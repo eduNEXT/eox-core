@@ -1,9 +1,11 @@
 Application Programming Interface
 =================================
 
-The API is usable only if the user is authenticated or has the right permissions.
+The API is usable only if the user is authenticated and has the right permissions.
 
 For authentication, an authorization token could be sent in the headers of the request, otherwise the session authentication will be used.
+
+Create an authentication token following steps 8 to 12 in the `Help for devs doc <https://github.com/eduNEXT/eox-core/blob/master/docs/help_for_devs/0001-include-test-cases-files.rst>`_.
 
 For permissions, the user should be configured with ``auth | user | Can access eox-core API`` or be set as an admin. 
 

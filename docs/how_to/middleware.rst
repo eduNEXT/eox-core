@@ -12,7 +12,7 @@ Allow redirection to other domains or error pages. Set in the LMS configuration:
    
    USE_REDIRECTION_MIDDLEWARE = True
 
-Open the Django Admin and check the *eduNEXT Openedx Extensions › Redirections* model to configure the redirection. 
+Open the Django Admin and check the *Edunext Open edX Extensions › Redirections* model to configure the redirection. 
 
 Path Redirection Middleware
 ---------------------------
@@ -56,8 +56,8 @@ An example of how to implement it:
     }
 
 
-- ``MKTG_REDIRECTS``: If an empty string ("") is set as a value, it will use the default LMS template, otherwise, it will redirect to the given target.
-    The following example has all the recommended pages for this middleware, you can define only the necessary in your use case.
+- ``MKTG_REDIRECTS``: If an empty string ("") is set as a value, it will use the default LMS template, otherwise, it will redirect to the given target. The 
+  following example has all the recommended pages for this middleware, you can define only the necessary in your use case.
 
 .. code-block:: python
 
