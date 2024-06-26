@@ -22,7 +22,7 @@ EOX_AUDIT_MODEL_APP = 'eox_audit_model.apps.EoxAuditModelConfig'
 def plugin_settings(settings):
     """
     Defines eox-core settings when app is used as a plugin to edx-platform.
-    See: https://github.com/edx/edx-platform/blob/master/openedx/core/djangoapps/plugins/README.rst
+    See: https://github.com/openedx/edx-platform/blob/master/openedx/core/djangoapps/plugins/README.rst
     """
     settings.EOX_CORE_COMMENTS_SERVICE_USERS_BACKEND = "eox_core.edxapp_wrapper.backends.comments_service_users_j_v1"
     settings.EOX_CORE_USERS_BACKEND = "eox_core.edxapp_wrapper.backends.users_m_v1"
