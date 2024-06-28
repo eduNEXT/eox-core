@@ -8,10 +8,10 @@
 # pin when possible.  Writing an issue against the offending project and
 # linking to it here is good.
 
+# Common constraints for Open edX repos
+-c https://raw.githubusercontent.com/openedx/edx-lint/master/edx_lint/files/common_constraints.txt
+
 # Keep same platform version
 pylint<3.0
 pycodestyle<2.9.0
-django<5.0
-click<9.0
 django-oauth-toolkit<2.0.0
-edx-drf-extensions<9.0
