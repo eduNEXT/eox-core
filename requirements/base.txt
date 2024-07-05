@@ -108,8 +108,9 @@ django-waffle==4.1.0
     #   edx-toggles
 django-webpack-loader==3.1.0
     # via edx-proctoring
-djangorestframework==3.15.2
+djangorestframework==3.15.1
     # via
+    #   -c requirements/constraints.txt
     #   -r requirements/base.in
     #   drf-jwt
     #   drf-yasg

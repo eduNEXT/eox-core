@@ -149,8 +149,9 @@ django-webpack-loader==3.1.0
     # via
     #   -r requirements/base.txt
     #   edx-proctoring
-djangorestframework==3.15.2
+djangorestframework==3.15.1
     # via
+    #   -c requirements/constraints.txt
     #   -r requirements/base.txt
     #   drf-jwt
     #   drf-yasg
