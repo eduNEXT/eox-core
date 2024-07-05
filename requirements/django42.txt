@@ -1,2 +1,2 @@
 Django==4.2.8
-django-filter
+django-filter==24.2
