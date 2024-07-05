@@ -10,6 +10,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please do not update the unreleased notes.
 
 <!-- Content should be placed here -->
+
+## [v10.5.0](https://github.com/eduNEXT/eox-core/compare/v10.4.0...v10.5.0) - (2024-07-08)
+
+### Added
+
+- **Integration Tests**: A new GitHub workflow has been added to run
+  integration tests. These tests validate backend imports and ensure
+  the `/eox-info` endpoint functions correctly.
+
+### Changed
+
+- **Redwood Support**: Upgrade requirements base on edx-platform redwood
+  release, update GitHub workflows with new actions version, and update
+  integration test to use new Redwood release with Tutor.
+
 ## [v10.4.0](https://github.com/eduNEXT/eox-core/compare/v10.3.0...v10.4.0) - 2024-05-24
 
 ### [10.4.0](https://github.com/eduNEXT/eox-core/compare/v10.3.0...v10.4.0) (2024-05-24)
