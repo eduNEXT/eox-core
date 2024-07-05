@@ -24,7 +24,7 @@ celery==5.4.0
     # via
     #   -r requirements/base.in
     #   event-tracking
-certifi==2024.6.2
+certifi==2024.7.4
     # via requests
 cffi==1.16.0
     # via
@@ -145,7 +145,6 @@ edx-opaque-keys[django]==2.10.0
     #   -r requirements/base.in
     #   edx-ccx-keys
     #   edx-drf-extensions
-    #   edx-opaque-keys
     #   edx-proctoring
     #   edx-when
     #   openedx-events
@@ -213,7 +212,6 @@ pyjwt[crypto]==2.8.0
     #   edx-drf-extensions
     #   edx-proctoring
     #   edx-rest-api-client
-    #   pyjwt
     #   social-auth-core
 pymongo==3.13.0
     # via
