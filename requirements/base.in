@@ -4,7 +4,6 @@
 six
 celery
 djangorestframework
-django-filter
 django-oauth-toolkit
 django-oauth2-provider
 django-waffle

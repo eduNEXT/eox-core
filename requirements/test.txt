@@ -95,7 +95,6 @@ dill==0.3.8
     #   -c https://raw.githubusercontent.com/openedx/edx-lint/master/edx_lint/files/common_constraints.txt
     #   -r requirements/base.txt
     #   django-crum
-    #   django-filter
     #   django-model-utils
     #   django-oauth-toolkit
     #   django-waffle
@@ -119,8 +118,6 @@ django-crum==0.7.9
     #   edx-django-utils
     #   edx-proctoring
     #   edx-toggles
-django-filter==24.2
-    # via -r requirements/base.txt
 django-ipware==7.0.1
     # via
     #   -r requirements/base.txt
