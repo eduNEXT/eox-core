@@ -1,2 +1,1 @@
 django==3.2.23
-django-filter==23.5
