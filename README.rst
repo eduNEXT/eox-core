@@ -54,6 +54,8 @@ Compatibility Notes
 +------------------+--------------+
 | Quince           | >= 10.0      |
 +------------------+--------------+
+| Redwood          | >= 10.5.0    |
++------------------+--------------+
 
 **NOTE**: The Maple version does not support Django 2.2 but it does support Django 3.2 as of eox-core 7.0.
 
@@ -92,7 +94,7 @@ not listed, then the accumulation of changes from previous releases is enough.
 
 These settings can be changed in ``eox_core/settings/common.py`` or, for example, in ansible configurations.
 
-**NOTE**: the current ``common.py`` works with Open edX Nutmeg version.
+**NOTE**: the current ``common.py`` works with Open edX Redwood version.
 
 
 Dependency Management
