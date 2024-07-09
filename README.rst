@@ -10,7 +10,7 @@ EOX Core
 .. |PyPI Badge| image:: https://img.shields.io/pypi/v/eox-core?label=PyPI
    :alt: PyPI - Version
 
-Eox-core is an `openedx plugin`_ for the `edx-platform`_, and part of the Edunext Open Extensions (aka EOX), that adds multiple API
+Eox-core is an `openedx plugin`_ for the `edx-platform`_, and part of the Edunext Open edX Extensions (aka EOX), that adds multiple API
 endpoints to extend its functionality and avoid changing the base code directly. These
 API endpoints include bulk creation of pre-activated users (for example, skip sending an activation email), enrollments, and pre-enrollment operations.
 
@@ -38,8 +38,8 @@ Features
 - Add pipelines for authentication.
 - Add a group of APIs.
 
-   .. image:: docs/_images/eox-core-apis.png
-        :alt: Eox-core APIs
+  .. image:: docs/_images/eox-core-apis.png
+      :alt: Eox-core APIs
 
 Usage
 =====
@@ -76,9 +76,7 @@ Compatibility Notes
 
 ⚠️ The Maple version does not support Django 2.2 but it does support Django 3.2 as of eox-core 7.0.
 
-The plugin is configured for the latest release (Quince). The following changes in the plugin settings should be applied in order to be used for previous releases.
-
-If the release you are looking for is not listed, the actual configuration is sufficient or it is incompatible with the current eox-core version.
+The plugin is configured for the latest release (Redwood). The following changes in the plugin settings should be applied in order to be used for previous releases.
 
 **Maple**
 
@@ -96,7 +94,11 @@ If the release you are looking for is not listed, the actual configuration is su
 
 These settings can be changed in ``eox_core/settings/common.py`` or, in the instance settings.
 
-If you are installing a previous version, please refer to the tag to verify the configuration that should be applied.
+
+🚨 If the release you are looking for is not listed, please note:
+
+- If the Open edX release is compatible with the current eox-core version (see `Compatibility Notes <https://github.com/eduNEXT/eox-core?tab=readme-ov-file#compatibility-notes>`_), the default configuration is sufficient.
+- If incompatible, you can refer to the README from the relevant version tag for configuration details (e.g., `v6.2.1 README <https://github.com/eduNEXT/eox-core/blob/v6.2.1/README.rst>`_).
 
 Integrations with third-party services
 --------------------------------------
