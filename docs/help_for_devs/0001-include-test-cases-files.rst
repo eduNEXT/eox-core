@@ -5,81 +5,88 @@ Eox-core test cases
 Context
 -------
 
-In order to have a way to test the eox-core API endpoints manually, but quickly, two json files have been
-created with the GET, POST, PATCH and DELETE requests. The `Eox-core-test.postman_collection.json`_ and
-`Eox-core-test.postman_environment.json`_ files were created with the `Posman`_ application.
+To have a way to test the eox-core API endpoints manually, but quickly, two JSON files have been
+created with GET, POST, PATCH, and DELETE requests. The `Eox-core Test Collection`_ and
+`Eox-core Test Environment`_ files were created for the `Postman`_ application.
 
-.. _eox-core-test.postman_collection.json: ../resources/Eox-core-test.postman_collection.json
-.. _eox-core-test.postman_environment.json: ../resources/Eox-core-test.postman_environment.json
-.. _Posman: https://www.postman.com/
+.. _Eox-core Test Collection: ../resources/eox-core-test.postman_collection.json
+.. _Eox-core Test Environment: ../resources/eox-core-test.postman_environment.json
+.. _Postman: https://www.postman.com/
 
 Instructions
 ------------
 
-To test the endpoints it is necessary to have the Open Edx platform running with the eox-core plugin installed.
+To properly test the endpoints, the Open Edx platform must be running with the eox-core plugin installed.
 
-#. Once your environment is set up, create a new admin user: ``tutor dev do createuser --staf --superuser admin <custom-mail> --password <password>``.
-#. Log into Django's admin site using the user created in the previous step.
-#. Create a testing user without staff permissions, you could do this in the Django admin page. Some of the test will require you to be staff user, specifically those for the support API. In case you want to run the test collection once, then user your admin user and skip the permission assignment steps.
-#. On the Site Administration panel go to *Authentication and Authorization* > *Users*.
-#. Click on the testing user created on the third step.
-#. Go to User permissions and look for auth **user** *can access eox-core API* and add it with a double click or one click and right arrow.
+#. Once your environment is set up, create a new admin user: ``tutor dev do createuser --staff --superuser admin <custom-mail> --password <password>``.
+#. Log into Django's admin site with the user created in the previous step.
+#. Create a testing user without staff permissions, you could do this on the Django admin page.
+
+   🚨 Some of the tests will require a staff user, specifically those for the support API; if you want to run the test collection at once, use the 
+   admin user and skip the permission assignment steps.
+
+#. On the Site Administration Panel, go to *Authentication and Authorization* > *Users*.
+#. Click on the testing user created by the third step.
+#. Go to User Permissions, search for ``auth | user | Can access eox-core API`` and add it with a double click or one click and the right arrow.
 #. Click Save at the bottom of the page.
-#. On the Site Administration panel go to *Django Oauth Toolkit* > *Applications*.
-#. You should be redirected to a table with a bunch of applications and on the right upper corner there's a button to Add *Application*, click on it.
-#. Once again, you should be redirected to a new page with a bunch of blank spaces, nevertheless, *client id* and *client secret* are given. Save them, as you will need these later.
-#. Fill the left spaces with the following rules:
+#. On the Site Administration panel, go to *Django Oauth Toolkit* > *Applications*.
+#. Once there, in the right-upper corner, you will find the *Add Application* button, click on it.
+#. You should be redirected to a new page with a bunch of blank spaces, nevertheless, *client id* and *client secret* are given. Save them, as you will need them later.
+#. Fill the blank spaces with the following rules:
 
-    - For *User id* click on the magnifier icon next to the blank space, a window should show up with the app's users, pick the one you created for tests.
-    - On the *Redirect to URL* section add your app's url.
-    - Pick *Confidential* on the *Client type* dropdown menu.
-    - Pick *Client credentials* for *Authorization grant type*.
-    - Add a custom *name*.
+   - For *User id* click on the magnifying glass icon, and a window should appear with the app's users. Select the one you created for testing.
+   - On the *Redirect to URL* section add your app URL.
+   - Pick *Confidential* on the *Client type* dropdown menu.
+   - Pick *Client credentials* for *Authorization grant type*.
+   - Add a custom *name*.
 
 #. Once everything is filled, click Save.
-#. In this test the desktop Postman application was used. Postman for Linux Version 8.12.5.
-#. Download the json files with the test (collection and environment).
-#. On *import* > *upload files*, upload the json files. Once it's uploaded, it should be shown in *Collections* and *Environments* menu.
-#. For *Collections*, there should be an arrow on the left side of the name, click on it to extend the content. The file consists of 3 folders:
+#. Open the desktop Postman application. and load the test collection and environment provided. On *import* > *upload files*, add the JSON files. 
+   Once it's uploaded, it should be shown in the *Collections* and *Environments* menu.
+#. For *Collections*, there should be an arrow on the left side of the name, click on it to extend the content. The file structure:
 
-    - Main API
-        * User
-            + Create user
-            + Get user
-            + Update user
-        * Enrollment
-            + Create enrollment
-            + Get enrollment
-            + Update enrollment
-            + Delete enrollment
-            + Create enrollment to test grade
-        * Pre enrollment
-            + Create whitelistings
-            + Get regular pre-enrollment
-            + Update whitelistings
-            + Delete pre-enrollment
-        * Grade
-            + Grade information
-        * User info
-            + Get user related to the authorization token
-    - Task dispatcher API
-            + Get task
-            + Dispatch a task
-            + Check the status
-    - Support API
-            + Update username
-            + Delete User
+   .. code-block::
+        
+        Eox-core
+        |
+        ├── Main API
+        │   ├── User
+        │   │   ├── Create user
+        │   │   ├── Get user
+        │   │   └── Update user
+        │   ├── Enrollment
+        │   │   ├── Create enrollment
+        │   │   ├── Get enrollment
+        │   │   ├── Update enrollment
+        │   │   ├── Delete enrollment
+        │   │   └── Create enrollment to test grade
+        │   ├── Pre-enrollment
+        │   │   ├── Create whitelisting
+        │   │   ├── Get regular pre-enrollment
+        │   │   ├── Update whitelisting
+        │   │   └── Delete pre-enrollment
+        │   ├── Grade
+        │   │   └── Grade information
+        │   └── User info
+        │       └── Get user related to the authorization token
+        ├── Task dispatcher API
+        │   ├── Get task
+        │   ├── Dispatch a task
+        │   └── Check the status
+        ├── Support API
+        │   ├── Update username
+        │   └── Delete User
+        └── Authentication
 
-    plus an Authorization section. Click on the last one.
+#. Open the Authentication POST request and go to the body, a table with 3 keys and values should be displayed. Those values must be updated with the eox-core Environment.
+#. For *Environment* a table on the right panel should appear with the following headers: *variable*, *initial value* and *current value*. Modify the *client_id* and
+   *client_secret* with those values retrieved from the *Django Oauth Toolkit*.
 
-#. More in depth information about the Authorization section should be now displayed on the right side panel. It looks more familiar to a traditional postman request. Go to the body and a table with 3 keys with their values should be displayed. Change this values in Environment.
-#. For *Environment* a table on the right panel should appear with the following headers: *variable*, *initial value*, *current value*. Change the *client_id* and *client_secret* with those values retrieved from the *Django Oauth Toolkit*.
-
-    .. image:: ../resources/variables_env.png
+   .. image:: ../resources/variables_env.png
         :height: 300
         :width: 900
         :alt: Environment variable
 
 #. Edit all variables except token and task_id, these are auto-generated
-#. Once again, pick the uploaded files in the Collections panel.
-#. On the right top side of the app, make sure your environment with the variables is chosen, if so click on the three dots shown when hovering the file's name and click on run collection. This should run all the tests at once and the result will be shown on the right panel.
+#. Go back to the to Collection panel.
+#. On the right-top side of the app, make sure eox-core environment is chosen and updated, if so click on the three dots shown when hovering over the file's name and click on *Run collection*. This should carry out all the tests at once and the result will be displayed.

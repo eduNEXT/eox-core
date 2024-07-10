@@ -18,7 +18,7 @@ except ImportError:
 def plugin_settings(settings):  # pylint: disable=function-redefined
     """
     Set of plugin settings used by the Open Edx platform.
-    More info: https://github.com/edx/edx-platform/blob/master/openedx/core/djangoapps/plugins/README.rst
+    More info: https://github.com/openedx/edx-platform/blob/master/openedx/core/djangoapps/plugins/README.rst
     """
     settings.EOX_CORE_COMMENTS_SERVICE_USERS_BACKEND = getattr(settings, 'ENV_TOKENS', {}).get(
         'EOX_CORE_COMMENTS_SERVICE_USERS_BACKEND',
