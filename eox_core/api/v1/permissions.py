@@ -6,6 +6,7 @@ Custom API permissions module
 from django.conf import settings
 from django.contrib.auth.models import Permission, User
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ImproperlyConfigured
 from django.db.utils import ProgrammingError
 from rest_framework import exceptions, permissions
 
@@ -23,7 +24,7 @@ def load_permissions():
                 name='Can access eox-core API',
                 content_type=content_type,
             )
-        except ProgrammingError:
+        except (ProgrammingError, ImproperlyConfigured):
             # This code runs when the app is loaded, if a migration has not been done a ProgrammingError exception is raised
             # we are bypassing those cases to let migrations run smoothly.
             pass
