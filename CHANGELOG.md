@@ -11,6 +11,19 @@ Please do not update the unreleased notes.
 
 <!-- Content should be placed here -->
 
+## [v10.5.1](https://github.com/eduNEXT/eox-core/compare/v10.5.0...v10.5.1) - (2024-07-19)
+
+### Fixed
+
+- **Fix build error**: A new `ImproperlyConfigured` exception is handled when
+  loading the API permissions to avoid errors during the build.
+
+### Changed
+
+- **Improve Documentation**: Update the README to include a more detailed
+  description of the project and its features. A new how-to section was
+  included with information about API, Middlewares, and pipelines.
+
 ## [v10.5.0](https://github.com/eduNEXT/eox-core/compare/v10.4.0...v10.5.0) - (2024-07-08)
 
 ### Added
