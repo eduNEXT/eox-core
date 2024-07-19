@@ -29,6 +29,14 @@ class EoxCoreConfig(AppConfig):
         },
     }
 
+    def ready(self):
+        """
+        Method to perform actions after apps registry is ended
+        """
+        from eox_core.api.v1.permissions import load_permissions as load_api_permissions  # pylint: disable=import-outside-toplevel
+
+        load_api_permissions()
+
 
 class EoxCoreCMSConfig(EoxCoreConfig):
     """App configuration"""

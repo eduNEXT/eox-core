@@ -3,6 +3,6 @@
 """
 API initialization module
 """
-from eox_core.api.v1.permissions import load_permissions
+# from eox_core.api.v1.permissions import load_permissions
 
-load_permissions()
+# load_permissions()
