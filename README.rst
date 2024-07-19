@@ -71,7 +71,7 @@ Compatibility Notes
 +------------------+--------------+
 | Quince           | >= 10.0      |
 +------------------+--------------+
-| Redwood          | >= 10.5.0    |
+| Redwood          | >= 10.5.1    |
 +------------------+--------------+
 
 ⚠️ The Maple version does not support Django 2.2 but it does support Django 3.2 as of eox-core 7.0.

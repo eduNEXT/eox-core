@@ -6,6 +6,7 @@ Custom API permissions module
 from django.conf import settings
 from django.contrib.auth.models import Permission, User
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ImproperlyConfigured
 from django.db.utils import ProgrammingError
 from rest_framework import exceptions, permissions
 
@@ -18,14 +19,16 @@ def load_permissions():
     if settings.EOX_CORE_LOAD_PERMISSIONS:
         try:
             content_type = ContentType.objects.get_for_model(User)
-            obj, created = Permission.objects.get_or_create(  # pylint: disable=unused-variable
+            Permission.objects.get_or_create(
                 codename='can_call_eox_core',
                 name='Can access eox-core API',
                 content_type=content_type,
             )
-        except ProgrammingError:
-            # This code runs when the app is loaded, if a migration has not been done a ProgrammingError exception is raised
-            # we are bypassing those cases to let migrations run smoothly.
+        except (ProgrammingError, ImproperlyConfigured):
+            # This code runs when the app is loaded. If a migration has not been done, a
+            # ProgrammingError is raised. The ImproperlyConfigured exception typically
+            # indicates a configuration issue. We are bypassing these exceptions to allow
+            # the migrations to run smoothly when building the Open edX image.
             pass
 
 

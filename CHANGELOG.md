@@ -11,6 +11,20 @@ Please do not update the unreleased notes.
 
 <!-- Content should be placed here -->
 
+## [v10.5.1](https://github.com/eduNEXT/eox-core/compare/v10.5.0...v10.5.1) - (2024-07-19)
+
+### Fixed
+
+- **Redwood Compatibility**: Corrected a build-time error, ensuring full
+  compatibility with the Redwood release. For this, a new `ImproperlyConfigured`
+  exception is handled when loading the API permissions.
+
+### Changed
+
+- **Improve Documentation**: Update the README to include a more detailed
+  description of the project and its features. A new how-to section was
+  included with information about API, Middlewares, and pipelines.
+
 ## [v10.5.0](https://github.com/eduNEXT/eox-core/compare/v10.4.0...v10.5.0) - (2024-07-08)
 
 ### Added
@@ -21,7 +35,7 @@ Please do not update the unreleased notes.
 
 ### Changed
 
-- **Redwood Support**: Upgrade requirements base on edx-platform redwood
+- **Redwood Support**: Upgrade requirements base on edx-platform Redwood
   release, update GitHub workflows with new actions version, and update
   integration test to use new Redwood release with Tutor.
 
