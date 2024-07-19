@@ -19,7 +19,7 @@ def load_permissions():
     if settings.EOX_CORE_LOAD_PERMISSIONS:
         try:
             content_type = ContentType.objects.get_for_model(User)
-            obj, created = Permission.objects.get_or_create(  # pylint: disable=unused-variable
+            Permission.objects.get_or_create(
                 codename='can_call_eox_core',
                 name='Can access eox-core API',
                 content_type=content_type,
