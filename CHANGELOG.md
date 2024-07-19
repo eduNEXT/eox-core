@@ -15,8 +15,9 @@ Please do not update the unreleased notes.
 
 ### Fixed
 
-- **Fix build error**: A new `ImproperlyConfigured` exception is handled when
-  loading the API permissions to avoid errors during the build.
+- **Redwood Compatibility**: Corrected a build-time error, ensuring full
+  compatibility with the Redwood release. For this, a new `ImproperlyConfigured`
+  exception is handled when loading the API permissions.
 
 ### Changed
 
@@ -34,7 +35,7 @@ Please do not update the unreleased notes.
 
 ### Changed
 
-- **Redwood Support**: Upgrade requirements base on edx-platform redwood
+- **Redwood Support**: Upgrade requirements base on edx-platform Redwood
   release, update GitHub workflows with new actions version, and update
   integration test to use new Redwood release with Tutor.
 
