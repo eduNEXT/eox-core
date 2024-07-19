@@ -25,8 +25,10 @@ def load_permissions():
                 content_type=content_type,
             )
         except (ProgrammingError, ImproperlyConfigured):
-            # This code runs when the app is loaded, if a migration has not been done a ProgrammingError exception is raised
-            # we are bypassing those cases to let migrations run smoothly.
+            # This code runs when the app is loaded, if a migration has not been done a
+            # ProgrammingError or ImproperlyConfugured exception is raised. We are
+            # bypassing those cases to let migrations run smoothly. This error occurs
+            # when building the Open edX image.
             pass
 
 
