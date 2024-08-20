@@ -13,9 +13,9 @@ make test-requirements
 bgreen echo "Install eox-tenant(requirement)"
 pip install eox-tenant
 
-# bgreen echo "Run migrations"
-# python manage.py lms makemigrations
-# python manage.py lms migrate
+bgreen echo "Run migrations"
+python manage.py lms makemigrations
+python manage.py lms migrate
 
 bgreen echo "Run tests"
 pytest -s --ds=lms.envs.tutor.test /openedx/eox-core/eox_core/tests/tutor
