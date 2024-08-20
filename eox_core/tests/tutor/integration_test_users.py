@@ -2,7 +2,7 @@
 Integration test suite.
 
 This suite performs multiple http requests to guarantee
-that the Grade API is behaving as expected on a live server.
+that the Users API is behaving as expected on a live server.
 """
 
 from django.contrib.auth.models import User
@@ -10,16 +10,20 @@ from django.contrib.sites.models import Site
 from django.test import TestCase, override_settings
 from eox_tenant.models import Route, TenantConfig
 from oauth2_provider.models import Application
+from rest_framework.status import HTTP_200_OK
 
 CLIENT_ID = "apiclient"
 CLIENT_SECRET = "apisecret"
 
 
-def create_oauth_client(user: User):
+def create_oauth_client(user: User) -> None:
     """
     Create a new OAuth client.
+
+    Args:
+        user (User): The user that will own the client.
     """
-    return Application.objects.create(
+    Application.objects.create(
         name="eox-core-app",
         client_id=CLIENT_ID,
         client_secret=CLIENT_SECRET,
@@ -29,16 +33,26 @@ def create_oauth_client(user: User):
     )
 
 
-def create_admin_user():
+def create_admin_user() -> User:
     """
     Create a new admin user.
+
+    Returns:
+        User: The admin user.
     """
     return User.objects.create_superuser("eox-core-admin")
 
 
-def create_tenant(name: str, host: str):
+def create_tenant(name: str, host: str) -> str:
     """
     Create a new tenant.
+
+    Args:
+        name (str): The tenant name.
+        host (str): The tenant host.
+
+    Returns:
+        str: The tenant domain.
     """
     domain = f"{host}.local.edly.io"
     config = TenantConfig.objects.create(
@@ -65,8 +79,8 @@ class TestUserIntegration(TestCase):
 
     def setUp(self):
         self.grade_endpoint = "eox-core/api/v1/grade/"
-        admin_user = create_admin_user()
-        create_oauth_client(admin_user)
+        self.admin_user = create_admin_user()
+        create_oauth_client(self.admin_user)
         self.tenant_x_domain = create_tenant("Tenant X", "tenant-x")
         self.tenant_x_token = self.get_access_token(self.tenant_x_domain)
 
@@ -90,11 +104,9 @@ class TestUserIntegration(TestCase):
         return response_access_token.json()["access_token"]
 
     def test_create_user_in_tenant(self):
-        """
-        Create a new user in a tenant.
-        """
-        create_user_endpoint = f"http://{self.tenant_x_domain}/eox-core/api/v1/user/"
-        payload = {
+        """Test the creation of a user in a tenant."""
+        path = f"http://{self.tenant_x_domain}/eox-core/api/v1/user/"
+        data = {
             "username": "user-tenant-x",
             "email": "user@tenantx.com",
             "fullname": "User Tenant X",
@@ -102,6 +114,13 @@ class TestUserIntegration(TestCase):
             "activate_user": True,
         }
         headers = {"Authorization": f"Bearer {self.tenant_x_token}"}
-        response = self.client.post(create_user_endpoint, data=payload, headers=headers)
 
-        self.assertEqual(response.status_code, 200)
+        response = self.client.post(path, data=data, headers=headers)
+
+        response_data = response.json()
+        self.assertEqual(response.status_code, HTTP_200_OK)
+        self.assertEqual(response_data["email"], data["email"])
+        self.assertEqual(response_data["username"], data["username"])
+        self.assertTrue(response_data["is_active"])
+        self.assertFalse(response_data["is_staff"])
+        self.assertFalse(response_data["is_superuser"])
