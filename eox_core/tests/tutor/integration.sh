@@ -6,7 +6,7 @@ echo "Install package"
 pip install -e /openedx/eox-core
 
 echo "Install eox-tenant(requirement)"
-pip install -e /openedx/eox-tenant
+pip install eox-tenant
 
 echo "Run migrations"
 python manage.py lms makemigrations
