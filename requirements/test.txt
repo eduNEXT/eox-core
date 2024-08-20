@@ -19,7 +19,7 @@ asgiref==3.8.1
     #   django-countries
 astroid==2.15.8
     # via pylint
-attrs==23.2.0
+attrs==24.2.0
     # via
     #   -r requirements/base.txt
     #   openedx-events
@@ -39,11 +39,11 @@ celery==5.4.0
     # via
     #   -r requirements/base.txt
     #   event-tracking
-certifi==2024.7.4
+certifi==2024.8.30
     # via
     #   -r requirements/base.txt
     #   requests
-cffi==1.16.0
+cffi==1.17.1
     # via
     #   -r requirements/base.txt
     #   cryptography
@@ -77,14 +77,16 @@ code-annotations==1.8.0
     # via
     #   -r requirements/base.txt
     #   edx-toggles
-coverage==7.5.4
+coverage==7.6.1
     # via -r requirements/test.in
-cryptography==42.0.8
+cryptography==43.0.1
     # via
     #   -r requirements/base.txt
     #   jwcrypto
     #   pyjwt
     #   social-auth-core
+ddt==1.7.2
+    # via -r requirements/test.in
 defusedxml==0.8.0rc2
     # via
     #   -r requirements/base.txt
@@ -128,7 +130,7 @@ django-ipware==7.0.1
     # via
     #   -r requirements/base.txt
     #   edx-proctoring
-django-model-utils==4.5.1
+django-model-utils==5.0.0
     # via
     #   -r requirements/base.txt
     #   edx-proctoring
@@ -151,7 +153,7 @@ django-waffle==4.1.0
     #   edx-drf-extensions
     #   edx-proctoring
     #   edx-toggles
-django-webpack-loader==3.1.0
+django-webpack-loader==3.1.1
     # via
     #   -r requirements/base.txt
     #   edx-proctoring
@@ -172,13 +174,13 @@ drf-yasg==1.21.7
     # via
     #   -r requirements/base.txt
     #   edx-api-doc-tools
-edx-api-doc-tools==1.8.0
+edx-api-doc-tools==2.0.0
     # via -r requirements/base.txt
 edx-ccx-keys==1.3.0
     # via
     #   -r requirements/base.txt
     #   openedx-events
-edx-django-utils==5.14.2
+edx-django-utils==5.15.0
     # via
     #   -r requirements/base.txt
     #   edx-drf-extensions
@@ -187,12 +189,12 @@ edx-django-utils==5.14.2
     #   edx-when
     #   event-tracking
     #   openedx-events
-edx-drf-extensions==10.3.0
+edx-drf-extensions==10.4.0
     # via
     #   -r requirements/base.txt
     #   edx-proctoring
     #   edx-when
-edx-opaque-keys[django]==2.10.0
+edx-opaque-keys[django]==2.11.0
     # via
     #   -r requirements/base.txt
     #   edx-ccx-keys
@@ -202,7 +204,7 @@ edx-opaque-keys[django]==2.10.0
     #   openedx-events
 edx-proctoring==4.18.1
     # via -r requirements/base.txt
-edx-rest-api-client==5.7.1
+edx-rest-api-client==6.0.0
     # via
     #   -r requirements/base.txt
     #   edx-proctoring
@@ -216,15 +218,16 @@ edx-when==2.5.0
     #   edx-proctoring
 event-tracking==2.4.0
     # via
+    #   -c https://raw.githubusercontent.com/openedx/edx-lint/master/edx_lint/files/common_constraints.txt
     #   -r requirements/base.txt
     #   edx-proctoring
-exceptiongroup==1.2.1
+exceptiongroup==1.2.2
     # via pytest
-factory-boy==3.3.0
+factory-boy==3.3.1
     # via -r requirements/test.in
-faker==26.0.0
+faker==28.4.1
     # via factory-boy
-fastavro==1.9.4
+fastavro==1.9.7
     # via
     #   -r requirements/base.txt
     #   openedx-events
@@ -232,7 +235,7 @@ fs==2.4.16
     # via
     #   -r requirements/base.txt
     #   xblock
-idna==3.7
+idna==3.10
     # via
     #   -r requirements/base.txt
     #   requests
@@ -256,13 +259,13 @@ jwcrypto==1.5.6
     # via
     #   -r requirements/base.txt
     #   django-oauth-toolkit
-kombu==5.3.7
+kombu==5.4.1
     # via
     #   -r requirements/base.txt
     #   celery
 lazy-object-proxy==1.10.0
     # via astroid
-lxml==5.2.2
+lxml==5.3.0
     # via
     #   -r requirements/base.txt
     #   xblock
@@ -280,7 +283,7 @@ mccabe==0.7.0
     # via pylint
 mock==5.1.0
     # via -r requirements/test.in
-newrelic==9.11.0
+newrelic==9.13.0
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
@@ -290,7 +293,7 @@ oauthlib==3.2.2
     #   django-oauth-toolkit
     #   requests-oauthlib
     #   social-auth-core
-openedx-events==9.11.0
+openedx-events==9.14.1
     # via
     #   -r requirements/base.txt
     #   event-tracking
@@ -299,11 +302,11 @@ packaging==24.1
     #   -r requirements/base.txt
     #   drf-yasg
     #   pytest
-pbr==6.0.0
+pbr==6.1.0
     # via
     #   -r requirements/base.txt
     #   stevedore
-platformdirs==4.2.2
+platformdirs==4.3.6
     # via pylint
 pluggy==1.5.0
     # via pytest
@@ -327,7 +330,7 @@ pycryptodomex==3.20.0
     # via
     #   -r requirements/base.txt
     #   edx-proctoring
-pyjwt[crypto]==2.8.0
+pyjwt[crypto]==2.9.0
     # via
     #   -r requirements/base.txt
     #   drf-jwt
@@ -348,11 +351,11 @@ pynacl==1.5.0
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
-pytest==8.2.2
+pytest==8.3.3
     # via
     #   -r requirements/test.in
     #   pytest-django
-pytest-django==4.8.0
+pytest-django==4.9.0
     # via -r requirements/test.in
 python-dateutil==2.9.0.post0
     # via
@@ -373,14 +376,14 @@ python3-openid==3.2.0
     # via
     #   -r requirements/base.txt
     #   social-auth-core
-pytz==2024.1
+pytz==2024.2
     # via
     #   -r requirements/base.txt
     #   drf-yasg
     #   edx-proctoring
     #   event-tracking
     #   xblock
-pyyaml==6.0.1
+pyyaml==6.0.2
     # via
     #   -r requirements/base.txt
     #   -r requirements/test.in
@@ -394,13 +397,12 @@ requests==2.32.3
     #   edx-drf-extensions
     #   edx-rest-api-client
     #   requests-oauthlib
-    #   slumber
     #   social-auth-core
 requests-oauthlib==2.0.0
     # via
     #   -r requirements/base.txt
     #   social-auth-core
-rules==3.4
+rules==3.5
     # via
     #   -r requirements/base.txt
     #   edx-proctoring
@@ -412,7 +414,7 @@ shortuuid==1.0.13
     # via
     #   -r requirements/base.txt
     #   django-oauth2-provider
-simplejson==3.19.2
+simplejson==3.19.3
     # via
     #   -r requirements/base.txt
     #   xblock
@@ -423,17 +425,13 @@ six==1.16.0
     #   event-tracking
     #   fs
     #   python-dateutil
-slumber==0.7.1
-    # via
-    #   -r requirements/base.txt
-    #   edx-rest-api-client
 social-auth-core==4.5.4
     # via -r requirements/base.txt
-sqlparse==0.5.0
+sqlparse==0.5.1
     # via
     #   -r requirements/base.txt
     #   django
-stevedore==5.2.0
+stevedore==5.3.0
     # via
     #   -r requirements/base.txt
     #   code-annotations
@@ -449,7 +447,7 @@ tomli==2.0.1
     # via
     #   pylint
     #   pytest
-tomlkit==0.12.5
+tomlkit==0.13.2
     # via pylint
 typing-extensions==4.12.2
     # via
@@ -470,7 +468,7 @@ uritemplate==4.1.1
     # via
     #   -r requirements/base.txt
     #   drf-yasg
-urllib3==2.2.2
+urllib3==2.2.3
     # via
     #   -r requirements/base.txt
     #   requests
@@ -488,13 +486,13 @@ web-fragments==2.2.0
     # via
     #   -r requirements/base.txt
     #   xblock
-webob==1.8.7
+webob==1.8.8
     # via
     #   -r requirements/base.txt
     #   xblock
 wrapt==1.16.0
     # via astroid
-xblock==4.0.1
+xblock==5.1.0
     # via
     #   -r requirements/base.txt
     #   edx-when

@@ -1,0 +1,137 @@
+[
+    {
+        "model": "sites.site",
+        "pk": 8,
+        "fields": {
+            "domain": "tenant-x.local.edly.io",
+            "name": "Tenant X"
+        }
+    },
+    {
+        "model": "sites.site",
+        "pk": 9,
+        "fields": {
+            "domain": "tenant-y.local.edly.io",
+            "name": "Tenant Y"
+        }
+    },
+    {
+        "model": "eox_tenant.route",
+        "pk": 1,
+        "fields": {
+            "domain": "tenant-x.local.edly.io",
+            "config": 1
+        }
+    },
+    {
+        "model": "eox_tenant.route",
+        "pk": 2,
+        "fields": {
+            "domain": "tenant-y.local.edly.io",
+            "config": 2
+        }
+    },
+    {
+        "model": "eox_tenant.tenantorganization",
+        "pk": 1,
+        "fields": {
+            "name": "TenantX"
+        }
+    },
+    {
+        "model": "eox_tenant.tenantorganization",
+        "pk": 2,
+        "fields": {
+            "name": "TenantY"
+        }
+    },
+    {
+        "model": "organizations.organization",
+        "pk": 1,
+        "fields": {
+            "created": "2024-09-11T17:15:30.708Z",
+            "modified": "2024-09-11T17:15:30.708Z",
+            "name": "TenantX",
+            "short_name": "Tenant-x",
+            "description": null,
+            "logo": "",
+            "active": true
+        }
+    },
+    {
+        "model": "organizations.organization",
+        "pk": 2,
+        "fields": {
+            "created": "2024-09-11T17:15:35.694Z",
+            "modified": "2024-09-11T17:15:35.694Z",
+            "name": "TenantY",
+            "short_name": "Tenant-y",
+            "description": null,
+            "logo": "",
+            "active": true
+        }
+    },
+    {
+        "model": "eox_tenant.tenantconfig",
+        "pk": 1,
+        "fields": {
+            "external_key": "tenant-x-key",
+            "lms_configs": "{\n    \"EDNX_USE_SIGNAL\": true,\n    \"PLATFORM_NAME\": \"Tenant X\",\n    \"SITE_NAME\": \"tenant-x.local.edly.io\",\n    \"course_org_filter\": [\n        \"TenantX\"\n    ]\n}",
+            "studio_configs": "{}",
+            "theming_configs": "{}",
+            "meta": "{}",
+            "organizations": [
+                1
+            ]
+        }
+    },
+    {
+        "model": "eox_tenant.tenantconfig",
+        "pk": 2,
+        "fields": {
+            "external_key": "tenant-y-key",
+            "lms_configs": "{\n    \"EDNX_USE_SIGNAL\": true,\n    \"PLATFORM_NAME\": \"Tenant Y\",\n    \"SITE_NAME\": \"tenant-y.local.edly.io\",\n    \"course_org_filter\": [\n        \"TenantY\"\n    ]\n}",
+            "studio_configs": "{}",
+            "theming_configs": "{}",
+            "meta": "{}",
+            "organizations": [
+                2
+            ]
+        }
+    },
+    {
+        "model": "auth.user",
+        "pk": 4,
+        "fields": {
+            "password": "pbkdf2_sha256$600000$6PZlT8H5P7ouzl2ozvZ5r7$2MKoXKlQux0KrN40OVtDnEiKawspCudlCKj1m0WnsIM=",
+            "last_login": "2024-09-03T21:55:08.123Z",
+            "is_superuser": true,
+            "username": "admin-eox-core",
+            "first_name": "",
+            "last_name": "",
+            "email": "admin-eox-core@mail.com",
+            "is_staff": true,
+            "is_active": true,
+            "date_joined": "2024-08-30T20:33:17.023Z",
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "oauth2_provider.application",
+        "pk": 4,
+        "fields": {
+            "client_id": "client_id",
+            "user": 4,
+            "redirect_uris": "http://local.edly.io/\r\nhttp://tenant-x.local.edly.io/\r\nhttp://tenant-y.local.edly.io/",
+            "client_type": "confidential",
+            "authorization_grant_type": "client-credentials",
+            "client_secret": "client_secret",
+            "name": "eox-core-app",
+            "skip_authorization": false,
+            "created": "2024-09-06T13:30:17.347Z",
+            "updated": "2024-09-06T13:30:17.347Z",
+            "algorithm": ""
+        }
+    }
+]
