@@ -115,6 +115,7 @@ class TestUserIntegration(TestCase):
             "activate_user": True,
         }
         headers = {"Authorization": f"Bearer {self.tenant_x_token}"}
+        print(f'\n\nHeaders: {headers}\n\n')
 
         response = self.client.post(path, data=data, headers=headers)
 
