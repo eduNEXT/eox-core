@@ -69,11 +69,7 @@ def create_tenant(name: str, host: str) -> str:
     return domain
 
 
-@override_settings(
-    ALLOWED_HOSTS=["testserver"],
-    SITE_ID=2,
-    EOX_CORE_USERS_BACKEND="eox_core.edxapp_wrapper.backends.users_m_v1",
-)
+@override_settings(ALLOWED_HOSTS=["testserver"], SITE_ID=2)
 class TestUsersAPIIntegration(TestCase):
     """Integration test suite for the Users API"""
 
@@ -104,6 +100,7 @@ class TestUsersAPIIntegration(TestCase):
         response_access_token = self.client.post(access_token_endpoint, data=access_token_data)
         return response_access_token.json()["access_token"]
 
+    @override_settings(EOX_CORE_USERS_BACKEND="eox_core.edxapp_wrapper.backends.users_m_v1")
     def test_create_user_in_tenant(self):
         """Test the creation of a user in a tenant."""
         path = f"http://{self.tenant_x_domain}/eox-core/api/v1/user/"
@@ -114,8 +111,9 @@ class TestUsersAPIIntegration(TestCase):
             "password": "p@$$w0rd",
             "activate_user": True,
         }
-        headers = {"Authorization": f"Bearer {self.tenant_x_token}"}
-        print(f"\n\nHeaders: {headers}\n\n")
+        authorization_bearer = f"Bearer {self.tenant_x_token}"
+        print(f"\n\nAuthorization bearer: {authorization_bearer}\n\n")
+        headers = {"Authorization": authorization_bearer}
 
         response = self.client.post(path, data=data, headers=headers)
 
