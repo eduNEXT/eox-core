@@ -83,6 +83,7 @@ class TestUserIntegration(TestCase):
         create_oauth_client(self.admin_user)
         self.tenant_x_domain = create_tenant("Tenant X", "tenant-x")
         self.tenant_x_token = self.get_access_token(self.tenant_x_domain)
+        print(f"\n\nTenant X token: {self.tenant_x_token}\n\n")
 
     def get_access_token(self, tenant_domain: str) -> str:
         """
@@ -118,6 +119,7 @@ class TestUserIntegration(TestCase):
         response = self.client.post(path, data=data, headers=headers)
 
         response_data = response.json()
+        print(f"\n\nResponse data: {response_data}\n\n")
         self.assertEqual(response.status_code, HTTP_200_OK)
         self.assertEqual(response_data["email"], data["email"])
         self.assertEqual(response_data["username"], data["username"])
