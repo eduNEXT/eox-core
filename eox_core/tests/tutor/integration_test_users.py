@@ -74,12 +74,12 @@ def create_tenant(name: str, host: str) -> str:
     SITE_ID=2,
     EOX_CORE_USERS_BACKEND="eox_core.edxapp_wrapper.backends.users_m_v1",
 )
-class TestUserIntegration(TestCase):
+class TestUsersAPIIntegration(TestCase):
     """Integration test suite for the Users API"""
 
     def setUp(self):
-        self.grade_endpoint = "eox-core/api/v1/grade/"
         self.admin_user = create_admin_user()
+        print(f"\n\nAdmin user: {self.admin_user}\n\n")
         create_oauth_client(self.admin_user)
         self.tenant_x_domain = create_tenant("Tenant X", "tenant-x")
         self.tenant_x_token = self.get_access_token(self.tenant_x_domain)
@@ -115,7 +115,7 @@ class TestUserIntegration(TestCase):
             "activate_user": True,
         }
         headers = {"Authorization": f"Bearer {self.tenant_x_token}"}
-        print(f'\n\nHeaders: {headers}\n\n')
+        print(f"\n\nHeaders: {headers}\n\n")
 
         response = self.client.post(path, data=data, headers=headers)
 
