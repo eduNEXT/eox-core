@@ -111,9 +111,8 @@ class TestUsersAPIIntegration(TestCase):
             "password": "p@$$w0rd",
             "activate_user": True,
         }
-        authorization_bearer = f"Bearer {self.tenant_x_token}"
-        print(f"\n\nAuthorization bearer: {authorization_bearer}\n\n")
-        headers = {"Authorization": authorization_bearer}
+        print(f"\n\nToken: {self.tenant_x_token}\n\n")
+        headers = {"Authorization": f"Bearer {self.tenant_x_token}"}
 
         response = self.client.post(path, data=data, headers=headers)
 
