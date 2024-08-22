@@ -66,12 +66,12 @@ def create_tenant(name: str, host: str) -> str:
         lms_configs={
             "EDNX_USE_SIGNAL": True,
             "PLATFORM_NAME": name,
-            "SITE_NAME": f"{domain}:8000",
+            "SITE_NAME": domain,
             "course_org_filter": ["OpenedX"],
         },
     )
     Route.objects.create(domain=domain, config=config)
-    Site.objects.create(domain=f"{domain}:8000", name=name)
+    Site.objects.create(domain=domain, name=name)
     return domain
 
 
@@ -108,6 +108,7 @@ class TestUsersAPIIntegration(TestCase):
     def test_create_user_in_tenant(self):
         """Test the creation of a user in a tenant."""
         path = f"http://{self.tenant_x_domain}/eox-core/api/v1/user/"
+        print(f'\n\nPath: {path}\n\n')
         data = {
             "username": "user-tenant-x",
             "email": "user@tenantx.com",
