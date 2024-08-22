@@ -21,7 +21,7 @@ CLIENT_ID = "apiclient"
 CLIENT_SECRET = "apisecret"
 
 
-def create_oauth_client(user: User) -> None:
+def create_oauth_client(user: User, redirect_uris: list) -> None:
     """
     Create a new OAuth client.
 
@@ -35,6 +35,7 @@ def create_oauth_client(user: User) -> None:
         client_type=Application.CLIENT_CONFIDENTIAL,
         authorization_grant_type=Application.GRANT_CLIENT_CREDENTIALS,
         user=user,
+        redirect_uris=redirect_uris,
     )
 
 
@@ -45,7 +46,7 @@ def create_admin_user() -> User:
     Returns:
         User: The admin user.
     """
-    return User.objects.create_superuser("eox-core-admin")
+    return User.objects.create_superuser("eox-core-admin", "eox-core@mail.com", "p@$$w0rd")
 
 
 def create_tenant(name: str, host: str) -> str:
@@ -79,9 +80,9 @@ class TestUsersAPIIntegration(TestCase):
     """Integration test suite for the Users API"""
 
     def setUp(self):
-        self.admin_user = create_admin_user()
-        create_oauth_client(self.admin_user)
         self.tenant_x_domain = create_tenant("Tenant X", "tenant-x")
+        self.admin_user = create_admin_user()
+        create_oauth_client(self.admin_user, redirect_uris=[f"http://{self.tenant_x_domain}/"])
         self.tenant_x_token = self.get_access_token(self.tenant_x_domain)
 
     def get_access_token(self, tenant_domain: str) -> str:
