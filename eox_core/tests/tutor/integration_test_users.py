@@ -95,14 +95,15 @@ class TestUsersAPIIntegration(TestCase):
         Returns:
             str: The access token.
         """
-        access_token_data = {
+        data = {
             "client_id": CLIENT_ID,
             "client_secret": CLIENT_SECRET,
             "grant_type": "client_credentials",
         }
-        access_token_endpoint = f"http://{tenant_domain}/oauth2/access_token/"
-        response_access_token = self.client.post(access_token_endpoint, data=access_token_data)
-        return response_access_token.json()["access_token"]
+        headers = {"Host": tenant_domain}
+        path = f"http://{tenant_domain}/oauth2/access_token/"
+        response = self.client.post(path, data=data, headers=headers)
+        return response.json()["access_token"]
 
     @override_settings(EOX_CORE_USERS_BACKEND="eox_core.edxapp_wrapper.backends.users_m_v1")
     def test_create_user_in_tenant(self):
