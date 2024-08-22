@@ -75,7 +75,7 @@ def create_tenant(name: str, host: str) -> str:
     return domain
 
 
-@override_settings(ALLOWED_HOSTS=["testserver"], SITE_ID=2)
+@override_settings(ALLOWED_HOSTS=["*"], SITE_ID=2)
 class TestUsersAPIIntegration(TestCase):
     """Integration test suite for the Users API"""
 
@@ -116,7 +116,7 @@ class TestUsersAPIIntegration(TestCase):
             "password": "p@$$w0rd",
             "activate_user": True,
         }
-        headers = {"Authorization": f"Bearer {self.tenant_x_token}"}
+        headers = {"Authorization": f"Bearer {self.tenant_x_token}", "Host": self.tenant_x_domain}
 
         response = self.client.post(path, data=data, headers=headers)
 
