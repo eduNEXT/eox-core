@@ -80,11 +80,9 @@ class TestUsersAPIIntegration(TestCase):
 
     def setUp(self):
         self.admin_user = create_admin_user()
-        print(f"\n\nAdmin user: {self.admin_user}\n\n")
         create_oauth_client(self.admin_user)
         self.tenant_x_domain = create_tenant("Tenant X", "tenant-x")
         self.tenant_x_token = self.get_access_token(self.tenant_x_domain)
-        print(f"\n\nTenant X token: {self.tenant_x_token}\n\n")
 
     def get_access_token(self, tenant_domain: str) -> str:
         """
@@ -116,7 +114,6 @@ class TestUsersAPIIntegration(TestCase):
             "password": "p@$$w0rd",
             "activate_user": True,
         }
-        print(f"\n\nToken: {self.tenant_x_token}\n\n")
         headers = {"Authorization": f"Bearer {self.tenant_x_token}"}
 
         response = self.client.post(path, data=data, headers=headers)

@@ -3,7 +3,6 @@
 """
 Custom API permissions module
 """
-
 from django.conf import settings
 from django.contrib.auth.models import Permission, User
 from django.contrib.contenttypes.models import ContentType
@@ -21,8 +20,8 @@ def load_permissions():
         try:
             content_type = ContentType.objects.get_for_model(User)
             Permission.objects.get_or_create(
-                codename="can_call_eox_core",
-                name="Can access eox-core API",
+                codename='can_call_eox_core',
+                name='Can access eox-core API',
                 content_type=content_type,
             )
         except (ProgrammingError, ImproperlyConfigured):
@@ -47,24 +46,21 @@ class EoxCoreAPIPermission(permissions.BasePermission):
             3) can call eox-core API
         """
         print(f"\n\nUser: {request.user}\n\n")
-        print(f"\n\nUser Is Staff?: {request.user.is_staff}\n\n")
         if request.user.is_staff:
             return True
 
         try:
-            application_uri_allowed = request.auth.application.redirect_uri_allowed(request.build_absolute_uri("/"))
+            application_uri_allowed = request.auth.application.redirect_uri_allowed(request.build_absolute_uri('/'))
         except Exception:  # pylint: disable=broad-except
             application_uri_allowed = False
 
-        print(f"\n\nApplication URI Allowed?: {application_uri_allowed}\n\n")
         try:
             client_url_allowed = request.get_host() in request.auth.client.url
         except Exception:  # pylint: disable=broad-except
             client_url_allowed = False
-        print(f"\n\nClient URL Allowed?: {client_url_allowed}\n\n")
 
         if client_url_allowed or application_uri_allowed:
-            return request.user.has_perm("auth.can_call_eox_core")
+            return request.user.has_perm('auth.can_call_eox_core')
 
         # If we get here either someone is using a token created on one site in a different site
         # or there was a missconfiguration of the oauth client.
