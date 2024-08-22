@@ -8,7 +8,12 @@ that the Users API is behaving as expected on a live server.
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.test import TestCase, override_settings
-from eox_tenant.models import Route, TenantConfig
+
+try:
+    from eox_tenant.models import Route, TenantConfig
+except ImportError:
+    Route = None
+    TenantConfig = None
 from oauth2_provider.models import Application
 from rest_framework.status import HTTP_200_OK
 
