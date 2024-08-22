@@ -45,7 +45,6 @@ class EoxCoreAPIPermission(permissions.BasePermission):
             2) is calling the API from an allowed site
             3) can call eox-core API
         """
-        print(f"\n\nUser: {request.user}\n\n")
         if request.user.is_staff:
             return True
 

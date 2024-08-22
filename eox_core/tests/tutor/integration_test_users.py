@@ -109,7 +109,6 @@ class TestUsersAPIIntegration(TestCase):
     def test_create_user_in_tenant(self):
         """Test the creation of a user in a tenant."""
         path = f"http://{self.tenant_x_domain}/eox-core/api/v1/user/"
-        print(f'\n\nPath: {path}\n\n')
         data = {
             "username": "user-tenant-x",
             "email": "user@tenantx.com",
@@ -122,7 +121,6 @@ class TestUsersAPIIntegration(TestCase):
         response = self.client.post(path, data=data, headers=headers)
 
         response_data = response.json()
-        print(f"\n\nResponse data: {response_data}\n\n")
         self.assertEqual(response.status_code, HTTP_200_OK)
         self.assertEqual(response_data["email"], data["email"])
         self.assertEqual(response_data["username"], data["username"])
