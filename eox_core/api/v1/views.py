@@ -106,6 +106,7 @@ class BearerAuth2(BearerAuthentication):
         print("3 ################")
         user, token = self.authenticate_credentials(access_token)
         print("4 ################")
+        
         set_custom_attribute("BearerAuthentication", "Success")
 
         return user, token
