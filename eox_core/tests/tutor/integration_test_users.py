@@ -84,8 +84,7 @@ class TestUsersAPIIntegration(TestCase):
         )
         Route.objects.create(domain=domain, config=config)  # pylint: disable=no-member
         Site.objects.create(domain=domain, name=name)
-        token = self.get_access_token(domain)
-        return {"domain": domain, "token": token}
+        return {"domain": domain, "token": self.get_access_token(domain)}
 
     def get_access_token(self, tenant_domain: str) -> str:
         """
