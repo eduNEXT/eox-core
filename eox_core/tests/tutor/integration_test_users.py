@@ -23,9 +23,9 @@ CLIENT_ID = "apiclient"
 CLIENT_SECRET = "apisecret"
 
 
-def create_oauth_client(user: User) -> None:
+def create_oauth2_client(user: User) -> None:
     """
-    Create a new OAuth client.
+    Create a new OAuth2 client.
 
     Args:
         user (User): The user that will own the client.
@@ -55,9 +55,10 @@ class TestUsersAPIIntegration(TestCase):
     """Integration test suite for the Users API"""
 
     def setUp(self):
+        """Set up the test suite"""
         self.path = reverse("eox-core:eox-api:eox-api:edxapp-user")
         self.admin_user = create_admin_user()
-        create_oauth_client(self.admin_user)
+        create_oauth2_client(self.admin_user)
         self.tenant_x = self.create_tenant("tenant-x")
         self.tenant_y = self.create_tenant("tenant-y")
 
@@ -118,9 +119,8 @@ class TestUsersAPIIntegration(TestCase):
         Returns:
             HttpResponse: The response object.
         """
-        path = self.path.format(tenant_domain=tenant["domain"])
         headers = {"Authorization": f"Bearer {tenant['token']}", "Host": tenant["domain"]}
-        response = self.client.post(path, data=user_data, headers=headers)
+        response = self.client.post(self.path, data=user_data, headers=headers)
         return response
 
     @override_settings(EOX_CORE_USERS_BACKEND="eox_core.edxapp_wrapper.backends.users_m_v1")
