@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.http import HttpResponse
 from django.test import TestCase, override_settings
+from django.urls import reverse
 
 try:
     from eox_tenant.models import Route, TenantConfig
@@ -54,7 +55,7 @@ class TestUsersAPIIntegration(TestCase):
     """Integration test suite for the Users API"""
 
     def setUp(self):
-        self.path = "http://{tenant_domain}/eox-core/api/v1/user/"
+        self.path = reverse("eox-core:eox-api:eox-api:edxapp-user")
         self.admin_user = create_admin_user()
         create_oauth_client(self.admin_user)
         self.tenant_x = self.create_tenant("tenant-x")
