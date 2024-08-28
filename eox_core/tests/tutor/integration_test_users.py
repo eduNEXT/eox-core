@@ -21,6 +21,7 @@ from rest_framework import status
 
 CLIENT_ID = "apiclient"
 CLIENT_SECRET = "apisecret"
+EOX_CORE_USERS_BACKEND = "eox_core.edxapp_wrapper.backends.users_m_v1"
 
 
 def create_oauth2_client(user: User) -> None:
@@ -62,7 +63,7 @@ class TestUsersAPIIntegration(TestCase):
         self.tenant_x = self.create_tenant("tenant-x")
         self.tenant_y = self.create_tenant("tenant-y")
 
-    @override_settings(EOX_CORE_USERS_BACKEND="eox_core.edxapp_wrapper.backends.users_m_v1")
+    @override_settings(EOX_CORE_USERS_BACKEND=EOX_CORE_USERS_BACKEND)
     def create_tenant(self, tenant: str) -> dict:
         """
         Create a new tenant.
@@ -123,7 +124,7 @@ class TestUsersAPIIntegration(TestCase):
         response = self.client.post(self.path, data=user_data, headers=headers)
         return response
 
-    @override_settings(EOX_CORE_USERS_BACKEND="eox_core.edxapp_wrapper.backends.users_m_v1")
+    @override_settings(EOX_CORE_USERS_BACKEND=EOX_CORE_USERS_BACKEND)
     def test_create_user_in_tenant_success(self):
         """
         Test creating a user in a tenant.
@@ -150,7 +151,7 @@ class TestUsersAPIIntegration(TestCase):
         self.assertFalse(response_data["is_staff"])
         self.assertFalse(response_data["is_superuser"])
 
-    @override_settings(EOX_CORE_USERS_BACKEND="eox_core.edxapp_wrapper.backends.users_m_v1")
+    @override_settings(EOX_CORE_USERS_BACKEND=EOX_CORE_USERS_BACKEND)
     def test_create_user_missing_required_fields(self):
         """
         Test creating a user in a tenant with invalid data.
