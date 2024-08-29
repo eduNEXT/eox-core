@@ -1,8 +1,5 @@
 """
-Integration test suite for the Users API.
-
-This suite performs multiple http requests to guarantee
-that the Users API is behaving as expected on a live server.
+Integration test suite for the API v1 views.
 """
 
 from django.contrib.auth.models import User
@@ -176,3 +173,28 @@ class TestUsersAPIIntegration(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("email", response_data)
         self.assertIn("username", response_data)
+
+
+@override_settings(ALLOWED_HOSTS=["testserver"], SITE_ID=2)
+class TestInfoView(TestCase):
+    """
+    Integration test suite for the info view.
+    """
+
+    def setUp(self):
+        """
+        Set up the base URL for the tests
+        """
+        self.path = reverse("eox-core:eox-info")
+
+    def test_info_view(self):
+        """
+        Tests the info view endpoint in Tutor
+        """
+        response = self.client.get(self.path)
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("version", response_data)
+        self.assertIn("name", response_data)
+        self.assertIn("git", response_data)
