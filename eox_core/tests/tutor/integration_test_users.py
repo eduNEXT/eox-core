@@ -129,9 +129,13 @@ class TestUsersAPIIntegration(TestCase):
         """
         Test creating a user in a tenant.
 
+        Open edX definitions tested:
+        - `create_edxapp_user`
+        - `check_edxapp_account_conflicts`
+
         Expected result:
-            - The status code is 200.
-            - The user is created successfully in the tenant with the provided data.
+        - The status code is 200.
+        - The user is created successfully in the tenant with the provided data.
         """
         data = {
             "username": "user-tenant-x",
