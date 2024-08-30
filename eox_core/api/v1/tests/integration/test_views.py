@@ -49,6 +49,7 @@ class BaseAPIIntegrationTest(APITestCase):
         return {"domain": f"{tenant}.local.edly.io"}
 
 
+@override_settings(EOX_CORE_USERS_BACKEND=EOX_CORE_USERS_BACKEND)
 class TestUsersAPIIntegration(BaseAPIIntegrationTest):
     """Integration test suite for the Users API"""
 
@@ -72,7 +73,6 @@ class TestUsersAPIIntegration(BaseAPIIntegrationTest):
         response = self.client.post(self.path, data=user_data, headers=headers)
         return response
 
-    @override_settings(EOX_CORE_USERS_BACKEND=EOX_CORE_USERS_BACKEND)
     def test_create_user_in_tenant_success(self):
         """
         Test creating a user in a tenant.
@@ -103,7 +103,6 @@ class TestUsersAPIIntegration(BaseAPIIntegrationTest):
         self.assertFalse(response_data["is_staff"])
         self.assertFalse(response_data["is_superuser"])
 
-    @override_settings(EOX_CORE_USERS_BACKEND=EOX_CORE_USERS_BACKEND)
     def test_create_user_missing_required_fields(self):
         """
         Test creating a user in a tenant with invalid data.
