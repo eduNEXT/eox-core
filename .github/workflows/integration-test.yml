@@ -16,4 +16,4 @@ jobs:
         with:
           tutor_version: ${{ matrix.tutor_version }}
           app_name: "eox-core"
-          shell_file_to_run: "eox_core/tests/tutor/integration.sh"
+          shell_file_to_run: "integration.sh"
