@@ -9,6 +9,7 @@ from rest_framework.serializers import ValidationError
 
 from eox_core.api.v1.serializers import EdxappCourseEnrollmentSerializer
 
+
 class CourseKeyValidationTest(TestCase):
     """ Tests for the CourseKey validations """
 
