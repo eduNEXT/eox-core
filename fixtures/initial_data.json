@@ -1,0 +1,88 @@
+[
+    {
+        "model": "eox_tenant.route",
+        "pk": 1,
+        "fields": {
+            "domain": "tenant-a.local.edly.io",
+            "config": 1
+        }
+    },
+    {
+        "model": "eox_tenant.route",
+        "pk": 2,
+        "fields": {
+            "domain": "tenant-b.local.edly.io",
+            "config": 2
+        }
+    },
+    {
+        "model": "eox_tenant.tenantconfig",
+        "pk": 1,
+        "fields": {
+            "external_key": "tenant-a-key",
+            "lms_configs": "{\n    \"EDNX_USE_SIGNAL\": true,\n    \"PLATFORM_NAME\": \"Tenant A\",\n    \"SITE_NAME\": \"tenant-a.local.edly.io:8000\",\n    \"course_org_filter\": [\n        \"OpenedX\"\n    ]\n}",
+            "studio_configs": "{}",
+            "theming_configs": "{}",
+            "meta": "{}",
+            "organizations": [
+                1
+            ]
+        }
+    },
+    {
+        "model": "eox_tenant.tenantconfig",
+        "pk": 2,
+        "fields": {
+            "external_key": "tenant-b-key",
+            "lms_configs": "{\n    \"EDNX_USE_SIGNAL\": true,\n    \"PLATFORM_NAME\": \"Tenant B\",\n    \"SITE_NAME\": \"tenant-b.local.edly.io:8000\",\n    \"course_org_filter\": [\n        \"OpenedX\"\n    ]\n}",
+            "studio_configs": "{}",
+            "theming_configs": "{}",
+            "meta": "{}",
+            "organizations": [
+                1
+            ]
+        }
+    },
+    {
+        "model": "eox_tenant.tenantorganization",
+        "pk": 1,
+        "fields": {
+            "name": "OpenedX"
+        }
+    },
+    {
+        "model": "auth.user",
+        "pk": 4,
+        "fields": {
+            "password": "pbkdf2_sha256$600000$6PZlT8H5P7ouzl2ozvZ5r7$2MKoXKlQux0KrN40OVtDnEiKawspCudlCKj1m0WnsIM=",
+            "last_login": "2024-09-03T21:55:08.123Z",
+            "is_superuser": true,
+            "username": "admin-eox-core",
+            "first_name": "",
+            "last_name": "",
+            "email": "admin-eox-core@mail.com",
+            "is_staff": true,
+            "is_active": true,
+            "date_joined": "2024-08-30T20:33:17.023Z",
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "oauth2_provider.application",
+        "pk": 4,
+        "fields": {
+            "client_id": "client_id",
+            "user": 4,
+            "redirect_uris": "http://local.edly.io:8000/\r\nhttp://tenant-a.local.edly.io:8000/\r\nhttp://tenant-b.local.edly.io:8000/",
+            "client_type": "confidential",
+            "authorization_grant_type": "client-credentials",
+            "client_secret": "client_secret",
+            "name": "eox-core-app",
+            "skip_authorization": false,
+            "created": "2024-09-06T13:30:17.347Z",
+            "updated": "2024-09-06T13:30:17.347Z",
+            "algorithm": ""
+        }
+    }
+]
