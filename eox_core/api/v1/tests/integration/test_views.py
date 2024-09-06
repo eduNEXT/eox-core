@@ -2,14 +2,17 @@
 Integration test suite for the API v1 views.
 """
 
-from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.test import override_settings
 from django.urls import reverse
+import requests
 from rest_framework import status
 from rest_framework.test import APITestCase
 
 EOX_CORE_USERS_BACKEND = "eox_core.edxapp_wrapper.backends.users_m_v1"
+API_TIMEOUT = 5
+CLIENT_ID = "client_id"
+CLIENT_SECRET = "client_secret"
 
 
 @override_settings(ALLOWED_HOSTS=["*"], SITE_ID=2)
@@ -22,31 +25,33 @@ class BaseAPIIntegrationTest(APITestCase):
         """
         Set up the test suite.
         """
-        self.admin_user = self.create_admin_user()
-        self.client.force_authenticate(user=self.admin_user)
-        self.tenant_x = self.create_tenant("tenant-x")
-        self.tenant_y = self.create_tenant("tenant-y")
+        self.default_site = {
+            "base_url": "http://local.edly.io:8000",
+            "domain": "local.edly.io",
+        }
+        self.tenant_x = {
+            "base_url": "http://local.edly.io:8000",
+            "domain": "local.edly.io",
+        }
 
-    def create_admin_user(self) -> User:
+    def get_access_token(self, tenant_base_url: str) -> str:
         """
-        Create a new admin user.
-
-        Returns:
-            User: The admin user.
-        """
-        return User.objects.create_superuser("eox-core-admin", "eox-core@mail.com", "p@$$w0rd")
-
-    def create_tenant(self, tenant: str) -> dict:
-        """
-        Create a new tenant.
+        Get an access token for a tenant.
 
         Args:
-            tenant (str): The tenant name.
+            tenant_base_url (str): The tenant base URL.
 
         Returns:
-            dict: The tenant data.
+            str: The access token.
         """
-        return {"domain": f"{tenant}.local.edly.io"}
+        data = {
+            "client_id": CLIENT_ID,
+            "client_secret": CLIENT_SECRET,
+            "grant_type": "client_credentials",
+        }
+        path = f"{tenant_base_url}/oauth2/access_token/"
+        response = requests.post(path, data=data, timeout=API_TIMEOUT)
+        return response.json()["access_token"]
 
 
 @override_settings(EOX_CORE_USERS_BACKEND=EOX_CORE_USERS_BACKEND)
@@ -69,8 +74,27 @@ class TestUsersAPIIntegration(BaseAPIIntegrationTest):
         Returns:
             HttpResponse: The response object.
         """
-        headers = {"Host": tenant["domain"]}
-        response = self.client.post(self.path, data=user_data, headers=headers)
+        access_token = self.get_access_token(tenant["base_url"])
+        headers = {"Host": tenant["domain"], "Authorization": f"Bearer {access_token}"}
+        path = f"{tenant['base_url']}{self.path}"
+        response = requests.post(path, data=user_data, headers=headers, timeout=API_TIMEOUT)
+        return response
+
+    def get_user_in_tenant(self, tenant: dict, username: str) -> HttpResponse:
+        """
+        Get a user in a tenant.
+
+        Args:
+            tenant (dict): The tenant data.
+            username (str): The username.
+
+        Returns:
+            HttpResponse: The response object.
+        """
+        access_token = self.get_access_token(tenant["base_url"])
+        headers = {"Host": tenant["domain"], "Authorization": f"Bearer {access_token}"}
+        path = f"{tenant['base_url']}{self.path}?username={username}"
+        response = requests.get(path, headers=headers, timeout=API_TIMEOUT)
         return response
 
     def test_create_user_in_tenant_success(self):
@@ -107,10 +131,13 @@ class TestUsersAPIIntegration(BaseAPIIntegrationTest):
         """
         Test creating a user in a tenant with invalid data.
 
+        Open edX definitions tested:
+        - `check_edxapp_account_conflicts`
+
         Expected result:
-            - The status code is 400.
-            - The response contains the missing fields.
-            - The user is not created in the tenant.
+        - The status code is 400.
+        - The response contains the missing fields.
+        - The user is not created in the tenant.
         """
         data = {
             "fullname": "User Tenant X",
@@ -144,9 +171,11 @@ class TestInfoView(BaseAPIIntegrationTest):
         - The status code is 200.
         - The response contains the version, name and git commit hash.
         """
-        response = self.client.get(self.path)
-        response_data = response.json()
+        path = f"{self.default_site['base_url']}{self.path}"
 
+        response = requests.get(path, timeout=API_TIMEOUT)
+
+        response_data = response.json()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn("version", response_data)
         self.assertIn("name", response_data)
