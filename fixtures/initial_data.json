@@ -3,7 +3,7 @@
         "model": "eox_tenant.route",
         "pk": 1,
         "fields": {
-            "domain": "tenant-a.local.edly.io",
+            "domain": "tenant-x.local.edly.io",
             "config": 1
         }
     },
@@ -11,7 +11,7 @@
         "model": "eox_tenant.route",
         "pk": 2,
         "fields": {
-            "domain": "tenant-b.local.edly.io",
+            "domain": "tenant-y.local.edly.io",
             "config": 2
         }
     },
@@ -19,8 +19,8 @@
         "model": "eox_tenant.tenantconfig",
         "pk": 1,
         "fields": {
-            "external_key": "tenant-a-key",
-            "lms_configs": "{\n    \"EDNX_USE_SIGNAL\": true,\n    \"PLATFORM_NAME\": \"Tenant A\",\n    \"SITE_NAME\": \"tenant-a.local.edly.io:8000\",\n    \"course_org_filter\": [\n        \"OpenedX\"\n    ]\n}",
+            "external_key": "tenant-x-key",
+            "lms_configs": "{\n    \"EDNX_USE_SIGNAL\": true,\n    \"PLATFORM_NAME\": \"Tenant X\",\n    \"SITE_NAME\": \"tenant-x.local.edly.io:8000\",\n    \"course_org_filter\": [\n        \"OpenedX\"\n    ]\n}",
             "studio_configs": "{}",
             "theming_configs": "{}",
             "meta": "{}",
@@ -33,8 +33,8 @@
         "model": "eox_tenant.tenantconfig",
         "pk": 2,
         "fields": {
-            "external_key": "tenant-b-key",
-            "lms_configs": "{\n    \"EDNX_USE_SIGNAL\": true,\n    \"PLATFORM_NAME\": \"Tenant B\",\n    \"SITE_NAME\": \"tenant-b.local.edly.io:8000\",\n    \"course_org_filter\": [\n        \"OpenedX\"\n    ]\n}",
+            "external_key": "tenant-y-key",
+            "lms_configs": "{\n    \"EDNX_USE_SIGNAL\": true,\n    \"PLATFORM_NAME\": \"Tenant Y\",\n    \"SITE_NAME\": \"tenant-y.local.edly.io:8000\",\n    \"course_org_filter\": [\n        \"OpenedX\"\n    ]\n}",
             "studio_configs": "{}",
             "theming_configs": "{}",
             "meta": "{}",
@@ -74,7 +74,7 @@
         "fields": {
             "client_id": "client_id",
             "user": 4,
-            "redirect_uris": "http://local.edly.io/\r\nhttp://local.edly.io:8000/\r\nhttp://tenant-a.local.edly.io:8000/\r\nhttp://tenant-b.local.edly.io:8000/",
+            "redirect_uris": "http://local.edly.io/\r\nhttp://local.edly.io:8000/\r\nhttp://tenant-x.local.edly.io:8000/\r\nhttp://tenant-y.local.edly.io:8000/",
             "client_type": "confidential",
             "authorization_grant_type": "client-credentials",
             "client_secret": "client_secret",
