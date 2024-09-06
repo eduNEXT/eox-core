@@ -2,10 +2,10 @@
 Integration test suite for the API v1 views.
 """
 
+import requests
 from django.http import HttpResponse
 from django.test import override_settings
 from django.urls import reverse
-import requests
 from rest_framework import status
 from rest_framework.test import APITestCase
 
