@@ -74,7 +74,7 @@
         "fields": {
             "client_id": "client_id",
             "user": 4,
-            "redirect_uris": "http://local.edly.io:8000/\r\nhttp://tenant-a.local.edly.io:8000/\r\nhttp://tenant-b.local.edly.io:8000/",
+            "redirect_uris": "http://local.edly.io/\r\nhttp://local.edly.io:8000/\r\nhttp://tenant-a.local.edly.io:8000/\r\nhttp://tenant-b.local.edly.io:8000/",
             "client_type": "confidential",
             "authorization_grant_type": "client-credentials",
             "client_secret": "client_secret",
