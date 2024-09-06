@@ -4,8 +4,12 @@ bgreen () { printf "\n\n\e[1m\e[32m" ; $@ ; printf "\e[0m\n\n"; }
 
 # This script installs the package in the edxapp environment, installs test
 # requirements from Open edX and runs the tests using the Tutor settings.
+
+# Variables
+PACKAGE_PATH=/openedx/eox-core
+
 bgreen echo "Install package"
-pip install -e /openedx/eox-core
+pip install -e $PACKAGE_PATH
 
 bgreen echo "Install eox-tenant (requirement)"
 pip install eox-tenant
@@ -17,7 +21,10 @@ python manage.py lms migrate
 bgreen echo "Install test requirements"
 pip install -r requirements/edx/testing.txt
 
-bgreen echo "Run tests"
+bgreen echo "Load fixtures"
+python manage.py lms loaddata "$PACKAGE_PATH/fixtures/initial_data.json"
+
+bgreen echo "Run integration tests"
 pytest -s --ds=lms.envs.tutor.test \
-    /openedx/eox-core/eox_core/api/v1/tests/integration \
-    /openedx/eox-core/eox_core/edxapp_wrapper/tests/integration
+    "$PACKAGE_PATH/eox_core/api/v1/tests/integration" \
+    "$PACKAGE_PATH/eox_core/edxapp_wrapper/tests/integration"
