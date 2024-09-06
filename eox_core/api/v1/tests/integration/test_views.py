@@ -26,11 +26,11 @@ class BaseAPIIntegrationTest(APITestCase):
         Set up the test suite.
         """
         self.default_site = {
-            "base_url": "http://local.edly.io:8000",
+            "base_url": "http://local.edly.io",
             "domain": "local.edly.io",
         }
         self.tenant_x = {
-            "base_url": "http://local.edly.io:8000",
+            "base_url": "http://local.edly.io",
             "domain": "local.edly.io",
         }
 
