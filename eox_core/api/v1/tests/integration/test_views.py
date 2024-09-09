@@ -101,16 +101,18 @@ class TestUsersAPIIntegration(BaseAPIIntegrationTest):
     def get_user_in_tenant(self, tenant: dict, username: str) -> HttpResponse:
         """
         Get a user in a tenant.
+
         Args:
             tenant (dict): The tenant data.
             username (str): The username.
+
         Returns:
             HttpResponse: The response object.
         """
         params = {"username": username}
         return self.make_tenant_request(tenant, "GET", self.url, params=params)
 
-    def test_create_user_in_tenant_success(self):
+    def test_create_user_in_tenant_success(self) -> None:
         """
         Test creating a user in a tenant.
 
@@ -140,7 +142,7 @@ class TestUsersAPIIntegration(BaseAPIIntegrationTest):
         self.assertFalse(response_data["is_staff"])
         self.assertFalse(response_data["is_superuser"])
 
-    def test_create_user_missing_required_fields(self):
+    def test_create_user_missing_required_fields(self) -> None:
         """
         Test creating a user in a tenant with invalid data.
 
@@ -177,7 +179,7 @@ class TestInfoView(BaseAPIIntegrationTest):
         self.url = reverse("eox-core:eox-info")
         super().setUp()
 
-    def test_info_view_success(self):
+    def test_info_view_success(self) -> None:
         """Test the info view.
 
         Expected result:
