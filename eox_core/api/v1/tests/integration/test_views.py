@@ -54,6 +54,33 @@ class BaseAPIIntegrationTest(APITestCase):
         response = requests.post(path, data=data, timeout=API_TIMEOUT)
         return response.json()["access_token"]
 
+    def make_tenant_request(self, tenant: dict, method: str, path: str, data=None, params=None) -> HttpResponse:
+        """
+        Make a request to a tenant's API.
+
+        Args:
+            tenant (dict): The tenant data.
+            method (str): The HTTP method ('GET', 'POST', etc.).
+            path (str): The API path.
+            data (dict, optional): The data for POST requests.
+            params (dict, optional): The parameters for GET requests.
+
+        Returns:
+            HttpResponse: The response object.
+        """
+        access_token = self.get_access_token(tenant["base_url"])
+        headers = {"Host": tenant["domain"], "Authorization": f"Bearer {access_token}"}
+        url = f"{tenant['base_url']}{path}"
+
+        if method.upper() == "POST":
+            response = requests.post(url, data=data, headers=headers, timeout=API_TIMEOUT)
+        elif method.upper() == "GET":
+            response = requests.get(url, headers=headers, params=params, timeout=API_TIMEOUT)
+        else:
+            raise ValueError(f"Unsupported HTTP method: {method}")
+
+        return response
+
 
 @override_settings(EOX_CORE_USERS_BACKEND=EOX_CORE_USERS_BACKEND)
 class TestUsersAPIIntegration(BaseAPIIntegrationTest):
@@ -75,28 +102,19 @@ class TestUsersAPIIntegration(BaseAPIIntegrationTest):
         Returns:
             HttpResponse: The response object.
         """
-        access_token = self.get_access_token(tenant["base_url"])
-        headers = {"Host": tenant["domain"], "Authorization": f"Bearer {access_token}"}
-        path = f"{tenant['base_url']}{self.path}"
-        response = requests.post(path, data=user_data, headers=headers, timeout=API_TIMEOUT)
-        return response
+        return self.make_tenant_request(tenant, "POST", self.path, data=user_data)
 
     def get_user_in_tenant(self, tenant: dict, username: str) -> HttpResponse:
         """
         Get a user in a tenant.
-
         Args:
             tenant (dict): The tenant data.
             username (str): The username.
-
         Returns:
             HttpResponse: The response object.
         """
-        access_token = self.get_access_token(tenant["base_url"])
-        headers = {"Host": tenant["domain"], "Authorization": f"Bearer {access_token}"}
-        path = f"{tenant['base_url']}{self.path}?username={username}"
-        response = requests.get(path, headers=headers, timeout=API_TIMEOUT)
-        return response
+        params = {"username": username}
+        return self.make_tenant_request(tenant, "GET", self.path, params=params)
 
     def test_create_user_in_tenant_success(self):
         """
