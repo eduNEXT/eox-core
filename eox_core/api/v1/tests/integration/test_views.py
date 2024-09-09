@@ -51,6 +51,7 @@ class BaseAPIIntegrationTest(APITestCase):
         response = requests.post(path, data=data, timeout=API_TIMEOUT)
         return response.json()["access_token"]
 
+    # pylint: disable=too-many-arguments
     def make_tenant_request(self, tenant: dict, method: str, path: str, data=None, params=None) -> HttpResponse:
         """
         Make a request to a tenant's API.
