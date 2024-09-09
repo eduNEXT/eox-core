@@ -4,7 +4,6 @@ Integration test suite for the API v1 views.
 
 import requests
 from django.http import HttpResponse
-from django.test import override_settings
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -15,7 +14,6 @@ CLIENT_ID = "client_id"
 CLIENT_SECRET = "client_secret"
 
 
-@override_settings(ALLOWED_HOSTS=["*"], SITE_ID=2)
 class BaseAPIIntegrationTest(APITestCase):
     """
     Base class for the integration test suite.
@@ -50,7 +48,6 @@ class BaseAPIIntegrationTest(APITestCase):
             "grant_type": "client_credentials",
         }
         path = f"{tenant_base_url}/oauth2/access_token/"
-        print(f'\n\nPath: {path}\n\n')
         response = requests.post(path, data=data, timeout=API_TIMEOUT)
         return response.json()["access_token"]
 
@@ -82,7 +79,6 @@ class BaseAPIIntegrationTest(APITestCase):
         return response
 
 
-@override_settings(EOX_CORE_USERS_BACKEND=EOX_CORE_USERS_BACKEND)
 class TestUsersAPIIntegration(BaseAPIIntegrationTest):
     """Integration test suite for the Users API"""
 
