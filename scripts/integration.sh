@@ -25,6 +25,6 @@ bgreen echo "Load fixtures"
 python manage.py lms loaddata "$PACKAGE_PATH/fixtures/initial_data.json"
 
 bgreen echo "Run integration tests"
-pytest -s --ds=lms.envs.tutor.test \
+pytest -s --ds=eox_core.settings.integration_test \
     "$PACKAGE_PATH/eox_core/api/v1/tests/integration" \
     "$PACKAGE_PATH/eox_core/edxapp_wrapper/tests/integration"

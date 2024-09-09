@@ -3,15 +3,11 @@ Integration test suite for the API v1 views.
 """
 
 import requests
+from django.conf import settings
 from django.http import HttpResponse
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
-
-EOX_CORE_USERS_BACKEND = "eox_core.edxapp_wrapper.backends.users_m_v1"
-API_TIMEOUT = 5
-CLIENT_ID = "client_id"
-CLIENT_SECRET = "client_secret"
 
 
 class BaseAPIIntegrationTest(APITestCase):
@@ -43,23 +39,23 @@ class BaseAPIIntegrationTest(APITestCase):
             str: The access token.
         """
         data = {
-            "client_id": CLIENT_ID,
-            "client_secret": CLIENT_SECRET,
+            "client_id": settings.CLIENT_ID,
+            "client_secret": settings.CLIENT_SECRET,
             "grant_type": "client_credentials",
         }
-        path = f"{tenant_base_url}/oauth2/access_token/"
-        response = requests.post(path, data=data, timeout=API_TIMEOUT)
+        url = f"{tenant_base_url}/oauth2/access_token/"
+        response = requests.post(url, data=data, timeout=settings.API_TIMEOUT)
         return response.json()["access_token"]
 
     # pylint: disable=too-many-arguments
-    def make_tenant_request(self, tenant: dict, method: str, path: str, data=None, params=None) -> HttpResponse:
+    def make_tenant_request(self, tenant: dict, method: str, url: str, data=None, params=None) -> HttpResponse:
         """
         Make a request to a tenant's API.
 
         Args:
             tenant (dict): The tenant data.
             method (str): The HTTP method ('GET', 'POST', etc.).
-            path (str): The API path.
+            url (str): The API url.
             data (dict, optional): The data for POST requests.
             params (dict, optional): The parameters for GET requests.
 
@@ -68,12 +64,13 @@ class BaseAPIIntegrationTest(APITestCase):
         """
         access_token = self.get_access_token(tenant["base_url"])
         headers = {"Host": tenant["domain"], "Authorization": f"Bearer {access_token}"}
-        url = f"{tenant['base_url']}{path}"
+        url = f"{tenant['base_url']}{url}"
 
-        if method.upper() == "POST":
-            response = requests.post(url, data=data, headers=headers, timeout=API_TIMEOUT)
-        elif method.upper() == "GET":
-            response = requests.get(url, headers=headers, params=params, timeout=API_TIMEOUT)
+        method = method.upper()
+        if method == "POST":
+            response = requests.post(url, data=data, headers=headers, timeout=settings.API_TIMEOUT)
+        elif method == "GET":
+            response = requests.get(url, headers=headers, params=params, timeout=settings.API_TIMEOUT)
         else:
             raise ValueError(f"Unsupported HTTP method: {method}")
 
@@ -85,7 +82,7 @@ class TestUsersAPIIntegration(BaseAPIIntegrationTest):
 
     def setUp(self):
         """Set up the test suite"""
-        self.path = reverse("eox-core:eox-api:eox-api:edxapp-user")
+        self.url = reverse("eox-core:eox-api:eox-api:edxapp-user")
         super().setUp()
 
     def create_user_in_tenant(self, tenant: dict, user_data: dict) -> HttpResponse:
@@ -99,7 +96,7 @@ class TestUsersAPIIntegration(BaseAPIIntegrationTest):
         Returns:
             HttpResponse: The response object.
         """
-        return self.make_tenant_request(tenant, "POST", self.path, data=user_data)
+        return self.make_tenant_request(tenant, "POST", self.url, data=user_data)
 
     def get_user_in_tenant(self, tenant: dict, username: str) -> HttpResponse:
         """
@@ -111,7 +108,7 @@ class TestUsersAPIIntegration(BaseAPIIntegrationTest):
             HttpResponse: The response object.
         """
         params = {"username": username}
-        return self.make_tenant_request(tenant, "GET", self.path, params=params)
+        return self.make_tenant_request(tenant, "GET", self.url, params=params)
 
     def test_create_user_in_tenant_success(self):
         """
@@ -177,7 +174,7 @@ class TestInfoView(BaseAPIIntegrationTest):
         """
         Set up the test suite.
         """
-        self.path = reverse("eox-core:eox-info")
+        self.url = reverse("eox-core:eox-info")
         super().setUp()
 
     def test_info_view_success(self):
@@ -187,9 +184,9 @@ class TestInfoView(BaseAPIIntegrationTest):
         - The status code is 200.
         - The response contains the version, name and git commit hash.
         """
-        path = f"{self.default_site['base_url']}{self.path}"
+        url = f"{self.default_site['base_url']}{self.url}"
 
-        response = requests.get(path, timeout=API_TIMEOUT)
+        response = requests.get(url, timeout=settings.API_TIMEOUT)
 
         response_data = response.json()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
