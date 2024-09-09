@@ -50,6 +50,7 @@ class BaseAPIIntegrationTest(APITestCase):
             "grant_type": "client_credentials",
         }
         path = f"{tenant_base_url}/oauth2/access_token/"
+        print(f'\n\nPath: {path}\n\n')
         response = requests.post(path, data=data, timeout=API_TIMEOUT)
         return response.json()["access_token"]
 
