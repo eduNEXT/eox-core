@@ -7,7 +7,7 @@ from django.test import TestCase
 from mock import MagicMock
 from rest_framework.exceptions import NotAuthenticated
 
-from ..permissions import EoxCoreAPIPermission
+from eox_core.api.v1.permissions import EoxCoreAPIPermission
 
 
 class PermissionsTest(TestCase):

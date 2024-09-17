@@ -7,7 +7,7 @@ from django.test import TestCase
 from mock import patch
 from rest_framework.serializers import ValidationError
 
-from ..serializers import EdxappCourseEnrollmentSerializer
+from eox_core.api.v1.serializers import EdxappCourseEnrollmentSerializer
 
 
 class CourseKeyValidationTest(TestCase):
