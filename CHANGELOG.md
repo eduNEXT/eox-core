@@ -11,6 +11,21 @@ Please do not update the unreleased notes.
 
 <!-- Content should be placed here -->
 
+## [v10.6.0](https://github.com/eduNEXT/eox-core/compare/v10.5.1...v10.6.0) - (2024-09-17)
+
+### Added
+
+- **Integration Tests**: A new set of integration tests was added to validate
+  the Users API. These tests ensure the correct behavior of endpoints
+  interacting with Open edX components.
+
+### Changed
+
+- **Unit Tests**: The unit tests were moved to a new directory, `/unit`, to
+  separate them from the integration tests. This change aims to improve the
+  organization of the tests and make it easier to identify the different types
+  of tests.
+
 ## [v10.5.1](https://github.com/eduNEXT/eox-core/compare/v10.5.0...v10.5.1) - (2024-07-19)
 
 ### Fixed
