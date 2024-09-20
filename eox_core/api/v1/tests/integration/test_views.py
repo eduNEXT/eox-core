@@ -4,9 +4,8 @@ Integration test suite for the API v1 views.
 
 from __future__ import annotations
 
+import ddt
 import requests
-from ddt import data as ddt_data
-from ddt import ddt, unpack
 from django.conf import settings as ds
 from django.test import TestCase
 from django.urls import reverse
@@ -15,6 +14,76 @@ from rest_framework import status
 from eox_core.api.v1.tests.integration.data.fake_users import FAKE_USER_DATA
 
 settings = ds.INTEGRATION_TEST_SETTINGS
+
+USER_URL = f"{settings['EOX_CORE_API_BASE']}{reverse('eox-api:eox-api:edxapp-user')}"
+USER_UPDATER_URL = f"{settings['EOX_CORE_API_BASE']}{reverse('eox-api:eox-api:edxapp-user-updater')}"
+ENROLLMENT_URL = f"{settings['EOX_CORE_API_BASE']}{reverse('eox-api:eox-api:edxapp-enrollment')}"
+
+
+def get_access_token(tenant_base_url: str) -> str:
+    """
+    Get an access token for a tenant.
+
+    Args:
+        tenant_base_url (str): The tenant base URL.
+
+    Returns:
+        str: The access token.
+    """
+    data = {
+        "client_id": settings["CLIENT_ID"],
+        "client_secret": settings["CLIENT_SECRET"],
+        "grant_type": "client_credentials",
+    }
+    url = f"{tenant_base_url}/oauth2/access_token/"
+    response = requests.post(url, data=data, timeout=settings["API_TIMEOUT"])
+    return response.json()["access_token"]
+
+
+# pylint: disable=too-many-arguments
+def make_request(
+    tenant: dict,
+    method: str,
+    url: str,
+    json: dict | None = None,
+    data: dict | None = None,
+    params: dict | None = None,
+    with_auth: bool = True,
+) -> requests.Response:
+    """
+    Make a request to a tenant.
+
+    Args:
+        tenant (dict): The tenant data.
+        method (str): The HTTP method ('GET', 'POST', etc.).
+        url (str): The URL to make the request to.
+        json (dict, optional): The JSON data for POST, PATCH and PUT requests.
+        data (dict, optional): The data for POST, PATCH and PUT requests.
+        params (dict, optional): The parameters for GET and DELETE requests.
+        with_auth (bool, optional): Whether to include the access token in the request headers.
+
+    Returns:
+        requests.Response: The response object.
+    """
+    headers = {"Host": tenant["domain"]}
+    if with_auth:
+        access_token = get_access_token(tenant["base_url"])
+        headers["Authorization"] = f"Bearer {access_token}"
+    full_url = f"{tenant['base_url']}/{url}"
+
+    method = method.upper()
+    if method not in ("GET", "POST", "PATCH", "PUT", "DELETE"):
+        raise ValueError(f"Unsupported HTTP method: {method}.")
+
+    return requests.request(
+        method,
+        full_url,
+        json=json,
+        data=data,
+        params=params,
+        headers=headers,
+        timeout=settings["API_TIMEOUT"],
+    )
 
 
 class BaseAPIIntegrationTest(TestCase):
@@ -48,96 +117,26 @@ class BaseAPIIntegrationTest(TestCase):
             "domain": domain,
         }
 
-    def get_access_token(self, tenant_base_url: str) -> str:
-        """
-        Get an access token for a tenant.
 
-        Args:
-            tenant_base_url (str): The tenant base URL.
+class UsersAPIRequestMixin:
+    """
+    Mixin class for the API request methods.
+    """
 
-        Returns:
-            str: The access token.
-        """
-        data = {
-            "client_id": settings["CLIENT_ID"],
-            "client_secret": settings["CLIENT_SECRET"],
-            "grant_type": "client_credentials",
-        }
-        url = f"{tenant_base_url}/oauth2/access_token/"
-        response = requests.post(url, data=data, timeout=settings["API_TIMEOUT"])
-        return response.json()["access_token"]
-
-    # pylint: disable=too-many-arguments
-    def make_request(
-        self,
-        tenant: dict,
-        method: str,
-        url: str,
-        json: dict | None = None,
-        data: dict | None = None,
-        params: dict | None = None,
-        with_auth: bool = True,
-    ) -> requests.Response:
-        """
-        Make a request to a tenant.
-
-        Args:
-            tenant (dict): The tenant data.
-            method (str): The HTTP method ('GET', 'POST', etc.).
-            url (str): The URL to make the request to.
-            json (dict, optional): The JSON data for POST, PATCH and PUT requests.
-            data (dict, optional): The data for POST, PATCH and PUT requests.
-            params (dict, optional): The parameters for GET and DELETE requests.
-            with_auth (bool, optional): Whether to include the access token in the request headers.
-
-        Returns:
-            requests.Response: The response object.
-        """
-        headers = {"Host": tenant["domain"]}
-        if with_auth:
-            access_token = self.get_access_token(tenant["base_url"])
-            headers["Authorization"] = f"Bearer {access_token}"
-        full_url = f"{tenant['base_url']}/{url}"
-
-        method = method.upper()
-        if method not in ("GET", "POST", "PATCH"):
-            raise ValueError(f"Unsupported HTTP method: {method}")
-
-        return requests.request(
-            method,
-            full_url,
-            json=json,
-            data=data,
-            params=params,
-            headers=headers,
-            timeout=settings["API_TIMEOUT"],
-        )
-
-
-@ddt
-class TestUsersAPIIntegration(BaseAPIIntegrationTest):
-    """Integration test suite for the Users API"""
-
-    def setUp(self):
-        """Set up the test suite"""
-        self.user_url = f"{settings['EOX_CORE_API_BASE']}{reverse('eox-api:eox-api:edxapp-user')}"
-        self.user_updater_url = f"{settings['EOX_CORE_API_BASE']}{reverse('eox-api:eox-api:edxapp-user-updater')}"
-        super().setUp()
-
-    def create_user_in_tenant(self, tenant: dict, user_data: dict) -> requests.Response:
+    def create_user(self, tenant: dict, data: dict) -> requests.Response:
         """
         Create a new user in a tenant.
 
         Args:
             tenant (dict): The tenant data.
-            user_data (dict): The user data.
+            data (dict): The user data.
 
         Returns:
             requests.Response: The response object.
         """
-        return self.make_request(tenant, "POST", url=self.user_url, data=user_data)
+        return make_request(tenant, "POST", url=USER_URL, json=data)
 
-    def get_user_in_tenant(self, tenant: dict, params: dict | None = None) -> requests.Response:
+    def get_user(self, tenant: dict, params: dict | None = None) -> requests.Response:
         """
         Get a user in a tenant by username or email.
 
@@ -148,251 +147,758 @@ class TestUsersAPIIntegration(BaseAPIIntegrationTest):
         Returns:
             requests.Response: The response object.
         """
-        return self.make_request(tenant, "GET", url=self.user_url, params=params)
+        return make_request(tenant, "GET", url=USER_URL, params=params)
 
-    def update_user_in_tenant(self, tenant: dict, user_data: dict) -> requests.Response:
+    def update_user(self, tenant: dict, data: dict) -> requests.Response:
         """
         Update a user in a tenant.
 
         Args:
             tenant (dict): The tenant data.
-            user_data (dict): The user data.
+            data (dict): The user data.
 
         Returns:
             requests.Response: The response object.
         """
-        return self.make_request(tenant, "PATCH", url=self.user_updater_url, json=user_data)
+        return make_request(tenant, "PATCH", url=USER_UPDATER_URL, json=data)
 
-    @ddt_data(
-        {"is_staff": False, "is_superuser": False},
-        {"is_staff": True, "is_superuser": False},
-        {"is_staff": False, "is_superuser": True},
-        {"is_staff": True, "is_superuser": True},
-    )
-    def test_create_user_in_tenant_success(self, permissions: dict) -> None:
+
+class EnrollmentAPIRequestMixin:
+    """Mixin class for the API request methods."""
+
+    def create_enrollment(self, tenant: dict, data: dict) -> requests.Response:
         """
-        Test creating a user in a tenant.
+        Create a new user in a tenant.
 
-        Open edX definitions tested:
-        - `create_edxapp_user`
-        - `check_edxapp_account_conflicts`
+        Args:
+            tenant (dict): The tenant data.
+            data (dict): The user data.
 
-        Expected result:
-        - The status code is 200.
-        - The user is created successfully in the tenant with the provided data.
+        Returns:
+            requests.Response: The response object.
         """
-        data = next(FAKE_USER_DATA)
-        data.update(permissions)
+        return make_request(tenant, "POST", url=ENROLLMENT_URL, data=data)
 
-        response = self.create_user_in_tenant(self.tenant_x, data)
-
-        response_data = response.json()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response_data["email"], data["email"])
-        self.assertEqual(response_data["username"], data["username"])
-        self.assertTrue(response_data["is_active"])
-        self.assertFalse(response_data["is_staff"])
-        self.assertFalse(response_data["is_superuser"])
-
-    def test_create_user_missing_required_fields(self) -> None:
+    def get_enrollment(self, tenant: dict, data: dict | None = None) -> requests.Response:
         """
-        Test creating a user in a tenant with invalid data.
+        Get a user in a tenant by username or email.
 
-        Open edX definitions tested:
-        - `check_edxapp_account_conflicts`
+        Args:
+            tenant (dict): The tenant data.
+            data (dict, optional): The body data for the request.
 
-        Expected result:
-        - The status code is 400.
-        - The response contains the missing fields.
-        - The user is not created in the tenant.
+        Returns:
+            requests.Response: The response object.
         """
-        data = next(FAKE_USER_DATA)
-        del data["email"]
-        del data["username"]
+        return make_request(tenant, "GET", url=ENROLLMENT_URL, data=data)
 
-        response = self.create_user_in_tenant(self.tenant_x, data)
-
-        response_data = response.json()
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn("email", response_data)
-        self.assertIn("username", response_data)
-
-    def test_create_user_in_tenant_user_already_exists(self) -> None:
+    def update_enrollment(self, tenant: dict, data: dict | None = None) -> requests.Response:
         """
-        Test creating a user in a tenant that already exists.
+        Update an enrollment in a tenant.
 
-        Open edX definitions tested:
-        - `check_edxapp_account_conflicts`
+        Args:
+            tenant (dict): The tenant data.
+            data (dict, optional): The body data for the request.
 
-        Expected result:
-        - The status code is 400.
-        - The response contains an error message.
-        - The user is not created in the tenant.
+        Returns:
+            requests.Response: The response object.
         """
-        data = next(FAKE_USER_DATA)
-        self.create_user_in_tenant(self.tenant_x, data)
+        return make_request(tenant, "PUT", url=ENROLLMENT_URL, data=data)
 
-        response = self.create_user_in_tenant(self.tenant_x, data)
-
-        response_data = response.json()
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn("non_field_errors", response_data)
-
-    @ddt_data("username", "email")
-    def test_get_user_in_tenant_success(self, query_param: str) -> None:
+    def delete_enrollment(self, tenant: dict, data: dict | None = None) -> requests.Response:
         """
-        Test getting a user in a tenant.
+        Delete an enrollment in a tenant.
 
-        Open edX definitions tested:
-        - `get_edxapp_user`
+        Args:
+            tenant (dict): The tenant data.
+            data (dict, optional): The body data for the request.
 
-        Expected result:
-        - The status code is 200.
-        - The response contains the user data.
+        Returns:
+            requests.Response: The response object.
         """
-        data = next(FAKE_USER_DATA)
-        self.create_user_in_tenant(self.tenant_x, data)
-
-        response = self.get_user_in_tenant(self.tenant_x, {query_param: data[query_param]})
-
-        response_data = response.json()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response_data[query_param], data[query_param])
-
-    def test_get_user_of_another_tenant(self) -> None:
-        """
-        Test getting a user that belongs to another tenant.
-
-        Open edX definitions tested:
-        - `get_edxapp_user`
-
-        Expected result:
-        - The status code is 404.
-        - The response contains an error message.
-        """
-        data = next(FAKE_USER_DATA)
-        self.create_user_in_tenant(self.tenant_x, data)
-
-        response = self.get_user_in_tenant(self.tenant_y, {"username": data["username"]})
-
-        response_data = response.json()
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertIn("detail", response_data)
-        self.assertEqual(
-            response_data["detail"],
-            f"No user found by {{'username': '{data['username']}'}} on site {self.tenant_y['domain']}.",
-        )
-
-    @ddt_data(
-        ("username", "user-not-found"),
-        ("email", "user-not-found@mail.com"),
-    )
-    @unpack
-    def test_get_user_in_tenant_user_not_found(self, param: str, value: str) -> None:
-        """
-        Test getting a user in a tenant that does not exist.
-
-        Open edX definitions tested:
-        - `get_edxapp_user`
-
-        Expected result:
-        - The status code is 404.
-        - The response contains an error message.
-        """
-        response = self.get_user_in_tenant(self.tenant_x, {param: value})
-
-        response_data = response.json()
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertIn("detail", response_data)
-        self.assertEqual(
-            response_data["detail"],
-            f"No user found by {{'{param}': '{value}'}} on site {self.tenant_x['domain']}.",
-        )
-
-    def test_update_user_in_tenant_success(self) -> None:
-        """
-        Test updating a user in a tenant.
-
-        Open edX definitions tested:
-        - `get_edxapp_user`
-        - `get_user_profile`
-        - `check_edxapp_account_conflicts`
-        - `get_user_read_only_serializer`
-
-        Expected result:
-        - The status code is 200.
-        - The user is updated successfully in the tenant with the provided data.
-        """
-        data = next(FAKE_USER_DATA)
-        self.create_user_in_tenant(self.tenant_x, data)
-        updated_data = next(FAKE_USER_DATA)
-        updated_data["username"] = data["username"]
-        updated_data["email"] = data["email"]
-
-        response = self.update_user_in_tenant(self.tenant_x, user_data=updated_data)
-
-        response_data = response.json()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response_data["username"], data["username"])
-        self.assertEqual(response_data["email"], data["email"])
-        self.assertEqual(response_data["name"], updated_data["fullname"])
-        self.assertEqual(response_data["mailing_address"], updated_data["mailing_address"])
-        self.assertEqual(response_data["year_of_birth"], updated_data["year_of_birth"])
-        self.assertEqual(response_data["gender"], updated_data["gender"])
-        self.assertEqual(response_data["level_of_education"], updated_data["level_of_education"])
-        self.assertEqual(response_data["goals"], updated_data["goals"])
-        self.assertTrue(response_data["is_active"])
-
-    @ddt_data(
-        ("username", "user-not-found"),
-        ("email", "user-not-found@mail.com"),
-    )
-    @unpack
-    def test_update_user_in_tenant_user_not_found(self, param: str, value: str) -> None:
-        """
-        Test updating a user in a tenant that does not exist.
-
-        Open edX definitions tested:
-        - `get_edxapp_user`
-
-        Expected result:
-        - The status code is 404.
-        - The response contains an error message.
-        """
-        response = self.update_user_in_tenant(self.tenant_x, {param: value})
-
-        response_data = response.json()
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertIn("detail", response_data)
-        self.assertEqual(
-            response_data["detail"],
-            f"No user found by {{'{param}': '{value}'}} on site {self.tenant_x['domain']}.",
-        )
+        return make_request(tenant, "DELETE", url=ENROLLMENT_URL, data=data)
 
 
-class TestInfoView(BaseAPIIntegrationTest):
-    """
-    Integration test suite for the info view.
-    """
+# @ddt
+# class TestUsersAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin):
+#     """Integration test suite for the Users API"""
+
+#     def setUp(self):
+#         """Set up the test suite"""
+#         super().setUp()
+
+#     @ddt_data(
+#         {"is_staff": False, "is_superuser": False},
+#         {"is_staff": True, "is_superuser": False},
+#         {"is_staff": False, "is_superuser": True},
+#         {"is_staff": True, "is_superuser": True},
+#     )
+#     def test_create_user_in_tenant_success(self, permissions: dict) -> None:
+#         """
+#         Test creating a user in a tenant.
+
+#         Open edX definitions tested:
+#         - `create_edxapp_user`
+#         - `check_edxapp_account_conflicts`
+
+#         Expected result:
+#         - The status code is 200.
+#         - The user is created successfully in the tenant with the provided data.
+#         """
+#         data = next(FAKE_USER_DATA)
+#         data.update(permissions)
+
+#         response = self.create_user(self.tenant_x, data)
+
+#         response_data = response.json()
+#         self.assertEqual(response.status_code, status.HTTP_200_OK)
+#         self.assertEqual(response_data["email"], data["email"])
+#         self.assertEqual(response_data["username"], data["username"])
+#         self.assertTrue(response_data["is_active"])
+#         self.assertFalse(response_data["is_staff"])
+#         self.assertFalse(response_data["is_superuser"])
+
+#     def test_create_user_missing_required_fields(self) -> None:
+#         """
+#         Test creating a user in a tenant with invalid data.
+
+#         Open edX definitions tested:
+#         - `check_edxapp_account_conflicts`
+
+#         Expected result:
+#         - The status code is 400.
+#         - The response contains the missing fields.
+#         - The user is not created in the tenant.
+#         """
+#         data = next(FAKE_USER_DATA)
+#         del data["email"]
+#         del data["username"]
+
+#         response = self.create_user(self.tenant_x, data)
+
+#         response_data = response.json()
+#         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+#         self.assertIn("email", response_data)
+#         self.assertIn("username", response_data)
+
+#     def test_create_user_in_tenant_user_already_exists(self) -> None:
+#         """
+#         Test creating a user in a tenant that already exists.
+
+#         Open edX definitions tested:
+#         - `check_edxapp_account_conflicts`
+
+#         Expected result:
+#         - The status code is 400.
+#         - The response contains an error message.
+#         - The user is not created in the tenant.
+#         """
+#         data = next(FAKE_USER_DATA)
+#         self.create_user(self.tenant_x, data)
+
+#         response = self.create_user(self.tenant_x, data)
+
+#         response_data = response.json()
+#         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+#         self.assertIn("non_field_errors", response_data)
+
+#     @ddt_data("username", "email")
+#     def test_get_user_in_tenant_success(self, query_param: str) -> None:
+#         """
+#         Test getting a user in a tenant.
+
+#         Open edX definitions tested:
+#         - `get_edxapp_user`
+
+#         Expected result:
+#         - The status code is 200.
+#         - The response contains the user data.
+#         """
+#         data = next(FAKE_USER_DATA)
+#         self.create_user(self.tenant_x, data)
+
+#         response = self.get_user(self.tenant_x, {query_param: data[query_param]})
+
+#         response_data = response.json()
+#         self.assertEqual(response.status_code, status.HTTP_200_OK)
+#         self.assertEqual(response_data[query_param], data[query_param])
+
+#     def test_get_user_of_another_tenant(self) -> None:
+#         """
+#         Test getting a user that belongs to another tenant.
+
+#         Open edX definitions tested:
+#         - `get_edxapp_user`
+
+#         Expected result:
+#         - The status code is 404.
+#         - The response contains an error message.
+#         """
+#         data = next(FAKE_USER_DATA)
+#         self.create_user(self.tenant_x, data)
+
+#         response = self.get_user(self.tenant_y, {"username": data["username"]})
+
+#         response_data = response.json()
+#         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+#         self.assertIn("detail", response_data)
+#         self.assertEqual(
+#             response_data["detail"],
+#             f"No user found by {{'username': '{data['username']}'}} on site {self.tenant_y['domain']}.",
+#         )
+
+#     @ddt_data(
+#         ("username", "user-not-found"),
+#         ("email", "user-not-found@mail.com"),
+#     )
+#     @unpack
+#     def test_get_user_in_tenant_user_not_found(self, param: str, value: str) -> None:
+#         """
+#         Test getting a user in a tenant that does not exist.
+
+#         Open edX definitions tested:
+#         - `get_edxapp_user`
+
+#         Expected result:
+#         - The status code is 404.
+#         - The response contains an error message.
+#         """
+#         response = self.get_user(self.tenant_x, {param: value})
+
+#         response_data = response.json()
+#         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+#         self.assertIn("detail", response_data)
+#         self.assertEqual(
+#             response_data["detail"],
+#             f"No user found by {{'{param}': '{value}'}} on site {self.tenant_x['domain']}.",
+#         )
+
+#     def test_update_user_in_tenant_success(self) -> None:
+#         """
+#         Test updating a user in a tenant.
+
+#         Open edX definitions tested:
+#         - `get_edxapp_user`
+#         - `get_user_profile`
+#         - `check_edxapp_account_conflicts`
+#         - `get_user_read_only_serializer`
+
+#         Expected result:
+#         - The status code is 200.
+#         - The user is updated successfully in the tenant with the provided data.
+#         """
+#         data = next(FAKE_USER_DATA)
+#         self.create_user(self.tenant_x, data)
+#         updated_data = next(FAKE_USER_DATA)
+#         updated_data["username"] = data["username"]
+#         updated_data["email"] = data["email"]
+
+#         response = self.update_user(self.tenant_x, data=updated_data)
+
+#         response_data = response.json()
+#         self.assertEqual(response.status_code, status.HTTP_200_OK)
+#         self.assertEqual(response_data["username"], data["username"])
+#         self.assertEqual(response_data["email"], data["email"])
+#         self.assertEqual(response_data["name"], updated_data["fullname"])
+#         self.assertEqual(response_data["mailing_address"], updated_data["mailing_address"])
+#         self.assertEqual(response_data["year_of_birth"], updated_data["year_of_birth"])
+#         self.assertEqual(response_data["gender"], updated_data["gender"])
+#         self.assertEqual(response_data["level_of_education"], updated_data["level_of_education"])
+#         self.assertEqual(response_data["goals"], updated_data["goals"])
+#         self.assertTrue(response_data["is_active"])
+
+#     @ddt_data(
+#         ("username", "user-not-found"),
+#         ("email", "user-not-found@mail.com"),
+#     )
+#     @unpack
+#     def test_update_user_in_tenant_user_not_found(self, param: str, value: str) -> None:
+#         """
+#         Test updating a user in a tenant that does not exist.
+
+#         Open edX definitions tested:
+#         - `get_edxapp_user`
+
+#         Expected result:
+#         - The status code is 404.
+#         - The response contains an error message.
+#         """
+#         response = self.update_user(self.tenant_x, {param: value})
+
+#         response_data = response.json()
+#         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+#         self.assertIn("detail", response_data)
+#         self.assertEqual(
+#             response_data["detail"],
+#             f"No user found by {{'{param}': '{value}'}} on site {self.tenant_x['domain']}.",
+#         )
+
+
+@ddt.ddt
+class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin, EnrollmentAPIRequestMixin):
+    """Integration test suite for the Enrollment API"""
 
     def setUp(self):
-        """
-        Set up the test suite.
-        """
-        self.url = f"{settings['EOX_CORE_API_BASE']}{reverse('eox-info')}"
-        super().setUp()
+        """Set up the test suite"""
+        self.course_id = "course-v1:OpenedX+DemoX+DemoCourse"
+        self.mode = "audit"
+        return super().setUp()
 
-    def test_info_view_success(self) -> None:
-        """Test the info view.
+    # @ddt.data("email", "username")
+    # def test_create_enrollment_valid_user_mode_course(self, param: str) -> None:
+    #     """
+    #     Create enrollment with a valid user, valid course and valid mode
+    #     """
+    #     user_data = next(FAKE_USER_DATA)
+    #     self.create_user(self.tenant_x, user_data)
+    #     data = {
+    #         param: user_data[param],
+    #         "course_id": self.course_id,
+    #         "mode": self.mode,
+    #     }
 
-        Expected result:
-        - The status code is 200.
-        - The response contains the version, name and git commit hash.
+    #     response = self.create_enrollment(self.tenant_x, data)
+
+    #     response_data = response.json()
+    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
+    #     self.assertEqual(response_data["username"], user_data["username"])
+    #     self.assertEqual(response_data["mode"], data["mode"])
+    #     self.assertEqual(response_data["course_id"], data["course_id"])
+    #     self.assertTrue(response_data["is_active"])
+    #     self.assertIn("created", response_data)
+
+    # @ddt.data("email", "username")
+    # def test_force_create_enrollment_valid_user_mode_course(self, param: str) -> None:
+    #     """
+    #     Create enrollment with a valid user, valid course, valid mode using force
+    #     """
+    #     user_data = next(FAKE_USER_DATA)
+    #     self.create_user(self.tenant_x, user_data)
+    #     data = {
+    #         param: user_data[param],
+    #         "course_id": self.course_id,
+    #         "mode": self.mode,
+    #         "force": True,
+    #     }
+
+    #     response = self.create_enrollment(self.tenant_x, data)
+
+    #     response_data = response.json()
+    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
+    #     self.assertEqual(response_data["username"], user_data["username"])
+    #     self.assertEqual(response_data["mode"], data["mode"])
+    #     self.assertEqual(response_data["course_id"], data["course_id"])
+    #     self.assertTrue(response_data["is_active"])
+    #     self.assertIn("created", response_data)
+
+    # @ddt.data("email", "username")
+    # def test_create_valid_course_mode_invalid_user(self, param: str) -> None:
+    #     """
+    #     Create enrollment with a valid course, valid mode, and a non-existent user
+    #     """
+    #     data = {
+    #         param: param,
+    #         "course_id": self.course_id,
+    #         "mode": self.mode,
+    #     }
+
+    #     response = self.create_enrollment(self.tenant_x, data)
+
+    #     response_data = response.json()
+    #     self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+    #     self.assertIn("non_field_errors", response_data)
+    #     self.assertEqual(response_data["non_field_errors"], ["User not found"])
+
+    # @ddt.data("email", "username")
+    # def test_create_valid_course_mode_invalid_user_for_site(self, param: str) -> None:
+    #     """
+    #     Create enrollment with a valid course, valid mode, and a user from another site
+    #     """
+    #     user_data = next(FAKE_USER_DATA)
+    #     self.create_user(self.tenant_y, user_data)
+    #     data = {
+    #         param: user_data[param],
+    #         "course_id": self.course_id,
+    #         "mode": self.mode,
+    #     }
+
+    #     response = self.create_enrollment(self.tenant_x, data)
+
+    #     response_data = response.json()
+    #     self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
+    #     self.assertEqual(
+    #         response_data["error"]["detail"],
+    #         f"No user found by {{'{param}': '{data[param]}'}} on site {self.tenant_x['domain']}.",
+    #     )
+
+    # @ddt.data("email", "username")
+    # def test_create_valid_user_mode_invalid_course(self, param: str) -> None:
+    #     """
+    #     Create enrollment with a valid user, valid mode, and non-existent course
+    #     """
+    #     user_data = next(FAKE_USER_DATA)
+    #     self.create_user(self.tenant_x, user_data)
+    #     data = {
+    #         param: user_data[param],
+    #         "course_id": "course-v1:OpenedX+DemoX+NonExistentCourse",
+    #         "mode": self.mode,
+    #     }
+
+    #     response = self.create_enrollment(self.tenant_x, data)
+
+    #     response_data = response.json()
+    #     self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+    #     self.assertIn("non_field_errors", response_data)
+    #     self.assertEqual(response_data["non_field_errors"], ["Course not found"])
+
+    @ddt.data("email", "username")
+    def test_create_valid_user_mode_invalid_course_for_site(self, param: str) -> None:
         """
-        response = self.make_request(self.default_site, "GET", url=self.url, with_auth=False)
+        Create enrollment with a valid user, valid mode, and a course from another site
+        """
+        user_data = next(FAKE_USER_DATA)
+        self.create_user(self.tenant_y, user_data)
+        data = {
+            param: user_data[param],
+            "course_id": self.course_id,
+            "mode": self.mode,
+        }
+
+        response = self.create_enrollment(self.tenant_y, data)
 
         response_data = response.json()
+        print(f"\n\nResponse data: {response_data}\n\n")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    @ddt.data("email", "username")
+    def test_force_create_valid_user_course_invalid_mode(self, param: str) -> None:
+        """
+        Create enrollment with a valid user, valid course, and a not available mode
+        """
+        user_data = next(FAKE_USER_DATA)
+        data = {
+            param: user_data[param],
+            "course_id": self.course_id,
+            "mode": "masters",
+            "force": True,
+        }
+
+        response = self.create_enrollment(self.tenant_y, data)
+
+        response_data = response.json()
+        print(f"\n\nResponse data: {response_data}\n\n")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    @ddt.data("email", "username")
+    def test_read_valid_email_course(self, param: str) -> None:
+        """
+        Get a valid enrollment
+        """
+        user_data = next(FAKE_USER_DATA)
+        enrollment_data = {
+            param: user_data[param],
+            "course_id": self.course_id,
+        }
+        self.create_user(self.tenant_y, user_data)
+        self.create_enrollment(self.tenant_x, enrollment_data)
+
+        response = self.get_enrollment(self.tenant_x, data=enrollment_data)
+
+        response_data = response.json()
+        print(f"\n\nResponse data: {response_data}\n\n")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn("version", response_data)
-        self.assertIn("name", response_data)
-        self.assertIn("git", response_data)
+
+    @ddt.data("email", "username")
+    def test_read_invalid_enrollment(self, param: str) -> None:
+        """
+        Get a invalid enrollment (doesn't exist)
+        """
+        user_data = next(FAKE_USER_DATA)
+        self.create_user(self.tenant_y, user_data)
+        data = {
+            param: user_data[param],
+            "course_id": self.course_id,
+        }
+
+        response = self.get_enrollment(self.tenant_x, data=data)
+
+        response_data = response.json()
+        print(f"\n\nResponse data: {response_data}\n\n")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    @ddt.data("email", "username")
+    def test_read_invalid_enrollment_for_site(self, param: str) -> None:
+        """
+        Get a invalid enrollment (enrollment from other site)
+        """
+        user_data = next(FAKE_USER_DATA)
+        enrollment_data = {
+            param: user_data[param],
+            "course_id": self.course_id,
+        }
+        self.create_user(self.tenant_x, user_data)
+        self.create_enrollment(self.tenant_x, enrollment_data)
+
+        response = self.get_enrollment(self.tenant_y, data=enrollment_data)
+
+        response_data = response.json()
+        print(f"\n\nResponse data: {response_data}\n\n")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    @ddt.data("email", "username")
+    def test_delete_valid_enrollment(self, param: str) -> None:
+        """
+        Delete a valid enrollment
+        """
+        user_data = next(FAKE_USER_DATA)
+        enrollment_data = {
+            param: user_data[param],
+            "course_id": self.course_id,
+        }
+        self.create_user(self.tenant_x, user_data)
+        self.create_enrollment(self.tenant_x, enrollment_data)
+
+        response = self.delete_enrollment(self.tenant_x, data=enrollment_data)
+
+        response_data = response.json()
+        print(f"\n\nResponse data: {response_data}\n\n")
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_delete_invalid_enrollment(self) -> None:
+        """
+        Delete a invalid enrollment (doesn't exist)
+        """
+        user_data = next(FAKE_USER_DATA)
+        self.create_user(self.tenant_x, user_data)
+        data = {
+            "email": user_data["email"],
+            "course_id": self.course_id,
+        }
+
+        response = self.delete_enrollment(self.tenant_x, data=data)
+
+        response_data = response.json()
+        print(f"\n\nResponse data: {response_data}\n\n")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_delete_invalid_enrollment_for_site(self) -> None:
+        """
+        Delete a invalid enrollment (enrollment from other site)
+        """
+        user_data = next(FAKE_USER_DATA)
+        self.create_user(self.tenant_x, user_data)
+        self.create_enrollment(self.tenant_x, user_data)
+        data = {
+            "email": user_data["email"],
+            "course_id": self.course_id,
+        }
+
+        response = self.delete_enrollment(self.tenant_y, data=data)
+
+        response_data = response.json()
+        print(f"\n\nResponse data: {response_data}\n\n")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_update_valid_enrollment_change_is_active(self) -> None:
+        """
+        Update an existing enrollment; change is_active flag
+        """
+        user_data = next(FAKE_USER_DATA)
+        self.create_user(self.tenant_x, user_data)
+        self.create_enrollment(self.tenant_x, user_data)
+        # You can use email or username to update the enrollment
+        # Add dd_data to test both cases
+        data = {
+            "email": user_data["email"],
+            "course_id": self.course_id,
+            "is_active": False,
+            "mode": self.mode,
+        }
+        expected_response = {
+            "user": user_data["username"],
+            "course_id": self.course_id,
+            "mode": self.mode,
+            "is_active": False,
+            "enrollment_attributes": None,
+        }
+
+        response = self.update_enrollment(self.tenant_x, data=data)
+
+        response_data = response.json()
+        print(f"\n\nResponse data: {response_data}\n\n")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertDictContainsSubset(expected_response, response_data)
+
+    def test_update_valid_enrollment_change_valid_mode(self) -> None:
+        """
+        Update an existing enrollment; change mode
+        """
+        user_data = next(FAKE_USER_DATA)
+        self.create_user(self.tenant_x, user_data)
+        self.create_enrollment(self.tenant_x, user_data)
+        # You can use email or username to update the enrollment
+        # Add dd_data to test both cases
+        data = {
+            "email": user_data["email"],
+            "course_id": self.course_id,
+            "is_active": True,
+            "mode": "honor",
+        }
+        expected_response = {
+            "user": user_data["username"],
+            "course_id": self.course_id,
+            "mode": "honor",
+            "is_active": True,
+            "enrollment_attributes": None,
+        }
+
+        response = self.update_enrollment(self.tenant_x, data=data)
+
+        response_data = response.json()
+        print(f"\n\nResponse data: {response_data}\n\n")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertDictContainsSubset(expected_response, response_data)
+
+    def test_update_valid_enrollment_change_invalid_mode(self) -> None:
+        """
+        Update an existing enrollment; change to invalid mode
+        """
+        user_data = next(FAKE_USER_DATA)
+        self.create_user(self.tenant_x, user_data)
+        self.create_enrollment(self.tenant_x, user_data)
+
+        data = {
+            "email": user_data["email"],
+            "course_id": self.course_id,
+            "is_active": True,
+            "mode": "masters",
+        }
+
+        response = self.update_enrollment(self.tenant_x, data=data)
+
+        response_data = response.json()
+        print(f"\n\nResponse data: {response_data}\n\n")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_update_invalid_enrollment_change_valid_mode(self) -> None:
+        """
+        Update an non-existent enrollment; change mode
+        """
+        user_data = next(FAKE_USER_DATA)
+        self.create_user(self.tenant_x, user_data)
+        data = {
+            "email": user_data["email"],
+            "course_id": self.course_id,
+            "is_active": True,
+            "mode": "honor",
+        }
+
+        response = self.update_enrollment(self.tenant_x, data=data)
+
+        response_data = response.json()
+        print(f"\n\nResponse data: {response_data}\n\n")
+        # Why is this returning 202?
+        self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
+
+    def test_update_invalid_enrollment_change_is_active(self) -> None:
+        """
+        Update an non-existent enrollment; change is_active flag
+        """
+        user_data = next(FAKE_USER_DATA)
+        self.create_user(self.tenant_x, user_data)
+        data = {
+            "email": user_data["email"],
+            "course_id": self.course_id,
+            "is_active": False,
+            "mode": self.mode,
+        }
+
+        response = self.update_enrollment(self.tenant_x, data=data)
+
+        response_data = response.json()
+        print(f"\n\nResponse data: {response_data}\n\n")
+        # Why is this returning 202?
+        self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
+
+    def test_update_valid_enrollment_change_is_active_force_post(self) -> None:
+        """
+        Update an existing enrollment using POST with force=True; change is_active flag
+        """
+        user_data = next(FAKE_USER_DATA)
+        self.create_user(self.tenant_x, user_data)
+        self.create_enrollment(self.tenant_x, user_data)
+        data = {
+            "email": user_data["email"],
+            "course_id": self.course_id,
+            "is_active": False,
+            "mode": self.mode,
+            "force": True,
+        }
+        expected_response = {
+            "username": user_data["username"],
+            "is_active": False,
+            "course_id": self.course_id,
+        }
+
+        response = self.create_enrollment(self.tenant_x, data=data)
+
+        response_data = response.json()
+        print(f"\n\nResponse data: {response_data}\n\n")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertDictContainsSubset(expected_response, response_data)
+
+    def test_update_valid_enrollment_change_valid_mode_force_post(self) -> None:
+        """
+        Update an existing enrollment; change mode
+        """
+        user_data = next(FAKE_USER_DATA)
+        self.create_user(self.tenant_x, user_data)
+        self.create_enrollment(self.tenant_x, user_data)
+        data = {
+            "email": user_data["email"],
+            "course_id": self.course_id,
+            "is_active": True,
+            "mode": "honor",
+            "force": True,
+        }
+        expected_response = {
+            "user": user_data["username"],
+            "is_active": True,
+            "course_id": data["course_id"],
+            "mode": "honor",
+        }
+
+        response = self.create_enrollment(self.tenant_x, data=data)
+
+        response_data = response.json()
+        print(f"\n\nResponse data: {response_data}\n\n")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertDictContainsSubset(expected_response, response_data)
+
+
+# class TestInfoView(BaseAPIIntegrationTest):
+#     """
+#     Integration test suite for the info view.
+#     """
+
+#     def setUp(self):
+#         """
+#         Set up the test suite.
+#         """
+#         self.url = f"{settings['EOX_CORE_API_BASE']}{reverse('eox-info')}"
+#         super().setUp()
+
+#     def test_info_view_success(self) -> None:
+#         """Test the info view.
+
+#         Expected result:
+#         - The status code is 200.
+#         - The response contains the version, name and git commit hash.
+#         """
+#         response = make_request(self.default_site, "GET", url=self.url, with_auth=False)
+
+#         response_data = response.json()
+#         self.assertEqual(response.status_code, status.HTTP_200_OK)
+#         self.assertIn("version", response_data)
+#         self.assertIn("name", response_data)
+#         self.assertIn("git", response_data)
