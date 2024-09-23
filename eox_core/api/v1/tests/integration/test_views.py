@@ -1,7 +1,6 @@
 """
 Integration test suite for the API v1 views.
 """
-# pylint: disable=too-many-lines
 
 from __future__ import annotations
 
@@ -52,7 +51,7 @@ def make_request(
     with_auth: bool = True,
 ) -> requests.Response:
     """
-    Make a request to a tenant.
+    Make a request to a site (default site or tenant).
 
     Args:
         tenant (dict): The tenant data.
@@ -471,20 +470,20 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         """
         user_data = next(FAKE_USER_DATA)
         self.create_user(self.tenant_x, user_data)
-        data = {
+        enrollment_data = {
             param: user_data[param],
             "course_id": self.course_id,
             "mode": self.mode,
             "force": True,
         }
 
-        response = self.create_enrollment(self.tenant_x, data)
+        response = self.create_enrollment(self.tenant_x, enrollment_data)
 
         response_data = response.json()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response_data["username"], user_data["username"])
-        self.assertEqual(response_data["mode"], data["mode"])
-        self.assertEqual(response_data["course_id"], data["course_id"])
+        self.assertEqual(response_data["mode"], enrollment_data["mode"])
+        self.assertEqual(response_data["course_id"], enrollment_data["course_id"])
         self.assertTrue(response_data["is_active"])
         self.assertIn("created", response_data)
 
@@ -513,19 +512,19 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         """
         user_data = next(FAKE_USER_DATA)
         self.create_user(self.tenant_y, user_data)
-        data = {
+        enrollment_data = {
             param: user_data[param],
             "course_id": self.course_id,
             "mode": self.mode,
         }
 
-        response = self.create_enrollment(self.tenant_x, data)
+        response = self.create_enrollment(self.tenant_x, enrollment_data)
 
         response_data = response.json()
         self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
         self.assertEqual(
             response_data["error"]["detail"],
-            f"No user found by {{'{param}': '{data[param]}'}} on site {self.tenant_x['domain']}.",
+            f"No user found by {{'{param}': '{enrollment_data[param]}'}} on site {self.tenant_x['domain']}.",
         )
 
     @ddt.data("email", "username")
@@ -535,13 +534,13 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         """
         user_data = next(FAKE_USER_DATA)
         self.create_user(self.tenant_x, user_data)
-        data = {
+        enrollment_data = {
             param: user_data[param],
             "course_id": "course-v1:OpenedX+DemoX+NonExistentCourse",
             "mode": self.mode,
         }
 
-        response = self.create_enrollment(self.tenant_x, data)
+        response = self.create_enrollment(self.tenant_x, enrollment_data)
 
         response_data = response.json()
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -555,13 +554,13 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         """
         user_data = next(FAKE_USER_DATA)
         self.create_user(self.tenant_y, user_data)
-        data = {
+        enrollment_data = {
             param: user_data[param],
             "course_id": self.course_id,
             "mode": self.mode,
         }
 
-        response = self.create_enrollment(self.tenant_y, data)
+        response = self.create_enrollment(self.tenant_y, enrollment_data)
 
         response_data = response.json()
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -575,13 +574,13 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         """
         user_data = next(FAKE_USER_DATA)
         self.create_user(self.tenant_x, user_data)
-        data = {
+        enrollment_data = {
             param: user_data[param],
             "course_id": self.course_id,
             "mode": "masters",
         }
 
-        response = self.create_enrollment(self.tenant_x, data)
+        response = self.create_enrollment(self.tenant_x, enrollment_data)
 
         response_data = response.json()
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -591,24 +590,24 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
     @ddt.data("email", "username")
     def test_force_create_valid_user_course_mode_not_allowed(self, param: str) -> None:
         """
-        Forece create enrollment with a valid user, valid course, and a not available mode
+        Force create enrollment with a valid user, valid course, and a not available mode
         """
         user_data = next(FAKE_USER_DATA)
         self.create_user(self.tenant_x, user_data)
-        data = {
+        enrollment_data = {
             param: user_data[param],
             "course_id": self.course_id,
             "mode": "masters",
             "force": True,
         }
 
-        response = self.create_enrollment(self.tenant_x, data)
+        response = self.create_enrollment(self.tenant_x, enrollment_data)
 
         response_data = response.json()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response_data["username"], user_data["username"])
-        self.assertEqual(response_data["mode"], data["mode"])
-        self.assertEqual(response_data["course_id"], data["course_id"])
+        self.assertEqual(response_data["mode"], enrollment_data["mode"])
+        self.assertEqual(response_data["course_id"], enrollment_data["course_id"])
         self.assertTrue(response_data["is_active"])
         self.assertIn("created", response_data)
 
@@ -643,20 +642,16 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         """
         user_data = next(FAKE_USER_DATA)
         self.create_user(self.tenant_x, user_data)
-        data = {
+        enrollment_data = {
             param: user_data[param],
             "course_id": self.course_id,
         }
 
-        response = self.get_enrollment(self.tenant_x, data=data)
+        response = self.get_enrollment(self.tenant_x, data=enrollment_data)
 
         response_data = response.json()
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertIn("detail", response_data)
-        self.assertEqual(
-            response_data["detail"],
-            f"No user found by {{'{param}': '{user_data[param]}'}} on site {self.tenant_x['domain']}.",
-        )
+        self.assertEqual(response_data, [f"No enrollment found for user:`{user_data['username']}`"])
 
     @ddt.data("email", "username")
     def test_read_invalid_enrollment_for_site(self, param: str) -> None:
@@ -701,18 +696,18 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
     @ddt.data("email", "username")
-    def test_delete_invalid_enrollment(self, param: str) -> None:
+    def test_delete_enrollment_does_not_exist(self, param: str) -> None:
         """
         Delete a invalid enrollment (doesn't exist)
         """
         user_data = next(FAKE_USER_DATA)
         self.create_user(self.tenant_x, user_data)
-        data = {
+        enrollment_data = {
             param: user_data[param],
             "course_id": self.course_id,
         }
 
-        response = self.delete_enrollment(self.tenant_x, data=data)
+        response = self.delete_enrollment(self.tenant_x, data=enrollment_data)
 
         response_data = response.json()
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
@@ -802,14 +797,14 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         """
         user_data = next(FAKE_USER_DATA)
         self.create_user(self.tenant_x, user_data)
-        data = {
+        enrollment_data = {
             param: user_data[param],
             "course_id": self.course_id,
             "is_active": False,
             "mode": "honor",
         }
 
-        response = self.update_enrollment(self.tenant_x, data=data)
+        response = self.update_enrollment(self.tenant_x, data=enrollment_data)
 
         response_data = response.json()
         self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
