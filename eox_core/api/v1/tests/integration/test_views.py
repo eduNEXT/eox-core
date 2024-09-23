@@ -107,7 +107,7 @@ class BaseAPIIntegrationTest(TestCase):
         If no prefix is provided, the default site data is returned.
 
         Args:
-            prefix (str): The tenant prefix.
+            prefix (str, optional): The tenant prefix. Defaults to "".
 
         Returns:
             dict: The tenant data.
@@ -435,39 +435,91 @@ class TestUsersAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin):
 class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin, EnrollmentAPIRequestMixin):
     """Integration test suite for the Enrollment API"""
 
-    def setUp(self):
+    def setUp(self) -> None:
         """Set up the test suite"""
-        self.course_id = "course-v1:OpenedX+DemoX+DemoCourse"
+        self.course_id = settings["COURSE_ID"]
         self.mode = "audit"
-        return super().setUp()
+        super().setUp()
 
     @ddt.data("email", "username")
-    def test_create_enrollment_valid_user_mode_course(self, param: str) -> None:
+    def test_create_enrollment_success(self, param: str) -> None:
         """
-        Create enrollment with a valid user, valid course and valid mode
+        Test creating a enrollment with a valid user, course and mode in a tenant.
+
+        Open edX definitions tested:
+        - `get_edxapp_user`
+        - `create_enrollment`
+        - `check_edxapp_account_conflicts`
+        - `check_edxapp_enrollment_is_valid`
+
+        Expected result:
+        - The status code is 200.
+        - The enrollment is created successfully in the tenant with the provided data.
         """
         user_data = next(FAKE_USER_DATA)
         self.create_user(self.tenant_x, user_data)
-        data = {
+        enrollment_data = {
             param: user_data[param],
             "course_id": self.course_id,
             "mode": self.mode,
         }
 
-        response = self.create_enrollment(self.tenant_x, data)
+        response = self.create_enrollment(self.tenant_x, enrollment_data)
 
         response_data = response.json()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response_data["username"], user_data["username"])
-        self.assertEqual(response_data["mode"], data["mode"])
-        self.assertEqual(response_data["course_id"], data["course_id"])
+        self.assertEqual(response_data["mode"], enrollment_data["mode"])
+        self.assertEqual(response_data["course_id"], enrollment_data["course_id"])
         self.assertTrue(response_data["is_active"])
         self.assertIn("created", response_data)
 
-    @ddt.data("email", "username")
-    def test_force_create_enrollment_valid_user_mode_course(self, param: str) -> None:
+    @ddt.data(
+        ("mode", {"mode": ["This field is required."]}),
+        ("course_id", {"non_field_errors": ["You have to provide a course_id or bundle_id"]}),
+        ("username", {"non_field_errors": ["Email or username needed"]}),
+    )
+    @ddt.unpack
+    def test_create_enrollment_missing_required_fields(self, param: str, error: list | dict) -> None:
         """
-        Create enrollment with a valid user, valid course, valid mode using force
+        Test creating a enrollment with missing required fields.
+
+        Open edX definitions tested:
+        - `check_edxapp_enrollment_is_valid`
+
+        Expected result:
+        - The status code is 400.
+        - The response contains a message about the missing field.
+        """
+        user_data = next(FAKE_USER_DATA)
+        self.create_user(self.tenant_x, user_data)
+        enrollment_data = {
+            "username": user_data["username"],
+            "mode": self.mode,
+            "course_id": self.course_id,
+        }
+        enrollment_data.pop(param)
+
+        response = self.create_enrollment(self.tenant_x, enrollment_data)
+
+        response_data = response.json()
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response_data, error)
+
+    @ddt.data("email", "username")
+    def test_force_create_enrollment_success(self, param: str) -> None:
+        """
+        Test force creating a enrollment with a valid user, course and mode in a tenant.
+
+        Open edX definitions tested:
+        - `get_edxapp_user`
+        - `create_enrollment`
+        - `check_edxapp_account_conflicts`
+        - `check_edxapp_enrollment_is_valid`
+
+        Expected result:
+        - The status code is 200.
+        - The enrollment is created successfully in the tenant with the provided data.
         """
         user_data = next(FAKE_USER_DATA)
         self.create_user(self.tenant_x, user_data)
@@ -491,15 +543,23 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
     @ddt.data("email", "username")
     def test_create_valid_course_mode_invalid_user(self, param: str) -> None:
         """
-        Create enrollment with a valid course, valid mode, and a non-existent user
+        Test creating a enrollment with a valid course, valid mode, and a non-existent user in a tenant.
+
+        Open edX definitions tested:
+        - `check_edxapp_enrollment_is_valid`
+
+        Expected result:
+        - The status code is 400.
+        - The response contains an error message about the user not found.
+        - The enrollment is not created in the tenant.
         """
-        data = {
+        enrollment_data = {
             param: param,
             "course_id": self.course_id,
             "mode": self.mode,
         }
 
-        response = self.create_enrollment(self.tenant_x, data)
+        response = self.create_enrollment(self.tenant_x, enrollment_data)
 
         response_data = response.json()
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -507,9 +567,17 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         self.assertEqual(response_data["non_field_errors"], ["User not found"])
 
     @ddt.data("email", "username")
-    def test_create_valid_course_mode_invalid_user_for_site(self, param: str) -> None:
+    def test_create_valid_course_mode_invalid_user_for_tenant(self, param: str) -> None:
         """
-        Create enrollment with a valid course, valid mode, and a user from another site
+        Test creating a enrollment with a valid course, valid mode, and a user from another tenant.
+
+        Open edX definitions tested:
+        - `check_edxapp_enrollment_is_valid`
+
+        Expected result:
+        - The status code is 202.
+        - The response contains an error message about the user not found on the tenant.
+        - The enrollment is not created in the tenant.
         """
         user_data = next(FAKE_USER_DATA)
         self.create_user(self.tenant_y, user_data)
@@ -531,7 +599,15 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
     @ddt.data("email", "username")
     def test_create_valid_user_mode_invalid_course(self, param: str) -> None:
         """
-        Create enrollment with a valid user, valid mode, and non-existent course
+        Test creating a enrollment with a valid user, valid mode, and a non-existent course in a tenant.
+
+        Open edX definitions tested:
+        - `check_edxapp_enrollment_is_valid`
+
+        Expected result:
+        - The status code is 400.
+        - The response contains an error message about the course not found.
+        - The enrollment is not created in the tenant.
         """
         user_data = next(FAKE_USER_DATA)
         self.create_user(self.tenant_x, user_data)
@@ -549,9 +625,17 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         self.assertEqual(response_data["non_field_errors"], ["Course not found"])
 
     @ddt.data("email", "username")
-    def test_create_valid_user_mode_invalid_course_for_site(self, param: str) -> None:
+    def test_create_valid_user_mode_invalid_course_for_tenant(self, param: str) -> None:
         """
-        Create enrollment with a valid user, valid mode, and a course from another site
+        Test creating a enrollment with a valid user, valid mode, and a course from another tenant.
+
+        Open edX definitions tested:
+        - `check_edxapp_enrollment_is_valid`
+        - `validate_org`
+
+        Expected result:
+        - The status code is 400.
+        - The response contains an error message about the course not found on the tenant.
         """
         user_data = next(FAKE_USER_DATA)
         self.create_user(self.tenant_y, user_data)
@@ -571,7 +655,15 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
     @ddt.data("email", "username")
     def test_create_valid_user_course_invalid_mode(self, param: str) -> None:
         """
-        Create enrollment with a valid user, valid course, and a not available mode
+        Test creating a enrollment with a valid user, valid course, and a not available mode in a tenant.
+
+        Open edX definitions tested:
+        - `check_edxapp_enrollment_is_valid`
+        - `api.validate_course_mode`
+
+        Expected result:
+        - The status code is 400.
+        - The response contains an error message about the mode not found.
         """
         user_data = next(FAKE_USER_DATA)
         self.create_user(self.tenant_x, user_data)
@@ -591,7 +683,17 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
     @ddt.data("email", "username")
     def test_force_create_valid_user_course_mode_not_allowed(self, param: str) -> None:
         """
-        Force create enrollment with a valid user, valid course, and a not available mode
+        Test creating a enrollment with a valid user, valid course, and a not available mode in a tenant.
+
+        Open edX definitions tested:
+        - `get_edxapp_user`
+        - `create_enrollment`
+        - `check_edxapp_account_conflicts`
+        - `check_edxapp_enrollment_is_valid`
+
+        Expected result:
+        - The status code is 200.
+        - The enrollment is created successfully in the tenant with the provided data.
         """
         user_data = next(FAKE_USER_DATA)
         self.create_user(self.tenant_x, user_data)
@@ -615,7 +717,15 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
     @ddt.data("email", "username")
     def test_get_enrollment_success(self, param: str) -> None:
         """
-        Get a valid enrollment.
+        Test getting a enrollment with a valid user, course and mode in a tenant.
+
+        Open edX definitions tested:
+        - `get_edxapp_user`
+        - `get_enrollment`
+
+        Expected result:
+        - The status code is 200.
+        - The response contains the enrollment data.
         """
         user_data = next(FAKE_USER_DATA)
         enrollment_data = {
@@ -639,7 +749,15 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
     @ddt.data("email", "username")
     def test_get_enrollment_does_not_exist(self, param: str) -> None:
         """
-        Get a invalid enrollment (doesn't exist)
+        Test getting a enrollment that does not exist in a tenant.
+
+        Open edX definitions tested:
+        - `get_edxapp_user`
+        - `get_enrollment`
+
+        Expected result:
+        - The status code is 404.
+        - The response contains an error message about the enrollment not found.
         """
         user_data = next(FAKE_USER_DATA)
         self.create_user(self.tenant_x, user_data)
@@ -655,9 +773,16 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         self.assertEqual(response_data, [f"No enrollment found for user:`{user_data['username']}`"])
 
     @ddt.data("email", "username")
-    def test_read_invalid_enrollment_for_site(self, param: str) -> None:
+    def test_get_enrollment_not_found_in_tenant(self, param: str) -> None:
         """
-        Get a invalid enrollment (enrollment from other site)
+        Test getting a enrollment that belongs to another tenant.
+
+        Open edX definitions tested:
+        - `get_edxapp_user`
+
+        Expected result:
+        - The status code is 404.
+        - The response contains an error message about the user not found on the tenant.
         """
         user_data = next(FAKE_USER_DATA)
         enrollment_data = {
@@ -679,9 +804,17 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         )
 
     @ddt.data("email", "username")
-    def test_delete_valid_enrollment(self, param: str) -> None:
+    def test_delete_enrollment_success(self, param: str) -> None:
         """
-        Delete a valid enrollment
+        Test deleting a enrollment with a valid user, course and mode in a tenant.
+
+        Open edX definitions tested:
+        - `get_edxapp_user`
+        - `delete_enrollment`
+
+        Expected result:
+        - The status code is 204.
+        - The enrollment is deleted successfully in the tenant.
         """
         user_data = next(FAKE_USER_DATA)
         enrollment_data = {
@@ -699,7 +832,15 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
     @ddt.data("email", "username")
     def test_delete_enrollment_does_not_exist(self, param: str) -> None:
         """
-        Delete a invalid enrollment (doesn't exist)
+        Test deleting a enrollment that does not exist in a tenant.
+
+        Open edX definitions tested:
+        - `get_edxapp_user`
+        - `delete_enrollment`
+
+        Expected result:
+        - The status code is 404.
+        - The response contains an error message about the enrollment not found.
         """
         user_data = next(FAKE_USER_DATA)
         self.create_user(self.tenant_x, user_data)
@@ -719,9 +860,17 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         )
 
     @ddt.data("email", "username")
-    def test_delete_invalid_enrollment_for_site(self, param: str) -> None:
+    def test_delete_invalid_enrollment_for_tenant(self, param: str) -> None:
         """
-        Delete a invalid enrollment (enrollment from other site)
+        Test deleting a enrollment that belongs to another tenant.
+
+        Open edX definitions tested:
+        - `get_edxapp_user`
+        - `delete_enrollment`
+
+        Expected result:
+        - The status code is 404.
+        - The response contains an error message about the user not found on the tenant.
         """
         user_data = next(FAKE_USER_DATA)
         enrollment_data = {
@@ -745,7 +894,15 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
     @ddt.data("email", "username")
     def test_update_valid_enrollment_change_is_active_mode_field(self, param: str) -> None:
         """
-        Update an existing enrollment; change is_active and mode field
+        Test updating an existing enrollment. Update is_active and mode field.
+
+        Open edX definitions tested:
+        - `get_edxapp_user`
+        - `update_enrollment`
+
+        Expected result:
+        - The status code is 200.
+        - The enrollment is updated successfully in the tenant with the provided data.
         """
         user_data = next(FAKE_USER_DATA)
         enrollment_data = {
@@ -769,9 +926,17 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         self.assertTrue(response_data["is_active"])
 
     @ddt.data("email", "username")
-    def test_update_valid_enrollment_change_invalid_mode(self, param: str) -> None:
+    def test_update_valid_enrollment_update_invalid_mode(self, param: str) -> None:
         """
-        Update an existing enrollment; change to invalid mode
+        Test updating an existing enrollment. Update to invalid mode.
+
+        Open edX definitions tested:
+        - `get_edxapp_user`
+        - `update_enrollment`
+
+        Expected result:
+        - The status code is 400.
+        - The response contains an error message about the mode not found.
         """
         user_data = next(FAKE_USER_DATA)
         enrollment_data = {
@@ -792,9 +957,17 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         self.assertEqual(response_data["non_field_errors"], ["Mode not found"])
 
     @ddt.data("email", "username")
-    def test_update_invalid_enrollment_change_valid_mode(self, param: str) -> None:
+    def test_update_enrollment_does_not_exist(self, param: str) -> None:
         """
-        Update an non-existent enrollment; change is_active and mode field
+        Test updating an enrollment that does not exist in a tenant.
+
+        Open edX definitions tested:
+        - `get_edxapp_user`
+        - `update_enrollment`
+
+        Expected result:
+        - The status code is 202.
+        - The response contains an error message about the enrollment not found.
         """
         user_data = next(FAKE_USER_DATA)
         self.create_user(self.tenant_x, user_data)
@@ -814,7 +987,15 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
     @ddt.data("email", "username")
     def test_update_valid_enrollment_force_post(self, param: str) -> None:
         """
-        Update an existing enrollment using POST with force=True.
+        Test updating an existing enrollment. Update is_active and mode field with force mode.
+
+        Open edX definitions tested:
+        - `get_edxapp_user`
+        - `update_enrollment`
+
+        Expected result:
+        - The status code is 200.
+        - The enrollment is updated successfully in the tenant with the provided data.
         """
         user_data = next(FAKE_USER_DATA)
         enrollment_data = {
