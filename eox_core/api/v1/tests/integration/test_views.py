@@ -1,6 +1,7 @@
 """
 Integration test suite for the API v1 views.
 """
+# pylint: disable=too-many-lines
 
 from __future__ import annotations
 
@@ -222,10 +223,6 @@ class EnrollmentAPIRequestMixin:
 @ddt
 class TestUsersAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin):
     """Integration test suite for the Users API"""
-
-    def setUp(self):
-        """Set up the test suite"""
-        super().setUp()
 
     @ddt.data(
         {"is_staff": False, "is_superuser": False},
