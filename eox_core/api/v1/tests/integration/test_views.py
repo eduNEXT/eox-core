@@ -2,6 +2,7 @@
 Integration test suite for the API v1 views.
 """
 
+# pylint: disable=too-many-lines
 from __future__ import annotations
 
 import ddt
