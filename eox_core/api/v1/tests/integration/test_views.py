@@ -220,7 +220,7 @@ class EnrollmentAPIRequestMixin:
         return make_request(tenant, "DELETE", url=ENROLLMENT_URL, data=data)
 
 
-@ddt
+@ddt.ddt
 class TestUsersAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin):
     """Integration test suite for the Users API"""
 
