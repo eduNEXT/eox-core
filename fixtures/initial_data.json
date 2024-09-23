@@ -168,5 +168,45 @@
             "updated": "2024-09-06T13:30:17.347Z",
             "algorithm": ""
         }
+    },
+    {
+        "model": "course_modes.coursemode",
+        "pk": 1,
+        "fields": {
+            "course": "course-v1:OpenedX+DemoX+DemoCourse",
+            "mode_slug": "audit",
+            "mode_display_name": "audit mode",
+            "min_price": 0,
+            "currency": "usd",
+            "_expiration_datetime": null,
+            "expiration_datetime_is_explicit": false,
+            "expiration_date": null,
+            "suggested_prices": "",
+            "description": null,
+            "sku": null,
+            "android_sku": null,
+            "ios_sku": null,
+            "bulk_sku": null
+        }
+    },
+    {
+        "model": "course_modes.coursemode",
+        "pk": 2,
+        "fields": {
+            "course": "course-v1:OpenedX+DemoX+DemoCourse",
+            "mode_slug": "honor",
+            "mode_display_name": "honor mode",
+            "min_price": 0,
+            "currency": "usd",
+            "_expiration_datetime": null,
+            "expiration_datetime_is_explicit": false,
+            "expiration_date": null,
+            "suggested_prices": "",
+            "description": null,
+            "sku": null,
+            "android_sku": null,
+            "ios_sku": null,
+            "bulk_sku": null
+        }
     }
 ]
