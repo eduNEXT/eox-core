@@ -53,39 +53,33 @@
         }
     },
     {
-        "model": "organizations.organization",
-        "pk": 1,
+        "model": "eox_tenant.tenantorganization",
+        "pk": 4,
         "fields": {
-            "created": "2024-09-11T17:15:30.708Z",
-            "modified": "2024-09-11T17:15:30.708Z",
-            "name": "TenantX",
-            "short_name": "Tenant-x",
-            "description": null,
-            "logo": "",
-            "active": true
+            "name": "edX"
         }
     },
     {
         "model": "organizations.organization",
-        "pk": 2,
-        "fields": {
-            "created": "2024-09-11T17:15:35.694Z",
-            "modified": "2024-09-11T17:15:35.694Z",
-            "name": "TenantY",
-            "short_name": "Tenant-y",
-            "description": null,
-            "logo": "",
-            "active": true
-        }
-    },
-    {
-        "model": "organizations.organization",
-        "pk": 2,
+        "pk": 3,
         "fields": {
             "created": "2024-09-11T17:15:35.694Z",
             "modified": "2024-09-11T17:15:35.694Z",
             "name": "OpenedX",
             "short_name": "openedx",
+            "description": null,
+            "logo": "",
+            "active": true
+        }
+    },
+    {
+        "model": "organizations.organization",
+        "pk": 4,
+        "fields": {
+            "created": "2024-09-11T17:15:35.694Z",
+            "modified": "2024-09-11T17:15:35.694Z",
+            "name": "edX",
+            "short_name": "edx",
             "description": null,
             "logo": "",
             "active": true
@@ -102,12 +96,13 @@
                 "SITE_NAME": "tenant-x.local.edly.io",
                 "course_org_filter": [
                     "TenantX",
-                    "OpenedX"
+                    "OpenedX",
+                    "edX"
                 ]
             },
-            "studio_configs": "{}",
-            "theming_configs": "{}",
-            "meta": "{}",
+            "studio_configs": {},
+            "theming_configs": {},
+            "meta": {},
             "organizations": [
                 1
             ]
@@ -126,9 +121,9 @@
                     "TenantY"
                 ]
             },
-            "studio_configs": "{}",
-            "theming_configs": "{}",
-            "meta": "{}",
+            "studio_configs": {},
+            "theming_configs": {},
+            "meta": {},
             "organizations": [
                 2
             ]
@@ -194,6 +189,46 @@
         "pk": 2,
         "fields": {
             "course": "course-v1:OpenedX+DemoX+DemoCourse",
+            "mode_slug": "honor",
+            "mode_display_name": "honor mode",
+            "min_price": 0,
+            "currency": "usd",
+            "_expiration_datetime": null,
+            "expiration_datetime_is_explicit": false,
+            "expiration_date": null,
+            "suggested_prices": "",
+            "description": null,
+            "sku": null,
+            "android_sku": null,
+            "ios_sku": null,
+            "bulk_sku": null
+        }
+    },
+    {
+        "model": "course_modes.coursemode",
+        "pk": 3,
+        "fields": {
+            "course": "course-v1:edX+DemoX+Demo_Course",
+            "mode_slug": "audit",
+            "mode_display_name": "audit mode",
+            "min_price": 0,
+            "currency": "usd",
+            "_expiration_datetime": null,
+            "expiration_datetime_is_explicit": false,
+            "expiration_date": null,
+            "suggested_prices": "",
+            "description": null,
+            "sku": null,
+            "android_sku": null,
+            "ios_sku": null,
+            "bulk_sku": null
+        }
+    },
+    {
+        "model": "course_modes.coursemode",
+        "pk": 4,
+        "fields": {
+            "course": "course-v1:edX+DemoX+Demo_Course",
             "mode_slug": "honor",
             "mode_display_name": "honor mode",
             "min_price": 0,
