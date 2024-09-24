@@ -9,7 +9,7 @@ jobs:
       matrix:
         include:
           - tutor_version: '<18.0.0'
-            course_id: 'course-v1:OpenedX+DemoX+Demo_Course'
+            course_id: 'course-v1:edX+DemoX+Demo_Course'
           - tutor_version: '<19.0.0'
             course_id: 'course-v1:OpenedX+DemoX+DemoCourse'
     steps:
