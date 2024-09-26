@@ -513,8 +513,12 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response_data, error)
 
-    @ddt.data("email", "username")
-    def test_create_valid_course_mode_invalid_user(self, param: str) -> None:
+    @ddt.data(
+        ("email", "user-not-found"),
+        ("username", "user-not-found@mail.com"),
+    )
+    @ddt.unpack
+    def test_create_valid_course_mode_invalid_user(self, param: str, value: str) -> None:
         """
         Test creating an enrollment with a valid course, valid mode, and a non-existent user in a tenant.
 
@@ -527,7 +531,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         - The enrollment is not created in the tenant.
         """
         enrollment_data = {
-            param: param,
+            param: value,
             "course_id": self.course_id,
             "mode": self.mode,
         }
