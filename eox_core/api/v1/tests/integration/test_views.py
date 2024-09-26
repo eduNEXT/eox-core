@@ -630,9 +630,9 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         self.assertEqual(response_data["course_id"], [f"Invalid course_id {self.course_id}"])
 
     @ddt.data("email", "username")
-    def test_create_valid_user_course_invalid_mode(self, param: str) -> None:
+    def test_create_valid_user_course_unavailable_mode(self, param: str) -> None:
         """
-        Test creating an enrollment with a valid user, valid course, and a not available mode in a tenant.
+        Test creating an enrollment with a valid user, valid course, and an unavailable mode in a tenant.
 
         Open edX definitions tested:
         - `check_edxapp_enrollment_is_valid`
@@ -658,9 +658,11 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         self.assertEqual(response_data["non_field_errors"], ["Mode not found"])
 
     @ddt.data("email", "username")
-    def test_force_create_valid_user_course_mode_not_allowed(self, param: str) -> None:
+    def test_force_create_valid_user_course_unavailable_mode(self, param: str) -> None:
         """
-        Test creating an enrollment with a valid user, valid course, and a not available mode in a tenant.
+        Test force creating an enrollment with a valid user, valid course, and an unavailable mode in a tenant.
+
+        When `force = True`, the enrollment is created even if the mode is not available.
 
         Open edX definitions tested:
         - `get_edxapp_user`
@@ -871,7 +873,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
     @ddt.data("email", "username")
     def test_update_valid_enrollment_change_is_active_mode_field(self, param: str) -> None:
         """
-        Test updating an existing enrollment. Update is_active and mode field.
+        Test updating an existing enrollment. Update `is_active` and `mode` field.
 
         Open edX definitions tested:
         - `get_edxapp_user`
@@ -903,9 +905,9 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         self.assertTrue(response_data["is_active"])
 
     @ddt.data("email", "username")
-    def test_update_valid_enrollment_update_invalid_mode(self, param: str) -> None:
+    def test_update_valid_enrollment_update_unavailable_mode(self, param: str) -> None:
         """
-        Test updating an existing enrollment. Update to invalid mode.
+        Test updating an existing enrollment. Update to an unavailable mode.
 
         Open edX definitions tested:
         - `get_edxapp_user`
@@ -952,7 +954,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
             param: user_data[param],
             "course_id": self.course_id,
             "is_active": False,
-            "mode": "honor",
+            "mode": self.mode,
         }
 
         response = self.update_enrollment(self.tenant_x, data=enrollment_data)
@@ -962,9 +964,11 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         self.assertEqual(response_data["error"]["detail"], f"No enrollment found for {user_data['username']}")
 
     @ddt.data("email", "username")
-    def test_update_valid_enrollment_force_post(self, param: str) -> None:
+    def test_update_valid_enrollment_using_force_flag(self, param: str) -> None:
         """
-        Test updating an existing enrollment. Update is_active and mode field with force mode.
+        Test updating an existing enrollment. Update `is_active` and `mode` field using force flag.
+
+        When `force = True`, the enrollment is updated even if the mode is not available.
 
         Open edX definitions tested:
         - `get_edxapp_user`
