@@ -437,9 +437,11 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
 
     def setUp(self) -> None:
         """Set up the test suite"""
+        super().setUp()
         self.course_id = settings["COURSE_ID"]
         self.mode = "audit"
-        super().setUp()
+        self.user = next(FAKE_USER_DATA)
+        self.create_user(self.tenant_x, self.user)
 
     @ddt.data(
         ("email", True),
@@ -462,10 +464,8 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         - The status code is 200.
         - The response indicates the enrollment was created successfully.
         """
-        user_data = next(FAKE_USER_DATA)
-        self.create_user(self.tenant_x, user_data)
         enrollment_data = {
-            param: user_data[param],
+            param: self.user[param],
             "course_id": self.course_id,
             "mode": self.mode,
             "force": force_value,
@@ -475,7 +475,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
 
         response_data = response.json()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response_data["username"], user_data["username"])
+        self.assertEqual(response_data["username"], self.user["username"])
         self.assertEqual(response_data["mode"], enrollment_data["mode"])
         self.assertEqual(response_data["course_id"], enrollment_data["course_id"])
         self.assertTrue(response_data["is_active"])
@@ -498,10 +498,8 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         - The status code is 400.
         - The response contains a message about the missing field.
         """
-        user_data = next(FAKE_USER_DATA)
-        self.create_user(self.tenant_x, user_data)
         enrollment_data = {
-            "username": user_data["username"],
+            "username": self.user["username"],
             "mode": self.mode,
             "course_id": self.course_id,
         }
@@ -586,10 +584,8 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         - The response contains an error message about the course not found.
         - The enrollment is not created in the tenant.
         """
-        user_data = next(FAKE_USER_DATA)
-        self.create_user(self.tenant_x, user_data)
         enrollment_data = {
-            param: user_data[param],
+            param: self.user[param],
             "course_id": "course-v1:OpenedX+DemoX+NonExistentCourse",
             "mode": self.mode,
         }
@@ -614,10 +610,8 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         - The status code is 400.
         - The response contains an error message about the course not found on the tenant.
         """
-        user_data = next(FAKE_USER_DATA)
-        self.create_user(self.tenant_y, user_data)
         enrollment_data = {
-            param: user_data[param],
+            param: self.user[param],
             "course_id": self.course_id,
             "mode": self.mode,
         }
@@ -642,10 +636,8 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         - The status code is 400.
         - The response contains an error message about the mode not found.
         """
-        user_data = next(FAKE_USER_DATA)
-        self.create_user(self.tenant_x, user_data)
         enrollment_data = {
-            param: user_data[param],
+            param: self.user[param],
             "course_id": self.course_id,
             "mode": "masters",
         }
@@ -674,10 +666,8 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         - The status code is 200.
         - The enrollment is created successfully in the tenant with the provided data.
         """
-        user_data = next(FAKE_USER_DATA)
-        self.create_user(self.tenant_x, user_data)
         enrollment_data = {
-            param: user_data[param],
+            param: self.user[param],
             "course_id": self.course_id,
             "mode": "masters",
             "force": True,
@@ -687,7 +677,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
 
         response_data = response.json()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response_data["username"], user_data["username"])
+        self.assertEqual(response_data["username"], self.user["username"])
         self.assertEqual(response_data["mode"], enrollment_data["mode"])
         self.assertEqual(response_data["course_id"], enrollment_data["course_id"])
         self.assertTrue(response_data["is_active"])
@@ -706,20 +696,18 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         - The status code is 200.
         - The response contains the enrollment data.
         """
-        user_data = next(FAKE_USER_DATA)
         enrollment_data = {
-            param: user_data[param],
+            param: self.user[param],
             "course_id": self.course_id,
             "mode": self.mode,
         }
-        self.create_user(self.tenant_x, user_data)
         self.create_enrollment(self.tenant_x, enrollment_data)
 
         response = self.get_enrollment(self.tenant_x, data=enrollment_data)
 
         response_data = response.json()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response_data["username"], user_data["username"])
+        self.assertEqual(response_data["username"], self.user["username"])
         self.assertEqual(response_data["mode"], enrollment_data["mode"])
         self.assertEqual(response_data["course_id"], enrollment_data["course_id"])
         self.assertTrue(response_data["is_active"])
@@ -738,10 +726,8 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         - The status code is 404.
         - The response contains an error message about the enrollment not found.
         """
-        user_data = next(FAKE_USER_DATA)
-        self.create_user(self.tenant_x, user_data)
         enrollment_data = {
-            param: user_data[param],
+            param: self.user[param],
             "course_id": self.course_id,
         }
 
@@ -749,7 +735,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
 
         response_data = response.json()
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertEqual(response_data, [f"No enrollment found for user:`{user_data['username']}`"])
+        self.assertEqual(response_data, [f"No enrollment found for user:`{self.user['username']}`"])
 
     @ddt.data("email", "username")
     def test_get_enrollment_not_found_in_tenant(self, param: str) -> None:
@@ -763,13 +749,11 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         - The status code is 404.
         - The response contains an error message about the user not found on the tenant.
         """
-        user_data = next(FAKE_USER_DATA)
         enrollment_data = {
-            param: user_data[param],
+            param: self.user[param],
             "course_id": self.course_id,
             "mode": self.mode,
         }
-        self.create_user(self.tenant_x, user_data)
         self.create_enrollment(self.tenant_x, enrollment_data)
 
         response = self.get_enrollment(self.tenant_y, data=enrollment_data)
@@ -779,7 +763,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         self.assertIn("detail", response_data)
         self.assertEqual(
             response_data["detail"],
-            f"No user found by {{'{param}': '{user_data[param]}'}} on site {self.tenant_y['domain']}.",
+            f"No user found by {{'{param}': '{self.user[param]}'}} on site {self.tenant_y['domain']}.",
         )
 
     @ddt.data("email", "username")
@@ -795,13 +779,11 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         - The status code is 204.
         - The enrollment is deleted successfully in the tenant.
         """
-        user_data = next(FAKE_USER_DATA)
         enrollment_data = {
-            param: user_data[param],
+            param: self.user[param],
             "course_id": self.course_id,
             "mode": self.mode,
         }
-        self.create_user(self.tenant_x, user_data)
         self.create_enrollment(self.tenant_x, enrollment_data)
 
         response = self.delete_enrollment(self.tenant_x, data=enrollment_data)
@@ -821,10 +803,8 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         - The status code is 404.
         - The response contains an error message about the enrollment not found.
         """
-        user_data = next(FAKE_USER_DATA)
-        self.create_user(self.tenant_x, user_data)
         enrollment_data = {
-            param: user_data[param],
+            param: self.user[param],
             "course_id": self.course_id,
         }
 
@@ -835,7 +815,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         self.assertIn("detail", response_data)
         self.assertEqual(
             response_data["detail"],
-            f"No enrollment found for user: `{user_data['username']}` on course_id `{self.course_id}`",
+            f"No enrollment found for user: `{self.user['username']}` on course_id `{self.course_id}`",
         )
 
     @ddt.data("email", "username")
@@ -851,13 +831,11 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         - The status code is 404.
         - The response contains an error message about the user not found on the tenant.
         """
-        user_data = next(FAKE_USER_DATA)
         enrollment_data = {
-            param: user_data[param],
+            param: self.user[param],
             "course_id": self.course_id,
             "mode": self.mode,
         }
-        self.create_user(self.tenant_x, user_data)
         self.create_enrollment(self.tenant_x, enrollment_data)
 
         response = self.delete_enrollment(self.tenant_y, data=enrollment_data)
@@ -867,7 +845,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         self.assertIn("detail", response_data)
         self.assertEqual(
             response_data["detail"],
-            f"No user found by {{'{param}': '{user_data[param]}'}} on site {self.tenant_y['domain']}.",
+            f"No user found by {{'{param}': '{self.user[param]}'}} on site {self.tenant_y['domain']}.",
         )
 
     @ddt.data("email", "username")
@@ -883,14 +861,12 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         - The status code is 200.
         - The enrollment is updated successfully in the tenant with the provided data.
         """
-        user_data = next(FAKE_USER_DATA)
         enrollment_data = {
-            param: user_data[param],
+            param: self.user[param],
             "course_id": self.course_id,
             "is_active": False,
             "mode": self.mode,
         }
-        self.create_user(self.tenant_x, user_data)
         self.create_enrollment(self.tenant_x, enrollment_data)
         enrollment_data["is_active"] = True
         enrollment_data["mode"] = "honor"
@@ -899,7 +875,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
 
         response_data = response.json()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response_data["user"], user_data["username"])
+        self.assertEqual(response_data["user"], self.user["username"])
         self.assertEqual(response_data["course_id"], enrollment_data["course_id"])
         self.assertEqual(response_data["mode"], enrollment_data["mode"])
         self.assertTrue(response_data["is_active"])
@@ -917,14 +893,12 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         - The status code is 400.
         - The response contains an error message about the mode not found.
         """
-        user_data = next(FAKE_USER_DATA)
         enrollment_data = {
-            param: user_data[param],
+            param: self.user[param],
             "course_id": self.course_id,
             "is_active": True,
             "mode": self.mode,
         }
-        self.create_user(self.tenant_x, user_data)
         self.create_enrollment(self.tenant_x, enrollment_data)
         enrollment_data["mode"] = "masters"
 
@@ -948,10 +922,8 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         - The status code is 202.
         - The response contains an error message about the enrollment not found.
         """
-        user_data = next(FAKE_USER_DATA)
-        self.create_user(self.tenant_x, user_data)
         enrollment_data = {
-            param: user_data[param],
+            param: self.user[param],
             "course_id": self.course_id,
             "is_active": False,
             "mode": self.mode,
@@ -961,7 +933,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
 
         response_data = response.json()
         self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
-        self.assertEqual(response_data["error"]["detail"], f"No enrollment found for {user_data['username']}")
+        self.assertEqual(response_data["error"]["detail"], f"No enrollment found for {self.user['username']}")
 
     @ddt.data("email", "username")
     def test_update_valid_enrollment_using_force_flag(self, param: str) -> None:
@@ -978,15 +950,13 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         - The status code is 200.
         - The enrollment is updated successfully in the tenant with the provided data.
         """
-        user_data = next(FAKE_USER_DATA)
         enrollment_data = {
-            param: user_data[param],
+            param: self.user[param],
             "course_id": self.course_id,
             "is_active": False,
             "mode": self.mode,
             "force": True,
         }
-        self.create_user(self.tenant_x, user_data)
         self.create_enrollment(self.tenant_x, enrollment_data)
         enrollment_data["is_active"] = True
         enrollment_data["mode"] = "honor"
@@ -995,7 +965,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
 
         response_data = response.json()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response_data["username"], user_data["username"])
+        self.assertEqual(response_data["username"], self.user["username"])
         self.assertEqual(response_data["course_id"], enrollment_data["course_id"])
         self.assertEqual(response_data["mode"], enrollment_data["mode"])
         self.assertTrue(response_data["is_active"])
