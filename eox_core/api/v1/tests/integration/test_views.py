@@ -444,7 +444,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
     @ddt.data("email", "username")
     def test_create_enrollment_success(self, param: str) -> None:
         """
-        Test creating a enrollment with a valid user, course and mode in a tenant.
+        Test creating an enrollment with a valid user, course and mode in a tenant.
 
         Open edX definitions tested:
         - `get_edxapp_user`
@@ -482,7 +482,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
     @ddt.unpack
     def test_create_enrollment_missing_required_fields(self, param: str, error: list | dict) -> None:
         """
-        Test creating a enrollment with missing required fields.
+        Test creating an enrollment with missing required fields.
 
         Open edX definitions tested:
         - `check_edxapp_enrollment_is_valid`
@@ -509,7 +509,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
     @ddt.data("email", "username")
     def test_force_create_enrollment_success(self, param: str) -> None:
         """
-        Test force creating a enrollment with a valid user, course and mode in a tenant.
+        Test force creating an enrollment with a valid user, course and mode in a tenant.
 
         Open edX definitions tested:
         - `get_edxapp_user`
@@ -543,7 +543,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
     @ddt.data("email", "username")
     def test_create_valid_course_mode_invalid_user(self, param: str) -> None:
         """
-        Test creating a enrollment with a valid course, valid mode, and a non-existent user in a tenant.
+        Test creating an enrollment with a valid course, valid mode, and a non-existent user in a tenant.
 
         Open edX definitions tested:
         - `check_edxapp_enrollment_is_valid`
@@ -569,7 +569,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
     @ddt.data("email", "username")
     def test_create_valid_course_mode_invalid_user_for_tenant(self, param: str) -> None:
         """
-        Test creating a enrollment with a valid course, valid mode, and a user from another tenant.
+        Test creating an enrollment with a valid course, valid mode, and a user from another tenant.
 
         Open edX definitions tested:
         - `check_edxapp_enrollment_is_valid`
@@ -599,7 +599,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
     @ddt.data("email", "username")
     def test_create_valid_user_mode_invalid_course(self, param: str) -> None:
         """
-        Test creating a enrollment with a valid user, valid mode, and a non-existent course in a tenant.
+        Test creating an enrollment with a valid user, valid mode, and a non-existent course in a tenant.
 
         Open edX definitions tested:
         - `check_edxapp_enrollment_is_valid`
@@ -627,7 +627,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
     @ddt.data("email", "username")
     def test_create_valid_user_mode_invalid_course_for_tenant(self, param: str) -> None:
         """
-        Test creating a enrollment with a valid user, valid mode, and a course from another tenant.
+        Test creating an enrollment with a valid user, valid mode, and a course from another tenant.
 
         Open edX definitions tested:
         - `check_edxapp_enrollment_is_valid`
@@ -655,7 +655,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
     @ddt.data("email", "username")
     def test_create_valid_user_course_invalid_mode(self, param: str) -> None:
         """
-        Test creating a enrollment with a valid user, valid course, and a not available mode in a tenant.
+        Test creating an enrollment with a valid user, valid course, and a not available mode in a tenant.
 
         Open edX definitions tested:
         - `check_edxapp_enrollment_is_valid`
@@ -683,7 +683,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
     @ddt.data("email", "username")
     def test_force_create_valid_user_course_mode_not_allowed(self, param: str) -> None:
         """
-        Test creating a enrollment with a valid user, valid course, and a not available mode in a tenant.
+        Test creating an enrollment with a valid user, valid course, and a not available mode in a tenant.
 
         Open edX definitions tested:
         - `get_edxapp_user`
@@ -717,7 +717,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
     @ddt.data("email", "username")
     def test_get_enrollment_success(self, param: str) -> None:
         """
-        Test getting a enrollment with a valid user, course and mode in a tenant.
+        Test getting an enrollment with a valid user, course and mode in a tenant.
 
         Open edX definitions tested:
         - `get_edxapp_user`
@@ -749,7 +749,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
     @ddt.data("email", "username")
     def test_get_enrollment_does_not_exist(self, param: str) -> None:
         """
-        Test getting a enrollment that does not exist in a tenant.
+        Test getting an enrollment that does not exist in a tenant.
 
         Open edX definitions tested:
         - `get_edxapp_user`
@@ -775,7 +775,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
     @ddt.data("email", "username")
     def test_get_enrollment_not_found_in_tenant(self, param: str) -> None:
         """
-        Test getting a enrollment that belongs to another tenant.
+        Test getting an enrollment that belongs to another tenant.
 
         Open edX definitions tested:
         - `get_edxapp_user`
@@ -806,7 +806,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
     @ddt.data("email", "username")
     def test_delete_enrollment_success(self, param: str) -> None:
         """
-        Test deleting a enrollment with a valid user, course and mode in a tenant.
+        Test deleting an enrollment with a valid user, course and mode in a tenant.
 
         Open edX definitions tested:
         - `get_edxapp_user`
@@ -832,7 +832,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
     @ddt.data("email", "username")
     def test_delete_enrollment_does_not_exist(self, param: str) -> None:
         """
-        Test deleting a enrollment that does not exist in a tenant.
+        Test deleting an enrollment that does not exist in a tenant.
 
         Open edX definitions tested:
         - `get_edxapp_user`
@@ -862,7 +862,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
     @ddt.data("email", "username")
     def test_delete_invalid_enrollment_for_tenant(self, param: str) -> None:
         """
-        Test deleting a enrollment that belongs to another tenant.
+        Test deleting an enrollment that belongs to another tenant.
 
         Open edX definitions tested:
         - `get_edxapp_user`
