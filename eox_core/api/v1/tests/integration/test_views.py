@@ -441,8 +441,14 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         self.mode = "audit"
         super().setUp()
 
-    @ddt.data("email", "username")
-    def test_create_enrollment_success(self, param: str) -> None:
+    @ddt.data(
+        ("email", True),
+        ("email", False),
+        ("username", True),
+        ("username", False),
+    )
+    @ddt.unpack
+    def test_create_enrollment_success(self, param: str, force_value: bool) -> None:
         """
         Test creating an enrollment with a valid user, course and mode in a tenant.
 
@@ -454,7 +460,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
 
         Expected result:
         - The status code is 200.
-        - The enrollment is created successfully in the tenant with the provided data.
+        - The response indicates the enrollment was created successfully.
         """
         user_data = next(FAKE_USER_DATA)
         self.create_user(self.tenant_x, user_data)
@@ -462,6 +468,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
             param: user_data[param],
             "course_id": self.course_id,
             "mode": self.mode,
+            "force": force_value,
         }
 
         response = self.create_enrollment(self.tenant_x, enrollment_data)
@@ -505,40 +512,6 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         response_data = response.json()
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response_data, error)
-
-    @ddt.data("email", "username")
-    def test_force_create_enrollment_success(self, param: str) -> None:
-        """
-        Test force creating an enrollment with a valid user, course and mode in a tenant.
-
-        Open edX definitions tested:
-        - `get_edxapp_user`
-        - `create_enrollment`
-        - `check_edxapp_account_conflicts`
-        - `check_edxapp_enrollment_is_valid`
-
-        Expected result:
-        - The status code is 200.
-        - The enrollment is created successfully in the tenant with the provided data.
-        """
-        user_data = next(FAKE_USER_DATA)
-        self.create_user(self.tenant_x, user_data)
-        enrollment_data = {
-            param: user_data[param],
-            "course_id": self.course_id,
-            "mode": self.mode,
-            "force": True,
-        }
-
-        response = self.create_enrollment(self.tenant_x, enrollment_data)
-
-        response_data = response.json()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response_data["username"], user_data["username"])
-        self.assertEqual(response_data["mode"], enrollment_data["mode"])
-        self.assertEqual(response_data["course_id"], enrollment_data["course_id"])
-        self.assertTrue(response_data["is_active"])
-        self.assertIn("created", response_data)
 
     @ddt.data("email", "username")
     def test_create_valid_course_mode_invalid_user(self, param: str) -> None:
