@@ -19,3 +19,4 @@ jobs:
           fixtures_file: 'fixtures/initial_data.json'
           openedx_imports_test_file_path: 'eox_core/edxapp_wrapper/tests/integration/test_backends.py'
           openedx_imports_test_function_name: 'test_current_settings_code_imports'
+
