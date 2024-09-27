@@ -63,8 +63,8 @@
         "model": "organizations.organization",
         "pk": 3,
         "fields": {
-            "created": "2024-09-11T17:15:35.694Z",
-            "modified": "2024-09-11T17:15:35.694Z",
+            "created": "2024-09-11T17:15:30.708Z",
+            "modified": "2024-09-11T17:15:30.708Z",
             "name": "OpenedX",
             "short_name": "openedx",
             "description": null,
