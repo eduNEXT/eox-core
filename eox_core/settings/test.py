@@ -112,5 +112,5 @@ INTEGRATION_TEST_SETTINGS = {
     "API_TIMEOUT": 5,
     "CLIENT_ID": "client_id",
     "CLIENT_SECRET": "client_secret",
-    "COURSE_ID": os.environ.get("COURSE_ID", "course-v1:OpenedX+DemoX+DemoCourse")
+    "DEMO_COURSE_ID": os.environ.get("DEMO_COURSE_ID", "course-v1:OpenedX+DemoX+DemoCourse")
 }

@@ -439,7 +439,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
     def setUp(self) -> None:
         """Set up the test suite"""
         super().setUp()
-        self.course_id = settings["COURSE_ID"]
+        self.demo_course_id = settings["DEMO_COURSE_ID"]
         self.mode = "audit"
         self.user = next(FAKE_USER_DATA)
         self.create_user(self.tenant_x, self.user)
@@ -468,7 +468,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         """
         enrollment_data = {
             param: self.user[param],
-            "course_id": self.course_id,
+            "course_id": self.demo_course_id,
             "mode": self.mode,
             "force": force_value,
         }
@@ -506,7 +506,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         enrollment_data = {
             "username": self.user["username"],
             "mode": self.mode,
-            "course_id": self.course_id,
+            "course_id": self.demo_course_id,
         }
         enrollment_data_copy = deepcopy(enrollment_data)
         enrollment_data.pop(param)
@@ -538,7 +538,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         """
         enrollment_data = {
             param: value,
-            "course_id": self.course_id,
+            "course_id": self.demo_course_id,
             "mode": self.mode,
         }
 
@@ -568,7 +568,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         self.create_user(self.tenant_y, user_data)
         enrollment_data = {
             param: user_data[param],
-            "course_id": self.course_id,
+            "course_id": self.demo_course_id,
             "mode": self.mode,
         }
 
@@ -627,7 +627,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         """
         enrollment_data = {
             param: self.user[param],
-            "course_id": self.course_id,
+            "course_id": self.demo_course_id,
             "mode": self.mode,
         }
 
@@ -636,7 +636,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         response_data = response.json()
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("course_id", response_data)
-        self.assertEqual(response_data["course_id"], [f"Invalid course_id {self.course_id}"])
+        self.assertEqual(response_data["course_id"], [f"Invalid course_id {self.demo_course_id}"])
         enrollment_response = self.get_enrollment(self.tenant_x, data=enrollment_data)
         self.assertEqual(enrollment_response.status_code, status.HTTP_404_NOT_FOUND)
 
@@ -656,7 +656,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         """
         enrollment_data = {
             param: self.user[param],
-            "course_id": self.course_id,
+            "course_id": self.demo_course_id,
             "mode": "masters",
         }
 
@@ -688,7 +688,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         """
         enrollment_data = {
             param: self.user[param],
-            "course_id": self.course_id,
+            "course_id": self.demo_course_id,
             "mode": "masters",
             "force": True,
         }
@@ -720,7 +720,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         """
         enrollment_data = {
             param: self.user[param],
-            "course_id": self.course_id,
+            "course_id": self.demo_course_id,
             "mode": self.mode,
         }
         self.create_enrollment(self.tenant_x, enrollment_data)
@@ -750,7 +750,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         """
         enrollment_data = {
             param: self.user[param],
-            "course_id": self.course_id,
+            "course_id": self.demo_course_id,
         }
 
         response = self.get_enrollment(self.tenant_x, data=enrollment_data)
@@ -773,7 +773,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         """
         enrollment_data = {
             param: self.user[param],
-            "course_id": self.course_id,
+            "course_id": self.demo_course_id,
             "mode": self.mode,
         }
         self.create_enrollment(self.tenant_x, enrollment_data)
@@ -803,7 +803,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         """
         enrollment_data = {
             param: self.user[param],
-            "course_id": self.course_id,
+            "course_id": self.demo_course_id,
             "mode": self.mode,
         }
         self.create_enrollment(self.tenant_x, enrollment_data)
@@ -829,7 +829,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         """
         enrollment_data = {
             param: self.user[param],
-            "course_id": self.course_id,
+            "course_id": self.demo_course_id,
         }
 
         response = self.delete_enrollment(self.tenant_x, data=enrollment_data)
@@ -839,7 +839,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         self.assertIn("detail", response_data)
         self.assertEqual(
             response_data["detail"],
-            f"No enrollment found for user: `{self.user['username']}` on course_id `{self.course_id}`",
+            f"No enrollment found for user: `{self.user['username']}` on course_id `{self.demo_course_id}`",
         )
 
     @ddt.data("email", "username")
@@ -858,7 +858,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         """
         enrollment_data = {
             param: self.user[param],
-            "course_id": self.course_id,
+            "course_id": self.demo_course_id,
             "mode": self.mode,
         }
         self.create_enrollment(self.tenant_x, enrollment_data)
@@ -890,7 +890,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         """
         enrollment_data = {
             param: self.user[param],
-            "course_id": self.course_id,
+            "course_id": self.demo_course_id,
             "is_active": False,
             "mode": self.mode,
         }
@@ -928,7 +928,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         """
         enrollment_data = {
             param: self.user[param],
-            "course_id": self.course_id,
+            "course_id": self.demo_course_id,
             "is_active": True,
             "mode": self.mode,
         }
@@ -962,7 +962,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         """
         enrollment_data = {
             param: self.user[param],
-            "course_id": self.course_id,
+            "course_id": self.demo_course_id,
             "is_active": False,
             "mode": self.mode,
         }
@@ -993,7 +993,7 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         """
         enrollment_data = {
             param: self.user[param],
-            "course_id": self.course_id,
+            "course_id": self.demo_course_id,
             "is_active": False,
             "mode": self.mode,
             "force": True,
