@@ -114,3 +114,4 @@ INTEGRATION_TEST_SETTINGS = {
     "CLIENT_SECRET": "client_secret",
     "DEMO_COURSE_ID": os.environ.get("DEMO_COURSE_ID", "course-v1:OpenedX+DemoX+DemoCourse")
 }
+
