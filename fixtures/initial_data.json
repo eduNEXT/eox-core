@@ -90,7 +90,7 @@
         "pk": 1,
         "fields": {
             "external_key": "tenant-x-key",
-            "lms_configs": "{\n    \"EDNX_USE_SIGNAL\": true,\n    \"PLATFORM_NAME\": \"Tenant X\",\n    \"SITE_NAME\": \"tenant-x.local.edly.io\",\n    \"course_org_filter\": [\n        \"TenantX\",\n        \"OpenedX\",\n        \"edx\"\n    ]\n}",
+            "lms_configs": "{\n    \"EDNX_USE_SIGNAL\": true,\n    \"PLATFORM_NAME\": \"Tenant X\",\n    \"SITE_NAME\": \"tenant-x.local.edly.io\",\n    \"course_org_filter\": [\n        \"TenantX\",\n        \"OpenedX\",\n        \"edX\"\n    ]\n}",
             "studio_configs": "{}",
             "theming_configs": "{}",
             "meta": "{}",
