@@ -63,8 +63,8 @@
         "model": "organizations.organization",
         "pk": 3,
         "fields": {
-            "created": "2024-09-11T17:15:30.708Z",
-            "modified": "2024-09-11T17:15:30.708Z",
+            "created": "2024-09-11T17:15:35.694Z",
+            "modified": "2024-09-11T17:15:35.694Z",
             "name": "OpenedX",
             "short_name": "openedx",
             "description": null,
@@ -90,10 +90,19 @@
         "pk": 1,
         "fields": {
             "external_key": "tenant-x-key",
-            "lms_configs": "{\"EDNX_USE_SIGNAL\": true,\"PLATFORM_NAME\": \"Tenant X\",\"SITE_NAME\": \"tenant-x.local.edly.io\",\"course_org_filter\": [\"TenantX\",\"OpenedX\",\"edx\"]}",
-            "studio_configs": "{}",
-            "theming_configs": "{}",
-            "meta": "{}",
+            "lms_configs": {
+                "EDNX_USE_SIGNAL": true,
+                "PLATFORM_NAME": "Tenant X",
+                "SITE_NAME": "tenant-x.local.edly.io",
+                "course_org_filter": [
+                    "TenantX",
+                    "OpenedX",
+                    "edX"
+                ]
+            },
+            "studio_configs": {},
+            "theming_configs": {},
+            "meta": {},
             "organizations": [
                 1
             ]
@@ -104,10 +113,17 @@
         "pk": 2,
         "fields": {
             "external_key": "tenant-y-key",
-            "lms_configs": "{\n    \"EDNX_USE_SIGNAL\": true,\n    \"PLATFORM_NAME\": \"Tenant Y\",\n    \"SITE_NAME\": \"tenant-y.local.edly.io\",\n    \"course_org_filter\": [\n        \"TenantY\"\n    ]\n}",
-            "studio_configs": "{}",
-            "theming_configs": "{}",
-            "meta": "{}",
+            "lms_configs": {
+                "EDNX_USE_SIGNAL": true,
+                "PLATFORM_NAME": "Tenant Y",
+                "SITE_NAME": "tenant-y.local.edly.io",
+                "course_org_filter": [
+                    "TenantY"
+                ]
+            },
+            "studio_configs": {},
+            "theming_configs": {},
+            "meta": {},
             "organizations": [
                 2
             ]
