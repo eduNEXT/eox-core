@@ -18,10 +18,6 @@ from eox_core.api.v1.tests.integration.data.fake_users import FAKE_USER_DATA
 
 settings = ds.INTEGRATION_TEST_SETTINGS
 
-USER_URL = f"{settings['EOX_CORE_API_BASE']}{reverse('eox-api:eox-api:edxapp-user')}"
-USER_UPDATER_URL = f"{settings['EOX_CORE_API_BASE']}{reverse('eox-api:eox-api:edxapp-user-updater')}"
-ENROLLMENT_URL = f"{settings['EOX_CORE_API_BASE']}{reverse('eox-api:eox-api:edxapp-enrollment')}"
-
 
 def get_access_token() -> str:
     """
@@ -100,6 +96,7 @@ class BaseAPIIntegrationTest(TestCase):
         self.default_site = self.get_tenant_data()
         self.tenant_x = self.get_tenant_data("tenant-x")
         self.tenant_y = self.get_tenant_data("tenant-y")
+        self.demo_course_id = settings["DEMO_COURSE_ID"]
 
     def get_tenant_data(self, prefix: str = "") -> dict:
         """
@@ -125,6 +122,9 @@ class UsersAPIRequestMixin:
     Mixin class for the API request methods.
     """
 
+    USER_URL = f"{settings['EOX_CORE_API_BASE']}{reverse('eox-api:eox-api:edxapp-user')}"
+    USER_UPDATER_URL = f"{settings['EOX_CORE_API_BASE']}{reverse('eox-api:eox-api:edxapp-user-updater')}"
+
     def create_user(self, tenant: dict, data: dict) -> requests.Response:
         """
         Create a new user in a tenant.
@@ -136,7 +136,7 @@ class UsersAPIRequestMixin:
         Returns:
             requests.Response: The response object.
         """
-        return make_request(tenant, "POST", url=USER_URL, json=data)
+        return make_request(tenant, "POST", url=self.USER_URL, json=data)
 
     def get_user(self, tenant: dict, params: dict | None = None) -> requests.Response:
         """
@@ -149,7 +149,7 @@ class UsersAPIRequestMixin:
         Returns:
             requests.Response: The response object.
         """
-        return make_request(tenant, "GET", url=USER_URL, params=params)
+        return make_request(tenant, "GET", url=self.USER_URL, params=params)
 
     def update_user(self, tenant: dict, data: dict) -> requests.Response:
         """
@@ -162,11 +162,13 @@ class UsersAPIRequestMixin:
         Returns:
             requests.Response: The response object.
         """
-        return make_request(tenant, "PATCH", url=USER_UPDATER_URL, json=data)
+        return make_request(tenant, "PATCH", url=self.USER_UPDATER_URL, json=data)
 
 
 class EnrollmentAPIRequestMixin:
     """Mixin class for the API request methods."""
+
+    ENROLLMENT_URL = f"{settings['EOX_CORE_API_BASE']}{reverse('eox-api:eox-api:edxapp-enrollment')}"
 
     def create_enrollment(self, tenant: dict, data: dict) -> requests.Response:
         """
@@ -179,7 +181,7 @@ class EnrollmentAPIRequestMixin:
         Returns:
             requests.Response: The response object.
         """
-        return make_request(tenant, "POST", url=ENROLLMENT_URL, data=data)
+        return make_request(tenant, "POST", url=self.ENROLLMENT_URL, data=data)
 
     def get_enrollment(self, tenant: dict, data: dict | None = None) -> requests.Response:
         """
@@ -192,7 +194,7 @@ class EnrollmentAPIRequestMixin:
         Returns:
             requests.Response: The response object.
         """
-        return make_request(tenant, "GET", url=ENROLLMENT_URL, data=data)
+        return make_request(tenant, "GET", url=self.ENROLLMENT_URL, data=data)
 
     def update_enrollment(self, tenant: dict, data: dict | None = None) -> requests.Response:
         """
@@ -205,7 +207,7 @@ class EnrollmentAPIRequestMixin:
         Returns:
             requests.Response: The response object.
         """
-        return make_request(tenant, "PUT", url=ENROLLMENT_URL, data=data)
+        return make_request(tenant, "PUT", url=self.ENROLLMENT_URL, data=data)
 
     def delete_enrollment(self, tenant: dict, data: dict | None = None) -> requests.Response:
         """
@@ -218,7 +220,7 @@ class EnrollmentAPIRequestMixin:
         Returns:
             requests.Response: The response object.
         """
-        return make_request(tenant, "DELETE", url=ENROLLMENT_URL, data=data)
+        return make_request(tenant, "DELETE", url=self.ENROLLMENT_URL, data=data)
 
 
 @ddt.ddt
@@ -439,7 +441,6 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
     def setUp(self) -> None:
         """Set up the test suite"""
         super().setUp()
-        self.demo_course_id = settings["DEMO_COURSE_ID"]
         self.mode = "audit"
         self.user = next(FAKE_USER_DATA)
         self.create_user(self.tenant_x, self.user)
