@@ -119,7 +119,7 @@ class BaseAPIIntegrationTest(TestCase):
 
 class UsersAPIRequestMixin:
     """
-    Mixin class for the API request methods.
+    Mixin class for the Users API request methods.
     """
 
     USER_URL = f"{settings['EOX_CORE_API_BASE']}{reverse('eox-api:eox-api:edxapp-user')}"
@@ -166,17 +166,17 @@ class UsersAPIRequestMixin:
 
 
 class EnrollmentAPIRequestMixin:
-    """Mixin class for the API request methods."""
+    """Mixin class for the Enrollment API request methods."""
 
     ENROLLMENT_URL = f"{settings['EOX_CORE_API_BASE']}{reverse('eox-api:eox-api:edxapp-enrollment')}"
 
     def create_enrollment(self, tenant: dict, data: dict) -> requests.Response:
         """
-        Create a new user in a tenant.
+        Create a new enrollment in a tenant.
 
         Args:
             tenant (dict): The tenant data.
-            data (dict): The user data.
+            data (dict): The enrollment data.
 
         Returns:
             requests.Response: The response object.
@@ -185,7 +185,7 @@ class EnrollmentAPIRequestMixin:
 
     def get_enrollment(self, tenant: dict, data: dict | None = None) -> requests.Response:
         """
-        Get a user in a tenant by username or email.
+        Get an enrollment in a tenant.
 
         Args:
             tenant (dict): The tenant data.
@@ -221,6 +221,64 @@ class EnrollmentAPIRequestMixin:
             requests.Response: The response object.
         """
         return make_request(tenant, "DELETE", url=self.ENROLLMENT_URL, data=data)
+
+
+class PreEnrollmentAPIRequestMixin:
+    """Mixin class for the Pre Enrollments API request methods."""
+
+    PRE_ENROLLMENT_URL = f"{settings['EOX_CORE_API_BASE']}{reverse('eox-api:eox-api:edxapp-pre-enrollment')}"
+
+    def create_pre_enrollment(self, tenant: dict, data: dict) -> requests.Response:
+        """
+        Create a new pre-enrollment in a tenant.
+
+        Args:
+            tenant (dict): The tenant data.
+            data (dict): The pre-enrollment data.
+
+        Returns:
+            requests.Response: The response object.
+        """
+        return make_request(tenant, "POST", url=self.PRE_ENROLLMENT_URL, data=data)
+
+    def get_pre_enrollment(self, tenant: dict, data: dict | None = None) -> requests.Response:
+        """
+        Get a pre-enrollment in a tenant by username or email.
+
+        Args:
+            tenant (dict): The tenant data.
+            data (dict, optional): The body data for the request.
+
+        Returns:
+            requests.Response: The response object.
+        """
+        return make_request(tenant, "GET", url=self.PRE_ENROLLMENT_URL, data=data)
+
+    def update_pre_enrollment(self, tenant: dict, data: dict | None = None) -> requests.Response:
+        """
+        Update an pre-enrollment in a tenant.
+
+        Args:
+            tenant (dict): The tenant data.
+            data (dict, optional): The body data for the request.
+
+        Returns:
+            requests.Response: The response object.
+        """
+        return make_request(tenant, "PUT", url=self.PRE_ENROLLMENT_URL, data=data)
+
+    def delete_pre_enrollment(self, tenant: dict, data: dict | None = None) -> requests.Response:
+        """
+        Delete an pre-enrollment in a tenant.
+
+        Args:
+            tenant (dict): The tenant data.
+            data (dict, optional): The body data for the request.
+
+        Returns:
+            requests.Response: The response object.
+        """
+        return make_request(tenant, "DELETE", url=self.PRE_ENROLLMENT_URL, data=data)
 
 
 @ddt.ddt
@@ -1016,6 +1074,149 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
         self.assertEqual(enrollment_response.status_code, status.HTTP_200_OK)
         self.assertEqual(enrollment_response_data["mode"], enrollment_data["mode"])
         self.assertTrue(enrollment_response_data["is_active"])
+
+
+@ddt.ddt
+class TestPreEnrollmentAPIIntegration(
+    BaseAPIIntegrationTest,
+    UsersAPIRequestMixin,
+    EnrollmentAPIRequestMixin,
+    PreEnrollmentAPIRequestMixin,
+):
+    """Integration test suite for the Pre-Enrollment API"""
+
+    def setUp(self) -> None:
+        """Set up the test suite"""
+        super().setUp()
+        self.user = next(FAKE_USER_DATA)
+        self.create_user(self.tenant_x, self.user)
+
+    @ddt.data(
+        {"auto_enroll": True},
+        {"auto_enroll": False},
+        {"email": "user-not-found1@mail.com", "auto_enroll": True},
+        {"email": "user-not-found2@mail.com", "auto_enroll": False},
+    )
+    def test_create_pre_enrollment_success(self, data: dict) -> None:
+        """
+        Test creating an pre-enrollment with a valid course and a user in a tenant.
+
+        The pre-enrollment is created even if the user does not exist in the tenant.
+
+        Open edX definitions tested:
+        ...
+
+        Expected result:
+        - The status code is 400.
+        - The response contains an error message about the user not found.
+        - The enrollment is not created in the tenant.
+        """
+        pre_enrollment_data = {
+            "course_id": self.demo_course_id,
+            "email": data.get("email") or self.user["email"],
+            "auto_enroll": data.get("auto_enroll"),
+        }
+
+        response = self.create_pre_enrollment(self.tenant_x, pre_enrollment_data)
+        response_data = response.json()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertNotIn("warning", response_data)
+        self.assertEqual(response_data["email"], pre_enrollment_data["email"])
+        self.assertEqual(response_data["course_id"], pre_enrollment_data["course_id"])
+        self.assertEqual(response_data["auto_enroll"], pre_enrollment_data["auto_enroll"])
+        pre_enrollment_response = self.get_pre_enrollment(self.tenant_x, data=pre_enrollment_data)
+        self.assertEqual(pre_enrollment_response.status_code, status.HTTP_200_OK)
+
+    @ddt.data(
+        {"course_id": ["This field is required."]},
+        {"email": ["This field is required."]},
+        {"course_id": ["This field is required."], "email": ["This field is required."]},
+    )
+    def test_create_pre_enrollment_missing_required_fields(self, errors: dict) -> None:
+        """
+        Test creating an pre-enrollment with missing required fields.
+
+        Open edX definitions tested:
+        - `validate_org`
+        - `get_valid_course_key`
+
+        Expected result:
+        - The status code is 400.
+        - The response contains a message about the missing fields.
+        - The pre-enrollment is not created in the tenant.
+        """
+        complete_pre_enrollment_data = {
+            "email": self.user["email"],
+            "course_id": self.demo_course_id,
+        }
+        incomplete_pre_enrollment_data = {
+            key: value for key, value in complete_pre_enrollment_data.items() if key not in errors
+        }
+
+        response = self.create_pre_enrollment(self.tenant_x, incomplete_pre_enrollment_data)
+
+        response_data = response.json()
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response_data, errors)
+        pre_enrollment_response = self.get_pre_enrollment(self.tenant_x, data=complete_pre_enrollment_data)
+        self.assertEqual(pre_enrollment_response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_create_pre_enrollmet_already_exists(self) -> None:
+        """
+        Test creating an pre-enrollment that already exists in a tenant.
+
+        Open edX definitions tested:
+        ...
+
+        Expected result:
+        - The status code is 400.
+        - The response contains an error message about the user not found.
+        - The enrollment is not created in the tenant.
+        """
+        pre_enrollment_data = {
+            "email": self.user["email"],
+            "course_id": self.demo_course_id,
+        }
+        self.create_pre_enrollment(self.tenant_x, pre_enrollment_data)
+
+        response = self.create_pre_enrollment(self.tenant_x, pre_enrollment_data)
+        response_data = response.json()
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(
+            response_data["detail"],
+            f"Pre-enrollment already exists for email: {self.user['email']} course_id: {self.demo_course_id}",
+        )
+
+    @ddt.data(True, False)
+    def test_create_pre_enrollment_non_existent_course(self, auto_enroll: bool) -> None:
+        """
+        Test creating an pre-enrollment with a non-existent course in a tenant.
+
+        Open edX definitions tested:
+        - ...
+
+        Expected result:
+        - The status code is 200.
+        - The response contains an warning message about the course not found.
+        - The pre-enrollment is created in the tenant.
+        """
+        course_id = "course-v1:OpenedX+DemoX+NonExistentCourse"
+        pre_enrollment_data = {
+            "email": self.user["email"],
+            "course_id": course_id,
+            "auto_enroll": auto_enroll,
+        }
+
+        response = self.create_pre_enrollment(self.tenant_x, pre_enrollment_data)
+
+        response_data = response.json()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response_data["warning"], [f"Course with course_id:{course_id} does not exist"])
+        self.assertEqual(response_data["email"], pre_enrollment_data["email"])
+        self.assertEqual(response_data["course_id"], pre_enrollment_data["course_id"])
+        self.assertEqual(response_data["auto_enroll"], pre_enrollment_data["auto_enroll"])
+        pre_enrollment_response = self.get_pre_enrollment(self.tenant_x, data=pre_enrollment_data)
+        self.assertEqual(pre_enrollment_response.status_code, status.HTTP_200_OK)
 
 
 class TestInfoView(BaseAPIIntegrationTest):
