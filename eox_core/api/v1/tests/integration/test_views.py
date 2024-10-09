@@ -1080,7 +1080,6 @@ class TestEnrollmentAPIIntegration(BaseAPIIntegrationTest, UsersAPIRequestMixin,
 class TestPreEnrollmentAPIIntegration(
     BaseAPIIntegrationTest,
     UsersAPIRequestMixin,
-    EnrollmentAPIRequestMixin,
     PreEnrollmentAPIRequestMixin,
 ):
     """Integration test suite for the Pre-Enrollment API"""
