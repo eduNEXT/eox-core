@@ -1,4 +1,5 @@
 """Fake user data for testing purposes."""
+# pylint: disable=too-many-lines
 
 FAKE_USER_DATA = iter(
     [
