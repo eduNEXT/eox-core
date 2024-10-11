@@ -1103,12 +1103,15 @@ class TestPreEnrollmentAPIIntegration(
         The pre-enrollment is created even if the user does not exist in the tenant.
 
         Open edX definitions tested:
-        ...
+        - `validate_org`
+        - `get_valid_course_key`
+        - `CourseEnrollmentAllowed`
+        - `get_courseware_courses`
 
         Expected result:
-        - The status code is 400.
-        - The response contains an error message about the user not found.
-        - The enrollment is not created in the tenant.
+        - The status code is 200.
+        - The response contains the pre-enrollment data.
+        - The pre-enrollment is created in the tenant.
         """
         pre_enrollment_data = {
             "course_id": self.demo_course_id,
@@ -1165,11 +1168,14 @@ class TestPreEnrollmentAPIIntegration(
         Test creating an pre-enrollment that already exists in a tenant.
 
         Open edX definitions tested:
-        ...
+        - `validate_org`
+        - `get_valid_course_key`
+        - `CourseEnrollmentAllowed`
+        - `get_courseware_courses`
 
         Expected result:
         - The status code is 400.
-        - The response contains an error message about the user not found.
+        - The response contains an error message about the pre-enrollment already existing.
         - The enrollment is not created in the tenant.
         """
         pre_enrollment_data = {
@@ -1186,13 +1192,21 @@ class TestPreEnrollmentAPIIntegration(
             f"Pre-enrollment already exists for email: {self.user['email']} course_id: {self.demo_course_id}",
         )
 
-    @ddt.data(True, False)
-    def test_create_pre_enrollment_non_existent_course(self, auto_enroll: bool) -> None:
+    @ddt.data(
+        {"auto_enroll": True},
+        {"auto_enroll": False},
+        {"email": "user-not-found1@mail.com", "auto_enroll": True},
+        {"email": "user-not-found2@mail.com", "auto_enroll": False},
+    )
+    def test_create_pre_enrollment_non_existent_course(self, data: dict) -> None:
         """
         Test creating an pre-enrollment with a non-existent course in a tenant.
 
         Open edX definitions tested:
-        - ...
+        - `validate_org`
+        - `get_valid_course_key`
+        - `CourseEnrollmentAllowed`
+        - `get_courseware_courses`
 
         Expected result:
         - The status code is 200.
@@ -1201,9 +1215,9 @@ class TestPreEnrollmentAPIIntegration(
         """
         course_id = "course-v1:OpenedX+DemoX+NonExistentCourse"
         pre_enrollment_data = {
-            "email": self.user["email"],
             "course_id": course_id,
-            "auto_enroll": auto_enroll,
+            "email": data.get("email") or self.user["email"],
+            "auto_enroll": data.get("auto_enroll"),
         }
 
         response = self.create_pre_enrollment(self.tenant_x, pre_enrollment_data)
@@ -1215,6 +1229,271 @@ class TestPreEnrollmentAPIIntegration(
         self.assertEqual(response_data["course_id"], pre_enrollment_data["course_id"])
         self.assertEqual(response_data["auto_enroll"], pre_enrollment_data["auto_enroll"])
         pre_enrollment_response = self.get_pre_enrollment(self.tenant_x, data=pre_enrollment_data)
+        self.assertEqual(pre_enrollment_response.status_code, status.HTTP_200_OK)
+
+    @ddt.data(True, False)
+    def test_get_pre_enrollment_success(self, auto_enroll: bool) -> None:
+        """
+        Test getting an pre-enrollment in a tenant.
+
+        Open edX definitions tested:
+        - `validate_org`
+        - `get_valid_course_key`
+        - `CourseEnrollmentAllowed`
+
+        Expected result:
+        - The status code is 200.
+        - The response contains the pre-enrollment data.
+        """
+        pre_enrollment_data = {
+            "course_id": self.demo_course_id,
+            "email": self.user["email"],
+            "auto_enroll": auto_enroll,
+        }
+        self.create_pre_enrollment(self.tenant_x, pre_enrollment_data)
+
+        response = self.get_pre_enrollment(self.tenant_x, data=pre_enrollment_data)
+
+        response_data = response.json()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response_data["course_id"], pre_enrollment_data["course_id"])
+        self.assertEqual(response_data["email"], pre_enrollment_data["email"])
+        self.assertEqual(response_data["auto_enroll"], pre_enrollment_data["auto_enroll"])
+
+    def test_get_pre_enrollment_does_not_exist(self) -> None:
+        """
+        Test getting an pre-enrollment that does not exist.
+
+        Open edX definitions tested:
+        - `validate_org`
+        - `get_valid_course_key`
+        - `CourseEnrollmentAllowed`
+
+        Expected result:
+        - The status code is 404.
+        - The response contains an error message about the pre-enrollment not found.
+        """
+        pre_enrollment_data = {
+            "course_id": self.demo_course_id,
+            "email": self.user["email"],
+        }
+
+        response = self.get_pre_enrollment(self.tenant_x, data=pre_enrollment_data)
+
+        response_data = response.json()
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(
+            response_data["detail"],
+            f"Pre-enrollment not found for email: {self.user['email']} course_id: {self.demo_course_id}",
+        )
+
+    def test_get_pre_enrollment_course_with_not_valid_org(self) -> None:
+        """
+        Test getting an pre-enrollment with a course that does not belong to the tenant.
+
+        Open edX definitions tested:
+        - `validate_org`
+        - `get_valid_course_key`
+        - `CourseEnrollmentAllowed`
+
+        Expected result:
+        - The status code is 400
+        - The response contains an error message about the course is not valid for the tenant.
+        """
+        course_id = "course-v1:AnotherOrg+DemoX+Demo_Course"
+        pre_enrollment_data = {
+            "course_id": course_id,
+            "email": self.user["email"],
+        }
+
+        response = self.get_pre_enrollment(self.tenant_x, data=pre_enrollment_data)
+
+        response_data = response.json()
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response_data["course_id"], [f"Invalid course_id {course_id}"])
+
+    def test_update_pre_enrollment_success(self) -> None:
+        """
+        Test updating an existing pre-enrollment. The endpoint only allows updating the `auto_enroll` field.
+
+        Open edX definitions tested:
+        - `validate_org`
+        - `get_valid_course_key`
+        - `CourseEnrollmentAllowed`
+        - `get_courseware_courses`
+
+        Expected result:
+        - The status code is 200.
+        - The pre-enrollment is updated successfully in the tenant with the provided data.
+        """
+        pre_enrollment_data = {
+            "course_id": self.demo_course_id,
+            "email": self.user["email"],
+            "auto_enroll": True,
+        }
+        self.create_pre_enrollment(self.tenant_x, pre_enrollment_data)
+        pre_enrollment_data["auto_enroll"] = False
+
+        response = self.update_pre_enrollment(self.tenant_x, data=pre_enrollment_data)
+
+        response_data = response.json()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response_data["course_id"], pre_enrollment_data["course_id"])
+        self.assertEqual(response_data["email"], pre_enrollment_data["email"])
+        self.assertEqual(response_data["auto_enroll"], pre_enrollment_data["auto_enroll"])
+
+    def test_update_pre_enrollment_does_not_exist(self) -> None:
+        """
+        Test updating an pre-enrollment that does not exist.
+
+        Open edX definitions tested:
+        - `validate_org`
+        - `get_valid_course_key`
+        - `CourseEnrollmentAllowed`
+
+        Expected result:
+        - The status code is 404.
+        - The response contains an error message about the pre-enrollment not found.
+        """
+        pre_enrollment_data = {
+            "course_id": self.demo_course_id,
+            "email": self.user["email"],
+        }
+
+        response = self.update_pre_enrollment(self.tenant_x, data=pre_enrollment_data)
+
+        response_data = response.json()
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(
+            response_data["detail"],
+            f"Pre-enrollment not found for email: {self.user['email']} course_id: {self.demo_course_id}",
+        )
+        pre_enrollment_response = self.get_pre_enrollment(self.tenant_x, data=pre_enrollment_data)
+        self.assertEqual(pre_enrollment_response.status_code, status.HTTP_404_NOT_FOUND)
+
+    @ddt.data(
+        {"course_id": ["This field is required."]},
+        {"email": ["This field is required."]},
+        {"course_id": ["This field is required."], "email": ["This field is required."]},
+    )
+    def test_update_pre_enrollment_missing_required_fields(self, errors: dict) -> None:
+        """
+        Test updating an pre-enrollment with missing required fields.
+
+        Open edX definitions tested:
+        - `validate_org`
+        - `get_valid_course_key`
+
+        Expected result:
+        - The status code is 400.
+        - The response contains a message about the missing fields.
+        - The pre-enrollment is not updated in the tenant.
+        """
+        complete_pre_enrollment_data = {
+            "email": self.user["email"],
+            "course_id": self.demo_course_id,
+        }
+        self.create_pre_enrollment(self.tenant_x, complete_pre_enrollment_data)
+        incomplete_pre_enrollment_data = {
+            key: value for key, value in complete_pre_enrollment_data.items() if key not in errors
+        }
+
+        response = self.update_pre_enrollment(self.tenant_x, incomplete_pre_enrollment_data)
+
+        response_data = response.json()
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response_data, errors)
+        pre_enrollment_response = self.get_pre_enrollment(self.tenant_x, data=complete_pre_enrollment_data)
+        self.assertEqual(pre_enrollment_response.status_code, status.HTTP_200_OK)
+
+    def test_delete_pre_enrollment_success(self) -> None:
+        """
+        Test deleting an existing pre-enrollment.
+
+        Open edX definitions tested:
+        - `validate_org`
+        - `get_valid_course_key`
+        - `CourseEnrollmentAllowed`
+        - `get_courseware_courses`
+
+        Expected result:
+        - The status code is 204.
+        - The pre-enrollment is deleted successfully in the tenant.
+        """
+        pre_enrollment_data = {
+            "course_id": self.demo_course_id,
+            "email": self.user["email"],
+            "auto_enroll": True,
+        }
+        self.create_pre_enrollment(self.tenant_x, pre_enrollment_data)
+        pre_enrollment_data["auto_enroll"] = False
+
+        response = self.delete_pre_enrollment(self.tenant_x, data=pre_enrollment_data)
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        pre_enrollment_response = self.get_pre_enrollment(self.tenant_x, data=pre_enrollment_data)
+        self.assertEqual(pre_enrollment_response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_delete_pre_enrollment_does_not_exist(self) -> None:
+        """
+        Test deleting an pre-enrollment that does not exist.
+
+        Open edX definitions tested:
+        - `validate_org`
+        - `get_valid_course_key`
+        - `CourseEnrollmentAllowed`
+
+        Expected result:
+        - The status code is 404.
+        - The response contains an error message about the pre-enrollment not found.
+        """
+        pre_enrollment_data = {
+            "course_id": self.demo_course_id,
+            "email": self.user["email"],
+        }
+
+        response = self.delete_pre_enrollment(self.tenant_x, data=pre_enrollment_data)
+
+        response_data = response.json()
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(
+            response_data["detail"],
+            f"Pre-enrollment not found for email: {self.user['email']} course_id: {self.demo_course_id}",
+        )
+
+    @ddt.data(
+        {"course_id": ["This field is required."]},
+        {"email": ["This field is required."]},
+        {"course_id": ["This field is required."], "email": ["This field is required."]},
+    )
+    def test_delete_pre_enrollment_missing_required_fields(self, errors: dict) -> None:
+        """
+        Test deleting an pre-enrollment with missing required fields.
+
+        Open edX definitions tested:
+        - `validate_org`
+        - `get_valid_course_key`
+
+        Expected result:
+        - The status code is 400.
+        - The response contains a message about the missing fields.
+        - The pre-enrollment is not deleted in the tenant.
+        """
+        complete_pre_enrollment_data = {
+            "email": self.user["email"],
+            "course_id": self.demo_course_id,
+        }
+        self.create_pre_enrollment(self.tenant_x, complete_pre_enrollment_data)
+        incomplete_pre_enrollment_data = {
+            key: value for key, value in complete_pre_enrollment_data.items() if key not in errors
+        }
+
+        response = self.delete_pre_enrollment(self.tenant_x, incomplete_pre_enrollment_data)
+
+        response_data = response.json()
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response_data, errors)
+        pre_enrollment_response = self.get_pre_enrollment(self.tenant_x, data=complete_pre_enrollment_data)
         self.assertEqual(pre_enrollment_response.status_code, status.HTTP_200_OK)
 
 
