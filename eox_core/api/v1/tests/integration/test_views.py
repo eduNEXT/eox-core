@@ -1121,12 +1121,13 @@ class TestPreEnrollmentAPIIntegration(
 
         response = self.create_pre_enrollment(self.tenant_x, pre_enrollment_data)
         response_data = response.json()
+        pre_enrollment_response = self.get_pre_enrollment(self.tenant_x, pre_enrollment_data)
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertNotIn("warning", response_data)
         self.assertEqual(response_data["email"], pre_enrollment_data["email"])
         self.assertEqual(response_data["course_id"], pre_enrollment_data["course_id"])
         self.assertEqual(response_data["auto_enroll"], pre_enrollment_data["auto_enroll"])
-        pre_enrollment_response = self.get_pre_enrollment(self.tenant_x, pre_enrollment_data)
         self.assertEqual(pre_enrollment_response.status_code, status.HTTP_200_OK)
 
     @ddt.data(
@@ -1156,11 +1157,11 @@ class TestPreEnrollmentAPIIntegration(
         }
 
         response = self.create_pre_enrollment(self.tenant_x, incomplete_pre_enrollment_data)
-
         response_data = response.json()
+        pre_enrollment_response = self.get_pre_enrollment(self.tenant_x, complete_pre_enrollment_data)
+
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response_data, errors)
-        pre_enrollment_response = self.get_pre_enrollment(self.tenant_x, complete_pre_enrollment_data)
         self.assertEqual(pre_enrollment_response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_create_pre_enrollmet_already_exists(self) -> None:
@@ -1186,6 +1187,7 @@ class TestPreEnrollmentAPIIntegration(
 
         response = self.create_pre_enrollment(self.tenant_x, pre_enrollment_data)
         response_data = response.json()
+
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(
             response_data["detail"],
@@ -1221,14 +1223,14 @@ class TestPreEnrollmentAPIIntegration(
         }
 
         response = self.create_pre_enrollment(self.tenant_x, pre_enrollment_data)
-
         response_data = response.json()
+        pre_enrollment_response = self.get_pre_enrollment(self.tenant_x, pre_enrollment_data)
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response_data["warning"], [f"Course with course_id:{course_id} does not exist"])
         self.assertEqual(response_data["email"], pre_enrollment_data["email"])
         self.assertEqual(response_data["course_id"], pre_enrollment_data["course_id"])
         self.assertEqual(response_data["auto_enroll"], pre_enrollment_data["auto_enroll"])
-        pre_enrollment_response = self.get_pre_enrollment(self.tenant_x, pre_enrollment_data)
         self.assertEqual(pre_enrollment_response.status_code, status.HTTP_200_OK)
 
     @ddt.data(True, False)
@@ -1253,8 +1255,8 @@ class TestPreEnrollmentAPIIntegration(
         self.create_pre_enrollment(self.tenant_x, pre_enrollment_data)
 
         response = self.get_pre_enrollment(self.tenant_x, pre_enrollment_data)
-
         response_data = response.json()
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response_data["course_id"], pre_enrollment_data["course_id"])
         self.assertEqual(response_data["email"], pre_enrollment_data["email"])
@@ -1279,8 +1281,8 @@ class TestPreEnrollmentAPIIntegration(
         }
 
         response = self.get_pre_enrollment(self.tenant_x, pre_enrollment_data)
-
         response_data = response.json()
+
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(
             response_data["detail"],
@@ -1307,8 +1309,8 @@ class TestPreEnrollmentAPIIntegration(
         }
 
         response = self.get_pre_enrollment(self.tenant_x, pre_enrollment_data)
-
         response_data = response.json()
+
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response_data["course_id"], [f"Invalid course_id {course_id}"])
 
@@ -1335,8 +1337,8 @@ class TestPreEnrollmentAPIIntegration(
         pre_enrollment_data["auto_enroll"] = False
 
         response = self.update_pre_enrollment(self.tenant_x, pre_enrollment_data)
-
         response_data = response.json()
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response_data["course_id"], pre_enrollment_data["course_id"])
         self.assertEqual(response_data["email"], pre_enrollment_data["email"])
@@ -1361,14 +1363,14 @@ class TestPreEnrollmentAPIIntegration(
         }
 
         response = self.update_pre_enrollment(self.tenant_x, pre_enrollment_data)
-
         response_data = response.json()
+        pre_enrollment_response = self.get_pre_enrollment(self.tenant_x, pre_enrollment_data)
+
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(
             response_data["detail"],
             f"Pre-enrollment not found for email: {self.user['email']} course_id: {self.demo_course_id}",
         )
-        pre_enrollment_response = self.get_pre_enrollment(self.tenant_x, pre_enrollment_data)
         self.assertEqual(pre_enrollment_response.status_code, status.HTTP_404_NOT_FOUND)
 
     @ddt.data(
@@ -1399,11 +1401,11 @@ class TestPreEnrollmentAPIIntegration(
         }
 
         response = self.update_pre_enrollment(self.tenant_x, incomplete_pre_enrollment_data)
-
         response_data = response.json()
+        pre_enrollment_response = self.get_pre_enrollment(self.tenant_x, complete_pre_enrollment_data)
+
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response_data, errors)
-        pre_enrollment_response = self.get_pre_enrollment(self.tenant_x, complete_pre_enrollment_data)
         self.assertEqual(pre_enrollment_response.status_code, status.HTTP_200_OK)
 
     def test_delete_pre_enrollment_success(self) -> None:
@@ -1429,9 +1431,9 @@ class TestPreEnrollmentAPIIntegration(
         pre_enrollment_data["auto_enroll"] = False
 
         response = self.delete_pre_enrollment(self.tenant_x, pre_enrollment_data)
+        pre_enrollment_response = self.get_pre_enrollment(self.tenant_x, pre_enrollment_data)
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        pre_enrollment_response = self.get_pre_enrollment(self.tenant_x, pre_enrollment_data)
         self.assertEqual(pre_enrollment_response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_delete_pre_enrollment_does_not_exist(self) -> None:
@@ -1453,8 +1455,8 @@ class TestPreEnrollmentAPIIntegration(
         }
 
         response = self.delete_pre_enrollment(self.tenant_x, pre_enrollment_data)
-
         response_data = response.json()
+
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(
             response_data["detail"],
@@ -1489,11 +1491,11 @@ class TestPreEnrollmentAPIIntegration(
         }
 
         response = self.delete_pre_enrollment(self.tenant_x, incomplete_pre_enrollment_data)
-
         response_data = response.json()
+        pre_enrollment_response = self.get_pre_enrollment(self.tenant_x, complete_pre_enrollment_data)
+
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response_data, errors)
-        pre_enrollment_response = self.get_pre_enrollment(self.tenant_x, complete_pre_enrollment_data)
         self.assertEqual(pre_enrollment_response.status_code, status.HTTP_200_OK)
 
 
@@ -1517,8 +1519,8 @@ class TestInfoView(BaseAPIIntegrationTest):
         - The response contains the version, name and git commit hash.
         """
         response = make_request(self.default_site, "GET", url=self.url, with_auth=False)
-
         response_data = response.json()
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn("version", response_data)
         self.assertIn("name", response_data)
