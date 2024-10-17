@@ -1175,9 +1175,9 @@ class TestPreEnrollmentAPIIntegration(
         - `get_courseware_courses`
 
         Expected result:
-        - The status code is 400.
+        - The status code is 404.
         - The response contains an error message about the pre-enrollment already existing.
-        - The enrollment is not created in the tenant.
+        - The pre-enrollment is not created in the tenant.
         """
         pre_enrollment_data = {
             "email": self.user["email"],
