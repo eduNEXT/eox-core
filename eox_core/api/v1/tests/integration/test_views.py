@@ -1212,7 +1212,7 @@ class TestPreEnrollmentAPIIntegration(
 
         Expected result:
         - The status code is 200.
-        - The response contains an warning message about the course not found.
+        - The response contains a warning message about the course not being found.
         - The pre-enrollment is created in the tenant.
         """
         course_id = "course-v1:OpenedX+DemoX+NonExistentCourse"
