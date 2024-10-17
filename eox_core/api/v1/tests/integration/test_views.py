@@ -1122,6 +1122,7 @@ class TestPreEnrollmentAPIIntegration(
         response = self.create_pre_enrollment(self.tenant_x, pre_enrollment_data)
         response_data = response.json()
         pre_enrollment_response = self.get_pre_enrollment(self.tenant_x, pre_enrollment_data)
+        pre_enrollment_response_data = pre_enrollment_response.json()
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertNotIn("warning", response_data)
@@ -1129,6 +1130,9 @@ class TestPreEnrollmentAPIIntegration(
         self.assertEqual(response_data["course_id"], pre_enrollment_data["course_id"])
         self.assertEqual(response_data["auto_enroll"], pre_enrollment_data["auto_enroll"])
         self.assertEqual(pre_enrollment_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(pre_enrollment_response_data["email"], pre_enrollment_data["email"])
+        self.assertEqual(pre_enrollment_response_data["course_id"], pre_enrollment_data["course_id"])
+        self.assertEqual(pre_enrollment_response_data["auto_enroll"], pre_enrollment_data["auto_enroll"])
 
     @ddt.data(
         {"course_id": ["This field is required."]},
@@ -1225,6 +1229,7 @@ class TestPreEnrollmentAPIIntegration(
         response = self.create_pre_enrollment(self.tenant_x, pre_enrollment_data)
         response_data = response.json()
         pre_enrollment_response = self.get_pre_enrollment(self.tenant_x, pre_enrollment_data)
+        pre_enrollment_response_data = pre_enrollment_response.json()
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response_data["warning"], [f"Course with course_id:{course_id} does not exist"])
@@ -1232,6 +1237,9 @@ class TestPreEnrollmentAPIIntegration(
         self.assertEqual(response_data["course_id"], pre_enrollment_data["course_id"])
         self.assertEqual(response_data["auto_enroll"], pre_enrollment_data["auto_enroll"])
         self.assertEqual(pre_enrollment_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(pre_enrollment_response_data["email"], pre_enrollment_data["email"])
+        self.assertEqual(pre_enrollment_response_data["course_id"], pre_enrollment_data["course_id"])
+        self.assertEqual(pre_enrollment_response_data["auto_enroll"], pre_enrollment_data["auto_enroll"])
 
     @ddt.data(True, False)
     def test_get_pre_enrollment_success(self, auto_enroll: bool) -> None:
@@ -1338,11 +1346,17 @@ class TestPreEnrollmentAPIIntegration(
 
         response = self.update_pre_enrollment(self.tenant_x, pre_enrollment_data)
         response_data = response.json()
+        pre_enrollment_response = self.get_pre_enrollment(self.tenant_x, pre_enrollment_data)
+        pre_enrollment_response_data = pre_enrollment_response.json()
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response_data["course_id"], pre_enrollment_data["course_id"])
         self.assertEqual(response_data["email"], pre_enrollment_data["email"])
         self.assertEqual(response_data["auto_enroll"], pre_enrollment_data["auto_enroll"])
+        self.assertEqual(pre_enrollment_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(pre_enrollment_response_data["course_id"], pre_enrollment_data["course_id"])
+        self.assertEqual(pre_enrollment_response_data["email"], pre_enrollment_data["email"])
+        self.assertEqual(pre_enrollment_response_data["auto_enroll"], pre_enrollment_data["auto_enroll"])
 
     def test_update_pre_enrollment_does_not_exist(self) -> None:
         """
@@ -1403,10 +1417,14 @@ class TestPreEnrollmentAPIIntegration(
         response = self.update_pre_enrollment(self.tenant_x, incomplete_pre_enrollment_data)
         response_data = response.json()
         pre_enrollment_response = self.get_pre_enrollment(self.tenant_x, complete_pre_enrollment_data)
+        pre_enrollment_response_data = pre_enrollment_response.json()
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response_data, errors)
         self.assertEqual(pre_enrollment_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(pre_enrollment_response_data["course_id"], complete_pre_enrollment_data["course_id"])
+        self.assertEqual(pre_enrollment_response_data["email"], complete_pre_enrollment_data["email"])
+        self.assertEqual(pre_enrollment_response_data["auto_enroll"], True)
 
     def test_delete_pre_enrollment_success(self) -> None:
         """
