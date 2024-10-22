@@ -228,6 +228,7 @@ Here is an example configuration using all the types, including `optional-expose
    }
 
 In this example:
+
 - `gender` and `mailing_address` are set to `optional-exposed`, making them visible alongside required fields but not mandatory.
 - `honor_code` is `required`, ensuring it must be filled.
 - `level_of_education` and `year_of_birth` are optional and shown in a secondary list.
