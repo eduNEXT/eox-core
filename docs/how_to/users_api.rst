@@ -145,7 +145,7 @@ If you attempt to update a field that is marked as `hidden` using the API, the u
          }
       ]
 
-Once the field is configured, it can be included in the body of both `POST` (to create a new user) and `PATCH` (to update an existing user) requests.
+Once the field is configured, it can be included in the body of both ``POST`` (to create a new user) and ``PATCH`` (to update an existing user) requests.
 
 **Types of Custom Fields**
 --------------------------
