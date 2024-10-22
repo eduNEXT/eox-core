@@ -198,7 +198,7 @@ When configuring additional registration fields, there are several visibility an
 - **required**: The field is displayed and must be filled out by the user.
 - **`optional`**: The field is displayed as part of a toggled input field list, and it is not mandatory to fill it out.
 - **`hidden`**: The field is not displayed to the user.
-- **`optional-exposed`**: The field is displayed along with the required fields, but filling it out is not mandatory. This option provides more visibility than `optional` while still keeping the field optional.
+- **optional-exposed**: The field is displayed along with the required fields, but filling it out is not mandatory. This option provides more visibility than ``optional`` while still keeping the field optional.
 
 **Testing `optional-exposed`**
 
