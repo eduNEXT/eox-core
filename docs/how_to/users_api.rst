@@ -202,7 +202,7 @@ When configuring additional registration fields, there are several visibility an
 
 **Testing `optional-exposed`**
 
-If you want to use and test the `optional-exposed` field type, make sure to add it to the configuration. For example, you can set a field to `optional-exposed` like this:
+If you want to use and test the ``optional-exposed`` field type, make sure to add it to the configuration. For example, you can set a field to ``optional-exposed`` like this:
 
 .. code-block:: json
 
