@@ -313,6 +313,7 @@ To use the filtering capabilities, the endpoint can be accessed as follows:
 **Method**: PATCH
 
 **Query Parameters**:
+
 - `username`: Specify the username of the user to update.
 - `email`: Specify the email of the user to update.
 
