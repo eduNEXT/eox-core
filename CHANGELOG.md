@@ -17,7 +17,7 @@ Please do not update the unreleased notes.
 
 - **Dropped Support for Django 3.2**: Removed support for Django 3.2 in this plugin. As a result, we have also dropped support for Open edX releases from Maple up to and including Palm, which rely on Django 3.2. Future versions of this plugin may not be compatible with these Open edX releases.
 
-## [v10.6.0](https://gitshub.com/eduNEXT/eox-core/compare/v10.5.1...v10.6.0) - (2024-09-17)
+## [v10.6.0](https://github.com/eduNEXT/eox-core/compare/v10.5.1...v10.6.0) - (2024-09-17)
 
 ### Added
 
