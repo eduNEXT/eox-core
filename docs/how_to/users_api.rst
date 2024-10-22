@@ -200,7 +200,7 @@ When configuring additional registration fields, there are several visibility an
 - **`hidden`**: The field is not displayed to the user.
 - **optional-exposed**: The field is displayed along with the required fields, but filling it out is not mandatory. This option provides more visibility than ``optional`` while still keeping the field optional.
 
-**Testing `optional-exposed`**
+**Testing optional-exposed**
 
 If you want to use and test the ``optional-exposed`` field type, make sure to add it to the configuration. For example, you can set a field to ``optional-exposed`` like this:
 
