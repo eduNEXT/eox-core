@@ -129,11 +129,11 @@ If, for example, we want to add the field `Organization name`, we will have to d
          "org_name": "required"
       }
 
-**Note on Hidden Fields**
+   **Note on Hidden Fields**
 
-Fields that are set as `hidden` in the configuration will not be visible in the registration form or user profile, and they **cannot be updated through the API**.
+   Fields that are set as ``hidden`` in the configuration will not be visible in the registration form or user profile, and they **cannot be updated through the API**.
 
-If you attempt to update a field that is marked as `hidden` using the API, the update will be ignored, and no changes will be applied to that field.
+   If you attempt to update a field that is marked as ``hidden`` using the API, the update will be ignored, and no changes will be applied to that field.
 
 3. Define the custom field by creating it as a dictionary inside the `EDNX_CUSTOM_REGISTRATION_FIELDS` setting. In this case, we are creating a text field for `org_name`. You must specify at least the `name`, `type`, and `label`:
 
