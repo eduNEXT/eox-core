@@ -15,6 +15,8 @@ Query Params:
 
 Example:
 
+.. code-block:: http
+
    http://tenant-a.local.edly.io:8000/eox-core/api/v1/user/?username=johndoe
 
    http://tenant-a.local.edly.io:8000/eox-core/api/v1/user/?email=johndoe@example.com
@@ -127,7 +129,7 @@ If, for example, we want to add the field `Organization name`, we will have to d
          "org_name": "required"
       }
 
-### Note on Hidden Fields
+**Note on Hidden Fields**
 
 Fields that are set as `hidden` in the configuration will not be visible in the registration form or user profile, and they **cannot be updated through the API**.
 
@@ -276,6 +278,8 @@ Body:
 
 Example:
 
+.. code-block:: http
+
    http://tenant-a.local.edly.io:8000/eox-core/api/v1/update-user/
 
 Response Example:
@@ -289,7 +293,7 @@ Response Example:
 
 This setting changes that allow specific user profile fields, considered as 'safe', to be updated. These "safe" fields are defined in the setting `EOX_CORE_USER_UPDATE_SAFE_FIELDS`.
 
-### Safe Fields Update
+**Safe Fields Update**
 
 The `EOX_CORE_USER_UPDATE_SAFE_FIELDS` setting specifies which fields in the user profile can be updated without requiring additional permissions.
 
@@ -303,7 +307,7 @@ Example configuration of `EOX_CORE_USER_UPDATE_SAFE_FIELDS`:
       "language",
    ]
 
-### Update User Endpoint Enhancement
+**Update User Endpoint Enhancement**
 
 A modification was also made to the update user endpoint, allowing it to filter users by `username` or `email`. This makes it easier to identify and update a specific user directly using one of these parameters.
 
