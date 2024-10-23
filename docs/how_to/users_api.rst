@@ -113,15 +113,15 @@ To add custom or extra registration fields for a specific tenant, you'll need to
 Example: Adding a custom field
 ------------------------------
 
-If, for example, we want to add the field `Organization name`, we will have to do the following:
+If, for example, we want to add the field ``Organization name``, we will have to do the following:
 
-1. Add the field name, `org_name` for example, to `extended_profile_fields` setting. This indicates that `org_name` will be saved as an extended profile field.
+1. Add the field name, ``org_name`` for example, to ``extended_profile_fields`` setting. This indicates that ``org_name`` will be saved as an extended profile field.
 
    .. code-block:: json
 
       "extended_profile_fields": [ "org_name" ]
 
-2. Add `org_name` to `REGISTRATION_EXTRA_FIELDS` setting, indicating whether the field is hidden, optional, or required:
+2. Add ``org_name`` to ``REGISTRATION_EXTRA_FIELDS`` setting, indicating whether the field is hidden, optional, or required:
 
    .. code-block:: json
 
@@ -135,7 +135,7 @@ If, for example, we want to add the field `Organization name`, we will have to d
 
    If you attempt to update a field that is marked as ``hidden`` using the API, the update will be ignored, and no changes will be applied to that field.
 
-3. Define the custom field by creating it as a dictionary inside the `EDNX_CUSTOM_REGISTRATION_FIELDS` setting. In this case, we are creating a text field for `org_name`. You must specify at least the `name`, `type`, and `label`:
+3. Define the custom field by creating it as a dictionary inside the ``EDNX_CUSTOM_REGISTRATION_FIELDS`` setting. In this case, we are creating a text field for ``org_name``. You must specify at least the ``name``, ``type``, and ``label``:
 
    .. code-block:: json
 
@@ -198,8 +198,8 @@ A dropdown field that allows users to choose from a predefined list of options. 
 When configuring additional registration fields, there are several visibility and requirement options that can be used:
 
 - **required**: The field is displayed and must be filled out by the user.
-- **`optional`**: The field is displayed as part of a toggled input field list, and it is not mandatory to fill it out.
-- **`hidden`**: The field is not displayed to the user.
+- **optional**: The field is displayed as part of a toggled input field list, and it is not mandatory to fill it out.
+- **hidden**: The field is not displayed to the user.
 - **optional-exposed**: The field is displayed along with the required fields, but filling it out is not mandatory. This option provides more visibility than ``optional`` while still keeping the field optional.
 
 **Testing optional-exposed**
@@ -212,11 +212,11 @@ If you want to use and test the ``optional-exposed`` field type, make sure to ad
       "org_name": "optional-exposed"
    }
 
-In this case, the `org_name` field will be displayed alongside required fields, but it won't be mandatory for the user to fill out. This can be particularly useful for fields that are not crucial but should be easily visible to users during registration.
+In this case, the ``org_name`` field will be displayed alongside required fields, but it won't be mandatory for the user to fill out. This can be particularly useful for fields that are not crucial but should be easily visible to users during registration.
 
 **Example Usage**
 
-Here is an example configuration using all the types, including `optional-exposed`:
+Here is an example configuration using all the types, including ``optional-exposed``:
 
 .. code-block:: json
 
@@ -231,10 +231,10 @@ Here is an example configuration using all the types, including `optional-expose
 
 In this example:
 
-- `gender` and `mailing_address` are set to `optional-exposed`, making them visible alongside required fields but not mandatory.
-- `honor_code` is `required`, ensuring it must be filled.
-- `level_of_education` and `year_of_birth` are optional and shown in a secondary list.
-- `confirm_email` is hidden from the registration form.
+- ``gender`` and ``mailing_address`` are set to ``optional-exposed``, making them visible alongside required fields but not mandatory.
+- ``honor_code`` is ``required``, ensuring it must be filled.
+- ``level_of_education`` and ``year_of_birth`` are optional and shown in a secondary list.
+- ``confirm_email`` is hidden from the registration form.
 
 **Including the custom field in a POST request:**
 
@@ -257,7 +257,7 @@ In this example:
       "org_name": "New Organization Name"
    }
 
-By following these steps, the `org_name` field will be correctly handled during user creation or update.
+By following these steps, the ``org_name`` field will be correctly handled during user creation or update.
 
 
 
@@ -295,9 +295,9 @@ This setting changes that allow specific user profile fields, considered as 'saf
 
 **Safe Fields Update**
 
-The `EOX_CORE_USER_UPDATE_SAFE_FIELDS` setting specifies which fields in the user profile can be updated without requiring additional permissions.
+The ``EOX_CORE_USER_UPDATE_SAFE_FIELDS`` setting specifies which fields in the user profile can be updated without requiring additional permissions.
 
-Example configuration of `EOX_CORE_USER_UPDATE_SAFE_FIELDS`:
+Example configuration of ``EOX_CORE_USER_UPDATE_SAFE_FIELDS``:
 
 .. code-block:: json
 
@@ -309,7 +309,7 @@ Example configuration of `EOX_CORE_USER_UPDATE_SAFE_FIELDS`:
 
 **Update User Endpoint Enhancement**
 
-A modification was also made to the update user endpoint, allowing it to filter users by `username` or `email`. This makes it easier to identify and update a specific user directly using one of these parameters.
+A modification was also made to the update user endpoint, allowing it to filter users by ``username`` or ``email``. This makes it easier to identify and update a specific user directly using one of these parameters.
 
 To use the filtering capabilities, the endpoint can be accessed as follows:
 
@@ -319,8 +319,8 @@ To use the filtering capabilities, the endpoint can be accessed as follows:
 
 **Query Parameters**:
 
-- `username`: Specify the username of the user to update.
-- `email`: Specify the email of the user to update.
+- ``username``: Specify the username of the user to update.
+- ``email``: Specify the email of the user to update.
 
 **Example Usage**:
 
