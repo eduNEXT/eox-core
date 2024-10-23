@@ -17,9 +17,9 @@ Example:
 
 .. code-block:: http
 
-POST http://tenant-a.local.edly.io:8000/eox-core/api/v1/user/?username=johndoe
-
-POST http://tenant-a.local.edly.io:8000/eox-core/api/v1/user/?email=johndoe@example.com
+    POST http://tenant-a.local.edly.io:8000/eox-core/api/v1/user/?username=johndoe
+    
+    POST http://tenant-a.local.edly.io:8000/eox-core/api/v1/user/?email=johndoe@example.com
 
     
 Response Example:
@@ -280,7 +280,7 @@ Example:
 
 .. code-block:: http
 
-   http://tenant-a.local.edly.io:8000/eox-core/api/v1/update-user/
+   PATCH http://tenant-a.local.edly.io:8000/eox-core/api/v1/update-user/
 
 Response Example:
 
