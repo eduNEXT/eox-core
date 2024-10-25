@@ -291,7 +291,7 @@ Response Example:
 **EOX_CORE_USER_UPDATE_SAFE_FIELDS**
 ------------------------------------
 
-This setting changes that allow specific user profile fields, considered as 'safe', to be updated. These "safe" fields are defined in the setting `EOX_CORE_USER_UPDATE_SAFE_FIELDS`.
+This setting allows specific user profile fields, considered as 'safe', to be updated. These "safe" fields are defined in the setting ``EOX_CORE_USER_UPDATE_SAFE_FIELDS``.
 
 **Safe Fields Update**
 
