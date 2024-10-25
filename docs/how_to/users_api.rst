@@ -98,6 +98,32 @@ Response Example:
       "is_superuser": false
    }
 
+**Update User**
+
+URL: ``/eox-core/api/v1/update-user/``
+
+Method: PATCH
+
+Body:
+
+.. code-block:: json
+
+   {
+      "email": "johndoe-updated@example.com",
+      "password": "updated-p@$$w0rd"
+   }
+
+Example:
+
+.. code-block:: http
+
+   PATCH http://tenant-a.local.edly.io:8000/eox-core/api/v1/update-user/
+
+Response Example:
+
+.. code-block:: json
+
+   200 OK
 
 
 **Extra Profile Fields**
@@ -259,34 +285,6 @@ In this example:
 
 By following these steps, the ``org_name`` field will be correctly handled during user creation or update.
 
-
-
-**Update User**
-
-URL: ``/eox-core/api/v1/update-user/``
-
-Method: PATCH
-
-Body:
-
-.. code-block:: json
-
-   {
-      "email": "johndoe-updated@example.com",
-      "password": "updated-p@$$w0rd"
-   }
-
-Example:
-
-.. code-block:: http
-
-   PATCH http://tenant-a.local.edly.io:8000/eox-core/api/v1/update-user/
-
-Response Example:
-
-.. code-block:: json
-
-   200 OK
 
 **EOX_CORE_USER_UPDATE_SAFE_FIELDS**
 ------------------------------------
