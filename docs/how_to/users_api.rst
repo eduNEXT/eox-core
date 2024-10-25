@@ -154,7 +154,7 @@ Once the field is configured, it can be included in the body of both ``POST`` (t
 
 You can create various types of fields to customize the registration form, depending on the type of input you want to collect. Here are some examples:
 
-**Text Field**
+**Text**
 
 A simple text input field, used for collecting short text responses like a PIN or Student ID:
 
