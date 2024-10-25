@@ -280,6 +280,54 @@ A dropdown field that allows users to choose from a predefined list of options. 
       "default": "Municipal"
    }
 
+**Email**
+
+An input field specifically for email addresses.
+
+.. code-block:: json
+
+   {
+      "name": "user_email",
+      "type": "email",
+      "label": "Email Address:"
+   }
+
+**Textarea**
+
+A larger text area for longer input, useful for comments or descriptions:
+
+.. code-block:: json
+
+   {
+      "name": "user_feedback",
+      "type": "textarea",
+      "label": "Your Feedback:"
+   }
+
+**Plaintext**
+
+A field to display static, non-editable information in a form:
+
+.. code-block:: json
+
+   {
+      "name": "terms_info",
+      "type": "plaintext",
+      "label": "Please read the terms and conditions carefully before proceeding."
+   }
+
+**Password**
+
+An input field that hides the typed information, typically used for passwords:
+
+.. code-block:: json
+
+   {
+      "name": "user_password",
+      "type": "password",
+      "label": "Password:"
+   }
+
 **Field Visibility Options**
 ----------------------------
 
