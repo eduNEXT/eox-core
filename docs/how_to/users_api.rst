@@ -174,6 +174,69 @@ If, for example, we want to add the field ``Organization name``, we will have to
 
 Once the field is configured, it can be included in the body of both ``POST`` (to create a new user) and ``PATCH`` (to update an existing user) requests.
 
+**EOX_CORE_USER_UPDATE_SAFE_FIELDS**
+------------------------------------
+
+This setting allows specific user profile fields, considered as 'safe', to be updated. These "safe" fields are defined in the setting ``EOX_CORE_USER_UPDATE_SAFE_FIELDS``.
+
+**Safe Fields Update**
+
+The ``EOX_CORE_USER_UPDATE_SAFE_FIELDS`` setting specifies which fields in the user profile can be updated without requiring additional permissions.
+
+Example configuration of ``EOX_CORE_USER_UPDATE_SAFE_FIELDS``:
+
+.. code-block:: json
+
+   "EOX_CORE_USER_UPDATE_SAFE_FIELDS": [
+      "bio",
+      "profile_image",
+      "language",
+   ]
+
+**Update User Endpoint Enhancement**
+
+A modification was also made to the update user endpoint, allowing it to filter users by ``username`` or ``email``. This makes it easier to identify and update a specific user directly using one of these parameters.
+
+To use the filtering capabilities, the endpoint can be accessed as follows:
+
+**URL**: ``/eox-core/api/v1/update-user/``
+
+**Method**: PATCH
+
+**Query Parameters**:
+
+- ``username``: Specify the username of the user to update.
+- ``email``: Specify the email of the user to update.
+
+**Example Usage**:
+
+.. code-block:: http
+
+   PATCH http://tenant-a.local.edly.io:8000/eox-core/api/v1/update-user/?username=johndoe
+
+   PATCH http://tenant-a.local.edly.io:8000/eox-core/api/v1/update-user/?email=johndoe@example.com
+
+**Example Body**:
+
+.. code-block:: json
+
+   {
+      "bio": "Updated user bio.",
+      "language": ["en", "es"]
+   }
+
+**Response Example**:
+
+.. code-block:: json
+
+   200 OK
+
+   {
+      "username": "johndoe",
+      "bio": "Updated user bio.",
+      "language": ["en", "es"]
+   }
+
 **Types of Custom Fields**
 --------------------------
 
@@ -285,65 +348,4 @@ In this example:
 By following these steps, the ``org_name`` field will be correctly handled during user creation or update.
 
 
-**EOX_CORE_USER_UPDATE_SAFE_FIELDS**
-------------------------------------
 
-This setting allows specific user profile fields, considered as 'safe', to be updated. These "safe" fields are defined in the setting ``EOX_CORE_USER_UPDATE_SAFE_FIELDS``.
-
-**Safe Fields Update**
-
-The ``EOX_CORE_USER_UPDATE_SAFE_FIELDS`` setting specifies which fields in the user profile can be updated without requiring additional permissions.
-
-Example configuration of ``EOX_CORE_USER_UPDATE_SAFE_FIELDS``:
-
-.. code-block:: json
-
-   "EOX_CORE_USER_UPDATE_SAFE_FIELDS": [
-      "bio",
-      "profile_image",
-      "language",
-   ]
-
-**Update User Endpoint Enhancement**
-
-A modification was also made to the update user endpoint, allowing it to filter users by ``username`` or ``email``. This makes it easier to identify and update a specific user directly using one of these parameters.
-
-To use the filtering capabilities, the endpoint can be accessed as follows:
-
-**URL**: ``/eox-core/api/v1/update-user/``
-
-**Method**: PATCH
-
-**Query Parameters**:
-
-- ``username``: Specify the username of the user to update.
-- ``email``: Specify the email of the user to update.
-
-**Example Usage**:
-
-.. code-block:: http
-
-   PATCH http://tenant-a.local.edly.io:8000/eox-core/api/v1/update-user/?username=johndoe
-
-   PATCH http://tenant-a.local.edly.io:8000/eox-core/api/v1/update-user/?email=johndoe@example.com
-
-**Example Body**:
-
-.. code-block:: json
-
-   {
-      "bio": "Updated user bio.",
-      "language": ["en", "es"]
-   }
-
-**Response Example**:
-
-.. code-block:: json
-
-   200 OK
-
-   {
-      "username": "johndoe",
-      "bio": "Updated user bio.",
-      "language": ["en", "es"]
-   }
