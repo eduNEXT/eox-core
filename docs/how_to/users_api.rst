@@ -7,11 +7,10 @@ URL: ``/eox-core/api/v1/user/``
 
 Method: GET
 
-Query Params:
+**Query Parameters**:
 
-    username (String)
-
-    email (String)
+- ``username`` (String): Specify the username of the user to retrieve.
+- ``email`` (String): Specify the email of the user to retrieve.
 
 Example:
 
