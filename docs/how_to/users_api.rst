@@ -16,9 +16,9 @@ Example:
 
 .. code-block:: http
 
-    POST http://tenant-a.local.edly.io:8000/eox-core/api/v1/user/?username=johndoe
+    GET http://tenant-a.local.edly.io:8000/eox-core/api/v1/user/?username=johndoe
     
-    POST http://tenant-a.local.edly.io:8000/eox-core/api/v1/user/?email=johndoe@example.com
+    GET http://tenant-a.local.edly.io:8000/eox-core/api/v1/user/?email=johndoe@example.com
 
     
 Response Example:
