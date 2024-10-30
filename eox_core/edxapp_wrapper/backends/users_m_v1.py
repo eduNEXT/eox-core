@@ -276,12 +276,19 @@ def delete_edxapp_user(*args, **kwargs):
     site = kwargs.get("site")
     is_support_user = kwargs.get("is_support_user")
 
+    print(f"\n\nUser: {user}, Site: {site}, Is Support User: {is_support_user}\n\n")
+
     user_response = f"The user {user.username} <{user.email}> "
+    print(f"\n\nUser response: {user_response}\n\n")
 
     signup_sources = user.usersignupsource_set.all()
     sources = [signup_source.site for signup_source in signup_sources]
 
-    if site and site.name.upper() in (source.upper() for source in sources):
+    print(f"\n\nSources: {sources}\n\n")
+    print(f"\n\nSite Name: {site.name.upper()}\n\n")
+    print(f"\n\nSite Domain: {site.domain}\n\n")
+
+    if site and site.domain.upper() in (source.upper() for source in sources):
         if len(sources) == 1:
             with transaction.atomic():
                 support_label = "_support" if is_support_user else ""
