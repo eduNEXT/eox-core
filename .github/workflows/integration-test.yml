@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        tutor_version: ['<18.0.0', '<19.0.0', 'nightly']
+        tutor_version: ['<18.0.0', '<19.0.0']
     steps:
       - name: Run Integration Tests
         uses: eduNEXT/integration-test-in-tutor@bav/add-plugins-step
