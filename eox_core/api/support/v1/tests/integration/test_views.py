@@ -53,7 +53,6 @@ class SupportAPIRequestMixin:
         """
         return make_request(tenant, "PATCH", url=self.UPDATE_USERNAME_URL, params=params, data=data)
 
-    # TODO: Check of the default value of data should be None
     def create_oauth_application(self, tenant: dict, data: dict | None = None) -> requests.Response:
         """
         Create an oauth application in a tenant.
@@ -65,7 +64,7 @@ class SupportAPIRequestMixin:
         Returns:
             requests.Response: The response object.
         """
-        return make_request(tenant, "POST", url=self.OAUTH_APP_URL, data=data)
+        return make_request(tenant, "POST", url=self.OAUTH_APP_URL, json=data)
 
 
 @ddt.ddt
@@ -141,8 +140,6 @@ class TestEdxAppUserAPIIntegration(SupportAPIRequestMixin, BaseIntegrationTest, 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response_data, ["Email or username needed"])
 
-    # TODO: Add test for multiple signup sources
-
     @ddt.data("username", "email")
     def test_update_username_in_tenant_success(self, query_param: str) -> None:
         """
@@ -164,6 +161,35 @@ class TestEdxAppUserAPIIntegration(SupportAPIRequestMixin, BaseIntegrationTest, 
         new_username = f"new-username-{query_param}"
 
         response = self.update_username(self.tenant_x, {query_param: data[query_param]}, {"new_username": new_username})
+        response_data = response.json()
+        get_response = self.get_user(self.tenant_x, {"username": new_username})
+        get_response_data = get_response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response_data["username"], new_username)
+        self.assertEqual(get_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(get_response_data["username"], new_username)
+
+    def test_update_username_in_tenant_with_multiple_signup_sources(self) -> None:
+        """
+        Test update an edxapp user's username in a tenant with multiple signup sources.
+
+        Open edX definitions tested:
+        - `get_edxapp_user`
+        - `check_edxapp_account_conflicts`
+        - `replace_username_cs_user`
+        - `get_user_read_only_serializer`
+
+        Expected result:
+        - The status code is 200.
+        - The response indicates the username was updated successfully.
+        - The user is found in the tenant with the new username.
+        """
+        data = next(FAKE_USER_DATA)
+        self.create_user(self.tenant_x, data)
+        new_username = f"new-username-username"
+
+        response = self.update_username(self.tenant_x, {"username": data["username"]}, {"new_username": new_username})
         response_data = response.json()
         get_response = self.get_user(self.tenant_x, {"username": new_username})
         get_response_data = get_response.json()
@@ -232,3 +258,66 @@ class TestEdxAppUserAPIIntegration(SupportAPIRequestMixin, BaseIntegrationTest, 
 @ddt.ddt
 class TestOauthApplicationAPIIntegration(SupportAPIRequestMixin, BaseIntegrationTest, UsersAPIRequestMixin):
     """Integration tests for the Oauth Application API."""
+
+    @ddt.data(True, False)
+    def test_create_oauth_application_in_tenant_success(self, create_user: bool) -> None:
+        """
+        Test create an oauth application in a tenant. The user is created if it does not exist.
+
+        Open edX definitions tested:
+        - `get_edxapp_user`
+        - `create_edxapp_user`
+        - `UserSignupSource`
+
+        Expected result:
+        - The status code is 200.
+        - The response indicates the oauth application was created successfully.
+        """
+        user_data = next(FAKE_USER_DATA)
+        if create_user:
+            self.create_user(self.tenant_x, user_data)
+        data = {
+            "user": {
+                "fullname": user_data["fullname"],
+                "email": user_data["email"],
+                "username": user_data["username"],
+                "permissions": ["can_call_eox_core", "can_call_eox_tenant"],
+            },
+            "redirect_uris": f"http://{self.tenant_x['domain']}/",
+            "client_type": "confidential",
+            "authorization_grant_type": "client-credentials",
+            "name": "test-application",
+            "skip_authorization": True,
+        }
+
+        response = self.create_oauth_application(self.tenant_x, data)
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response_data["user"], {"email": user_data["email"], "username": user_data["username"]})
+        self.assertEqual(response_data["redirect_uris"], f"http://{self.tenant_x['domain']}/")
+        self.assertEqual(response_data["client_type"], data["client_type"])
+        self.assertEqual(response_data["authorization_grant_type"], data["authorization_grant_type"])
+        self.assertEqual(response_data["name"], data["name"])
+        self.assertEqual(response_data["skip_authorization"], data["skip_authorization"])
+
+    def test_create_oauth_application_in_tenant_missing_required_fields(self) -> None:
+        """
+        Test create an oauth application in a tenant without providing the required fields.
+
+        Expected result:
+        - The status code is 400.
+        - The response indicates the required fields are missing.
+        """
+        response = self.create_oauth_application(self.tenant_x)
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response_data,
+            {
+                "user": ["This field is required."],
+                "client_type": ["This field is required."],
+                "authorization_grant_type": ["This field is required."],
+            },
+        )
