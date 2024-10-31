@@ -8,9 +8,8 @@ from django.conf import settings as ds
 from django.urls import reverse
 from rest_framework import status
 
-# TODO: move the FAKE_USER_DATA to a common place
-from eox_core.api.v1.tests.integration.data.fake_users import FAKE_USER_DATA
 from eox_core.api.v1.tests.integration.test_views import UsersAPIRequestMixin
+from eox_core.tests.integration.data.fake_users import FAKE_USER_DATA
 from eox_core.tests.integration.utils import BaseIntegrationTest, make_request
 
 settings = ds.INTEGRATION_TEST_SETTINGS
@@ -40,14 +39,13 @@ class SupportAPIRequestMixin:
         """
         return make_request(tenant, "DELETE", url=self.DELETE_USER_URL, params=params)
 
-    # TODO: Check of the default value of data should be None
-    def update_username(self, tenant: dict, params: dict, data: dict | None = None) -> requests.Response:
+    def update_username(self, tenant: dict, params: dict | None = None, data: dict | None = None) -> requests.Response:
         """
         Update an edxapp user's username in a tenant.
 
         Args:
             tenant (dict): The tenant data.
-            params (dict): The query parameters for the request.
+            params (dict, optional): The query parameters for the request.
             data (dict, optional): The body data for the request.
 
         Returns:
@@ -93,15 +91,15 @@ class TestEdxAppUserAPIIntegration(SupportAPIRequestMixin, BaseIntegrationTest, 
 
         response = self.delete_user(self.tenant_x, {query_param: data[query_param]})
         response_data = response.json()
-        get_response = self.get_user(self.tenant_y, {query_param: data[query_param]})
+        get_response = self.get_user(self.tenant_x, {"email": data["email"]})
         get_response_data = get_response.json()
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response_data, f"The user {data['username']} <{data['email']}>  has been removed")
         self.assertEqual(get_response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(
-            get_response_data["detail"],
-            f"No user found by {{'{query_param}': '{data[query_param]}'}} on site {self.tenant_y['domain']}.",
+            get_response_data,
+            {"detail": f"No user found by {{'email': '{data['email']}'}} on site {self.tenant_x['domain']}."},
         )
 
     @ddt.data(
@@ -135,13 +133,100 @@ class TestEdxAppUserAPIIntegration(SupportAPIRequestMixin, BaseIntegrationTest, 
 
         Expected result:
         - The status code is 400.
-        - The response indicates the username is required.
+        - The response indicates the username or email is required.
         """
         response = self.delete_user(self.tenant_x)
         response_data = response.json()
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response_data, ["Email or username needed"])
+
+    # TODO: Add test for multiple signup sources
+
+    @ddt.data("username", "email")
+    def test_update_username_in_tenant_success(self, query_param: str) -> None:
+        """
+        Test update an edxapp user's username in a tenant.
+
+        Open edX definitions tested:
+        - `get_edxapp_user`
+        - `check_edxapp_account_conflicts`
+        - `replace_username_cs_user`
+        - `get_user_read_only_serializer`
+
+        Expected result:
+        - The status code is 200.
+        - The response indicates the username was updated successfully.
+        - The user is found in the tenant with the new username.
+        """
+        data = next(FAKE_USER_DATA)
+        self.create_user(self.tenant_x, data)
+        new_username = f"new-username-{query_param}"
+
+        response = self.update_username(self.tenant_x, {query_param: data[query_param]}, {"new_username": new_username})
+        response_data = response.json()
+        get_response = self.get_user(self.tenant_x, {"username": new_username})
+        get_response_data = get_response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response_data["username"], new_username)
+        self.assertEqual(get_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(get_response_data["username"], new_username)
+
+    def test_update_username_in_tenant_not_found(self) -> None:
+        """
+        Test update an edxapp user's username in a tenant that does not exist.
+
+        Open edX definitions tested:
+        - `get_edxapp_user`
+
+        Expected result:
+        - The status code is 404.
+        - The response indicates the user was not found in the tenant.
+        """
+        response = self.update_username(
+            self.tenant_x,
+            {"username": "user-not-found"},
+            {"new_username": "new-username"},
+        )
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(
+            response_data["detail"],
+            f"No user found by {{'username': 'user-not-found'}} on site {self.tenant_x['domain']}.",
+        )
+
+    def test_update_username_in_tenant_missing_params(self) -> None:
+        """
+        Test update an edxapp user's username in a tenant without providing the username.
+
+        Expected result:
+        - The status code is 400.
+        - The response indicates the username is required.
+        """
+        response = self.update_username(self.tenant_x)
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response_data, ["Email or username needed"])
+
+    def test_update_username_in_tenant_missing_body(self) -> None:
+        """
+        Test update an edxapp user's username in a tenant without providing the new username.
+
+        Expected result:
+        - The status code is 400.
+        - The response indicates the new username is required.
+        """
+        data = next(FAKE_USER_DATA)
+        self.create_user(self.tenant_x, data)
+
+        response = self.update_username(self.tenant_x, params={"username": data["username"]})
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response_data, {"new_username": ["This field is required."]})
 
 
 @ddt.ddt
