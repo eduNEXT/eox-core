@@ -43,8 +43,8 @@ FAKE_USER_DATA = iter(
             "goals": "Proin interdum mauris non ligula pellentesque ultrices.",
         },
         {
-            "username": "ddilon3",
-            "email": "ddilon3@geocities.com",
+            "username": "ddilon4",
+            "email": "ddilon4@geocities.com",
             "fullname": "Dotty Dilon",
             "password": 'mV9"3zRdRr#bTP',
             "activate_user": True,
