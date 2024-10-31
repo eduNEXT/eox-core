@@ -13,7 +13,7 @@ from django.conf import settings as ds
 from django.urls import reverse
 from rest_framework import status
 
-from eox_core.api.v1.tests.integration.data.fake_users import FAKE_USER_DATA
+from eox_core.tests.integration.data.fake_users import FAKE_USER_DATA
 from eox_core.tests.integration.utils import BaseIntegrationTest, make_request
 
 settings = ds.INTEGRATION_TEST_SETTINGS
