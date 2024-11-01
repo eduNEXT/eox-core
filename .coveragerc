@@ -1,0 +1,9 @@
+[run]
+branch = True
+data_file = .coverage
+source=eox_core
+omit =
+    */tests/*
+    */settings/*
+    */migrations/*
+    */edxapp_wrapper/*
