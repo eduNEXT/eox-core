@@ -170,35 +170,6 @@ class TestEdxAppUserAPIIntegration(SupportAPIRequestMixin, BaseIntegrationTest, 
         self.assertEqual(get_response.status_code, status.HTTP_200_OK)
         self.assertEqual(get_response_data["username"], new_username)
 
-    def test_update_username_in_tenant_with_multiple_signup_sources(self) -> None:
-        """
-        Test update an edxapp user's username in a tenant with multiple signup sources.
-
-        Open edX definitions tested:
-        - `get_edxapp_user`
-        - `check_edxapp_account_conflicts`
-        - `replace_username_cs_user`
-        - `get_user_read_only_serializer`
-
-        Expected result:
-        - The status code is 200.
-        - The response indicates the username was updated successfully.
-        - The user is found in the tenant with the new username.
-        """
-        data = next(FAKE_USER_DATA)
-        self.create_user(self.tenant_x, data)
-        new_username = f"new-username-username"
-
-        response = self.update_username(self.tenant_x, {"username": data["username"]}, {"new_username": new_username})
-        response_data = response.json()
-        get_response = self.get_user(self.tenant_x, {"username": new_username})
-        get_response_data = get_response.json()
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response_data["username"], new_username)
-        self.assertEqual(get_response.status_code, status.HTTP_200_OK)
-        self.assertEqual(get_response_data["username"], new_username)
-
     def test_update_username_in_tenant_not_found(self) -> None:
         """
         Test update an edxapp user's username in a tenant that does not exist.
