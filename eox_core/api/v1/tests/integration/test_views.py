@@ -1070,7 +1070,7 @@ class TestPreEnrollmentAPIIntegration(
         self.assertEqual(response_data, errors)
         self.assertEqual(pre_enrollment_response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_create_pre_enrollmet_already_exists(self) -> None:
+    def test_create_pre_enrollment_already_exists(self) -> None:
         """
         Test creating an pre-enrollment that already exists in a tenant.
 
