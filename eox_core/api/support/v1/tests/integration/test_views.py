@@ -1,4 +1,4 @@
-"""Support API request mixin for the Pre Enrollments API."""
+"""Support API integration tests."""
 
 from __future__ import annotations
 
