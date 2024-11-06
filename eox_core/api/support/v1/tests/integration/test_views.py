@@ -68,7 +68,11 @@ class SupportAPIRequestMixin:
 
 
 @ddt.ddt
-class TestEdxAppUserAPIIntegration(SupportAPIRequestMixin, BaseIntegrationTest, UsersAPIRequestMixin):
+class TestEdxAppUserAPIIntegration(
+    SupportAPIRequestMixin,
+    BaseIntegrationTest,
+    UsersAPIRequestMixin,
+):
     """Integration tests for the EdxApp User API."""
 
     @ddt.data("username", "email")
