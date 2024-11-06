@@ -93,6 +93,7 @@ class TestEdxAppUserAPIIntegration(
         self.create_user(self.tenant_x, data)
 
         response = self.delete_user(self.tenant_x, {query_param: data[query_param]})
+        print(f"\n\n{response.text}\n\n")
         response_data = response.json()
         get_response = self.get_user(self.tenant_x, {"email": data["email"]})
         get_response_data = get_response.json()
@@ -123,6 +124,7 @@ class TestEdxAppUserAPIIntegration(
         """
         response = self.delete_user(self.tenant_x, {query_param: value})
         response_data = response.json()
+        print(f"\n\nResponse data: {response_data}\n\n")
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(
@@ -140,6 +142,7 @@ class TestEdxAppUserAPIIntegration(
         """
         response = self.delete_user(self.tenant_x)
         response_data = response.json()
+        print(f"\n\nResponse data: {response_data}\n\n")
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response_data, ["Email or username needed"])
@@ -165,9 +168,11 @@ class TestEdxAppUserAPIIntegration(
         new_username = f"new-username-{query_param}"
 
         response = self.update_username(self.tenant_x, {query_param: data[query_param]}, {"new_username": new_username})
+        print(f"\n\nResponse text: {response.text}\n\n")
         response_data = response.json()
         get_response = self.get_user(self.tenant_x, {"username": new_username})
         get_response_data = get_response.json()
+        print(f"\n\nGet response data: {get_response_data}\n\n")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response_data["username"], new_username)
@@ -191,6 +196,7 @@ class TestEdxAppUserAPIIntegration(
             {"new_username": "new-username"},
         )
         response_data = response.json()
+        print(f"\n\nResponse data: {response_data}\n\n")
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(
@@ -208,6 +214,7 @@ class TestEdxAppUserAPIIntegration(
         """
         response = self.update_username(self.tenant_x)
         response_data = response.json()
+        print(f"\n\nResponse data: {response_data}\n\n")
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response_data, ["Email or username needed"])
@@ -225,6 +232,7 @@ class TestEdxAppUserAPIIntegration(
 
         response = self.update_username(self.tenant_x, params={"username": data["username"]})
         response_data = response.json()
+        print(f"\n\nResponse data: {response_data}\n\n")
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response_data, {"new_username": ["This field is required."]})
@@ -267,6 +275,7 @@ class TestOauthApplicationAPIIntegration(SupportAPIRequestMixin, BaseIntegration
 
         response = self.create_oauth_application(self.tenant_x, data)
         response_data = response.json()
+        print(f"\n\nResponse data: {response_data}\n\n")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response_data["user"], {"email": user_data["email"], "username": user_data["username"]})
@@ -286,6 +295,7 @@ class TestOauthApplicationAPIIntegration(SupportAPIRequestMixin, BaseIntegration
         """
         response = self.create_oauth_application(self.tenant_x)
         response_data = response.json()
+        print(f"\n\nResponse data: {response_data}\n\n")
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(
