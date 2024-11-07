@@ -130,6 +130,30 @@ class TestEdxAppUserAPIIntegration(
             f"No user found by {{'{query_param}': '{value}'}} on site {self.tenant_x['domain']}.",
         )
 
+    @ddt.data("username", "email")
+    def test_delete_user_of_another_tenant(self, query_param: str) -> None:
+        """
+        Test delete an edxapp user of another tenant.
+
+        Open edX definitions tested:
+        - `get_edxapp_user`
+
+        Expected result:
+        - The status code is 404.
+        - The response indicates the user was not found in the tenant.
+        """
+        data = next(FAKE_USER_DATA)
+        self.create_user(self.tenant_x, data)
+
+        response = self.delete_user(self.tenant_y, {query_param: data[query_param]})
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(
+            response_data["detail"],
+            f"No user found by {{'{query_param}': '{data[query_param]}'}} on site {self.tenant_y['domain']}.",
+        )
+
     def test_delete_user_missing_required_fields(self) -> None:
         """
         Test delete an edxapp user in a tenant without providing the username or email.
@@ -196,6 +220,35 @@ class TestEdxAppUserAPIIntegration(
         self.assertEqual(
             response_data["detail"],
             f"No user found by {{'username': 'user-not-found'}} on site {self.tenant_x['domain']}.",
+        )
+
+    @ddt.data("username", "email")
+    def test_update_user_username_of_another_tenant(self, query_param: str) -> None:
+        """
+        Test update an edxapp user's username of another tenant.
+
+        Open edX definitions tested:
+        - `get_edxapp_user`
+
+        Expected result:
+        - The status code is 404.
+        - The response indicates the user was not found in the tenant.
+        """
+        data = next(FAKE_USER_DATA)
+        self.create_user(self.tenant_x, data)
+        new_username = f"new-username-{query_param}"
+
+        response = self.update_username(
+            self.tenant_y,
+            {query_param: data[query_param]},
+            {"new_username": new_username},
+        )
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(
+            response_data["detail"],
+            f"No user found by {{'{query_param}': '{data[query_param]}'}} on site {self.tenant_y['domain']}.",
         )
 
     def test_update_username_in_tenant_missing_params(self) -> None:
