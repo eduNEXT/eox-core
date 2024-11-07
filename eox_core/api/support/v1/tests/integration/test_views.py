@@ -237,7 +237,10 @@ class TestOauthApplicationAPIIntegration(SupportAPIRequestMixin, BaseIntegration
     @ddt.data(True, False)
     def test_create_oauth_application_in_tenant_success(self, create_user: bool) -> None:
         """
-        Test create an oauth application in a tenant. The user is created if it does not exist.
+        Test create an oauth application in a tenant.
+
+        If the user exists, it will be used to create the oauth application.
+        If the user does not exist, it will be created and used to create the oauth application.
 
         Open edX definitions tested:
         - `get_edxapp_user`
