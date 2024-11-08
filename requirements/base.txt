@@ -136,7 +136,7 @@ edx-django-utils==7.0.0
     #   edx-when
     #   event-tracking
     #   openedx-events
-edx-drf-extensions==10.4.0
+edx-drf-extensions==10.5.0
     # via
     #   -r requirements/base.in
     #   edx-proctoring
@@ -149,7 +149,7 @@ edx-opaque-keys[django]==2.11.0
     #   edx-proctoring
     #   edx-when
     #   openedx-events
-edx-proctoring==4.18.2
+edx-proctoring==4.18.3
     # via -r requirements/base.in
 edx-rest-api-client==6.0.0
     # via edx-proctoring
@@ -302,7 +302,7 @@ wcwidth==0.2.13
     # via prompt-toolkit
 web-fragments==2.2.0
     # via xblock
-webob==1.8.8
+webob==1.8.9
     # via xblock
 xblock==5.1.0
     # via edx-when
