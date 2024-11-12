@@ -147,12 +147,14 @@ class TestEdxAppUserAPIIntegration(
 
         response = self.delete_user(self.tenant_y, {query_param: data[query_param]})
         response_data = response.json()
+        get_response = self.get_user(self.tenant_x, {"username": data["username"]})
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(
             response_data["detail"],
             f"No user found by {{'{query_param}': '{data[query_param]}'}} on site {self.tenant_y['domain']}.",
         )
+        self.assertEqual(get_response.status_code, status.HTTP_200_OK)
 
     def test_delete_user_missing_required_fields(self) -> None:
         """
