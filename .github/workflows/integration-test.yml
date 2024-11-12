@@ -10,7 +10,7 @@ jobs:
         tutor_version: ['<18.0.0', '<19.0.0']
     steps:
       - name: Run Integration Tests
-        uses: eduNEXT/integration-test-in-tutor@bav/add-custom-plugins-step
+        uses: eduNEXT/integration-test-in-tutor@main
         with:
           tutor_version: ${{ matrix.tutor_version }}
           tutor_plugins: 'forum'
