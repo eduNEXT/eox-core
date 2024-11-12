@@ -1,5 +1,5 @@
 """
-Test backend to get CourseEnrollment Model.
+Redwood test backend for users module
 """
 
 from unittest.mock import Mock

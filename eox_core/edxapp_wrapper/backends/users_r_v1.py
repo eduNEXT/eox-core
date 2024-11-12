@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Backend for the create_edxapp_user that works under the open-release/lilac.master tag
+Redwood backend for users module
 """
 import logging
 
@@ -311,7 +311,7 @@ def delete_edxapp_user(*args, **kwargs):
                 msg = f"{user_response} has been removed"
         else:
             for signup_source in signup_sources:
-                if signup_source.site.upper() == site.name.upper():
+                if signup_source.site.upper() == site.domain.upper():
                     signup_source.delete()
 
                     msg = f"{user_response} has more than one signup source. The signup source from the site {site} has been deleted"
