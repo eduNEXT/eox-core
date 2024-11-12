@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Redwood backend for users module
+Quince backend for users module
 """
 import logging
 

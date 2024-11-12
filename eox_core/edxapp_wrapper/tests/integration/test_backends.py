@@ -19,4 +19,4 @@ def test_current_settings_code_imports():
     import eox_core.edxapp_wrapper.backends.pre_enrollment_l_v1
     import eox_core.edxapp_wrapper.backends.storages_i_v1
     import eox_core.edxapp_wrapper.backends.third_party_auth_l_v1
-    import eox_core.edxapp_wrapper.backends.users_r_v1
+    import eox_core.edxapp_wrapper.backends.users_q_v1

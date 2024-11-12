@@ -25,7 +25,7 @@ def plugin_settings(settings):
     See: https://github.com/openedx/edx-platform/blob/master/openedx/core/djangoapps/plugins/README.rst
     """
     settings.EOX_CORE_COMMENTS_SERVICE_USERS_BACKEND = "eox_core.edxapp_wrapper.backends.comments_service_users_j_v1"
-    settings.EOX_CORE_USERS_BACKEND = "eox_core.edxapp_wrapper.backends.users_r_v1"
+    settings.EOX_CORE_USERS_BACKEND = "eox_core.edxapp_wrapper.backends.users_q_v1"
     settings.EOX_CORE_ENROLLMENT_BACKEND = "eox_core.edxapp_wrapper.backends.enrollment_o_v1"
     settings.EOX_CORE_PRE_ENROLLMENT_BACKEND = "eox_core.edxapp_wrapper.backends.pre_enrollment_l_v1"
     settings.EOX_CORE_CERTIFICATES_BACKEND = "eox_core.edxapp_wrapper.backends.certificates_m_v1"

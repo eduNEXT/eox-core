@@ -1,5 +1,5 @@
 """
-Redwood test backend for users module
+Quince test backend for users module
 """
 
 from unittest.mock import Mock
