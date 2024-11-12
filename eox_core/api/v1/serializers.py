@@ -216,6 +216,10 @@ class WrittableEdxappUserSerializer(EdxappExtendedUserSerializer):
         has_profile = hasattr(instance, 'profile')
 
         extra_registration_fields.update(extended_profile_fields)
+
+        # Initialize profile_meta to avoid potential unassigned variable warning
+        profile_meta = {}
+        
         if has_profile:
             profile_meta = instance.profile.get_meta()
 
