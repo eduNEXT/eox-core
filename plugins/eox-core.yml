@@ -1,0 +1,7 @@
+name: eox-core
+version: 1.0.0
+patches:
+  openedx-common-settings: |
+    MIDDLEWARE += [
+      "eox_core.middleware.PathRedirectionMiddleware",
+    ]
