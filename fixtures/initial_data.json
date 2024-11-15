@@ -91,6 +91,25 @@
         "fields": {
             "external_key": "tenant-x-key",
             "lms_configs": {
+                "MKTG_REDIRECTS": {
+                    "about.html": "",
+                    "dashboard.html": "https://www.example.com/"
+                },
+                "EDNX_CUSTOM_PATH_REDIRECTS": {
+                    "/blog": {
+                        "redirect_always": "/donate"
+                    },
+                    "/contact": "not_found_loggedout",
+                    "/courses": {
+                        "redirect_loggedin": "/donate"
+                    },
+                    "/faq": {
+                        "redirect_loggedout": "/donate"
+                    },
+                    "/help": "not_found_loggedin",
+                    "/privacy": "not_found",
+                    "/tos": "login_required"
+                },
                 "EDNX_USE_SIGNAL": true,
                 "PLATFORM_NAME": "Tenant X",
                 "SITE_NAME": "tenant-x.local.edly.io",
@@ -145,6 +164,29 @@
             "date_joined": "2024-08-30T20:33:17.023Z",
             "groups": [],
             "user_permissions": []
+        }
+    },
+    {
+        "model": "student.userprofile",
+        "pk": 3,
+        "fields": {
+            "user": 4,
+            "name": "Admin Eox Core",
+            "meta": "",
+            "courseware": "course.xml",
+            "language": "",
+            "location": "",
+            "year_of_birth": null,
+            "gender": null,
+            "level_of_education": null,
+            "mailing_address": "",
+            "city": "",
+            "country": null,
+            "state": null,
+            "goals": "",
+            "bio": null,
+            "profile_image_uploaded_at": null,
+            "phone_number": null
         }
     },
     {
