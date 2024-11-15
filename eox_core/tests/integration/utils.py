@@ -79,10 +79,11 @@ class BaseIntegrationTest(TestCase):
     Base class for the integration test suite.
     """
 
-    def setUp(self):
+    def __init__(self, *args, **kwargs):
         """
-        Set up the test suite.
+        Initialize the class attributes.
         """
+        super().__init__(*args, **kwargs)
         self.default_site = self.get_tenant_data()
         self.tenant_x = self.get_tenant_data("tenant-x")
         self.tenant_y = self.get_tenant_data("tenant-y")
