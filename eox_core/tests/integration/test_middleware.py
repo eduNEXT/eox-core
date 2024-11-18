@@ -32,8 +32,8 @@ class TestPathRedirectionMiddleware(BaseIntegrationTest):
 
         login_url = f"{self.tenant_x_url}/api/user/v2/account/login_session/"
         login_data = {
-            "email_or_username": settings["TEST_USER_USERNAME"],
-            "password": settings["TEST_USER_PASSWORD"],
+            "email_or_username": settings["SESSION_USER_USERNAME"],
+            "password": settings["SESSION_USER_PASSWORD"],
         }
         headers = {
             "X-CSRFToken": csrf_token,

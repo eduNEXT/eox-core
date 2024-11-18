@@ -113,6 +113,6 @@ INTEGRATION_TEST_SETTINGS = {
     "CLIENT_ID": "client_id",
     "CLIENT_SECRET": "client_secret",
     "DEMO_COURSE_ID": os.environ.get("DEMO_COURSE_ID", "course-v1:OpenedX+DemoX+DemoCourse"),
-    "TEST_USER_USERNAME": "admin-eox-core",
-    "TEST_USER_PASSWORD": "admin",
+    "SESSION_USER_USERNAME": "admin-eox-core",
+    "SESSION_USER_PASSWORD": "admin",
 }
