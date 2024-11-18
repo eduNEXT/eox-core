@@ -7,16 +7,17 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        tutor_version: ['<18.0.0', '<19.0.0', "nightly"]
+        tutor_version: ['<18.0.0', '<19.0.0', 'nightly']
     steps:
       - name: Run Integration Tests
         uses: eduNEXT/integration-test-in-tutor@main
         with:
           tutor_version: ${{ matrix.tutor_version }}
           tutor_plugins: 'forum'
+          inline_tutor_plugins_folder: 'integration_tests/tutor_plugins'
           app_name: 'eox-core'
           openedx_extra_pip_requirements: 'eox-tenant'
-          shell_file_to_run: 'scripts/execute_integration_tests.sh'
+          shell_file_to_run: 'integration_tests/scripts/execute_integration_tests.sh'
           fixtures_file: 'fixtures/initial_data.json'
           openedx_imports_test_file_path: 'eox_core/edxapp_wrapper/tests/integration/test_backends.py'
-          tutor_extra_commands_path: 'scripts/execute_tutor_extra_commands.sh'
+          tutor_extra_commands_path: 'integration_tests/scripts/execute_tutor_extra_commands.sh'
