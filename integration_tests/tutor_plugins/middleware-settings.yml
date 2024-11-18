@@ -1,4 +1,4 @@
-name: eox-core
+name: middleware-settings
 version: 1.0.0
 patches:
   openedx-common-settings: |
