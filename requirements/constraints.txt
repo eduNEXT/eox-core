@@ -15,7 +15,6 @@
 # Ensures a consistent pylint version across all Python environments to avoid triggering varying warnings
 pylint<3.3.0
 
-# Date: 2023-07-31
 # As it is not clarified what exact breaking changes will be introduced as per
 # the next major release, ensure the installed version is within boundaries.
 # Issue for unpinning: https://github.com/openedx/edx-platform/issues/32884
