@@ -73,6 +73,8 @@ Compatibility Notes
 +------------------+---------------+
 | Redwood          | >= 10.5.1     |
 +------------------+---------------+
+| Sumac            | >= 11.1.0     |
++------------------+---------------+
 
 ⚠️ The Maple version does not support Django 2.2 but it does support Django 3.2 as of eox-core 7.0.
 
