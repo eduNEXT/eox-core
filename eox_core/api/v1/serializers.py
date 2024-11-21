@@ -44,6 +44,7 @@ class EdxappWithWarningSerializer(serializers.Serializer):
     """
     Mixin serializer to add a warning field to Edxapp serializers
     """
+
     def __init__(self, *args, **kwargs):
         """
         Conditionally adds a warning field if a context is passed
@@ -216,6 +217,10 @@ class WrittableEdxappUserSerializer(EdxappExtendedUserSerializer):
         has_profile = hasattr(instance, 'profile')
 
         extra_registration_fields.update(extended_profile_fields)
+
+        # Initialize profile_meta to avoid potential unassigned variable warning
+        profile_meta = {}
+
         if has_profile:
             profile_meta = instance.profile.get_meta()
 
@@ -291,6 +296,7 @@ class EdxappValidatedCourseIDField(serializers.Field):
     """
     CourseKey Field
     """
+
     def to_representation(self, value):
         return str(value)
 

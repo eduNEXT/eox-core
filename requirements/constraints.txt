@@ -11,9 +11,13 @@
 # Common constraints for Open edX repos
 -c https://raw.githubusercontent.com/openedx/edx-lint/master/edx_lint/files/common_constraints.txt
 
-# Keep same platform version
-pylint<3.0
-pycodestyle<2.9.0
+# Versions >= 3.3.0 drop support for Python 3.8
+# Ensures a consistent pylint version across all Python environments to avoid triggering varying warnings
+pylint<3.3.0
+
+# As it is not clarified what exact breaking changes will be introduced as per
+# the next major release, ensure the installed version is within boundaries.
+# Issue for unpinning: https://github.com/openedx/edx-platform/issues/32884
 django-oauth-toolkit<2.0.0
 
 # backports.zoneinfo is only needed for Python < 3.9
