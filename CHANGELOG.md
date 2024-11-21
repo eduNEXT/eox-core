@@ -11,6 +11,8 @@ Please do not update the unreleased notes.
 
 <!-- Content should be placed here -->
 
+## [v11.1.0](https://github.com/eduNEXT/eox-core/compare/v11.0.0...v11.1.0) - (2024-11-21)
+
 ## [v11.0.0](https://github.com/eduNEXT/eox-core/compare/v10.6.0...v11.0.0) - (2024-10-22)
 
 #### ⚠ BREAKING CHANGES
