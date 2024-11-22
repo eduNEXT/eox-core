@@ -3,9 +3,4 @@ on: [pull_request]
 
 jobs:
   commitlint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: wagoid/commitlint-github-action@v6
+    uses: openedx/.github/.github/workflows/commitlint.yml@master
