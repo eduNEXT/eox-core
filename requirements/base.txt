@@ -4,7 +4,7 @@
 #
 #    make upgrade
 #
-amqp==5.2.0
+amqp==5.3.1
     # via kombu
 appdirs==1.4.4
     # via fs
@@ -48,7 +48,7 @@ click-plugins==1.1.1
     # via celery
 click-repl==0.3.0
     # via celery
-code-annotations==1.8.0
+code-annotations==1.8.2
     # via edx-toggles
 cryptography==43.0.3
     # via
@@ -103,7 +103,7 @@ django-simple-history==3.0.0
     # via
     #   -c https://raw.githubusercontent.com/openedx/edx-lint/master/edx_lint/files/common_constraints.txt
     #   edx-proctoring
-django-waffle==4.1.0
+django-waffle==4.2.0
     # via
     #   -r requirements/base.in
     #   edx-django-utils
@@ -120,6 +120,8 @@ djangorestframework==3.15.2
     #   edx-api-doc-tools
     #   edx-drf-extensions
     #   edx-proctoring
+dnspython==2.6.1
+    # via pymongo
 drf-jwt==1.19.2
     # via edx-drf-extensions
 drf-yasg==1.21.8
@@ -128,7 +130,7 @@ edx-api-doc-tools==2.0.0
     # via -r requirements/base.in
 edx-ccx-keys==1.3.0
     # via openedx-events
-edx-django-utils==7.0.0
+edx-django-utils==7.0.1
     # via
     #   edx-drf-extensions
     #   edx-rest-api-client
@@ -149,7 +151,7 @@ edx-opaque-keys[django]==2.11.0
     #   edx-proctoring
     #   edx-when
     #   openedx-events
-edx-proctoring==4.18.3
+edx-proctoring==4.18.4
     # via -r requirements/base.in
 edx-rest-api-client==6.0.0
     # via edx-proctoring
@@ -157,10 +159,8 @@ edx-toggles==5.2.0
     # via event-tracking
 edx-when==2.5.0
     # via edx-proctoring
-event-tracking==2.4.0
-    # via
-    #   -c https://raw.githubusercontent.com/openedx/edx-lint/master/edx_lint/files/common_constraints.txt
-    #   edx-proctoring
+event-tracking==3.0.0
+    # via edx-proctoring
 fastavro==1.9.7
     # via openedx-events
 fs==2.4.16
@@ -186,7 +186,7 @@ markupsafe==2.1.5
     #   jinja2
     #   mako
     #   xblock
-newrelic==10.2.0
+newrelic==10.3.0
     # via edx-django-utils
 oauthlib==3.2.2
     # via
@@ -197,7 +197,7 @@ openedx-events==9.14.1
     # via
     #   -r requirements/base.in
     #   event-tracking
-packaging==24.1
+packaging==24.2
     # via drf-yasg
 pbr==6.1.0
     # via stevedore
@@ -216,7 +216,7 @@ pyjwt[crypto]==2.9.0
     #   edx-proctoring
     #   edx-rest-api-client
     #   social-auth-core
-pymongo==3.13.0
+pymongo==4.4.0
     # via
     #   edx-opaque-keys
     #   event-tracking
@@ -270,7 +270,7 @@ six==1.16.0
     #   python-dateutil
 social-auth-core==4.5.4
     # via -r requirements/base.in
-sqlparse==0.5.1
+sqlparse==0.5.2
     # via django
 stevedore==5.3.0
     # via
