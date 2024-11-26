@@ -6,11 +6,9 @@ jobs:
     name: Tutor Integration Tests
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        tutor_version: ['<18.0.0', '<19.0.0']
-        include:
-          - tutor_version: 'nightly'
-            continue_on_error: true
+        tutor_version: ['<19.0.0', '<20.0.0', 'nightly']
     steps:
       - name: Run Integration Tests
         uses: eduNEXT/integration-test-in-tutor@main
