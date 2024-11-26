@@ -13,6 +13,11 @@ Please do not update the unreleased notes.
 
 ## [v11.1.0](https://github.com/eduNEXT/eox-core/compare/v11.0.0...v11.1.0) - (2024-11-21)
 
+### Changed
+
+- **Sumac Support**: Upgrade requirements base on edx-platform Sumac
+release and update integration tests to use new Sumac release with Tutor.
+
 ## [v11.0.0](https://github.com/eduNEXT/eox-core/compare/v10.6.0...v11.0.0) - (2024-10-22)
 
 #### ⚠ BREAKING CHANGES
