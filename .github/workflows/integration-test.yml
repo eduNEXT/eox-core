@@ -21,3 +21,5 @@ jobs:
           fixtures_file: 'fixtures/initial_data.json'
           openedx_imports_test_file_path: 'eox_core/edxapp_wrapper/tests/integration/test_backends.py'
           tutor_extra_commands_path: 'integration_tests/scripts/execute_tutor_extra_commands.sh'
+        continue-on-error: ${{ matrix.tutor_version == 'nightly' }}
+
