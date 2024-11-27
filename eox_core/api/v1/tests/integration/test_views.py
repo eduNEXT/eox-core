@@ -183,6 +183,25 @@ class PreEnrollmentAPIRequestMixin:
         return make_request(tenant, "DELETE", url=self.PRE_ENROLLMENT_URL, data=data)
 
 
+class GradeAPIRequestMixin:
+    """Mixin class for the Grade API request methods."""
+
+    GRADE_URL = f"{settings['EOX_CORE_API_BASE']}{reverse('eox-api:eox-api:edxapp-grade')}"
+
+    def get_grade_info(self, tenant: dict, params: dict | None = None) -> requests.Response:
+        """
+        Get an grade in a tenant.
+
+        Args:
+            tenant (dict): The tenant data.
+            params (dict, optional): The query parameters for the request.
+
+        Returns:
+            requests.Response: The response object.
+        """
+        return make_request(tenant, "GET", url=self.GRADE_URL, params=params)
+
+
 @ddt.ddt
 class TestUsersAPIIntegration(BaseIntegrationTest, UsersAPIRequestMixin):
     """Integration test suite for the Users API"""
@@ -1445,3 +1464,163 @@ class TestInfoView(BaseIntegrationTest):
         self.assertIn("version", response_data)
         self.assertIn("name", response_data)
         self.assertIn("git", response_data)
+
+
+@ddt.ddt
+# pylint: disable=too-many-ancestors
+class TestGradeAPIIntegration(
+    BaseIntegrationTest,
+    UsersAPIRequestMixin,
+    EnrollmentAPIRequestMixin,
+    GradeAPIRequestMixin
+):
+    """Integration test suite for the Grade API"""
+
+    def setUp(self) -> None:
+        """Set up the test suite"""
+        super().setUp()
+        self.mode = "audit"
+        self.user = next(FAKE_USER_DATA)
+        self.create_user(self.tenant_x, self.user)
+        self.create_enrollment_data = {
+            "email": self.user["email"],
+            "course_id": self.demo_course_id,
+            "mode": self.mode,
+            "is_active": True,
+            "force": True,
+        }
+        self.params = {
+            "username": self.user["username"],
+            "course_id": self.demo_course_id,
+        }
+
+    @ddt.data(
+        {"detailed": False, "grading_policy": False},
+        {"detailed": True, "grading_policy": False},
+        {"detailed": True, "grading_policy": True},
+    )
+    def test_get_grades_for_user_successfully(self, extra_params: dict):
+        """
+        Get Grade info about the user who belongs to tenant where the course is hosted
+
+        Open edX definitions tested:
+        - `get_edxapp_user`
+        - `get_enrollment`
+        - `get_course_grade_factory`
+        - `get_valid_course_key`
+        - `get_courseware_courses`
+        - `grade_factory`
+
+        Expected result:
+        - The status code is 200.
+        - The response includes the 'earned_grade'.
+        - The response includes the 'section_breakdown' if 'detailed' params is True, otherwise, it is not included.
+        - The response includes the 'grading_policy' if 'grading_policy' params is True, otherwise, it is not included.
+        """
+        self.create_enrollment(self.tenant_x, self.create_enrollment_data)
+        params = self.params.copy()
+        params.update(extra_params)
+
+        response = self.get_grade_info(self.tenant_x, params)
+        response_content = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("earned_grade", response_content)
+        if extra_params["detailed"]:
+            self.assertIn("section_breakdown", response_content)
+            for detail_grade in response_content["section_breakdown"]:
+                self.assertGreaterEqual(detail_grade["percent"], 0.0)
+                self.assertGreaterEqual(detail_grade["score_earned"], 0.0)
+                self.assertGreaterEqual(detail_grade["score_possible"], 0.0)
+                self.assertFalse(detail_grade["attempted"])
+                self.assertIn("assignment_type", detail_grade)
+                self.assertIn("subsection_name", detail_grade)
+        else:
+            self.assertNotIn("section_breakdown", response_content)
+
+        if extra_params["grading_policy"]:
+            self.assertIn("grading_policy", response_content)
+            self.assertIn("grader", response_content["grading_policy"])
+            self.assertIn("grade_cutoffs", response_content["grading_policy"])
+            for detail_grade in response_content["grading_policy"]["grader"]:
+                self.assertGreaterEqual(detail_grade["count"], 0)
+                self.assertGreaterEqual(detail_grade["dropped"], 0)
+                self.assertIn("assignment_type", detail_grade)
+                self.assertIn("weight", detail_grade)
+        else:
+            self.assertNotIn("grading_policy", response_content)
+
+    def test_get_grade_for_user_not_found(self):
+        """
+        Test get grade info for a user and course from another site.
+
+        Open edX definitions tested:
+        - `get_edxapp_user`
+
+        Expected result:
+        - The status code is 404.
+        - The response contains an error message.
+        """
+        params = self.params.copy()
+        params.update({
+            "detailed": True,
+            "grading_policy": True,
+        })
+
+        response = self.get_grade_info(self.tenant_y, params)
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertIn("detail", response_data)
+        self.assertEqual(
+            response_data["detail"],
+            f"No user found by {{'username': '{params['username']}'}} on site {self.tenant_y['domain']}.",
+        )
+
+    def test_get_grade_for_enrollment_not_found(self):
+        """
+        Test grade info for a enrollment not found.
+
+        Open edX definitions tested:
+        - `get_enrollment`
+
+        Expected result:
+        - The status code is 404.
+        - The response contains an error message.
+        """
+        response = self.get_grade_info(self.tenant_x, self.params)
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(
+            response_data, [
+                f"No enrollment found for user:`{self.user['username']}`"
+            ],
+        )
+
+    def test_get_grade_for_course_not_found(self):
+        """
+        Test grade info for a course not found.
+
+        Open edX definitions tested:
+        - `get_enrollment`
+
+        Expected result:
+        - The status code is 404.
+        - The response contains an error message.
+        """
+        response = self.get_grade_info(
+            self.tenant_x,
+            {
+                "username": self.user["username"],
+                "course_id": "course-not-exist"
+            }
+        )
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(
+            response_data, [
+                "No course found for course_id `course-not-exist`"
+            ],
+        )
