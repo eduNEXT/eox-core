@@ -11,7 +11,7 @@ jobs:
         tutor_version: ['<19.0.0', '<20.0.0', 'main']
     steps:
       - name: Run Integration Tests
-        uses: eduNEXT/integration-test-in-tutor@main
+        uses: eduNEXT/integration-test-in-tutor@magagio/rename-nightly-in-favor-of-main
         with:
           tutor_version: ${{ matrix.tutor_version }}
           tutor_plugins: 'forum'
