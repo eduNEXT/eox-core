@@ -34,7 +34,7 @@ class ConfigurableOpenIdConnectAuth(OpenIdConnectAuth):     # pylint: disable=ab
             try:
                 setattr(self, key, conf.get(key, getattr(self, key)))
             except Exception:  # pylint: disable=broad-except
-                LOG.error("Tried and failed to set property %s of a config-based-openidconnect", key)
+                LOG.warning("Tried and failed to set property %s of a config-based-openidconnect", key)
 
         super().__init__(*args, **kwargs)
 
