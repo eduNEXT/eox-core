@@ -56,6 +56,22 @@ def serialize_data(data):
     return data
 
 
+def process_query_results(raw_result):
+    """
+    Process the raw result of a query.
+
+    Args:
+        raw_result: The result from the SQL query (list, scalar, or dictionary).
+
+    Returns:
+        The processed result, extracting scalar values from single-item lists,
+        or returning the original value for more complex data structures.
+    """
+    if isinstance(raw_result, list) and len(raw_result) == 1:
+        return raw_result[0]
+    return raw_result
+
+
 def post_data_to_api(api_url, report_data, token_generation_url, current_host):
     """
     Sends the generated report data to the Shipyard API.
