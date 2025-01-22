@@ -11,6 +11,12 @@ Please do not update the unreleased notes.
 
 <!-- Content should be placed here -->
 
+## [v11.2.0](https://github.com/eduNEXT/eox-core/compare/v11.1.0...v11.2.0) - (2025-01-20)
+
+### Added
+
+- API to collect data and generate reports.
+
 ## [v11.1.0](https://github.com/eduNEXT/eox-core/compare/v11.0.0...v11.1.0) - (2024-11-21)
 
 ### Changed
