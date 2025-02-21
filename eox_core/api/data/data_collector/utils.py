@@ -9,6 +9,7 @@ import requests
 from django.conf import settings
 from datetime import datetime
 import logging
+import re
 
 from eox_core.utils import get_access_token
 
@@ -24,7 +25,17 @@ def execute_query(sql_query):
     
     Returns:
         list or dict: Structured query results.
+    
+    Raises:
+        ValueError: If the query is not a SELECT statement.
     """
+    # Normalize query (remove whitespace and convert to uppercase)
+    normalized_query = sql_query.strip().upper()
+
+    # Verify that the query begins with "SELECT"
+    if not re.match(r"^SELECT\s", normalized_query):
+        raise ValueError("Only SELECT queries are allowed.")
+
     with connection.cursor() as cursor:
         cursor.execute(sql_query)
         rows = cursor.fetchall()
