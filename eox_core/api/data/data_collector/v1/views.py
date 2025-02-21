@@ -35,7 +35,6 @@ class DataCollectorView(APIView):
     - Validates input using DataCollectorSerializer.
     - Triggers an async task to execute queries and send results to a specified destination.
     """
-    # Allow JWT Auth
     permission_classes = [DatacollectorPermission]
 
     def post(self, request):
@@ -55,33 +54,13 @@ class DataCollectorView(APIView):
             )
         
         serializer = DataCollectorSerializer(data=request.data)
-
         if serializer.is_valid():
             validated_data = serializer.validated_data
-            query_file_content = validated_data.get("query_file_content")
-            query_file_url = validated_data.get("query_file_url")
             destination_url = validated_data.get("destination_url")
             token_generation_url = validated_data.get("token_generation_url")
             current_host = request.get_host() #Remove trailing slash and http
 
-            # If the query file content is not provided, fetch it from the URL
-            if not query_file_content and query_file_url:
-                try:
-                    response = requests.get(query_file_url)
-                    if response.status_code == 200:
-                        query_file_content = response.text
-                    else:
-                        return Response(
-                            {"error": "Failed to fetch query file from the provided URL."},
-                            status=status.HTTP_400_BAD_REQUEST
-                        )
-                except Exception as e:
-                    return Response(
-                        {"error": f"An error occurred while fetching the query file: {str(e)}"},
-                        status=status.HTTP_400_BAD_REQUEST
-                    )
-
-            generate_report.delay(destination_url, query_file_content, token_generation_url, current_host)
+            generate_report.delay(destination_url, token_generation_url, current_host)
             return Response(
                 {"message": "Data collection task has been initiated successfully."},
                 status=status.HTTP_202_ACCEPTED

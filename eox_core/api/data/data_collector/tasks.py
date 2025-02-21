@@ -5,6 +5,7 @@ and posting the results to the Shipyard API.
 
 from celery import shared_task, Task
 from eox_core.api.data.data_collector.utils import execute_query, post_data_to_api, serialize_data, process_query_results
+from eox_core.api.data.data_collector.queries import PREDEFINED_QUERIES
 import yaml
 import logging
 
@@ -30,34 +31,27 @@ class ReportTask(Task):
 
 
 @shared_task(bind=True)
-def generate_report(self, destination_url, query_file_content, token_generation_url, current_host):
+def generate_report(self, destination_url, token_generation_url, current_host):
     """
     Async task to generate a report:
-    1. Reads queries from the provided query file content.
-    2. Executes each query against the database.
-    3. Sends the results to the Shipyard API.
+    1. Executes all predefined queries.
+    2. Sends the results to the Shipyard API.
 
     Args:
         self (Task): The Celery task instance.
-        query_file_content (str): The content of the query file in YAML format.
+        destination_url (str): URL to send the results.
+        token_generation_url (str): URL to get the access token.
+        current_host (str): The host making the request.
 
     Raises:
         Retry: If an error occurs, the task retries up to 3 times with a 60-second delay.
     """
     try:
-        queries = yaml.safe_load(query_file_content).get("queries", [])
-        if not queries:
-            logger.warning("No queries found in the provided file. Task will exit.")
-            return
-
         report_data = {}
-        for query in queries:
-            query_name = query.get("name")
-            query_sql = query.get("query")
+        for query_name, query_sql in PREDEFINED_QUERIES.items():
             logger.info(f"Executing query: {query_name}")
             try:
                 result = execute_query(query_sql)
-
                 serialized_result = serialize_data(result)
                 processed_result = process_query_results(serialized_result)
                 report_data[query_name] = processed_result
@@ -66,7 +60,6 @@ def generate_report(self, destination_url, query_file_content, token_generation_
                 continue
 
         post_data_to_api(destination_url, report_data, token_generation_url, current_host)
-
         logger.info("Report generation task completed successfully.")
     except Exception as e:
         logger.error(f"An error occurred in the report generation task: {e}. Retrying")
