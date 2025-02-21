@@ -48,6 +48,12 @@ class DataCollectorView(APIView):
         Returns:
             Response: A success or error message.
         """
+        if not getattr(settings, "EOX_CORE_DATA_COLLECTOR_ENABLED", False):
+            return Response(
+                {"error": "This endpoint is currently disabled."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
         serializer = DataCollectorSerializer(data=request.data)
 
         if serializer.is_valid():
