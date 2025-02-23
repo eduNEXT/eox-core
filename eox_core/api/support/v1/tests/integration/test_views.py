@@ -191,17 +191,17 @@ class TestEdxAppUserAPIIntegration(
         new_username = f"new-username-{query_param}"
 
         response = self.update_username(self.tenant_x, {query_param: data[query_param]}, {"new_username": new_username})
-        self.assertEqual(response, "test1")
-        response_data = response.json()
-        # get_response = self.get_user(self.tenant_x, {"username": new_username})
-        # get_response_data = get_response.json()
+        #self.assertEqual(response, "test1")
+        #response_data = response.json()
+        get_response = self.get_user(self.tenant_x, {"username": new_username})
+        get_response_data = get_response.json()
         
-        self.assertEqual(response_data, "test2")
+        #self.assertEqual(response_data, "test2")
         # self.assertEqual(get_response_data, "test")
-        # self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         # self.assertEqual(response_data["username"], new_username)
-        # self.assertEqual(get_response.status_code, status.HTTP_200_OK)
-        # self.assertEqual(get_response_data["username"], new_username)
+        self.assertEqual(get_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(get_response_data["username"], new_username)
 
     def test_update_username_in_tenant_not_found(self) -> None:
         """
