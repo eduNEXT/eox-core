@@ -191,12 +191,8 @@ class TestEdxAppUserAPIIntegration(
         new_username = f"new-username-{query_param}"
 
         response = self.update_username(self.tenant_x, {query_param: data[query_param]}, {"new_username": new_username})
-        print("Response status:", response.status_code)
-        print("Response body:", response.text)
         response_data = response.json()
         get_response = self.get_user(self.tenant_x, {"username": new_username})
-        print("get_response status:", get_response.status_code)
-        print("get_response body:", get_response.text)
         get_response_data = get_response.json()
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
