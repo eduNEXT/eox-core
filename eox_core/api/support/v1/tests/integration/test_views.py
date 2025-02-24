@@ -51,7 +51,7 @@ class SupportAPIRequestMixin:
         Returns:
             requests.Response: The response object.
         """
-        return make_request(tenant, "PATCH", url=self.UPDATE_USERNAME_URL, json=data)
+        return make_request(tenant, "PATCH", url=self.UPDATE_USERNAME_URL, params=params, data=data)
 
     def create_oauth_application(self, tenant: dict, data: dict | None = None) -> requests.Response:
         """
@@ -170,7 +170,7 @@ class TestEdxAppUserAPIIntegration(
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response_data, ["Email or username needed"])
 
-    @ddt.data("username")
+    @ddt.data("username", "email")
     def test_update_username_in_tenant_success(self, query_param: str) -> None:
         """
         Test update an edxapp user's username in a tenant.
@@ -190,7 +190,7 @@ class TestEdxAppUserAPIIntegration(
         self.create_user(self.tenant_x, data)
         new_username = f"new-username-{query_param}"
 
-        response = self.update_username(self.tenant_x, {query_param: data[query_param]}, {"username": data['username'], "new_username": new_username})
+        response = self.update_username(self.tenant_x, {query_param: data[query_param]}, {"new_username": new_username})
         # response_data = response.json()
         get_response = self.get_user(self.tenant_x, {"username": new_username})
         # get_response_data = get_response.json()
