@@ -195,8 +195,6 @@ class TestEdxAppUserAPIIntegration(
         get_response = self.get_user(self.tenant_x, {"username": new_username})
         get_response_data = get_response.json()
 
-        self.assertEqual(True, True)
-
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response_data["username"], new_username)
         self.assertEqual(get_response.status_code, status.HTTP_200_OK)
