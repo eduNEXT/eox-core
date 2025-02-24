@@ -108,7 +108,7 @@ PROCTORING_BACKENDS = {
 # Integration test settings
 INTEGRATION_TEST_SETTINGS = {
     "EOX_CORE_API_BASE": "eox-core",
-    "LMS_BASE": "local.openedx.io",
+    "LMS_BASE": "local.edly.io",
     "API_TIMEOUT": 5,
     "CLIENT_ID": "client_id",
     "CLIENT_SECRET": "client_secret",
