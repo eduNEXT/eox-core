@@ -15,7 +15,7 @@ from eox_core.api.data.data_collector.v1.serializers import DataCollectorSeriali
 logger = logging.getLogger(__name__)
 
 
-class IsGitHubAction(BasePermission):
+class DatacollectorPermission(BasePermission):
     """
     Permission class to allow access only if the request contains a valid GitHub Action token.
     """
@@ -36,7 +36,7 @@ class DataCollectorView(APIView):
     - Triggers an async task to execute queries and send results to a specified destination.
     """
     # Allow JWT Auth
-    permission_classes = [IsGitHubAction]
+    permission_classes = [DatacollectorPermission]
 
     def post(self, request):
         """
