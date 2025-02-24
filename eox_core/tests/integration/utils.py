@@ -63,7 +63,7 @@ def make_request(
     if method not in ("GET", "POST", "PATCH", "PUT", "DELETE"):
         raise ValueError(f"Unsupported HTTP method: {method}.")
 
-    requests.request(
+    return requests.request(
         method,
         full_url,
         json=json,
