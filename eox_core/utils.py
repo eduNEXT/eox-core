@@ -169,7 +169,10 @@ def get_or_create_site_from_oauth_app_uris(redirect_uris):
 
 
 def get_access_token(
-        token_url, client_id, client_secret, grant_type="client_credentials"
+        token_url,
+        client_id,
+        client_secret,
+        grant_type="client_credentials"
     ):
     """
     Fetch an access token from a service OAuth2 API.
