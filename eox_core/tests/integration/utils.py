@@ -72,8 +72,14 @@ def make_request(
         headers=headers,
         timeout=settings["API_TIMEOUT"],
     )
-
-    print('REQUEST TEST FELIPE' ,request)
+    if method == 'PATCH':
+        print('method', method)
+        print('full_url', full_url)
+        print('json', json)
+        print('data', data)
+        print('params', params)
+        print('headers', headers)
+        print('REQUEST TEST FELIPE', request)
 
     return request
 
