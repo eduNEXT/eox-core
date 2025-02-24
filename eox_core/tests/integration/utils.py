@@ -86,7 +86,7 @@ def make_request(
         print(f"Response Body: {request.text}")
     except Exception as e:
         print(f"Error inesperado: {e}")
-        return request
+    return request
 
 
 class BaseIntegrationTest(TestCase):
