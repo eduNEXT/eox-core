@@ -50,7 +50,7 @@ class DataCollectorView(APIView):
         Returns:
             Response: A success or error message.
         """
-        if not getattr(settings, "EOX_CORE_DATA_COLLECTOR_ENABLED", False):
+        if not getattr(settings, "AGGREGATED_DATA_COLLECTOR_API_ENABLED", False):
             return Response(
                 {"error": "This endpoint is currently disabled."},
                 status=status.HTTP_403_FORBIDDEN
