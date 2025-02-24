@@ -31,6 +31,9 @@ class DataCollectorView(APIView):
     """
     API view to handle data collection requests.
 
+    This feature is **100% opt-in**, meaning that it will only work if explicitly enabled
+    by the system administrator. No data is extracted or sent without consent.
+
     This view:
     - Validates input using DataCollectorSerializer.
     - Triggers an async task to execute queries and send results to a specified destination.
