@@ -63,7 +63,7 @@ def make_request(
     if method not in ("GET", "POST", "PATCH", "PUT", "DELETE"):
         raise ValueError(f"Unsupported HTTP method: {method}.")
     
-    request = requests.request(
+    requests.request(
         method,
         full_url,
         json=json,
@@ -72,16 +72,6 @@ def make_request(
         headers=headers,
         timeout=settings["API_TIMEOUT"],
     )
-    if method == 'PATCH':
-        print('method', method)
-        print('full_url', full_url)
-        print('json', json)
-        print('data', data)
-        print('params', params)
-        print('headers', headers)
-        print('REQUEST TEST FELIPE', request)
-
-    return request
 
 
 class BaseIntegrationTest(TestCase):
