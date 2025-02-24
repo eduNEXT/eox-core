@@ -188,7 +188,7 @@ class TestEdxAppUserAPIIntegration(
         """
         data = next(FAKE_USER_DATA)
         self.create_user(self.tenant_x, data)
-        new_username = f"newusername{query_param}"
+        new_username = f"new-username-{query_param}"
 
         response = self.update_username(self.tenant_x, {query_param: data[query_param]}, {"new_username": new_username})
         # response_data = response.json()
