@@ -79,8 +79,6 @@ def make_request(
         print('data', data)
         print('params', params)
         print('headers', headers)
-        print('request.text', request.text)
-        print('request.headers', request.headers)
         print('REQUEST TEST FELIPE', request)
 
     return request
