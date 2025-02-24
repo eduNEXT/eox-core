@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+
 class DataCollectorSerializer(serializers.Serializer):
     """
     Serializer for the DataCollectorView API.

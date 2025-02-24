@@ -19,13 +19,13 @@ logger = logging.getLogger(__name__)
 def execute_query(sql_query):
     """
     Execute a raw SQL query and return the results in a structured format.
-    
+
     Args:
         sql_query (str): The raw SQL query to execute.
-    
+
     Returns:
         list or dict: Structured query results.
-    
+
     Raises:
         ValueError: If the query is not a SELECT statement.
     """
@@ -102,7 +102,7 @@ def post_data_to_api(api_url, report_data, token_generation_url, current_host):
         "Authorization": f"Bearer {token}",
         "Content-Type": "application/json",
     }
-    payload = {"instance_domain":current_host, "data": report_data}
+    payload = {"instance_domain": current_host, "data": report_data}
     response = requests.post(api_url, json=payload, headers=headers)
 
     if not response.ok:

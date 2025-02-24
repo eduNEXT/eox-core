@@ -62,7 +62,7 @@ class DataCollectorView(APIView):
             validated_data = serializer.validated_data
             destination_url = validated_data.get("destination_url")
             token_generation_url = validated_data.get("token_generation_url")
-            current_host = request.get_host() #Remove trailing slash and http
+            current_host = request.get_host()  # Remove trailing slash and http
 
             generate_report.delay(destination_url, token_generation_url, current_host)
             return Response(
