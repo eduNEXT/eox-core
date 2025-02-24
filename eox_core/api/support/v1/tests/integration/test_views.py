@@ -51,7 +51,7 @@ class SupportAPIRequestMixin:
         Returns:
             requests.Response: The response object.
         """
-        return make_request(tenant, "PATCH", url=self.UPDATE_USERNAME_URL, params=params, data=data)
+        return make_request(tenant, "PATCH", url=self.UPDATE_USERNAME_URL, params=params, json=data)
 
     def create_oauth_application(self, tenant: dict, data: dict | None = None) -> requests.Response:
         """
