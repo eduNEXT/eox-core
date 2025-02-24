@@ -62,26 +62,31 @@ def make_request(
     method = method.upper()
     if method not in ("GET", "POST", "PATCH", "PUT", "DELETE"):
         raise ValueError(f"Unsupported HTTP method: {method}.")
-
-    request = requests.request(
-        method,
-        full_url,
-        json=json,
-        data=data,
-        params=params,
-        headers=headers,
-        timeout=settings["API_TIMEOUT"],
-    )
-    if method == 'PATCH':
-        print('method', method)
-        print('full_url', full_url)
-        print('json', json)
-        print('data', data)
-        print('params', params)
-        print('headers', headers)
-        print('REQUEST TEST FELIPE', request)
-
-    return request
+    try:
+        request = requests.request(
+            method,
+            full_url,
+            json=json,
+            data=data,
+            params=params,
+            headers=headers,
+            timeout=settings["API_TIMEOUT"],
+        )
+        if method == 'PATCH':
+            print('method', method)
+            print('full_url', full_url)
+            print('json', json)
+            print('data', data)
+            print('params', params)
+            print('headers', headers)
+            print('REQUEST TEST FELIPE', request)
+    except requests.exceptions.HTTPError as e:
+        print(f"Error HTTP: {e}")
+        print(f"Status Code: {request.status_code}")
+        print(f"Response Body: {request.text}")
+    except Exception as e:
+        print(f"Error inesperado: {e}")
+        return request
 
 
 class BaseIntegrationTest(TestCase):
