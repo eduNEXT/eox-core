@@ -3,31 +3,13 @@ Async task for generating reports by executing database queries
 and posting the results to the Shipyard API.
 """
 
-from celery import shared_task, Task
+from celery import shared_task
 from eox_core.api.data.data_collector.utils import execute_query, post_data_to_api, serialize_data, process_query_results
 from eox_core.api.data.data_collector.queries import PREDEFINED_QUERIES
 import yaml
 import logging
 
 logger = logging.getLogger(__name__)
-
-
-class ReportTask(Task):
-    """
-    Custom task class to handle report generation with an on_failure hook.
-    """
-    def on_failure(self, exc, task_id, args, kwargs, einfo):
-        """
-        Called when the task has exhausted all retries.
-
-        Args:
-            exc (Exception): The exception raised.
-            task_id (str): The ID of the failed task.
-            args (tuple): The positional arguments for the task.
-            kwargs (dict): The keyword arguments for the task.
-            einfo (ExceptionInfo): Exception information.
-        """
-        logger.error(f"Task {task_id} failed after retries. Exception: {exc}. Could not collect data.")
 
 
 @shared_task(bind=True)
