@@ -11,6 +11,8 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+COUNTDOWN = 60
+MAX_RETRIES = 3
 
 @shared_task(bind=True)
 def generate_report(self, destination_url, token_generation_url, current_host):
@@ -45,4 +47,4 @@ def generate_report(self, destination_url, token_generation_url, current_host):
         logger.info("Report generation task completed successfully.")
     except Exception as e:
         logger.error(f"An error occurred in the report generation task: {e}. Retrying")
-        raise self.retry(exc=e, countdown=60, max_retries=3)
+        raise self.retry(exc=e, countdown=COUNTDOWN, max_retries=MAX_RETRIES)
