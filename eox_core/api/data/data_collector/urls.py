@@ -1,5 +1,8 @@
 """
-URLs for the Microsite API
+URL configuration for the Microsite API.
+
+This module defines the URL patterns for the Microsite API, 
+including versioned endpoints for data_collector.
 """
 from django.urls import include, re_path
 
