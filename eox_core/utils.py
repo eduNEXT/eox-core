@@ -184,7 +184,10 @@ def get_access_token(token_url, client_id, client_secret, grant_type="client_cre
             "client_id": client_id,
             "client_secret": client_secret,
         },
+        timeout=10
     )
     if response.ok:
         return response.json().get("access_token")
-    raise Exception("Failed to obtain access token for API.")
+    raise requests.exceptions.HTTPError(
+        f"Failed to obtain access token: {response.status_code} - {response.text}"
+    )
