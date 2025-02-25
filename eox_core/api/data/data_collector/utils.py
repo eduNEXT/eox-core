@@ -25,6 +25,13 @@ def execute_query(sql_query):
 
     Returns:
         list or dict: Structured query results.
+    
+    Example:
+        >>> execute_query("SELECT id, username FROM auth_user WHERE is_active = 1;")
+        [
+            {"id": 1, "username": "john_doe"},
+            {"id": 2, "username": "jane_doe"}
+        ]
     """
     with connection.cursor() as cursor:
         cursor.execute(sql_query)
