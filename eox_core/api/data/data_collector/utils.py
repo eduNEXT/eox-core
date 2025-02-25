@@ -47,41 +47,29 @@ def execute_query(sql_query):
             return [dict(zip(columns, row)) for row in rows]  # Multi-column results as a list of dicts
         return rows
 
-
-def serialize_data(data):
+def post_process_query_results(data):
     """
-    Recursively serialize data, converting datetime objects to strings.
+    Cleans and processes query results by:
+    - Serializing datetime objects into strings.
+    - Extracting scalar values from single-item lists.
+    - Returning structured data for further use.
 
     Args:
-        data (dict or list): The data to serialize.
+        data (dict, list, datetime, or scalar): The query result data.
 
     Returns:
-        dict or list: The serialized data with datetime objects as strings.
+        dict, list, or scalar: The processed query result.
     """
     if isinstance(data, dict):
-        return {key: serialize_data(value) for key, value in data.items()}
+        return {key: post_process_query_results(value) for key, value in data.items()}
     elif isinstance(data, list):
-        return [serialize_data(item) for item in data]
+        # If it's a list with one item, return just the item
+        if len(data) == 1:
+            return post_process_query_results(data[0])
+        return [post_process_query_results(item) for item in data]
     elif isinstance(data, datetime):
         return data.isoformat()
     return data
-
-
-def process_query_results(raw_result):
-    """
-    Process the raw result of a query.
-
-    Args:
-        raw_result: The result from the SQL query (list, scalar, or dictionary).
-
-    Returns:
-        The processed result, extracting scalar values from single-item lists,
-        or returning the original value for more complex data structures.
-    """
-    if isinstance(raw_result, list) and len(raw_result) == 1:
-        return raw_result[0]
-    return raw_result
-
 
 def post_data_to_api(api_url, report_data, token_generation_url, current_host):
     """

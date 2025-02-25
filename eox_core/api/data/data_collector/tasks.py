@@ -4,7 +4,7 @@ and posting the results to the Shipyard API.
 """
 
 from celery import shared_task
-from eox_core.api.data.data_collector.utils import execute_query, post_data_to_api, serialize_data, process_query_results
+from eox_core.api.data.data_collector.utils import execute_query, post_data_to_api, post_process_query_results
 from eox_core.api.data.data_collector.queries import PREDEFINED_QUERIES
 import yaml
 import logging
@@ -35,8 +35,7 @@ def generate_report(self, destination_url, token_generation_url, current_host):
             try:
                 result = execute_query(query_sql)
 
-                serialized_result = serialize_data(result)
-                processed_result = process_query_results(serialized_result)
+                processed_result = post_process_query_results(result)
                 report_data[query_name] = processed_result
             except Exception as e:
                 logger.error(f"Failed to execute query '{query_name}': {e}")
