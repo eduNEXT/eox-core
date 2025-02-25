@@ -80,8 +80,8 @@ def post_data_to_api(api_url, report_data, token_generation_url, current_host):
     """
     token = get_access_token(
         token_generation_url,
-        settings.EOX_CORE_SAVE_DATA_API_CLIENT_ID,
-        settings.EOX_CORE_SAVE_DATA_API_CLIENT_SECRET,
+        settings.EOX_CORE_AGGREGATED_DATA_API_CLIENT_ID,
+        settings.EOX_CORE_AGGREGATED_DATA_API_CLIENT_SECRET,
     )
     headers = {
         "Authorization": f"Bearer {token}",
