@@ -1,9 +1,21 @@
+"""
+This module contains SQL queries to retrieve platform-related metrics.
+
+These queries are used to extract information about user activity, course 
+engagement, and certificate issuance. The data retrieval is conditioned on 
+the feature being enabled and the necessary authentication credentials 
+being set.
+"""
+
+# This query counts the total number of users in the platform.
 TOTAL_USERS_QUERY = """
 SELECT
   COUNT(*)
 FROM
   auth_user as au;
 """
+# This query counts the number of unique active users in the last month.
+# A user is considered active if they have modified a student module within the last month.
 ACTIVE_USERS_LAST_MONTH_QUERY = """
 SELECT
   YEAR(cs.modified) AS 'Year',
@@ -17,6 +29,8 @@ WHERE
 GROUP BY
     YEAR(cs.modified), MONTH(cs.modified);
 """
+# This query counts the number of unique active users in the last 7 days.
+# A user is considered active if they have modified a student module within the last 7 days.
 ACTIVE_USERS_LAST_7_DAYS_QUERY = """
 SELECT
   COUNT(DISTINCT cs.student_id)
@@ -25,6 +39,7 @@ FROM
 WHERE
   cs.modified >= DATE_SUB(CURDATE(), INTERVAL 7 DAY);
 """
+# This query counts the total number of courses created on the platform.
 TOTAL_COURSES_CREATED_QUERY = """
 SELECT
   COUNT(*)
@@ -45,6 +60,7 @@ WHERE
     OR coc.end IS NULL
   );
 """
+# This query counts the number of courses that have at least one issued certificate.
 COURSES_WITH_ACTIVE_CERTIFICATES_QUERY = """
 SELECT
   COUNT(DISTINCT coc.id)
@@ -55,6 +71,7 @@ JOIN
 ON
   coc.id = cg.course_id;
 """
+# This query counts the number of new enrollments in the last month.
 ENROLLMENTS_LAST_MONTH_QUERY = """
 SELECT
   YEAR(sc.created) AS 'Year',
@@ -68,6 +85,7 @@ WHERE
 GROUP BY
   YEAR(sc.created), MONTH(sc.created);
 """
+# This query counts the number of new enrollments in the last 7 days.
 ENROLLMENTS_LAST_7_DAYS_QUERY = """
 SELECT
   COUNT(DISTINCT sc.id)
@@ -82,6 +100,7 @@ SELECT
 FROM
   certificates_generatedcertificate as cg;
 """
+# This query counts the total number of certificates issued on the platform.
 PREDEFINED_QUERIES = {
     "Total Users": TOTAL_USERS_QUERY,
     "Active Users Last Month": ACTIVE_USERS_LAST_MONTH_QUERY,
