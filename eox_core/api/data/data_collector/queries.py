@@ -1,9 +1,9 @@
 """
 This module contains SQL queries to retrieve platform-related metrics.
 
-These queries are used to extract information about user activity, course 
-engagement, and certificate issuance. The data retrieval is conditioned on 
-the feature being enabled and the necessary authentication credentials 
+These queries are used to extract information about user activity, course
+engagement, and certificate issuance. The data retrieval is conditioned on
+the feature being enabled and the necessary authentication credentials
 being set.
 """
 
@@ -110,5 +110,5 @@ PREDEFINED_QUERIES = {
     "Courses With Active Certificates": COURSES_WITH_ACTIVE_CERTIFICATES_QUERY,
     "Enrollments Last Month": ENROLLMENTS_LAST_MONTH_QUERY,
     "Enrollments Last 7 Days": ENROLLMENTS_LAST_7_DAYS_QUERY,
-    "Certificates Issued": CERTIFICATES_ISSUED_QUERY,   
+    "Certificates Issued": CERTIFICATES_ISSUED_QUERY,
 }

@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 COUNTDOWN = 60
 MAX_RETRIES = 3
 
+
 @shared_task(bind=True)
 def generate_report(self, destination_url, token_generation_url, current_host):
     """

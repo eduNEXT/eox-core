@@ -37,7 +37,7 @@ class DataCollectorView(APIView):
                 {"error": "This endpoint is currently disabled."},
                 status=status.HTTP_403_FORBIDDEN
             )
-        
+
         destination_url = getattr(settings, "EOX_CORE_DATA_COLLECT_DESTINATION_URL", None)
         token_generation_url = getattr(settings, "EOX_CORE_DATA_COLLECT_TOKEN_URL", None)
 

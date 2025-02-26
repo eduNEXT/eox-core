@@ -25,7 +25,7 @@ def execute_query(sql_query):
 
     Returns:
         list or dict: Structured query results.
-    
+
     Example:
         >>> execute_query("SELECT id, username FROM auth_user WHERE is_active = 1;")
         [
@@ -43,6 +43,7 @@ def execute_query(sql_query):
                 return [row[0] for row in rows]  # Return single-column results as a list
             return [dict(zip(columns, row)) for row in rows]  # Multi-column results as a list of dicts
         return rows
+
 
 def post_process_query_results(data):
     """
@@ -67,6 +68,7 @@ def post_process_query_results(data):
     elif isinstance(data, datetime):
         return data.isoformat()
     return data
+
 
 def post_data_to_api(api_url, report_data, token_generation_url, current_host):
     """

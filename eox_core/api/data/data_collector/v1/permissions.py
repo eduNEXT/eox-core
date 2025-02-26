@@ -5,6 +5,7 @@ from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
+
 class DatacollectorPermission(BasePermission):
     """
     Permission class to allow access only if the request contains a valid GitHub Action token.
