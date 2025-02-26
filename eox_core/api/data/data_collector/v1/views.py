@@ -10,7 +10,6 @@ from eox_core.api.data.data_collector.tasks import generate_report
 from rest_framework.permissions import BasePermission
 from rest_framework.authentication import get_authorization_header
 from django.conf import settings
-from eox_core.api.data.data_collector.v1.serializers import DataCollectorSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +34,6 @@ class DataCollectorView(APIView):
     by the system administrator. No data is extracted or sent without consent.
 
     This view:
-    - Validates input using DataCollectorSerializer.
     - Triggers an async task to execute queries and send results to a specified destination.
     """
     permission_classes = [DatacollectorPermission]
@@ -55,19 +53,21 @@ class DataCollectorView(APIView):
                 {"error": "This endpoint is currently disabled."},
                 status=status.HTTP_403_FORBIDDEN
             )
+        
+        destination_url = getattr(settings, "EOX_CORE_DATA_COLLECT_DESTINATION_URL", None)
+        token_generation_url = getattr(settings, "EOX_CORE_DATA_COLLECT_TOKEN_URL", None)
 
-        serializer = DataCollectorSerializer(data=request.data)
-
-        if serializer.is_valid():
-            validated_data = serializer.validated_data
-            destination_url = validated_data.get("destination_url")
-            token_generation_url = validated_data.get("token_generation_url")
-            current_host = request.get_host()  # Remove trailing slash and http
-
-            generate_report.delay(destination_url, token_generation_url, current_host)
+        if not destination_url or not token_generation_url:
+            logger.error("Data collection settings are missing.")
             return Response(
-                {"message": "Data collection task has been initiated successfully."},
-                status=status.HTTP_202_ACCEPTED
+                {"error": "Data collection settings are not properly configured."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        current_host = request.get_host()  # Remove trailing slash and http
+
+        generate_report.delay(destination_url, token_generation_url, current_host)
+        return Response(
+            {"message": "Data collection task has been initiated successfully."},
+            status=status.HTTP_202_ACCEPTED
+        )
