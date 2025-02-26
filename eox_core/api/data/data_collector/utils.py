@@ -3,14 +3,11 @@ Utility functions for report generation, including query execution
 and integration with the Shipyard API.
 """
 
-import yaml
-from django.db import connection
+import logging
+from datetime import datetime
 import requests
 from django.conf import settings
-from datetime import datetime
-import logging
-import re
-
+from django.db import connection
 from eox_core.utils import get_access_token
 
 logger = logging.getLogger(__name__)
@@ -60,7 +57,7 @@ def post_process_query_results(data):
     """
     if isinstance(data, dict):
         return {key: post_process_query_results(value) for key, value in data.items()}
-    elif isinstance(data, list):
+    if isinstance(data, list):
         # If it's a list with one item, return just the item
         if len(data) == 1:
             return post_process_query_results(data[0])
@@ -90,7 +87,12 @@ def post_data_to_api(api_url, report_data, token_generation_url, current_host):
         "Content-Type": "application/json",
     }
     payload = {"instance_domain": current_host, "data": report_data}
-    response = requests.post(api_url, json=payload, headers=headers)
+    response = requests.post(api_url, json=payload, headers=headers, timeout=10)
 
-    if not response.ok:
-        raise Exception(f"Failed to post data to Shipyard API: {response.content}")
+    try:
+        response = requests.post(api_url, json=payload, headers=headers, timeout=10)
+        response.raise_for_status()
+    except requests.Timeout:
+        raise requests.Timeout("The request to Shipyard API timed out.")
+    except requests.RequestException as e:
+        raise requests.RequestException(f"Failed to post data to Shipyard API: {e}")

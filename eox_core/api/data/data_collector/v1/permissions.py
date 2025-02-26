@@ -1,3 +1,7 @@
+"""
+Custom permission classes for the Data Collector API.
+"""
+
 import logging
 from rest_framework.permissions import BasePermission
 from rest_framework.authentication import get_authorization_header
