@@ -3,9 +3,10 @@ Custom permission classes for the Data Collector API.
 """
 
 import logging
-from rest_framework.permissions import BasePermission
-from rest_framework.authentication import get_authorization_header
+
 from django.conf import settings
+from rest_framework.authentication import get_authorization_header
+from rest_framework.permissions import BasePermission
 
 logger = logging.getLogger(__name__)
 

@@ -5,9 +5,11 @@ and integration with the Shipyard API.
 
 import logging
 from datetime import datetime
+
 import requests
 from django.conf import settings
 from django.db import connection
+
 from eox_core.utils import get_access_token
 
 logger = logging.getLogger(__name__)

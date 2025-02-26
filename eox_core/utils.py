@@ -5,8 +5,8 @@ Util function definitions.
 import datetime
 import hashlib
 import re
-import requests
 
+import requests
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core import cache

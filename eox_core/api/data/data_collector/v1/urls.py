@@ -1,5 +1,6 @@
 """_"""
 from django.urls import path
+
 from eox_core.api.data.data_collector.v1.views import DataCollectorView
 
 # pylint: disable=invalid-name
