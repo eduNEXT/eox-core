@@ -62,7 +62,7 @@ def post_process_query_results(data):
         if len(data) == 1:
             return post_process_query_results(data[0])
         return [post_process_query_results(item) for item in data]
-    elif isinstance(data, datetime):
+    if isinstance(data, datetime):
         return data.isoformat()
     return data
 
@@ -92,7 +92,7 @@ def post_data_to_api(api_url, report_data, token_generation_url, current_host):
     try:
         response = requests.post(api_url, json=payload, headers=headers, timeout=10)
         response.raise_for_status()
-    except requests.Timeout:
-        raise requests.Timeout("The request to Shipyard API timed out.")
+    except requests.Timeout as exc:
+        raise requests.Timeout("The request to Shipyard API timed out.") from exc
     except requests.RequestException as e:
         raise requests.RequestException(f"Failed to post data to Shipyard API: {e}")
