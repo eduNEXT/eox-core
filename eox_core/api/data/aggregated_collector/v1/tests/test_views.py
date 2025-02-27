@@ -1,6 +1,7 @@
 import pytest
 from unittest.mock import patch
 from django.conf import settings
+from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework import status
 from eox_core.api.data.aggregated_collector.tasks import generate_report
@@ -11,13 +12,13 @@ def api_client():
 
 @pytest.fixture
 def api_url():
-    return "/eox-core/data-api/v1/aggregated-collector/"
+    return reverse('eox-data-api:eox-data-api-collector-v1:aggregated_collector')
 
 @pytest.mark.django_db
 class TestAggregatedCollectorView:
     
     @pytest.fixture(autouse=True)
-    def setup(settings):
+    def setup(self, settings):
         """Set default values for settings before each test."""
         settings.AGGREGATED_DATA_COLLECTOR_API_ENABLED = True
         settings.EOX_CORE_AGGREGATED_COLLECT_DESTINATION_URL = "https://example.com/destination"
