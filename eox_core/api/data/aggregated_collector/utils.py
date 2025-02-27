@@ -15,7 +15,7 @@ from eox_core.utils import get_access_token
 logger = logging.getLogger(__name__)
 
 
-def execute_query(sql_query):
+def execute_query(sql_query: str):
     """
     Execute a raw SQL query and return the results in a structured format.
 
@@ -44,7 +44,7 @@ def execute_query(sql_query):
         return rows
 
 
-def post_process_query_results(data):
+def post_process_query_results(data: any):
     """
     Cleans and processes query results by:
     - Serializing datetime objects into strings.
@@ -69,7 +69,7 @@ def post_process_query_results(data):
     return data
 
 
-def post_data_to_api(api_url, report_data, token_generation_url, current_host):
+def post_data_to_api(api_url: str, report_data: dict, token_generation_url: str, current_host: str):
     """
     Sends the generated report data to the Shipyard API.
 

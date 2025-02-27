@@ -18,7 +18,7 @@ MAX_RETRIES = 3
 
 
 @shared_task(bind=True)
-def generate_report(self, destination_url, token_generation_url, current_host):
+def generate_report(self, destination_url: str, token_generation_url: str, current_host: str):
     """
     Async task to generate a report:
     1. Executes all predefined queries.

@@ -7,6 +7,7 @@ This module defines the API views for collecting and processing data.
 import logging
 
 from django.conf import settings
+from django.http import HttpRequest
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -29,7 +30,7 @@ class AggregatedCollectorView(APIView):
     """
     permission_classes = [AggregatedCollectorPermission]
 
-    def post(self, request):
+    def post(self, request: HttpRequest) -> Response:
         """
         Handles POST requests to collect data.
 
