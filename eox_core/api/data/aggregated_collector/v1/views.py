@@ -1,5 +1,5 @@
 """
-Views for the Data Collector API (v1).
+Views for the Aggregated Collector API (v1).
 
 This module defines the API views for collecting and processing data.
 """
@@ -11,13 +11,13 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from eox_core.api.data.data_collector.tasks import generate_report
-from eox_core.api.data.data_collector.v1.permissions import DatacollectorPermission
+from eox_core.api.data.aggregated_collector.tasks import generate_report
+from eox_core.api.data.aggregated_collector.v1.permissions import AggregatedCollectorPermission
 
 logger = logging.getLogger(__name__)
 
 
-class DataCollectorView(APIView):
+class AggregatedCollectorView(APIView):
     """
     API view to handle data collection requests.
 
@@ -27,7 +27,7 @@ class DataCollectorView(APIView):
     This view:
     - Triggers an async task to execute queries and send results to a specified destination.
     """
-    permission_classes = [DatacollectorPermission]
+    permission_classes = [AggregatedCollectorPermission]
 
     def post(self, request):
         """
@@ -45,8 +45,8 @@ class DataCollectorView(APIView):
                 status=status.HTTP_403_FORBIDDEN
             )
 
-        destination_url = getattr(settings, "EOX_CORE_DATA_COLLECT_DESTINATION_URL", None)
-        token_generation_url = getattr(settings, "EOX_CORE_DATA_COLLECT_TOKEN_URL", None)
+        destination_url = getattr(settings, "EOX_CORE_AGGREGATED_COLLECT_DESTINATION_URL", None)
+        token_generation_url = getattr(settings, "EOX_CORE_AGGREGATED_COLLECT_TOKEN_URL", None)
 
         if not destination_url or not token_generation_url:
             logger.error("Data collection settings are missing.")

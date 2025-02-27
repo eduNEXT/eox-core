@@ -8,8 +8,8 @@ import logging
 from celery import shared_task
 from django.db.utils import DatabaseError, OperationalError
 
-from eox_core.api.data.data_collector.queries import PREDEFINED_QUERIES
-from eox_core.api.data.data_collector.utils import execute_query, post_data_to_api, post_process_query_results
+from eox_core.api.data.aggregated_collector.queries import PREDEFINED_QUERIES
+from eox_core.api.data.aggregated_collector.utils import execute_query, post_data_to_api, post_process_query_results
 
 logger = logging.getLogger(__name__)
 

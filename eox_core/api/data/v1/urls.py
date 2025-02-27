@@ -11,5 +11,5 @@ app_name = 'eox_core'  # pylint: disable=invalid-name
 urlpatterns = [  # pylint: disable=invalid-name
     re_path(r'^v1/', include((ROUTER.urls, 'eox_core'), namespace='eox-data-api-v1')),
     re_path(r'^v1/tasks/(?P<task_id>.*)$', CeleryTasksStatus.as_view(), name="celery-data-api-tasks"),
-    re_path(r'^', include('eox_core.api.data.data_collector.urls', namespace='eox-data-api-collector')),
+    re_path(r'^', include('eox_core.api.data.aggregated_collector.urls', namespace='eox-data-api-collector')),
 ]
