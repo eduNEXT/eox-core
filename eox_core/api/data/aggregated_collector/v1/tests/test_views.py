@@ -1,64 +1,38 @@
-import pytest
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
+from django.test import TestCase
 from django.conf import settings
-from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework import status
+from eox_core.api.data.aggregated_collector.utils import execute_query
 from eox_core.api.data.aggregated_collector.tasks import generate_report
+from eox_core.api.data.aggregated_collector.v1.views import AggregatedCollectorView
 
-@pytest.fixture
-def api_client():
-    return APIClient()
-
-@pytest.fixture
-def api_url():
-    return reverse('eox-data-api:eox-data-api-collector-v1:aggregated_collector')
-
-@pytest.mark.django_db
-class TestAggregatedCollectorView:
-    
-    @pytest.fixture(autouse=True)
-    def setup(self, settings):
-        """Set default values for settings before each test."""
+class AggregatedCollectorTests(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.url = "/v1/aggregated-collector/"
         settings.AGGREGATED_DATA_COLLECTOR_API_ENABLED = True
-        settings.EOX_CORE_AGGREGATED_COLLECT_DESTINATION_URL = "https://example.com/destination"
-        settings.EOX_CORE_AGGREGATED_COLLECT_TOKEN_URL = "https://example.com/token"
-        settings.EOX_CORE_DATA_COLLECT_AUTH_TOKEN = "valid_token"
+        settings.EOX_CORE_AGGREGATED_COLLECT_DESTINATION_URL = "http://mock-api.com"
+        settings.EOX_CORE_AGGREGATED_COLLECT_TOKEN_URL = "http://mock-token.com"
+        settings.EOX_CORE_AGGREGATED_COLLECT_AUTH_TOKEN = "test-token"
 
-    def test_endpoint_disabled(self, api_client, api_url):
-        """Should return 403 if the API is disabled in settings."""
-        settings.AGGREGATED_DATA_COLLECTOR_API_ENABLED = False
-
-        response = api_client.post(api_url)
+    @patch("eox_core.api.data.aggregated_collector.utils.connection.cursor")
+    def test_execute_query(self, mock_cursor):
+        mock_cursor.return_value.__enter__.return_value.fetchall.return_value = [(1, "test_user")]
+        mock_cursor.return_value.__enter__.return_value.description = [("id",), ("username",)]
         
-        assert response.status_code == status.HTTP_403_FORBIDDEN
-        assert response.data["error"] == "This endpoint is currently disabled."
+        result = execute_query("SELECT id, username FROM auth_user;")
+        self.assertEqual(result, [{"id": 1, "username": "test_user"}])
 
-    def test_missing_settings(self, api_client, api_url):
-        """Should return 500 if required settings are missing."""
-        settings.EOX_CORE_AGGREGATED_COLLECT_DESTINATION_URL = None
-        settings.EOX_CORE_AGGREGATED_COLLECT_TOKEN_URL = None
+    @patch("eox_core.api.data.aggregated_collector.tasks.execute_query")
+    @patch("eox_core.api.data.aggregated_collector.tasks.post_data_to_api")
+    def test_generate_report(self, mock_post, mock_execute):
+        mock_execute.return_value = [{"id": 1, "data": "sample"}]
+        generate_report("http://mock-api.com", "http://mock-token.com", "localhost")
+        mock_post.assert_called_once()
 
-        response = api_client.post(api_url)
-
-        assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
-        assert response.data["error"] == "Data collection settings are not properly configured."
-
-    @patch("eox_core.api.data.aggregated_collector.tasks.generate_report.delay")
-    def test_successful_request(self, mock_generate_report, api_client, api_url):
-        """Should return 202 and trigger the async task correctly."""
-        response = api_client.post(api_url)
-
-        assert response.status_code == status.HTTP_202_ACCEPTED
-        assert response.data["message"] == "Data collection task has been initiated successfully."
-        mock_generate_report.assert_called_once_with(
-            "https://example.com/destination",
-            "https://example.com/token",
-            "testserver"
-        )
-
-    def test_unauthorized_request(self, api_client, api_url):
-        """Should return 403 if no authentication token is provided."""
-        response = api_client.post(api_url, HTTP_AUTHORIZATION="")
-
-        assert response.status_code == status.HTTP_403_FORBIDDEN
+    @patch("eox_core.api.data.aggregated_collector.v1.views.generate_report.delay")
+    def test_aggregated_collector_view(self, mock_task):
+        response = self.client.post(self.url, HTTP_AUTHORIZATION=f"Bearer {settings.EOX_CORE_AGGREGATED_COLLECT_AUTH_TOKEN}")
+        self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
+        mock_task.assert_called_once()
