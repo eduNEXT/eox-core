@@ -17,15 +17,12 @@ def api_url():
 class TestAggregatedCollectorView:
     
     @pytest.fixture(autouse=True)
-    def setup(self):
+    def setup(settings):
         """Set default values for settings before each test."""
-        self.default_settings = {
-            "AGGREGATED_DATA_COLLECTOR_API_ENABLED": True,
-            "EOX_CORE_AGGREGATED_COLLECT_DESTINATION_URL": "https://example.com/destination",
-            "EOX_CORE_AGGREGATED_COLLECT_TOKEN_URL": "https://example.com/token",
-            "EOX_CORE_DATA_COLLECT_AUTH_TOKEN": "valid_token"
-        }
-        settings.configure(**self.default_settings)
+        settings.AGGREGATED_DATA_COLLECTOR_API_ENABLED = True
+        settings.EOX_CORE_AGGREGATED_COLLECT_DESTINATION_URL = "https://example.com/destination"
+        settings.EOX_CORE_AGGREGATED_COLLECT_TOKEN_URL = "https://example.com/token"
+        settings.EOX_CORE_DATA_COLLECT_AUTH_TOKEN = "valid_token"
 
     def test_endpoint_disabled(self, api_client, api_url):
         """Should return 403 if the API is disabled in settings."""
