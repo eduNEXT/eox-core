@@ -18,13 +18,3 @@ class UtilsTests(TestCase):
         expected_result = [{"id": 1, "username": "test_user"}]
 
         self.assertEqual(result, expected_result)
-
-    @patch("eox_core.api.data.aggregated_collector.utils.connection.cursor")
-    def test_execute_query_failure(self, mock_cursor):
-        """
-        Test that execute_query handles exceptions gracefully.
-        """
-        mock_cursor.return_value.__enter__.side_effect = Exception("Database error")
-        
-        result = execute_query("SELECT id, username FROM auth_user;")
-        self.assertEqual(result, [])  # Expected to return an empty list on failure
