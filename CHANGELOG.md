@@ -15,7 +15,7 @@ Please do not update the unreleased notes.
 
 ### Added
 
-- API to collect data and generate reports.
+- New API endpoint to support data collection and report generation (if the feature is enabled).
 
 ## [v11.1.0](https://github.com/eduNEXT/eox-core/compare/v11.0.0...v11.1.0) - (2024-11-21)
 

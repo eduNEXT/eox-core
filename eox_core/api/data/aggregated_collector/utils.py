@@ -1,6 +1,5 @@
 """
-Utility functions for report generation, including query execution
-and integration with the Shipyard API.
+Utility functions for report generation, including query execution and data posting.
 """
 
 import logging
@@ -81,8 +80,8 @@ def post_data_to_api(api_url: str, report_data: dict, token_generation_url: str,
     """
     token = get_access_token(
         token_generation_url,
-        settings.EOX_CORE_AGGREGATED_DATA_API_CLIENT_ID,
-        settings.EOX_CORE_AGGREGATED_DATA_API_CLIENT_SECRET,
+        settings.EOX_CORE_AGGREGATED_COLLECTOR_TARGET_CLIENT_ID,
+        settings.EOX_CORE_AGGREGATED_COLLECTOR_TARGET_CLIENT_SECRET,
     )
     headers = {
         "Authorization": f"Bearer {token}",
@@ -95,6 +94,6 @@ def post_data_to_api(api_url: str, report_data: dict, token_generation_url: str,
         response = requests.post(api_url, json=payload, headers=headers, timeout=10)
         response.raise_for_status()
     except requests.Timeout as exc:
-        raise requests.Timeout("The request to Shipyard API timed out.") from exc
+        raise requests.Timeout("The request to API timed out.") from exc
     except requests.RequestException as e:
-        raise requests.RequestException(f"Failed to post data to Shipyard API: {e}")
+        raise requests.RequestException(f"Failed to post data to API: {e}")

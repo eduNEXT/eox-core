@@ -40,17 +40,13 @@ class AggregatedCollectorView(APIView):
         Returns:
             Response: A success or error message.
         """
-        if not getattr(settings, "AGGREGATED_DATA_COLLECTOR_API_ENABLED", False):
-            return Response(
-                {"error": "This endpoint is currently disabled."},
-                status=status.HTTP_403_FORBIDDEN
-            )
+        destination_url = getattr(settings, "EOX_CORE_AGGREGATED_COLLECTOR_TARGET_URL", None)
+        token_generation_url = getattr(settings, "EOX_CORE_AGGREGATED_COLLECTOR_TARGET_TOKEN_URL", None)
+        client_id = getattr(settings, "EOX_CORE_AGGREGATED_COLLECTOR_TARGET_CLIENT_ID", None)
+        client_secret = getattr(settings, "EOX_CORE_AGGREGATED_COLLECTOR_TARGET_CLIENT_SECRET", None)
 
-        destination_url = getattr(settings, "EOX_CORE_AGGREGATED_COLLECT_DESTINATION_URL", None)
-        token_generation_url = getattr(settings, "EOX_CORE_AGGREGATED_COLLECT_TOKEN_URL", None)
-
-        if not destination_url or not token_generation_url:
-            logger.error("Data collection settings are missing.")
+        if not all([destination_url, token_generation_url, client_id, client_secret]):
+            logger.error("Missing required Aggregated Data Collector settings.")
             return Response(
                 {"error": "Data collection settings are not properly configured."},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
