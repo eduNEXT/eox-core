@@ -88,7 +88,6 @@ def post_data_to_api(api_url: str, report_data: dict, token_generation_url: str,
         "Content-Type": "application/json",
     }
     payload = {"instance_domain": current_host, "data": report_data}
-    response = requests.post(api_url, json=payload, headers=headers, timeout=10)
 
     try:
         response = requests.post(api_url, json=payload, headers=headers, timeout=10)
