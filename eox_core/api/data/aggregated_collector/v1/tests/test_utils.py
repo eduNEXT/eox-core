@@ -5,6 +5,7 @@ from unittest.mock import patch, MagicMock
 from django.test import TestCase
 from eox_core.api.data.aggregated_collector.utils import execute_query
 
+
 class UtilsTests(TestCase):
     @patch("eox_core.api.data.aggregated_collector.utils.connection.cursor")
     def test_execute_query_success(self, mock_cursor):
@@ -13,7 +14,7 @@ class UtilsTests(TestCase):
         """
         mock_cursor.return_value.__enter__.return_value.fetchall.return_value = [(1, "test_user")]
         mock_cursor.return_value.__enter__.return_value.description = [("id",), ("username",)]
-        
+
         result = execute_query("SELECT id, username FROM auth_user;")
         expected_result = [{"id": 1, "username": "test_user"}]
 

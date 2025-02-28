@@ -10,6 +10,7 @@ from rest_framework import status
 from eox_core.api.data.aggregated_collector.tasks import generate_report
 from eox_core.api.data.aggregated_collector.v1.views import AggregatedCollectorView
 
+
 class AggregatedCollectorViewTests(TestCase):
     def setUp(self):
         self.client = APIClient()
