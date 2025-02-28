@@ -3,7 +3,7 @@ Test suite for Aggregated Data Collector API.
 """
 from unittest.mock import patch, MagicMock
 from django.test import TestCase
-from eox_core.api.data.aggregated_collector.utils import execute_query, fetch_access_token
+from eox_core.api.data.aggregated_collector.utils import execute_query
 
 class UtilsTests(TestCase):
     @patch("eox_core.api.data.aggregated_collector.utils.connection.cursor")
@@ -28,29 +28,3 @@ class UtilsTests(TestCase):
         
         result = execute_query("SELECT id, username FROM auth_user;")
         self.assertEqual(result, [])  # Expected to return an empty list on failure
-
-    @patch("eox_core.api.data.aggregated_collector.utils.requests.post")
-    def test_fetch_access_token_success(self, mock_post):
-        """
-        Test that fetch_access_token correctly retrieves an access token.
-        """
-        mock_response = MagicMock()
-        mock_response.status_code = 200
-        mock_response.json.return_value = {"access_token": "mock_token"}
-        mock_post.return_value = mock_response
-
-        token = fetch_access_token("http://mock-token.com", "client_id", "client_secret")
-        self.assertEqual(token, "mock_token")
-
-    @patch("eox_core.api.data.aggregated_collector.utils.requests.post")
-    def test_fetch_access_token_failure(self, mock_post):
-        """
-        Test that fetch_access_token returns None if the request fails.
-        """
-        mock_response = MagicMock()
-        mock_response.status_code = 400
-        mock_response.json.return_value = {"error": "invalid_request"}
-        mock_post.return_value = mock_response
-
-        token = fetch_access_token("http://mock-token.com", "client_id", "client_secret")
-        self.assertIsNone(token)
