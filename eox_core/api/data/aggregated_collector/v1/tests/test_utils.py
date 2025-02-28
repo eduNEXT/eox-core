@@ -1,12 +1,15 @@
 """
 Test suite for Aggregated Data Collector API.
 """
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from django.test import TestCase
 from eox_core.api.data.aggregated_collector.utils import execute_query
 
 
 class UtilsTests(TestCase):
+    """
+    Test suite for utility functions used in the Aggregated Data Collector API.
+    """
     @patch("eox_core.api.data.aggregated_collector.utils.connection.cursor")
     def test_execute_query_success(self, mock_cursor):
         """
