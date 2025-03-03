@@ -14,7 +14,7 @@ from eox_core.api.data.aggregated_collector.v1.views import AggregatedCollectorV
 class AggregatedCollectorViewTests(TestCase):
     def setUp(self):
         self.client = APIClient()
-        self.url = "/eox-core/data-api/v1/aggregated-collector/"
+        self.url = reverse("aggregated_collector")
         settings.AGGREGATED_DATA_COLLECTOR_API_ENABLED = True
         settings.EOX_CORE_AGGREGATED_COLLECTOR_TARGET_URL = "http://mock-api.com"
         settings.EOX_CORE_AGGREGATED_COLLECTOR_TARGET_TOKEN_URL = "http://mock-token.com"
