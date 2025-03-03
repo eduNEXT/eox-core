@@ -30,7 +30,7 @@ class AggregatedCollectorViewTests(TestCase):
         """
         mock_execute.return_value = [{"id": 1, "data": "sample"}]
 
-        generate_report(self, "http://mock-api.com", "http://mock-token.com", "localhost")
+        generate_report("http://mock-api.com", "http://mock-token.com", "localhost")
 
         mock_post.assert_called_once()
 
