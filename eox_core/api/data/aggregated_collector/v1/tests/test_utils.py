@@ -2,7 +2,9 @@
 Test suite for Aggregated Data Collector API.
 """
 from unittest.mock import patch
+
 from django.test import TestCase
+
 from eox_core.api.data.aggregated_collector.utils import execute_query
 
 
