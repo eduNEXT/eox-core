@@ -1,18 +1,19 @@
 """
 Test suite for Aggregated Data Collector API.
 """
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from django.test import TestCase
 from django.conf import settings
 from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework import status
-from eox_core.api.data.aggregated_collector.utils import execute_query
 from eox_core.api.data.aggregated_collector.tasks import generate_report
-from eox_core.api.data.aggregated_collector.v1.views import AggregatedCollectorView
 
 
 class AggregatedCollectorViewTests(TestCase):
+    """
+    Test cases for the Aggregated Data Collector API.
+    """
     def setUp(self):
         self.client = APIClient()
         self.url = reverse("eox-data-api:eox-data-api-collector:eox-data-api-collector-v1:aggregated_collector")
@@ -31,7 +32,7 @@ class AggregatedCollectorViewTests(TestCase):
         """
         mock_execute.return_value = [{"id": 1, "data": "sample"}]
 
-        generate_report("http://mock-api.com", "http://mock-token.com", "localhost")
+        generate_report(None, "http://mock-api.com", "http://mock-token.com", "localhost")
 
         mock_post.assert_called_once()
 
