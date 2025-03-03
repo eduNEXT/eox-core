@@ -6,6 +6,7 @@ import datetime
 import hashlib
 import re
 
+import requests
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core import cache
@@ -165,3 +166,28 @@ def get_or_create_site_from_oauth_app_uris(redirect_uris):
         return sites_qs.first()
 
     return Site.objects.create(domain=domain, name=domain)
+
+
+def get_access_token(token_url, client_id, client_secret, grant_type="client_credentials"):
+    """
+    Fetch an access token from a service OAuth2 API.
+
+    Returns:
+        str: The access token.
+    Raises:
+        Exception: If the token request fails.
+    """
+    response = requests.post(
+        token_url,
+        data={
+            "grant_type": grant_type,
+            "client_id": client_id,
+            "client_secret": client_secret,
+        },
+        timeout=10
+    )
+    if response.ok:
+        return response.json().get("access_token")
+    raise requests.exceptions.HTTPError(
+        f"Failed to obtain access token: {response.status_code} - {response.text}"
+    )
