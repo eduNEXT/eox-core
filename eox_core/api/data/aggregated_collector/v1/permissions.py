@@ -19,6 +19,9 @@ class AggregatedCollectorPermission(BasePermission):
     """
 
     def has_permission(self, request, view):
+        """"
+        Determines if the request has permission to access the Aggregated Collector API.
+        """
         # Check if the API is enabled
         if not getattr(settings, "AGGREGATED_DATA_COLLECTOR_API_ENABLED", False):
             return False
