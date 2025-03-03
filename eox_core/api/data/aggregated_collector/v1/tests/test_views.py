@@ -14,11 +14,13 @@ from eox_core.api.data.aggregated_collector.v1.views import AggregatedCollectorV
 class AggregatedCollectorViewTests(TestCase):
     def setUp(self):
         self.client = APIClient()
-        self.url = reverse("eox-data-api-collector-v1:aggregated_collector")
+        self.url = "/eox-core/data-api/v1/aggregated-collector/"
         settings.AGGREGATED_DATA_COLLECTOR_API_ENABLED = True
         settings.EOX_CORE_AGGREGATED_COLLECTOR_TARGET_URL = "http://mock-api.com"
         settings.EOX_CORE_AGGREGATED_COLLECTOR_TARGET_TOKEN_URL = "http://mock-token.com"
         settings.EOX_CORE_AGGREGATED_COLLECTOR_AUTH_TOKEN = "test-token"
+        settings.EOX_CORE_AGGREGATED_COLLECTOR_TARGET_CLIENT_ID = "test-client-id"
+        settings.EOX_CORE_AGGREGATED_COLLECTOR_TARGET_CLIENT_SECRET = "test-client-secret"
 
     @patch("eox_core.api.data.aggregated_collector.tasks.execute_query")
     @patch("eox_core.api.data.aggregated_collector.tasks.post_data_to_api")
