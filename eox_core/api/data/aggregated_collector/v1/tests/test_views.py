@@ -48,3 +48,21 @@ class AggregatedCollectorViewTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
 
         mock_task.assert_called_once()
+
+    def test_aggregated_collector_view_disabled(self):
+        """
+        Test that the view returns 503 if the API is disabled.
+        """
+        settings.AGGREGATED_DATA_COLLECTOR_API_ENABLED = False
+
+        response = self.client.post(self.url, HTTP_AUTHORIZATION=f"Bearer {settings.EOX_CORE_AGGREGATED_COLLECTOR_AUTH_TOKEN}")
+
+        self.assertEqual(response.status_code, status.HTTP_503_SERVICE_UNAVAILABLE)
+
+    def test_aggregated_collector_view_no_auth(self):
+        """
+        Test that the view returns 401 if no authentication token is provided.
+        """
+        response = self.client.post(self.url)
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
