@@ -11,6 +11,7 @@ from eox_core.api.data.aggregated_collector.utils import execute_query
 from eox_core.api.data.aggregated_collector.tasks import generate_report
 from eox_core.api.data.aggregated_collector.v1.views import AggregatedCollectorView
 
+
 class AggregatedCollectorViewTests(TestCase):
     def setUp(self):
         self.client = APIClient()
@@ -42,5 +43,5 @@ class AggregatedCollectorViewTests(TestCase):
         response = self.client.post(self.url, HTTP_AUTHORIZATION=f"Bearer {settings.EOX_CORE_AGGREGATED_COLLECTOR_AUTH_TOKEN}")
 
         self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
-        
+
         mock_task.assert_called_once()
