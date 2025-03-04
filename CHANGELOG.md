@@ -11,6 +11,11 @@ Please do not update the unreleased notes.
 
 <!-- Content should be placed here -->
 
+## [v11.3.0](https://github.com/eduNEXT/eox-core/compare/v11.2.0...v11.3.0) - (2025-03-02)
+
+### Added
+- Added signed JWT authentication for the OAuth application API to support secure authentication when creating tenant OAuth clients from Control Center.
+
 ## [v11.2.0](https://github.com/eduNEXT/eox-core/compare/v11.1.0...v11.2.0) - (2025-01-20)
 
 ### Added

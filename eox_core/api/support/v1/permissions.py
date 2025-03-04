@@ -3,6 +3,7 @@
 """
 Custom Support API permissions module
 """
+from django.contrib.auth.models import AnonymousUser
 from rest_framework import exceptions, permissions
 
 
@@ -17,7 +18,7 @@ class EoxCoreSupportAPIPermission(permissions.BasePermission):
         For now, to grant access only checks if the requesting user:
             1) is_staff
         """
-        if request.user.is_staff:
+        if request.user is None or isinstance(request.user, AnonymousUser) or request.user.is_staff:
             return True
 
         # To prevent leaking important information we return the most basic message.
