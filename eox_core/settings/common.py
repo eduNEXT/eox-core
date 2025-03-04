@@ -50,6 +50,7 @@ def plugin_settings(settings):
     settings.EOX_CORE_ASYNC_TASKS = []
     settings.EOX_CORE_THIRD_PARTY_AUTH_BACKEND = 'eox_core.edxapp_wrapper.backends.third_party_auth_l_v1'
     settings.EOX_CORE_LANG_PREF_BACKEND = 'eox_core.edxapp_wrapper.backends.lang_pref_middleware_p_v1'
+    settings.EOX_CORE_JWT_SIGNED_OAUTH_APP_PUBLIC_KEY = ''
 
     if settings.EOX_CORE_USER_ENABLE_MULTI_TENANCY:
         settings.EOX_CORE_USER_ORIGIN_SITE_SOURCES = [
