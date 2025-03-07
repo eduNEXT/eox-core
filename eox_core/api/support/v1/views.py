@@ -20,6 +20,7 @@ from rest_framework.renderers import BrowsableAPIRenderer, JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from eox_core.api.support.v1.authentication import JWTsignedOauthAppAuthentication
 from eox_core.api.support.v1.permissions import EoxCoreSupportAPIPermission
 from eox_core.api.support.v1.serializers import (
     OauthApplicationSerializer,
@@ -154,7 +155,7 @@ class OauthApplicationAPIView(UserQueryMixin, APIView):
     django_oauth_toolkit Application object.
     """
 
-    authentication_classes = (BearerAuthentication, SessionAuthentication, JwtAuthentication)
+    authentication_classes = (JWTsignedOauthAppAuthentication, BearerAuthentication, SessionAuthentication, JwtAuthentication)
     permission_classes = (EoxCoreSupportAPIPermission,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
