@@ -11,6 +11,12 @@ Please do not update the unreleased notes.
 
 <!-- Content should be placed here -->
 
+## [v11.4.0](https://github.com/eduNEXT/eox-core/compare/v11.3.0...v11.4.0) - (2025-06-09)
+
+### Changed
+
+- **Teak Support**: Upgrade requirements base on edx-platform Teak
+
 ## [v11.3.0](https://github.com/eduNEXT/eox-core/compare/v11.2.0...v11.3.0) - (2025-03-02)
 
 ### Added

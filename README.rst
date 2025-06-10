@@ -75,10 +75,12 @@ Compatibility Notes
 +------------------+---------------+
 | Sumac            | >= 11.1.0     |
 +------------------+---------------+
+| Teak             | >= 11.4.0     |
++------------------+---------------+
 
 ⚠️ The Maple version does not support Django 2.2 but it does support Django 3.2 as of eox-core 7.0.
 
-The plugin is configured for the latest release (Redwood). The following changes in the plugin settings should be applied in order to be used for previous releases.
+The plugin is configured for the latest release (Teak). The following changes in the plugin settings should be applied in order to be used for previous releases.
 
 **Maple**
 
