@@ -75,7 +75,7 @@ Compatibility Notes
 +------------------+---------------+
 | Sumac            | >= 11.1.0     |
 +------------------+---------------+
-| Teak             | >= 11.4.0     |
+| Teak             | >= 12.0.0     |
 +------------------+---------------+
 
 ⚠️ The Maple version does not support Django 2.2 but it does support Django 3.2 as of eox-core 7.0.
