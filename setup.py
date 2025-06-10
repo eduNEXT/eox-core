@@ -52,7 +52,7 @@ def is_requirement(line):
 
 setup(
     name="eox-core",
-    python_requires='>=3.8',
+    python_requires='>=3.11',
     version=VERSION,
     author="eduNEXT",
     author_email="contact@edunext.co",
@@ -66,7 +66,6 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: GNU Affero General Public License v3',
         'Operating System :: OS Independent',
-        'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.11',
     ],
     install_requires=load_requirements('requirements/base.in'),
