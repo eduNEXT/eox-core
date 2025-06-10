@@ -17,7 +17,7 @@ asgiref==3.8.1
     #   -r requirements/base.txt
     #   django
     #   django-countries
-astroid==3.2.4
+astroid==3.3.10
     # via pylint
 attrs==25.3.0
     # via
@@ -235,7 +235,7 @@ inflection==0.5.1
     #   drf-yasg
 iniconfig==2.1.0
     # via pytest
-isort==5.13.2
+isort==6.0.1
     # via pylint
 jinja2==3.1.6
     # via
@@ -323,10 +323,8 @@ pyjwt[crypto]==2.10.1
     #   edx-proctoring
     #   edx-rest-api-client
     #   social-auth-core
-pylint==3.2.7
-    # via
-    #   -c requirements/constraints.txt
-    #   -r requirements/test.in
+pylint==3.3.7
+    # via -r requirements/test.in
 pymongo==4.13.0
     # via
     #   -r requirements/base.txt
