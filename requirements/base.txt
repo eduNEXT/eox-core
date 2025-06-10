@@ -136,9 +136,8 @@ edx-drf-extensions==10.6.0
     #   -r requirements/base.in
     #   edx-proctoring
     #   edx-when
-edx-opaque-keys[django]==2.13.0
+edx-opaque-keys[django]==3.0.0
     # via
-    #   -r requirements/base.in
     #   edx-ccx-keys
     #   edx-drf-extensions
     #   edx-proctoring
