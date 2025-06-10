@@ -10,7 +10,7 @@ appdirs==1.4.4
     # via fs
 asgiref==3.8.1
     # via django
-attrs==24.2.0
+attrs==25.3.0
     # via openedx-events
 backports-zoneinfo[tzdata]==0.2.1 ; python_version < "3.9"
     # via
@@ -21,19 +21,19 @@ backports-zoneinfo[tzdata]==0.2.1 ; python_version < "3.9"
     #   kombu
 billiard==4.2.1
     # via celery
-celery==5.4.0
+celery==5.5.3
     # via
     #   -r requirements/base.in
     #   event-tracking
-certifi==2024.8.30
+certifi==2025.4.26
     # via requests
 cffi==1.17.1
     # via
     #   cryptography
     #   pynacl
-charset-normalizer==3.4.0
+charset-normalizer==3.4.2
     # via requests
-click==8.1.7
+click==8.1.8
     # via
     #   -r requirements/base.in
     #   celery
@@ -50,7 +50,7 @@ click-repl==0.3.0
     # via celery
 code-annotations==1.8.2
     # via edx-toggles
-cryptography==43.0.3
+cryptography==45.0.4
     # via
     #   jwcrypto
     #   pyjwt
@@ -59,7 +59,7 @@ defusedxml==0.8.0rc2
     # via
     #   python3-openid
     #   social-auth-core
-django==4.2.16
+django==4.2.22
     # via
     #   -c https://raw.githubusercontent.com/openedx/edx-lint/master/edx_lint/files/common_constraints.txt
     #   -r requirements/base.in
@@ -110,7 +110,7 @@ django-waffle==4.2.0
     #   edx-drf-extensions
     #   edx-proctoring
     #   edx-toggles
-django-webpack-loader==3.1.1
+django-webpack-loader==3.2.0
     # via edx-proctoring
 djangorestframework==3.15.2
     # via
@@ -124,13 +124,13 @@ dnspython==2.6.1
     # via pymongo
 drf-jwt==1.19.2
     # via edx-drf-extensions
-drf-yasg==1.21.8
+drf-yasg==1.21.10
     # via edx-api-doc-tools
-edx-api-doc-tools==2.0.0
+edx-api-doc-tools==2.1.0
     # via -r requirements/base.in
-edx-ccx-keys==1.3.0
+edx-ccx-keys==2.0.2
     # via openedx-events
-edx-django-utils==7.0.1
+edx-django-utils==8.0.0
     # via
     #   edx-drf-extensions
     #   edx-rest-api-client
@@ -138,12 +138,12 @@ edx-django-utils==7.0.1
     #   edx-when
     #   event-tracking
     #   openedx-events
-edx-drf-extensions==10.5.0
+edx-drf-extensions==10.6.0
     # via
     #   -r requirements/base.in
     #   edx-proctoring
     #   edx-when
-edx-opaque-keys[django]==2.11.0
+edx-opaque-keys[django]==2.13.0
     # via
     #   -r requirements/base.in
     #   edx-ccx-keys
@@ -151,15 +151,15 @@ edx-opaque-keys[django]==2.11.0
     #   edx-proctoring
     #   edx-when
     #   openedx-events
-edx-proctoring==4.18.4
+edx-proctoring==5.2.0
     # via -r requirements/base.in
-edx-rest-api-client==6.0.0
+edx-rest-api-client==6.2.0
     # via edx-proctoring
-edx-toggles==5.2.0
+edx-toggles==5.3.0
     # via event-tracking
-edx-when==2.5.0
+edx-when==3.0.0
     # via edx-proctoring
-event-tracking==3.0.0
+event-tracking==3.3.0
     # via edx-proctoring
 fastavro==1.9.7
     # via openedx-events
@@ -169,25 +169,23 @@ idna==3.10
     # via requests
 inflection==0.5.1
     # via drf-yasg
-jinja2==3.1.4
+jinja2==3.1.6
     # via code-annotations
 jsonfield==3.1.0
     # via edx-proctoring
 jwcrypto==1.5.6
     # via django-oauth-toolkit
-kombu==5.4.2
+kombu==5.5.4
     # via celery
-lxml==5.3.0
+lxml==5.4.0
     # via xblock
-mako==1.3.6
+mako==1.3.10
     # via xblock
 markupsafe==2.1.5
     # via
     #   jinja2
     #   mako
     #   xblock
-newrelic==10.3.0
-    # via edx-django-utils
 oauthlib==3.2.2
     # via
     #   django-oauth-toolkit
@@ -197,17 +195,19 @@ openedx-events==9.14.1
     # via
     #   -r requirements/base.in
     #   event-tracking
-packaging==24.2
-    # via drf-yasg
-pbr==6.1.0
+packaging==25.0
+    # via
+    #   drf-yasg
+    #   kombu
+pbr==6.1.1
     # via stevedore
-prompt-toolkit==3.0.48
+prompt-toolkit==3.0.51
     # via click-repl
-psutil==6.1.0
+psutil==7.0.0
     # via edx-django-utils
 pycparser==2.22
     # via cffi
-pycryptodomex==3.21.0
+pycryptodomex==3.23.0
     # via edx-proctoring
 pyjwt[crypto]==2.9.0
     # via
@@ -216,7 +216,7 @@ pyjwt[crypto]==2.9.0
     #   edx-proctoring
     #   edx-rest-api-client
     #   social-auth-core
-pymongo==4.4.0
+pymongo==4.10.1
     # via
     #   edx-opaque-keys
     #   event-tracking
@@ -233,7 +233,7 @@ python-slugify==8.0.4
     # via code-annotations
 python3-openid==3.2.0
     # via social-auth-core
-pytz==2024.2
+pytz==2025.2
     # via
     #   drf-yasg
     #   edx-proctoring
@@ -244,7 +244,7 @@ pyyaml==6.0.2
     #   code-annotations
     #   drf-yasg
     #   xblock
-requests==2.32.3
+requests==2.32.4
     # via
     #   django-oauth-toolkit
     #   edx-drf-extensions
@@ -259,9 +259,9 @@ semantic-version==2.10.0
     # via edx-drf-extensions
 shortuuid==1.0.13
     # via django-oauth2-provider
-simplejson==3.19.3
+simplejson==3.20.1
     # via xblock
-six==1.16.0
+six==1.17.0
     # via
     #   -r requirements/base.in
     #   edx-ccx-keys
@@ -270,7 +270,7 @@ six==1.16.0
     #   python-dateutil
 social-auth-core==4.5.4
     # via -r requirements/base.in
-sqlparse==0.5.2
+sqlparse==0.5.3
     # via django
 stevedore==5.3.0
     # via
@@ -279,20 +279,19 @@ stevedore==5.3.0
     #   edx-opaque-keys
 text-unidecode==1.3
     # via python-slugify
-typing-extensions==4.12.2
+typing-extensions==4.13.2
     # via
     #   asgiref
     #   edx-opaque-keys
     #   jwcrypto
-    #   kombu
-tzdata==2024.2
-    # via
-    #   backports-zoneinfo
-    #   celery
+tzdata==2025.2
+    # via backports-zoneinfo
 uritemplate==4.1.1
     # via drf-yasg
 urllib3==2.2.3
-    # via requests
+    # via
+    #   -c https://raw.githubusercontent.com/openedx/edx-lint/master/edx_lint/files/common_constraints.txt
+    #   requests
 vine==5.1.0
     # via
     #   amqp
@@ -300,11 +299,11 @@ vine==5.1.0
     #   kombu
 wcwidth==0.2.13
     # via prompt-toolkit
-web-fragments==2.2.0
+web-fragments==3.1.0
     # via xblock
 webob==1.8.9
     # via xblock
-xblock==5.1.0
+xblock==5.2.0
     # via edx-when
 
 # The following packages are considered to be unsafe in a requirements file:
