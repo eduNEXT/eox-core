@@ -26,14 +26,13 @@ class TestGradesAPI(TestCase):
         self.client.force_authenticate(user=self.api_user)
         self.url = reverse("eox-api:eox-api:edxapp-grade")
 
-    # pylint: disable=too-many-positional-arguments
     @patch("eox_core.api.v1.views.get_courseware_courses")
     @patch("eox_core.api.v1.views.get_valid_course_key")
     @patch("eox_core.api.v1.views.get_course_grade_factory")
     @patch("eox_core.api.v1.views.get_enrollment")
     @patch("eox_core.api.v1.views.get_edxapp_user")
     @patch_permissions
-    def test_get_grade_no_detail_no_policy(  # pylint: disable=too-many-arguments
+    def test_get_grade_no_detail_no_policy(  # pylint: disable=too-many-arguments, too-many-positional-arguments
             self,
             _,
             get_edxapp_user,
@@ -58,14 +57,13 @@ class TestGradesAPI(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, expected_response)
 
-    # pylint: disable=too-many-positional-arguments
     @patch("eox_core.api.v1.views.get_courseware_courses")
     @patch("eox_core.api.v1.views.get_valid_course_key")
     @patch("eox_core.api.v1.views.get_course_grade_factory")
     @patch("eox_core.api.v1.views.get_enrollment")
     @patch("eox_core.api.v1.views.get_edxapp_user")
     @patch_permissions
-    def test_get_grade_detail_no_policy(  # pylint: disable=too-many-arguments
+    def test_get_grade_detail_no_policy(  # pylint: disable=too-many-arguments, too-many-positional-arguments
             self,
             _,
             get_edxapp_user,
@@ -92,14 +90,13 @@ class TestGradesAPI(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, expected_response)
 
-    # pylint: disable=too-many-positional-arguments
     @patch("eox_core.api.v1.views.get_courseware_courses")
     @patch("eox_core.api.v1.views.get_valid_course_key")
     @patch("eox_core.api.v1.views.get_course_grade_factory")
     @patch("eox_core.api.v1.views.get_enrollment")
     @patch("eox_core.api.v1.views.get_edxapp_user")
     @patch_permissions
-    def test_get_grade_detail_policy(  # pylint: disable=too-many-arguments
+    def test_get_grade_detail_policy(  # pylint: disable=too-many-arguments, too-many-positional-arguments
             self,
             _,
             get_edxapp_user,

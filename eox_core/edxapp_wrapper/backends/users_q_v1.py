@@ -114,8 +114,7 @@ class EdnxAccountCreationForm(AccountCreationForm):
     This form it's currently only used for validation, not rendering.
     """
 
-    # pylint: disable=too-many-positional-arguments
-    def __init__(  # pylint:disable=too-many-arguments
+    def __init__(  # pylint:disable=too-many-arguments, too-many-positional-arguments
             self,
             data=None,
             extra_fields=None,
