@@ -22,10 +22,10 @@ jobs:
           default_bump: false
           default_prerelease_bump: false
           dry_run: true
-      - name: Set up Python 3.8
+      - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
-          python-version: "3.8"
+          python-version: "3.11"
       - name: Create bumpversion
         if: steps.tag_version.outputs.new_version
         run: |
@@ -40,7 +40,7 @@ jobs:
       - name: Commit bumpversion
         id: bumpversion
         if: steps.tag_version.outputs.new_version
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v6
         with:
           branch: ${{ github.ref }}
           commit_message: "docs(bumpversion): ${{ steps.tag_version.outputs.previous_tag }} → ${{ steps.tag_version.outputs.new_version }}"

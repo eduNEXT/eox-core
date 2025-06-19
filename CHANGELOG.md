@@ -11,6 +11,16 @@ Please do not update the unreleased notes.
 
 <!-- Content should be placed here -->
 
+## [v12.0.0](https://github.com/eduNEXT/eox-core/compare/v11.3.0...v12.0.0) - (2025-06-09)
+
+#### ⚠ BREAKING CHANGES
+
+- **Dropped Support for Python 3.8**: Removed support for Python 3.8 in this plugin
+
+### Changed
+
+- **Teak Support**: Upgrade requirements base on edx-platform Teak
+
 ## [v11.3.0](https://github.com/eduNEXT/eox-core/compare/v11.2.0...v11.3.0) - (2025-03-02)
 
 ### Added

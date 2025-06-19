@@ -32,7 +32,7 @@ class TestGradesAPI(TestCase):
     @patch("eox_core.api.v1.views.get_enrollment")
     @patch("eox_core.api.v1.views.get_edxapp_user")
     @patch_permissions
-    def test_get_grade_no_detail_no_policy(  # pylint: disable=too-many-arguments
+    def test_get_grade_no_detail_no_policy(  # pylint: disable=too-many-arguments, too-many-positional-arguments
             self,
             _,
             get_edxapp_user,
@@ -63,7 +63,7 @@ class TestGradesAPI(TestCase):
     @patch("eox_core.api.v1.views.get_enrollment")
     @patch("eox_core.api.v1.views.get_edxapp_user")
     @patch_permissions
-    def test_get_grade_detail_no_policy(  # pylint: disable=too-many-arguments
+    def test_get_grade_detail_no_policy(  # pylint: disable=too-many-arguments, too-many-positional-arguments
             self,
             _,
             get_edxapp_user,
@@ -96,7 +96,7 @@ class TestGradesAPI(TestCase):
     @patch("eox_core.api.v1.views.get_enrollment")
     @patch("eox_core.api.v1.views.get_edxapp_user")
     @patch_permissions
-    def test_get_grade_detail_policy(  # pylint: disable=too-many-arguments
+    def test_get_grade_detail_policy(  # pylint: disable=too-many-arguments, too-many-positional-arguments
             self,
             _,
             get_edxapp_user,
