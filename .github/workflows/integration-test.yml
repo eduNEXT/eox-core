@@ -8,7 +8,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        tutor_version: ['<19.0.0', '<20.0.0', 'main']
+        tutor_version: ['<20.0.0', '<21.0.0', 'main']
     steps:
       - name: Run Integration Tests
         uses: eduNEXT/integration-test-in-tutor@main
