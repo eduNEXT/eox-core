@@ -11,6 +11,12 @@ Please do not update the unreleased notes.
 
 <!-- Content should be placed here -->
 
+## [v12.1.0](https://github.com/eduNEXT/eox-core/compare/v12.0.0...v12.1.0) - (2025-07-01)
+
+### Added
+
+- Integration tests now run against Tutor Teak (`<21.0.0`) instead of Redwood (`<19.0.0`), keeping CI aligned with currently supported Open edX releases.
+
 ## [v12.0.0](https://github.com/eduNEXT/eox-core/compare/v11.3.0...v12.0.0) - (2025-06-09)
 
 #### ⚠ BREAKING CHANGES
