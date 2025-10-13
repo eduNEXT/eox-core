@@ -8,10 +8,26 @@
 # pin when possible.  Writing an issue against the offending project and
 # linking to it here is good.
 
-# Common constraints for Open edX repos
--c https://raw.githubusercontent.com/openedx/edx-lint/master/edx_lint/files/common_constraints.txt
+# using LTS django version
+Django<6.0
+
+# elasticsearch>=7.14.0 includes breaking changes in it which caused issues in discovery upgrade process.
+# elastic search changelog: https://www.elastic.co/guide/en/enterprise-search/master/release-notes-7.14.0.html
+# See https://github.com/openedx/edx-platform/issues/35126 for more info
+elasticsearch<7.14.0
+
+# NOTE: Pylint 4.x introduces changes in how the "ignore" and "ignore-patterns" options
+# are parsed from setup.cfg and other configuration files. This causes Django migration
+# modules (e.g., eox_tenant/migrations) to be linted even when explicitly ignored.
+# Until we find a stable fix or plugin-based workaround, we keep Pylint pinned below 4.
+pylint<4
 
 # As it is not clarified what exact breaking changes will be introduced as per
 # the next major release, ensure the installed version is within boundaries.
 # Issue for unpinning: https://github.com/openedx/edx-platform/issues/32884
 django-oauth-toolkit<2.0.0
+
+# django-filter 25.2 dropped support for Django 4.2.
+# Pinning to 25.1 to maintain compatibility with Django 4.2 environments.
+# Once Django 4.2 support is dropped, this constraint can be removed.
+django-filter==25.1

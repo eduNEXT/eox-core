@@ -77,6 +77,8 @@ Compatibility Notes
 +------------------+---------------+
 | Teak             | >= 12.0.0     |
 +------------------+---------------+
+| Ulmo             | >= 12.2.0      |
++------------------+---------------+
 
 The plugin is configured for the latest release (Teak). The following changes in the plugin settings should be applied in order to be used for previous releases.
 
