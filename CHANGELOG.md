@@ -11,6 +11,13 @@ Please do not update the unreleased notes.
 
 <!-- Content should be placed here -->
 
+## [v12.2.0](https://github.com/eduNEXT/eox-core/compare/v12.1.0...v12.2.0) - (2025-10-13)
+
+### Changed
+
+- **Ulmo Support**: Upgrade requirements base on edx-platform Ulmo
+release, update GitHub Workflows with new actions version.
+
 ## [v12.1.0](https://github.com/eduNEXT/eox-core/compare/v12.0.0...v12.1.0) - (2025-07-01)
 
 ### Added

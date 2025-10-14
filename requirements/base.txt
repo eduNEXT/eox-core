@@ -8,25 +8,25 @@ amqp==5.3.1
     # via kombu
 appdirs==1.4.4
     # via fs
-asgiref==3.8.1
+asgiref==3.10.0
     # via django
-attrs==25.3.0
+attrs==25.4.0
     # via openedx-events
-billiard==4.2.1
+billiard==4.2.2
     # via celery
 celery==5.5.3
     # via
     #   -r requirements/base.in
     #   event-tracking
-certifi==2025.4.26
+certifi==2025.10.5
     # via requests
-cffi==1.17.1
+cffi==2.0.0
     # via
     #   cryptography
     #   pynacl
-charset-normalizer==3.4.2
+charset-normalizer==3.4.3
     # via requests
-click==8.2.1
+click==8.3.0
     # via
     #   -r requirements/base.in
     #   celery
@@ -37,29 +37,29 @@ click==8.2.1
     #   edx-django-utils
 click-didyoumean==0.3.1
     # via celery
-click-plugins==1.1.1
+click-plugins==1.1.1.2
     # via celery
 click-repl==0.3.0
     # via celery
 code-annotations==2.3.0
     # via edx-toggles
-cryptography==45.0.4
+cryptography==46.0.2
     # via
     #   jwcrypto
     #   pyjwt
-    #   social-auth-core
 defusedxml==0.7.1
     # via
     #   python3-openid
     #   social-auth-core
-django==4.2.23
+django==5.2.7
     # via
-    #   -c https://raw.githubusercontent.com/openedx/edx-lint/master/edx_lint/files/common_constraints.txt
+    #   -c requirements/constraints.txt
     #   -r requirements/base.in
     #   django-crum
     #   django-filter
     #   django-model-utils
     #   django-oauth-toolkit
+    #   django-simple-history
     #   django-waffle
     #   djangorestframework
     #   drf-jwt
@@ -79,7 +79,9 @@ django-crum==0.7.9
     #   edx-proctoring
     #   edx-toggles
 django-filter==25.1
-    # via -r requirements/base.in
+    # via
+    #   -c requirements/constraints.txt
+    #   -r requirements/base.in
 django-ipware==7.0.1
     # via edx-proctoring
 django-model-utils==5.0.0
@@ -92,20 +94,18 @@ django-oauth-toolkit==1.7.1
     #   -r requirements/base.in
 django-oauth2-provider==0.2.6.1
     # via -r requirements/base.in
-django-simple-history==3.0.0
-    # via
-    #   -c https://raw.githubusercontent.com/openedx/edx-lint/master/edx_lint/files/common_constraints.txt
-    #   edx-proctoring
-django-waffle==4.2.0
+django-simple-history==3.10.1
+    # via edx-proctoring
+django-waffle==5.0.0
     # via
     #   -r requirements/base.in
     #   edx-django-utils
     #   edx-drf-extensions
     #   edx-proctoring
     #   edx-toggles
-django-webpack-loader==3.2.0
+django-webpack-loader==3.2.1
     # via edx-proctoring
-djangorestframework==3.16.0
+djangorestframework==3.16.1
     # via
     #   -r requirements/base.in
     #   drf-jwt
@@ -113,17 +113,17 @@ djangorestframework==3.16.0
     #   edx-api-doc-tools
     #   edx-drf-extensions
     #   edx-proctoring
-dnspython==2.7.0
+dnspython==2.8.0
     # via pymongo
 drf-jwt==1.19.2
     # via edx-drf-extensions
-drf-yasg==1.21.10
+drf-yasg==1.21.11
     # via edx-api-doc-tools
 edx-api-doc-tools==2.1.0
     # via -r requirements/base.in
 edx-ccx-keys==2.0.2
     # via openedx-events
-edx-django-utils==8.0.0
+edx-django-utils==8.0.1
     # via
     #   edx-drf-extensions
     #   edx-rest-api-client
@@ -147,43 +147,43 @@ edx-proctoring==5.2.0
     # via -r requirements/base.in
 edx-rest-api-client==6.2.0
     # via edx-proctoring
-edx-toggles==5.3.0
+edx-toggles==5.4.1
     # via event-tracking
 edx-when==3.0.0
     # via edx-proctoring
 event-tracking==3.3.0
     # via edx-proctoring
-fastavro==1.11.1
+fastavro==1.12.1
     # via openedx-events
 fs==2.4.16
     # via xblock
-idna==3.10
+idna==3.11
     # via requests
 inflection==0.5.1
     # via drf-yasg
 jinja2==3.1.6
     # via code-annotations
-jsonfield==3.1.0
+jsonfield==3.2.0
     # via edx-proctoring
 jwcrypto==1.5.6
     # via django-oauth-toolkit
 kombu==5.5.4
     # via celery
-lxml==5.4.0
+lxml==6.0.2
     # via xblock
 mako==1.3.10
     # via xblock
-markupsafe==3.0.2
+markupsafe==3.0.3
     # via
     #   jinja2
     #   mako
     #   xblock
-oauthlib==3.2.2
+oauthlib==3.3.1
     # via
     #   django-oauth-toolkit
     #   requests-oauthlib
     #   social-auth-core
-openedx-events==10.2.1
+openedx-events==10.5.0
     # via
     #   -r requirements/base.in
     #   event-tracking
@@ -191,13 +191,11 @@ packaging==25.0
     # via
     #   drf-yasg
     #   kombu
-pbr==6.1.1
-    # via stevedore
-prompt-toolkit==3.0.51
+prompt-toolkit==3.0.52
     # via click-repl
-psutil==7.0.0
+psutil==7.1.0
     # via edx-django-utils
-pycparser==2.22
+pycparser==2.23
     # via cffi
 pycryptodomex==3.23.0
     # via edx-proctoring
@@ -208,11 +206,11 @@ pyjwt[crypto]==2.10.1
     #   edx-proctoring
     #   edx-rest-api-client
     #   social-auth-core
-pymongo==4.13.0
+pymongo==4.15.3
     # via
     #   edx-opaque-keys
     #   event-tracking
-pynacl==1.5.0
+pynacl==1.6.0
     # via edx-django-utils
 python-dateutil==2.9.0.post0
     # via
@@ -231,12 +229,12 @@ pytz==2025.2
     #   edx-proctoring
     #   event-tracking
     #   xblock
-pyyaml==6.0.2
+pyyaml==6.0.3
     # via
     #   code-annotations
     #   drf-yasg
     #   xblock
-requests==2.32.4
+requests==2.32.5
     # via
     #   django-oauth-toolkit
     #   edx-drf-extensions
@@ -251,7 +249,7 @@ semantic-version==2.10.0
     # via edx-drf-extensions
 shortuuid==1.0.13
     # via django-oauth2-provider
-simplejson==3.20.1
+simplejson==3.20.2
     # via xblock
 six==1.17.0
     # via
@@ -260,18 +258,18 @@ six==1.17.0
     #   event-tracking
     #   fs
     #   python-dateutil
-social-auth-core==4.6.1
+social-auth-core==4.8.1
     # via -r requirements/base.in
 sqlparse==0.5.3
     # via django
-stevedore==5.4.1
+stevedore==5.5.0
     # via
     #   code-annotations
     #   edx-django-utils
     #   edx-opaque-keys
 text-unidecode==1.3
     # via python-slugify
-typing-extensions==4.14.0
+typing-extensions==4.15.0
     # via
     #   edx-opaque-keys
     #   jwcrypto
@@ -279,16 +277,14 @@ tzdata==2025.2
     # via kombu
 uritemplate==4.2.0
     # via drf-yasg
-urllib3==2.2.3
-    # via
-    #   -c https://raw.githubusercontent.com/openedx/edx-lint/master/edx_lint/files/common_constraints.txt
-    #   requests
+urllib3==2.5.0
+    # via requests
 vine==5.1.0
     # via
     #   amqp
     #   celery
     #   kombu
-wcwidth==0.2.13
+wcwidth==0.2.14
     # via prompt-toolkit
 web-fragments==3.1.0
     # via xblock
