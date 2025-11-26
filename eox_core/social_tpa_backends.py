@@ -8,7 +8,7 @@ import logging
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from social_core.backends.open_id_connect import OpenIdConnectAuth
-from social_core.exceptions import AuthMissingParameter
+from social_core.exceptions import AuthException, AuthMissingParameter
 
 from eox_core.edxapp_wrapper.configuration_helpers import get_configuration_helper
 
@@ -211,6 +211,7 @@ class BaseOAuth2PKCEMixin:
     DEFAULT_USE_PKCE = True
 
     def create_code_verifier(self):
+        """Create a new code verifier and store it in the session."""
         name = f"{self.name}_code_verifier"
         code_verifier_len = self.setting(
             "PKCE_CODE_VERIFIER_LENGTH", default=self.PKCE_DEFAULT_CODE_VERIFIER_LENGTH
@@ -220,11 +221,13 @@ class BaseOAuth2PKCEMixin:
         return code_verifier
 
     def get_code_verifier(self):
+        """Retrieve the code verifier from the session."""
         name = f"{self.name}_code_verifier"
         code_verifier = self.strategy.session_get(name)
         return code_verifier
 
     def generate_code_challenge(self, code_verifier, challenge_method):
+        """Generate a code challenge from the code verifier."""
         method = challenge_method.lower()
         if method == "s256":
             hashed = hashlib.sha256(code_verifier.encode()).digest()
@@ -236,6 +239,7 @@ class BaseOAuth2PKCEMixin:
         raise AuthException("Unsupported code challenge method.")
 
     def auth_params(self, state=None):
+        """Get the authentication parameters, adding PKCE parameters if enabled."""
         params = super().auth_params(state=state)
 
         if self.setting("USE_PKCE", default=self.DEFAULT_USE_PKCE):
@@ -252,6 +256,7 @@ class BaseOAuth2PKCEMixin:
         return params
 
     def auth_complete_params(self, state=None):
+        """Get the authentication complete parameters, adding PKCE parameters if enabled."""
         params = super().auth_complete_params(state=state)
 
         if self.setting("USE_PKCE", default=self.DEFAULT_USE_PKCE):
