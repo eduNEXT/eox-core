@@ -28,24 +28,28 @@ class WrittableEdxappRemoveUserSerializer(serializers.Serializer):
     is_support_user = serializers.BooleanField(default=True)
 
 
-class WrittableEdxappUsernameSerializer(serializers.Serializer):
+class WrittableEdxappUserSerializer(serializers.Serializer):
     """
-    Handles the serialization of the data required to update the username of an edxapp user.
+    Base serializer for updating username or email of an edxapp user.
     """
-    new_username = serializers.CharField(max_length=USERNAME_MAX_LENGTH, write_only=True)
 
-    def validate(self, attrs):
+    def validate_conflicts(self, attrs):
         """
-        When a username update is being made, then it checks that:
-            - The new username is not already taken by other user.
-            - The user is not staff or superuser.
-            - The user has just one signup source.
+        Validates that no conflicts exist for the provided username or email.
         """
         username = attrs.get("new_username")
-        conflicts = check_edxapp_account_conflicts(None, username)
-        if conflicts:
-            raise serializers.ValidationError({"detail": "An account already exists with the provided username."})
+        email = attrs.get("new_email")
 
+        conflicts = check_edxapp_account_conflicts(email, username)
+        if conflicts:
+            raise serializers.ValidationError({"detail": "An account already exists with the provided username or email."})
+
+        return attrs
+
+    def validate_role_restrictions(self, attrs):
+        """
+        Validates that the user is not staff or superuser and has just one signup source.
+        """
         if self.instance.is_staff or self.instance.is_superuser:
             raise serializers.ValidationError({"detail": "You can't update users with roles like staff or superuser."})
 
@@ -54,17 +58,80 @@ class WrittableEdxappUsernameSerializer(serializers.Serializer):
 
         return attrs
 
+    def validate_required_fields(self, required_fields):
+        """
+        Validates that at least one field to update is provided.
+        """
+        if not required_fields:
+            raise serializers.ValidationError(
+                {"detail": "At least one field to update must be provided."}
+            )
+        return required_fields
+
+
+class WrittableEdxappUsernameSerializer(WrittableEdxappUserSerializer):
+    """
+    Handles the serialization of the data required to update the username of an edxapp user.
+    """
+
+    new_username = serializers.CharField(
+        max_length=USERNAME_MAX_LENGTH,
+        required=True,
+        allow_blank=False,
+        allow_null=False,
+    )
+
+    def validate(self, attrs):
+        """
+        Validates that the new username is provided and passes all checks.
+        """
+        if not attrs.get("new_username"):
+            raise serializers.ValidationError({"detail": "You must provide a new username."})
+
+        self.validate_conflicts(attrs)
+        self.validate_role_restrictions(attrs)
+
+        return attrs
+
     def update(self, instance, validated_data):
         """
-        Method to update username of edxapp User.
+        Updates the username of the edxapp User.
         """
-        key = 'username'
-        if validated_data:
-            setattr(instance, key, validated_data['new_username'])
-            instance.save()
-
+        instance.username = validated_data["new_username"]
+        instance.save()
         return instance
 
+
+class WrittableEdxappEmailSerializer(WrittableEdxappUserSerializer):
+    """
+    Handles the serialization of the data required to update the email of an edxapp user.
+    """
+
+    new_email = serializers.EmailField(
+        required=True,
+        allow_blank=False,
+        allow_null=False,
+    )
+
+    def validate(self, attrs):
+        """
+        Validates that the new email is provided and passes all checks.
+        """
+        if not attrs.get("new_email"):
+            raise serializers.ValidationError({"detail": "You must provide a new email."})
+
+        self.validate_conflicts(attrs)
+        self.validate_role_restrictions(attrs)
+
+        return attrs
+
+    def update(self, instance, validated_data):
+        """
+        Updates the email of the edxapp User.
+        """
+        instance.email = validated_data["new_email"]
+        instance.save()
+        return instance
 
 class OauthApplicationUserSerializer(serializers.Serializer):
     """
