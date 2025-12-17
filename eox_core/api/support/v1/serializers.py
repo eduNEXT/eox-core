@@ -31,6 +31,11 @@ class WrittableEdxappRemoveUserSerializer(serializers.Serializer):
 class WrittableEdxappUserSerializer(serializers.Serializer):
     """
     Base serializer for updating username or email of an edxapp user.
+
+    When a username/email update is being made the following validations are performed:
+    - The new username/email is not already taken by another user.
+    - The user is not staff or superuser.
+    - The user has just one signup source.
     """
 
     def validate_conflicts(self, attrs):
@@ -58,15 +63,14 @@ class WrittableEdxappUserSerializer(serializers.Serializer):
 
         return attrs
 
-    def validate_required_fields(self, required_fields):
+    def validate(self, attrs):
         """
-        Validates that at least one field to update is provided.
+        Base validate method to be used by child serializers to validate common restrictions.
         """
-        if not required_fields:
-            raise serializers.ValidationError(
-                {"detail": "At least one field to update must be provided."}
-            )
-        return required_fields
+        self.validate_conflicts(attrs)
+        self.validate_role_restrictions(attrs)
+
+        return attrs
 
 
 class WrittableEdxappUsernameSerializer(WrittableEdxappUserSerializer):
@@ -80,18 +84,6 @@ class WrittableEdxappUsernameSerializer(WrittableEdxappUserSerializer):
         allow_blank=False,
         allow_null=False,
     )
-
-    def validate(self, attrs):
-        """
-        Validates that the new username is provided and passes all checks.
-        """
-        if not attrs.get("new_username"):
-            raise serializers.ValidationError({"detail": "You must provide a new username."})
-
-        self.validate_conflicts(attrs)
-        self.validate_role_restrictions(attrs)
-
-        return attrs
 
     def update(self, instance, validated_data):
         """
@@ -112,18 +104,6 @@ class WrittableEdxappEmailSerializer(WrittableEdxappUserSerializer):
         allow_blank=False,
         allow_null=False,
     )
-
-    def validate(self, attrs):
-        """
-        Validates that the new email is provided and passes all checks.
-        """
-        if not attrs.get("new_email"):
-            raise serializers.ValidationError({"detail": "You must provide a new email."})
-
-        self.validate_conflicts(attrs)
-        self.validate_role_restrictions(attrs)
-
-        return attrs
 
     def update(self, instance, validated_data):
         """
