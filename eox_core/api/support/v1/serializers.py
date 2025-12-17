@@ -113,6 +113,7 @@ class WrittableEdxappEmailSerializer(WrittableEdxappUserSerializer):
         instance.save()
         return instance
 
+
 class OauthApplicationUserSerializer(serializers.Serializer):
     """
     Oauth Application owner serializer.
