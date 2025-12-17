@@ -24,9 +24,9 @@ from eox_core.api.support.v1.authentication import JWTsignedOauthAppAuthenticati
 from eox_core.api.support.v1.permissions import EoxCoreSupportAPIPermission
 from eox_core.api.support.v1.serializers import (
     OauthApplicationSerializer,
+    WrittableEdxappEmailSerializer,
     WrittableEdxappRemoveUserSerializer,
     WrittableEdxappUsernameSerializer,
-    WrittableEdxappEmailSerializer,
 )
 from eox_core.api.v1.serializers import EdxappUserReadOnlySerializer
 from eox_core.api.v1.views import UserQueryMixin
