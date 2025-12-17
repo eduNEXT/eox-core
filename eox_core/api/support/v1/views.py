@@ -26,6 +26,7 @@ from eox_core.api.support.v1.serializers import (
     OauthApplicationSerializer,
     WrittableEdxappRemoveUserSerializer,
     WrittableEdxappUsernameSerializer,
+    WrittableEdxappEmailSerializer,
 )
 from eox_core.api.v1.serializers import EdxappUserReadOnlySerializer
 from eox_core.api.v1.views import UserQueryMixin
@@ -95,42 +96,35 @@ class EdxappUser(UserQueryMixin, APIView):
         return Response(message, status=status)
 
 
-class EdxappReplaceUsername(UserQueryMixin, APIView):
+class EdxappUserUpdateBase(UserQueryMixin, APIView):
     """
-    Handles the replacement of the username.
+    Base view for updating edxapp user attributes (username, email, etc.).
+    Provides common functionality for user updates with forum synchronization.
     """
 
     authentication_classes = (BearerAuthentication, SessionAuthentication, JwtAuthentication)
     permission_classes = (EoxCoreSupportAPIPermission,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
-    @audit_drf_api(action="Update an Edxapp user's Username.", method_name='eox_core_api_method')
+    def get_serializer_class(self):
+        """
+        Returns the serializer class to use.
+        Must be overridden by subclasses.
+        """
+        raise NotImplementedError("Subclasses must implement get_serializer_class()")
+
     def patch(self, request, *args, **kwargs):
         """
-        Allows to safely update an Edxapp user's Username along with the
-        forum associated User.
+        Updates an edxapp user's attribute and synchronizes with the forum.
 
-        For now users that have different signup sources cannot be updated.
-
-        For example:
-
-        **Requests**:
-            PATCH <domain>/eox-core/support-api/v1/replace-username/
-
-        **Request body**
-            {
-                "new_username": "new username"
-            }
-
-        **Response values**
-            User serialized.
+        For users with different signup sources, updates are not allowed.
         """
         query = self.get_user_query(request)
         user = get_edxapp_user(**query)
         data = request.data
 
         with transaction.atomic():
-            serializer = WrittableEdxappUsernameSerializer(user, data=data)
+            serializer = self.get_serializer_class()(user, data=data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
 
@@ -147,6 +141,74 @@ class EdxappReplaceUsername(UserQueryMixin, APIView):
             user, custom_fields=admin_fields, context={"request": request}
         )
         return Response(serialized_user.data)
+
+
+class EdxappReplaceUsername(EdxappUserUpdateBase):
+    """
+    Handles the replacement of the username.
+    """
+
+    def get_serializer_class(self):
+        """
+        Returns the serializer class to use.
+        """
+        return WrittableEdxappUsernameSerializer
+
+    @audit_drf_api(action="Update an Edxapp user's Username.", method_name='eox_core_api_method')
+    def patch(self, request, *args, **kwargs):
+        """
+        Allows to safely update an Edxapp user's Username along with the
+        forum associated User.
+
+        For now users that have different signup sources cannot be updated.
+
+        For example:
+
+        **Requests**:
+            PATCH <domain>/eox-core/support-api/v1/replace-username/?username=old_username
+
+        **Request body**
+            {
+                "new_username": "new username"
+            }
+
+        **Response values**
+            User serialized.
+        """
+        return super().patch(request, *args, **kwargs)
+
+
+class EdxappReplaceEmail(EdxappUserUpdateBase):
+    """
+    Handles the replacement of the email.
+    """
+
+    def get_serializer_class(self):
+        """Returns the serializer class to use."""
+        return WrittableEdxappEmailSerializer
+
+    @audit_drf_api(action="Update an Edxapp user's Email.", method_name='eox_core_api_method')
+    def patch(self, request, *args, **kwargs):
+        """
+        Allows to safely update an Edxapp user's Email along with the
+        forum associated User.
+
+        For now users that have different signup sources cannot be updated.
+
+        For example:
+
+        **Requests**:
+            PATCH <domain>/eox-core/support-api/v1/replace-email/?email=old_email
+
+        **Request body**
+            {
+                "new_email": "new email"
+            }
+
+        **Response values**
+            User serialized.
+        """
+        return super().patch(request, *args, **kwargs)
 
 
 class OauthApplicationAPIView(UserQueryMixin, APIView):
