@@ -9,10 +9,10 @@ jobs:
       fail-fast: false
       max-parallel: 1
       matrix:
-        tutor_version: ['<20.0.0', '<21.0.0', 'main']
+        tutor_version: ['<21.0.0', 'main']
     steps:
       - name: Run Integration Tests
-        uses: eduNEXT/integration-test-in-tutor@main
+        uses: eduNEXT/integration-test-in-tutor@v0.1.0
         with:
           tutor_version: ${{ matrix.tutor_version }}
           tutor_plugins: 'forum'
