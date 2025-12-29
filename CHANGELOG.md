@@ -11,6 +11,13 @@ Please do not update the unreleased notes.
 
 <!-- Content should be placed here -->
 
+## [v12.2.1](https://github.com/eduNEXT/eox-core/compare/v12.2.0...v12.2.1) - (2025-12-18)
+
+### Changed
+
+- Pin Tutor integration-tests GitHub Action version to avoid integration test failures.
+- Remove integration tests for Tutor<20.0.0
+
 ## [v12.2.0](https://github.com/eduNEXT/eox-core/compare/v12.1.0...v12.2.0) - (2025-10-13)
 
 ### Changed
