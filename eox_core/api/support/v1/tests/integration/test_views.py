@@ -361,7 +361,7 @@ class TestEdxAppUserAPIIntegration(
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(
             response_data["detail"],
-            "An account already exists with the provided username or email.",
+            ["An account already exists with the provided username or email."],
         )
 
     def test_update_email_in_tenant_not_found(self) -> None:
