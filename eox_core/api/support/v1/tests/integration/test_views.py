@@ -22,6 +22,9 @@ class SupportAPIRequestMixin:
     UPDATE_USERNAME_URL = (
         f"{settings['EOX_CORE_API_BASE']}{reverse('eox-support-api:eox-support-api:edxapp-replace-username')}"
     )
+    UPDATE_EMAIL_URL = (
+        f"{settings['EOX_CORE_API_BASE']}{reverse('eox-support-api:eox-support-api:edxapp-replace-email')}"
+    )
     OAUTH_APP_URL = (
         f"{settings['EOX_CORE_API_BASE']}{reverse('eox-support-api:eox-support-api:edxapp-oauth-application')}"
     )
@@ -52,6 +55,20 @@ class SupportAPIRequestMixin:
             requests.Response: The response object.
         """
         return make_request(tenant, "PATCH", url=self.UPDATE_USERNAME_URL, params=params, data=data)
+
+    def update_email(self, tenant: dict, params: dict | None = None, data: dict | None = None) -> requests.Response:
+        """
+        Update an edxapp user's email in a tenant.
+
+        Args:
+            tenant (dict): The tenant data.
+            params (dict, optional): The query parameters for the request.
+            data (dict, optional): The body data for the request.
+
+        Returns:
+            requests.Response: The response object.
+        """
+        return make_request(tenant, "PATCH", url=self.UPDATE_EMAIL_URL, params=params, data=data)
 
     def create_oauth_application(self, tenant: dict, data: dict | None = None) -> requests.Response:
         """
@@ -283,6 +300,153 @@ class TestEdxAppUserAPIIntegration(
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response_data, {"new_username": ["This field is required."]})
+
+    @ddt.data("username", "email")
+    def test_update_email_in_tenant_success(self, query_param: str) -> None:
+        """
+        Test update an edxapp user's email in a tenant.
+
+        Open edX definitions tested:
+        - `get_edxapp_user`
+        - `check_edxapp_account_conflicts`
+        - `get_user_read_only_serializer`
+
+        Expected result:
+        - The status code is 200.
+        - The response indicates the email was updated successfully.
+        - The user is found in the tenant with the new email.
+        - The user cannot be found with the old email.
+        """
+        data = next(FAKE_USER_DATA)
+        self.create_user(self.tenant_x, data)
+        old_email = data["email"]
+        new_email = f"new-email-{query_param}@example.com"
+
+        response = self.update_email(self.tenant_x, {query_param: data[query_param]}, {"new_email": new_email})
+        response_data = response.json()
+        get_response = self.get_user(self.tenant_x, {"email": new_email})
+        get_response_data = get_response.json()
+        old_email_response = self.get_user(self.tenant_x, {"email": old_email})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response_data["email"], new_email)
+        self.assertEqual(get_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(get_response_data["email"], new_email)
+        self.assertEqual(old_email_response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_update_email_in_tenant_conflict(self) -> None:
+        """
+        Test update an edxapp user's email to an email that already exists.
+
+        Open edX definitions tested:
+        - `get_edxapp_user`
+        - `check_edxapp_account_conflicts`
+
+        Expected result:
+        - The status code is 400.
+        - The response indicates the email already exists.
+        """
+        data1 = next(FAKE_USER_DATA)
+        data2 = next(FAKE_USER_DATA)
+        self.create_user(self.tenant_x, data1)
+        self.create_user(self.tenant_x, data2)
+
+        response = self.update_email(
+            self.tenant_x,
+            {"username": data1["username"]},
+            {"new_email": data2["email"]},
+        )
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response_data["detail"],
+            "An account already exists with the provided username or email.",
+        )
+
+    def test_update_email_in_tenant_not_found(self) -> None:
+        """
+        Test update an edxapp user's email in a tenant that does not exist.
+
+        Open edX definitions tested:
+        - `get_edxapp_user`
+
+        Expected result:
+        - The status code is 404.
+        - The response indicates the user was not found in the tenant.
+        """
+        response = self.update_email(
+            self.tenant_x,
+            {"username": "user-not-found"},
+            {"new_email": "new-email@example.com"},
+        )
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(
+            response_data["detail"],
+            f"No user found by {{'username': 'user-not-found'}} on site {self.tenant_x['domain']}.",
+        )
+
+    @ddt.data("username", "email")
+    def test_update_user_email_of_another_tenant(self, query_param: str) -> None:
+        """
+        Test update an edxapp user's email of another tenant.
+
+        Open edX definitions tested:
+        - `get_edxapp_user`
+
+        Expected result:
+        - The status code is 404.
+        - The response indicates the user was not found in the tenant.
+        """
+        data = next(FAKE_USER_DATA)
+        self.create_user(self.tenant_x, data)
+        new_email = f"new-email-{query_param}@example.com"
+
+        response = self.update_email(
+            self.tenant_y,
+            {query_param: data[query_param]},
+            {"new_email": new_email},
+        )
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(
+            response_data["detail"],
+            f"No user found by {{'{query_param}': '{data[query_param]}'}} on site {self.tenant_y['domain']}.",
+        )
+
+    def test_update_email_in_tenant_missing_params(self) -> None:
+        """
+        Test update an edxapp user's email in a tenant without providing the username or email.
+
+        Expected result:
+        - The status code is 400.
+        - The response indicates the username or email is required.
+        """
+        response = self.update_email(self.tenant_x)
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response_data, ["Email or username needed"])
+
+    def test_update_email_in_tenant_missing_body(self) -> None:
+        """
+        Test update an edxapp user's email in a tenant without providing the new email.
+
+        Expected result:
+        - The status code is 400.
+        - The response indicates the new email is required.
+        """
+        data = next(FAKE_USER_DATA)
+        self.create_user(self.tenant_x, data)
+
+        response = self.update_email(self.tenant_x, params={"username": data["username"]})
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response_data, {"new_email": ["This field is required."]})
 
 
 @ddt.ddt
