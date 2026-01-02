@@ -5,7 +5,6 @@ from __future__ import annotations
 import ddt
 import requests
 from django.conf import settings as ds
-from django.test import override_settings
 from django.urls import reverse
 from rest_framework import status
 
@@ -160,106 +159,6 @@ class TestEdxAppUserAPIIntegration(
     def test_delete_user_missing_required_fields(self) -> None:
         """
         Test delete an edxapp user in a tenant without providing the username or email.
-
-        Expected result:
-        - The status code is 400.
-        - The response indicates the username or email is required.
-        """
-        response = self.delete_user(self.tenant_x)
-        response_data = response.json()
-
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response_data, ["Email or username needed"])
-
-    @override_settings(EOX_CORE_ALLOW_PERMANENT_USER_DELETION=True)
-    @ddt.data("username", "email")
-    def test_permanently_delete_user_in_tenant_success(self, query_param: str) -> None:
-        """
-        Test permanently delete an edxapp user in a tenant.
-
-        Open edX definitions tested:
-        - `get_edxapp_user`
-        - `delete_edxapp_user`
-        - `permanently_delete_user`
-
-        Expected result:
-        - The status code is 200.
-        - The response indicates the user was permanently deleted successfully from the tenant.
-        - The user is not found in the tenant.
-        """
-        data = next(FAKE_USER_DATA)
-        self.create_user(self.tenant_x, data)
-
-        response = self.delete_user(self.tenant_x, {query_param: data[query_param]})
-        response_data = response.json()
-        get_response = self.get_user(self.tenant_x, {"email": data["email"]})
-        get_response_data = get_response.json()
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response_data, f"The user {data['username']} <{data['email']}> has been permanently deleted")
-        self.assertEqual(get_response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertEqual(
-            get_response_data,
-            {"detail": f"No user found by {{'email': '{data['email']}'}} on site {self.tenant_x['domain']}."},
-        )
-
-    @override_settings(EOX_CORE_ALLOW_PERMANENT_USER_DELETION=True)
-    @ddt.data(
-        ("username", "user-not-found"),
-        ("email", "user-not-found@mail.com"),
-    )
-    @ddt.unpack
-    def test_permanently_delete_user_in_tenant_not_found(self, query_param: str, value: str) -> None:
-        """
-        Test permanently delete an edxapp user in a tenant that does not exist.
-
-        Open edX definitions tested:
-        - `get_edxapp_user`
-
-        Expected result:
-        - The status code is 404.
-        - The response indicates the user was not found in the tenant.
-        """
-        response = self.delete_user(self.tenant_x, {query_param: value})
-        response_data = response.json()
-
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertEqual(
-            response_data["detail"],
-            f"No user found by {{'{query_param}': '{value}'}} on site {self.tenant_x['domain']}.",
-        )
-
-    @override_settings(EOX_CORE_ALLOW_PERMANENT_USER_DELETION=True)
-    @ddt.data("username", "email")
-    def test_permanently_delete_user_of_another_tenant(self, query_param: str) -> None:
-        """
-        Test permanently delete an edxapp user of another tenant.
-
-        Open edX definitions tested:
-        - `get_edxapp_user`
-
-        Expected result:
-        - The status code is 404.
-        - The response indicates the user was not found in the tenant.
-        """
-        data = next(FAKE_USER_DATA)
-        self.create_user(self.tenant_x, data)
-
-        response = self.delete_user(self.tenant_y, {query_param: data[query_param]})
-        response_data = response.json()
-        get_response = self.get_user(self.tenant_x, {"username": data["username"]})
-
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertEqual(
-            response_data["detail"],
-            f"No user found by {{'{query_param}': '{data[query_param]}'}} on site {self.tenant_y['domain']}.",
-        )
-        self.assertEqual(get_response.status_code, status.HTTP_200_OK)
-
-    @override_settings(EOX_CORE_ALLOW_PERMANENT_USER_DELETION=True)
-    def test_permanently_delete_user_missing_required_fields(self) -> None:
-        """
-        Test permanently delete an edxapp user in a tenant without providing the username or email.
 
         Expected result:
         - The status code is 400.

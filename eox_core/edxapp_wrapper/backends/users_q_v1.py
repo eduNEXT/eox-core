@@ -276,13 +276,13 @@ def permanently_delete_user(*args, **kwargs):
     user = kwargs.get("user")
 
     with transaction.atomic():
-        # Delete OAuth tokens associated with the user
-        # and unlink LMS social auth accounts
+        # Delete OAuth tokens associated with the user.
         retire_dot_oauth2_models(user)
+
+        # Unlink LMS social auth accounts
         UserSocialAuth.objects.filter(user_id=user.id).delete()
 
-        # Permanently delete the user and rely on cascade deletion to remove
-        # its related objects
+        # Delete the user
         user.delete()
 
     return (
