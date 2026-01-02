@@ -265,9 +265,43 @@ def get_edxapp_user(**kwargs):
     return user
 
 
-def delete_edxapp_user(*args, **kwargs):
+def permanently_delete_user(*args, **kwargs):
+    """Hard deletes a user from the platform.
+
+    This function permanently removes the user from the database. It is
+    irreversible and should be used with caution. All associated objects should
+    be handled via cascading deletes or other mechanisms as needed. The
+    only object manually deleted here are the OAuth tokens associated with the user.
     """
-    Deletes a user from the platform.
+    user = kwargs.get("user")
+
+    with transaction.atomic():
+        # Delete OAuth tokens associated with the user.
+        retire_dot_oauth2_models(user)
+
+        # Unlink LMS social auth accounts
+        UserSocialAuth.objects.filter(user_id=user.id).delete()
+
+        # Delete the user
+        user.delete()
+
+    return (
+        f"The user {user.username} <{user.email}> has been permanently deleted",
+        status.HTTP_200_OK,
+    )
+
+
+def retire_user_with_cascade_delete(*args, **kwargs):
+    """Deletes a user from the platform by retiring them.
+
+    This function renames the user's email and username to indicate that
+    the account has been retired, adds the user to the retirement queue, unlinks
+    social auth accounts, sets an unusable password, removes activation keys,
+    deletes OAuth tokens, and deletes the user's signup source for the specified
+    site.
+
+    If the user tries to register again with the same email or username, the
+    system will recognize that the account has been retired.
     """
     msg = None
 
@@ -319,6 +353,19 @@ def delete_edxapp_user(*args, **kwargs):
         return msg, status.HTTP_200_OK
 
     raise NotFound(f"{user_response} does not have a signup source on the site {site}")
+
+
+def delete_edxapp_user(*args, **kwargs):
+    """Deletes a user from the platform by either retiring or permanently deleting them.
+
+    The method used depends on the EOX_CORE_ALLOW_PERMANENT_USER_DELETION setting.
+
+    If EOX_CORE_ALLOW_PERMANENT_USER_DELETION is set to True, the user will be
+    permanently deleted from the database. This action is irreversible.
+    """
+    if getattr(settings, "EOX_CORE_ALLOW_PERMANENT_USER_DELETION", False):
+        return permanently_delete_user(*args, **kwargs)
+    return retire_user_with_cascade_delete(*args, **kwargs)
 
 
 def get_course_team_user(*args, **kwargs):
