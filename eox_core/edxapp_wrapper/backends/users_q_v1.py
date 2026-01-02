@@ -365,8 +365,7 @@ def delete_edxapp_user(*args, **kwargs):
     """
     if getattr(settings, "EOX_CORE_ALLOW_PERMANENT_USER_DELETION", False):
         return permanently_delete_user(*args, **kwargs)
-    else:
-        return retire_user_with_cascade_delete(*args, **kwargs)
+    return retire_user_with_cascade_delete(*args, **kwargs)
 
 
 def get_course_team_user(*args, **kwargs):
