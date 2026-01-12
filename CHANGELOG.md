@@ -11,6 +11,12 @@ Please do not update the unreleased notes.
 
 <!-- Content should be placed here -->
 
+## [v12.3.0](https://github.com/eduNEXT/eox-core/compare/v12.2.1...v12.3.0) - (2026-01-12)
+
+### Added
+
+- New API endpoint to support user email changes.
+
 ## [v12.2.1](https://github.com/eduNEXT/eox-core/compare/v12.2.0...v12.2.1) - (2025-12-18)
 
 ### Changed
