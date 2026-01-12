@@ -16,6 +16,7 @@ Please do not update the unreleased notes.
 ### Added
 
 - New API endpoint to support user email changes.
+- Support for permanent user deletion via Users API when the feature is enabled.
 
 ## [v12.2.1](https://github.com/eduNEXT/eox-core/compare/v12.2.0...v12.2.1) - (2025-12-18)
 
