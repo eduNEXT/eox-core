@@ -220,6 +220,25 @@ def ensure_user_has_signup_source(user=None, *args, **kwargs):
         )
 
 
+def map_language_to_openedx(lang: str) -> str:
+    """
+    Maps a BCP 47 language code to Open edX language format.
+    """
+    lang = lang.strip()
+
+    mapping = {
+        "en": "en",
+        "es": "es-es",
+        "pt": "pt-pt",
+        "pt-BR": "pt-br",
+        "de": "de-de",
+        "pl": "pl",
+        "ca": "ca",
+    }
+
+    return mapping.get(lang, "en")
+
+
 def get_language_from_sso_provider(response: dict) -> str:
     """
     Get the language from the SSO provider.
@@ -230,8 +249,7 @@ def get_language_from_sso_provider(response: dict) -> str:
     Returns:
         The language from the SSO provider.
     """
-    # The fallback is only for testing purposes.
-    return response.get("language", "es-419")
+    return map_language_to_openedx(response.get("language"))
 
 
 # pylint: disable=unused-argument
