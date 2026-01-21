@@ -10,6 +10,7 @@ class EoxCoreConfig(AppConfig):
     """App configuration"""
     name = 'eox_core'
     verbose_name = "eduNEXT Openedx Extensions"
+    
 
     plugin_app = {
         'url_config': {
@@ -28,6 +29,13 @@ class EoxCoreConfig(AppConfig):
             },
         },
     }
+    
+    def ready(self):
+        """
+        Register signal receivers when Django starts.
+        """
+        from eox_core import handlers  # pylint: disable=import-outside-toplevel, unused-import
+        handlers.connect_signals()
 
 
 class EoxCoreCMSConfig(EoxCoreConfig):
