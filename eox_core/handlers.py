@@ -12,13 +12,21 @@ import logging
 
 from django.contrib.auth.signals import user_logged_out
 from django.db import transaction
-from django.dispatch import receiver
-
+from django.dispatch import Signal, receiver
 from openedx.core.djangoapps.user_api.accounts.signals import (  # pylint: disable=import-error
     USER_RETIRE_LMS_CRITICAL,
     USER_RETIRE_LMS_MISC,
 )
 from openedx.core.djangoapps.user_api.models import UserRetirementStatus  # pylint: disable=import-error
+
+try:
+    from common.djangoapps.student.models import UserProfile
+    from common.djangoapps.util.model_utils import USER_FIELDS_CHANGED
+    from lms.djangoapps.certificates.api import get_recently_modified_certificates
+except ImportError:
+    UserProfile = None
+    USER_FIELDS_CHANGED = Signal()
+    get_recently_modified_certificates = None
 
 logger = logging.getLogger("platform_plugins_ca.deactivation")
 retirement_logger = logging.getLogger("platform_plugins_ca.retirement")
@@ -202,3 +210,25 @@ def connect_signals():
         "USER_RETIRE_LMS_MISC -> handle_retire_lms_misc, "
         "USER_RETIRE_LMS_CRITICAL -> handle_retire_lms_critical"
     )
+
+
+# pylint: disable=unused-argument
+@receiver(USER_FIELDS_CHANGED)
+def update_certificates_for_user(sender, user, table, changed_fields, **kwargs):
+    """
+    Update certificates when a user's name changes.
+
+    This handler listens to the `USER_FIELDS_CHANGED` signal and updates the name of
+    the certificates of the user if the user's name has changed.
+
+    Args:
+        sender: The model class that sent the signal.
+        user: The User instance whose fields have changed.
+        table: The database table name where the change occurred.
+        changed_fields: Dictionary mapping field names to (old_value, new_value) tuples.
+        **kwargs: Additional keyword arguments passed by the signal.
+    """
+    # Only update certificates if the user's name has changed
+    if table == UserProfile._meta.db_table and "name" in changed_fields:
+        certificates = get_recently_modified_certificates(user_ids=[user.id])
+        certificates.update(name=user.profile.name)
