@@ -1,204 +1,46 @@
 """
-Signal handlers for platform_plugins_ca.
+Signal handlers for eox_core.
 
-This module handles:
-1. Account deactivation logging (when user requests deletion via deactivate_logout)
-2. User retirement signal handling (MetaRed policy: permanent deletion after pipeline)
+This module handles user retirement signal handling (MetaRed policy: permanent deletion
+after pipeline completion to allow email reuse).
 
-The retirement handlers listen for USER_RETIRE_LMS_CRITICAL signal at the END
-of the retirement pipeline to permanently delete users, allowing email reuse.
+The deletion is executed via a background task with a short delay to avoid conflicts
+with the sender still modifying and saving the user instance after the signal is emitted.
 """
 import logging
 
-from django.contrib.auth.signals import user_logged_out
-from django.db import transaction
 from django.dispatch import receiver
 
-from openedx.core.djangoapps.user_api.accounts.signals import (  # pylint: disable=import-error
-    USER_RETIRE_LMS_CRITICAL,
-    USER_RETIRE_LMS_MISC,
-)
-from openedx.core.djangoapps.user_api.models import UserRetirementStatus  # pylint: disable=import-error
+from openedx.core.djangoapps.user_api.accounts.signals import USER_RETIRE_LMS_MISC  # pylint: disable=import-error
 
-logger = logging.getLogger("platform_plugins_ca.deactivation")
-retirement_logger = logging.getLogger("platform_plugins_ca.retirement")
+from eox_core.tasks import delete_user_task
 
+retirement_logger = logging.getLogger(__name__)
 
-@receiver(user_logged_out)
-def handle_account_deactivation(sender, request, user, **kwargs):
-    """
-    Signal receiver for user logout events.
-
-    Logs when a user requests account deletion via the deactivate_logout endpoint.
-    The actual deletion happens later via the retirement pipeline.
-    """
-    if not user:
-        return
-
-    if request and 'deactivate_logout' in request.path:
-        logger.info(
-            "ACCOUNT_DEACTIVATION_INITIATED: User requested account deletion. "
-            "user_id=%s, username=%s, email=%s. "
-            "User will be deleted after retirement pipeline completes.",
-            user.id,
-            user.username,
-            user.email,
-        )
+DEFAULT_LMS_QUEUE = "edx.lms.core.default"
 
 
 @receiver(USER_RETIRE_LMS_MISC)
-def handle_retire_lms_misc(sender, user, **kwargs):
+def handle_retire_user(sender, user, **kwargs):  # pylint: disable=unused-argument
     """
     Signal receiver for USER_RETIRE_LMS_MISC retirement step.
 
-    Logs when the LMS_MISC retirement step is reached for a user.
-    """
-    retirement_logger.info(
-        "[METARED_RETIREMENT] USER_RETIRE_LMS_MISC signal received - "
-        "sender=%s, user=%s, kwargs=%s",
-        sender,
-        user,
-        kwargs,
-    )
-
-    if not user:
-        retirement_logger.warning(
-            "[METARED_RETIREMENT] LMS_MISC step received with None user - ignoring"
-        )
-        return
-
-    try:
-        user_id = getattr(user, 'id', None)
-        username = getattr(user, 'username', None)
-        email = getattr(user, 'email', None)
-        retirement_logger.info(
-            "[METARED_RETIREMENT] LMS_MISC step for user: %s (id=%s, email=%s)",
-            username,
-            user_id,
-            email,
-        )
-    except Exception as e:  # pylint: disable=broad-except
-        retirement_logger.error(
-            "[METARED_RETIREMENT] Error accessing user attributes in LMS_MISC: %s",
-            e,
-            exc_info=True,
-        )
-
-
-@receiver(USER_RETIRE_LMS_CRITICAL)
-def handle_retire_lms_critical(sender, user, **kwargs):
-    """
-    Signal receiver for USER_RETIRE_LMS_CRITICAL retirement step.
-
-    Permanently deletes the user after the retirement pipeline completes.
-    This implements the MetaRed policy allowing email reuse after deletion.
-    """
-    retirement_logger.info(
-        "[METARED_RETIREMENT] USER_RETIRE_LMS_CRITICAL signal received - "
-        "sender=%s, user=%s, kwargs=%s",
-        sender,
-        user,
-        kwargs,
-    )
-
-    if not user:
-        retirement_logger.warning(
-            "[METARED_RETIREMENT] LMS_CRITICAL step received with None user - ignoring"
-        )
-        return
-
-    try:
-        user_id = getattr(user, 'id', None)
-        username = getattr(user, 'username', None)
-        email = getattr(user, 'email', None)
-        retirement_logger.info(
-            "[METARED_RETIREMENT] LMS_CRITICAL step for user: %s (id=%s, email=%s) - deleting now",
-            username,
-            user_id,
-            email,
-        )
-    except Exception as e:  # pylint: disable=broad-except
-        retirement_logger.error(
-            "[METARED_RETIREMENT] Error accessing user attributes in LMS_CRITICAL: %s",
-            e,
-            exc_info=True,
-        )
-        return
-
-    delete_user_permanently(user)
-
-
-def delete_user_permanently(user):
-    """
-    Permanently delete a user from the database.
-
-    This function deletes the UserRetirementStatus record first (since it
-    references the user), then deletes the user record itself. This allows
-    the user to re-register with the same email address (MetaRed policy).
-
-    Parameters
-    ----------
-    user : User
-        The Django user instance to delete.
+    Schedules the permanent deletion of the user via a background task with a short
+    delay. This implements the MetaRed policy allowing email reuse after deletion.
     """
     if not user:
-        retirement_logger.warning(
-            "[METARED_RETIREMENT] delete_user_permanently called with None user - ignoring"
-        )
+        retirement_logger.warning("Retirement signal received with None user - ignoring")
         return
 
-    try:
-        user_id, username, email = user.id, user.username, user.email
-    except AttributeError as e:
-        retirement_logger.error(
-            "[METARED_RETIREMENT] User object missing required attributes: %s",
-            e,
-        )
-        return
+    username = user.username
+    user_id = user.id
 
-    retirement_logger.info(
-        "[METARED_RETIREMENT] Deleting user: %s (id=%s, email=%s)",
-        username,
-        user_id,
-        email,
-    )
+    retirement_logger.info("Scheduling deletion for user: %s (id=%s)", username, user_id)
 
-    try:
-        with transaction.atomic():
-            UserRetirementStatus.objects.filter(user=user).delete()
-            user.delete()
-            retirement_logger.info(
-                "[METARED_RETIREMENT] User deleted: %s - can re-register with %s",
-                username,
-                email,
-            )
-
-    except Exception as e:  # pylint: disable=broad-except
-        retirement_logger.error(
-            "[METARED_RETIREMENT] Failed to delete user %s: %s",
-            username,
-            e,
-            exc_info=True,
-        )
-
-
-def connect_signals():
-    """
-    Connect all signal receivers for platform_plugins_ca.
-
-    This function is called from the AppConfig.ready() method to ensure
-    signals are registered when Django starts.
-
-    Note: The @receiver decorators handle signal connection automatically,
-    but this function provides a hook for logging and any future manual
-    signal connections.
-    """
-    logger.info(
-        "SIGNALS: platform_plugins_ca signal receivers configured "
-        "(deactivation logging + retirement handlers)"
-    )
-    retirement_logger.info(
-        "[METARED_RETIREMENT] Signal handlers registered: "
-        "USER_RETIRE_LMS_MISC -> handle_retire_lms_misc, "
-        "USER_RETIRE_LMS_CRITICAL -> handle_retire_lms_critical"
+    # Schedule deletion with a 10-second delay to let the pipeline finish.
+    delete_user_task.apply_async(
+        args=[user_id, username],
+        countdown=10,
+        queue=DEFAULT_LMS_QUEUE,
+        routing_key=DEFAULT_LMS_QUEUE,
     )
