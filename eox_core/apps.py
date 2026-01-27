@@ -10,6 +10,7 @@ class EoxCoreConfig(AppConfig):
     """App configuration"""
     name = 'eox_core'
     verbose_name = "eduNEXT Openedx Extensions"
+    
 
     plugin_app = {
         'url_config': {
@@ -28,6 +29,12 @@ class EoxCoreConfig(AppConfig):
             },
         },
     }
+    
+    def ready(self):
+        """
+        Import handlers to register signal receivers via @receiver decorators.
+        """
+        from eox_core import handlers  # pylint: disable=import-outside-toplevel, unused-import  # noqa: F401
 
     def ready(self):
         """
