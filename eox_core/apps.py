@@ -36,6 +36,13 @@ class EoxCoreConfig(AppConfig):
         """
         from eox_core import handlers  # pylint: disable=import-outside-toplevel, unused-import  # noqa: F401
 
+    def ready(self):
+        """
+        Register signal receivers when Django starts.
+        """
+        from eox_core import handlers  # pylint: disable=import-outside-toplevel, unused-import
+        handlers.connect_signals()
+
 
 class EoxCoreCMSConfig(EoxCoreConfig):
     """App configuration"""

@@ -5,11 +5,11 @@ import logging
 
 from common.djangoapps.third_party_auth.pipeline import get_complete_url
 from crum import get_current_request
+from django.conf import settings
 from django.db.models.signals import post_save
 from django.shortcuts import redirect
 from openedx.core.djangoapps.lang_pref.helpers import get_language_cookie, set_language_cookie
 from social_core.exceptions import AuthFailed, NotAllowedToDisconnect
-from social_core.pipeline import partial
 
 from eox_core.edxapp_wrapper.users import (
     generate_password,
@@ -243,58 +243,65 @@ def get_language_from_sso_provider(response: dict) -> str:
     """
     Get the language from the SSO provider.
 
+    The language is mapped to the Open edX language format using the
+    ``SOA_SSO_LANGUAGE_MAPPING`` setting. If the language is not found
+    in the mapping, the default language is used.
+
     Args:
         response: The response from the SSO provider.
 
     Returns:
-        The language from the SSO provider.
+        The language in the Open edX language format.
     """
-    return map_language_to_openedx(response.get("language"))
+    language = response.get("language", settings.LANGUAGE_CODE)
+
+    if language is None or not isinstance(language, str):
+        return settings.LANGUAGE_CODE
+
+    language = language.strip()
+
+    if not language:
+        return settings.LANGUAGE_CODE
+
+    return settings.SOA_SSO_LANGUAGE_MAPPING.get(language, settings.LANGUAGE_CODE)
+
 
 
 # pylint: disable=unused-argument
-@partial.partial
-def set_language_preference_from_sso_provider(
-    response,
-    user=None,
-    strategy=None,
-    current_partial=None,
-    **kwargs,
-):
+def set_language_preference_from_sso_provider(response, user=None, strategy=None, backend=None, **kwargs):
     """
     Set the language preference cookie from SSO provider data using a redirect pattern.
 
-    This is a partial pipeline function that extracts the language code from SSO provider
-    data and sets it as a language preference cookie. It uses the redirect pattern with
-    @partial.partial decorator to set the cookie while maintaining the authentication flow.
+    This pipeline function extracts the language code from the SSO provider response
+    and sets it as a language preference cookie. It uses a redirect pattern to set
+    the cookie while maintaining the authentication flow.
 
-    The function compares the current language cookie with the requested language and only
-    performs a redirect if they differ, avoiding unnecessary redirects when the language
-    is already set correctly.
+    The function compares the current language cookie with the extracted language and
+    only performs a redirect if they differ, avoiding unnecessary redirects when the
+    language is already set correctly.
 
     Args:
-        *args: Additional positional arguments passed through the pipeline.
+        response: The SSO provider response containing user data and attributes,
+            including the language preference.
         user: The User object being authenticated. Must be present for language setting.
         strategy: The python-social-auth strategy instance containing the request object.
-        current_partial: The current partial token containing backend information for
-            generating the completion URL.
-        **kwargs: Additional keyword arguments. Expected to contain:
-            - language (str): The language code to set (e.g., 'es', 'en', 'pt-pt').
+        backend: The authentication backend instance, used to generate the completion URL.
+        **kwargs: Additional keyword arguments passed through the pipeline.
 
     Returns:
         HttpResponseRedirect: A redirect response with the language cookie set if the
             language differs from the current cookie and the redirect URL can be
             generated successfully.
-        None: If the language matches the current cookie, user is not present, request
-              is unavailable, or redirect URL generation fails.
+        None: If the language matches the current cookie, no language is found in the
+            response, user is not present, request is unavailable, or redirect URL
+            generation fails.
     """
     print("[DEBUG] set_language_preference_from_sso_provider")
     print("\n\nResponse:", response)
     print("\n\nUser:", user)
     print("\n\nStrategy:", strategy)
-    print("\n\nCurrent partial:", current_partial)
+    print("\n\nBackend:", backend)
     print("\n\nkwargs:", kwargs)
-
     language = get_language_from_sso_provider(response)
 
     if language and user is not None:
@@ -305,7 +312,7 @@ def set_language_preference_from_sso_provider(
 
             if current_cookie != language:
                 try:
-                    redirect_url = get_complete_url(current_partial.backend)
+                    redirect_url = get_complete_url(backend.name)
                 except ValueError:
                     pass
                 else:
