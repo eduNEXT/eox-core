@@ -9,6 +9,7 @@ The retirement handlers listen for USER_RETIRE_LMS_CRITICAL signal at the END
 of the retirement pipeline to permanently delete users, allowing email reuse.
 """
 import logging
+import json
 
 from django.contrib.auth.signals import user_logged_out
 from django.db import transaction
@@ -18,6 +19,7 @@ from openedx.core.djangoapps.user_api.accounts.signals import (  # pylint: disab
     USER_RETIRE_LMS_MISC,
 )
 from openedx.core.djangoapps.user_api.models import UserRetirementStatus  # pylint: disable=import-error
+from openedx_events.analytics.signals import TRACKING_EVENT_EMITTED
 
 try:
     from common.djangoapps.student.models import UserProfile
@@ -232,3 +234,22 @@ def update_certificates_for_user(sender, user, table, changed_fields, **kwargs):
     if table == UserProfile._meta.db_table and "name" in changed_fields:
         certificates = get_recently_modified_certificates(user_ids=[user.id])
         certificates.update(name=user.profile.name)
+
+
+@receiver(TRACKING_EVENT_EMITTED)
+def handle_tracking_event(sender, tracking_log, **kwargs):
+    """
+    Handle tracking events emitted by the Open edX analytics system.
+
+    Args:
+        sender: The sender of the signal.
+        tracking_log: TrackingLogData instance with event information.
+        **kwargs: Additional keyword arguments.
+    """
+    print(f"Raw tracking_log: {tracking_log}")
+    print(f"Event Name: {tracking_log.name}")
+    print(f"Timestamp: {tracking_log.timestamp.isoformat()}")
+    print(f"Data (raw): {tracking_log.data}")
+    print(f"Data (parsed): {json.loads(tracking_log.data) if tracking_log.data else {}}")
+    print(f"Context (raw): {tracking_log.context}")
+    print(f"Context (parsed): {json.loads(tracking_log.context) if tracking_log.context else {}}")
