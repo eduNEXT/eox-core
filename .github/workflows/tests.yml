@@ -37,7 +37,8 @@ jobs:
           make install-dev-dependencies
       - name: Run Python Tests
         run: |
-            export TOXENV=${TOX_ENV//./}
+            export TOX_ENV=${TOX_ENV//./}
+            export TOXENV=$TOX_ENV
             make run-tests
         env:
           TOX_ENV: py${{matrix.python-version}}-django${{matrix.django}}
