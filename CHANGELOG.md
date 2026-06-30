@@ -11,6 +11,14 @@ Please do not update the unreleased notes.
 
 <!-- Content should be placed here -->
 
+## [v12.4.0](https://github.com/eduNEXT/eox-core/compare/v12.3.1...v12.4.0) - (2026-06-24)
+
+### Changed
+
+- **Verawood Support**: Update integration tests to use new Verawood release with Tutor,
+  update GitHub Actions versions, and update integration-test workflow to add Verawood
+  and remove oldest Tutor version support.
+
 ## [v12.3.1](https://github.com/eduNEXT/eox-core/compare/v12.3.0...v12.3.1) - (2026-01-20)
 
 ### Changed
